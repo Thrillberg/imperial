@@ -1,6 +1,6 @@
 const imperial = require('./imperial');
 
-test('adds 1 + 2 to equal 3', () => {
-  expect(imperial(1, 2)).toBe(3);
+test('gets the player who owns Austria-Hungary', () => {
+  expect(imperial()).toBe("franzJosef");
 });
 
