@@ -1,14 +1,5 @@
 const startingGameState = {
-  rondel: [
-    {production: []},
-    {maneuver: []},
-    {taxation: []},
-    {factory: []},
-    {production: []},
-    {maneuver: []},
-    {investor: []},
-    {import: []}
-  ],
+  rondel: [[],[],[],[],[],[],[],[]],
   taxChart: {
 
   },

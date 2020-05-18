@@ -1,6 +1,6 @@
 const imperial = require('./imperial');
 
-test('gets the player who owns Austria-Hungary', () => {
-  expect(imperial()).toBe("franzJosef");
+test('puts Austria-Hungary on "production" in the rondel', () => {
+  expect(imperial().rondel[0][0]).toEqual(["franzJosef", {"austriaHungary": 9, "germany": 2}]);
 });
 

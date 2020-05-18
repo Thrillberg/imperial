@@ -1,18 +1,18 @@
 let gameState = require('./startingGameState');
 
 function imperial() {
-  return selectAction(gameState);
+  return selectAction(0, gameState);
 }
 
-function selectAction(gameState) {
-  const player = getAustrianPlayer(gameState.investors);
-  return player;
+function selectAction(actionIndex, gameState) {
+  gameState.rondel[actionIndex].push(getAustrianPlayer(gameState.investors))
+  return gameState
 }
 
 function getAustrianPlayer(investors) {
   return Object.entries(investors).filter((entry) => {
     return entry[1].austriaHungary === Math.max(...investorsInvestmentsInAustria(allInvestorsInAustria(investors)))
-  })[0][0]
+  })[0]
 }
 
 function investorsInvestmentsInAustria(investors) {
