@@ -5,24 +5,34 @@ function imperial() {
 }
 
 function selectAction(actionIndex, gameState) {
-  gameState.rondel[actionIndex].push(getAustrianPlayer(gameState.investors))
+  gameState.rondel[actionIndex].push(getAustrianPlayer(gameState.investments))
   return gameState
 }
 
-function getAustrianPlayer(investors) {
-  return Object.entries(investors).filter((entry) => {
-    return entry[1].austriaHungary === Math.max(...investorsInvestmentsInAustria(allInvestorsInAustria(investors)))
-  })[0]
+function getAustrianPlayer(investments) {
+  return leadingAustrianInvestment(investments).investor
 }
 
-function investorsInvestmentsInAustria(investors) {
-  return investors.map(investor => investor[1].austriaHungary);
+function leadingAustrianInvestment(investments) {
+  return investments.filter(isLeadingAustrianInvestment)[0]
 }
 
-function allInvestorsInAustria(investors) {
-  return Object.entries(investors).filter((entry) => {
-    return (Number.isInteger(entry[1].austriaHungary))
-  })
+function isLeadingAustrianInvestment(investments) {
+  return function(investment) {
+    return investment.amount === Math.max(allAustrianInvestments(investments))
+  }
+}
+
+function allAustrianInvestments(investments) {
+  return investments.filter(isAustrianInvestment).map(investmentAmount)
+}
+
+function isAustrianInvestment(investment) {
+  return investment.country === "austriaHungary";
+}
+
+function investmentAmount(investment) {
+  return investment.amount;
 }
 
 module.exports = imperial;

@@ -23,32 +23,20 @@ const startingGameState = {
       score: 0,
     }
   },
-  investors: {
-    franzJosef: {
-      austriaHungary: 9,
-      germany: 2
-    },
-    nicholas: {
-      russia: 9,
-      france: 2
-    },
-    raymond: {
-      france: 9,
-      austriaHungary: 2
-    },
-    george: {
-      uk: 9,
-      russia: 2
-    },
-    wilhelm: {
-      germany: 9,
-      italy: 2
-    },
-    victor: {
-      italy: 9,
-      uk: 2
-    },
-  }
+  investments: [
+    { investor: "franzJosef", country: "austriaHungary", amount: 9 },
+    { investor: "franzJosef", country: "germany", amount: 2 },
+    { investor: "nicholas", country: "russia", amount: 9 },
+    { investor: "nicholas", country: "france", amount: 2 },
+    { investor: "raymond", country: "france", amount: 9 },
+    { investor: "raymond", country: "austriaHungary", amount: 2 },
+    { investor: "george", country: "uk", amount: 9 },
+    { investor: "george", country: "russia", amount: 2 },
+    { investor: "wilhelm", country: "germany", amount: 9 },
+    { investor: "wilhelm", country: "italy", amount: 2 },
+    { investor: "victor", country: "italy", amount: 9 },
+    { investor: "victor", country: "uk", amount: 2 }
+  ]
 }
 
 module.exports = startingGameState;
