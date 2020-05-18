@@ -5,13 +5,18 @@ function imperial() {
 }
 
 function selectAction(gameState) {
-  const player = getAustrianPlayer(gameState);
+  const player = getAustrianPlayer(gameState.investors);
   return player;
 }
 
-function getAustrianPlayer(gameState) {
-  const investors = gameState.investors
-  const austriaHungaryInvestments = Object.entries(investors).map((entry) => {
+function getAustrianPlayer(investors) {
+  return Object.entries(investors).filter((entry) => {
+    return entry[1].austriaHungary === Math.max(...allInvestorsInAustria(investors).map(investor => investor[1]))
+  })[0][0]
+}
+
+function allInvestorsInAustria(investors) {
+  return Object.entries(investors).map((entry) => {
     const investorName = entry[0];
     const investments = entry[1];
 
@@ -19,15 +24,6 @@ function getAustrianPlayer(gameState) {
       return [investorName, investments.austriaHungary]
     }
   }).filter(Boolean);
-  leadingInvestor = "";
-  leadingInvestment = 0;
-  austriaHungaryInvestments.forEach((investment) => {
-    if (investment[1] > leadingInvestment) {
-      leadingInvestor = investment[0]
-      leadingInvestment = investment[1]
-    }
-  });
-  return leadingInvestor;
 }
 
 module.exports = imperial;
