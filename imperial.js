@@ -1,16 +1,27 @@
 let gameState = require('./startingGameState');
 
 function imperial() {
-  return selectAction(0, gameState);
+  if (selectAction(0, gameState) === 0) {
+    return buildFactory(gameState)
+  }
 }
 
 function selectAction(actionIndex, gameState) {
   gameState.rondel[actionIndex].push(getAustrianPlayer(gameState.investments))
-  return gameState
+  return actionIndex
+}
+
+function buildFactory(gameState) {
+  return payToBank(5, gameState)
 }
 
 function getAustrianPlayer(investments) {
   return leadingAustrianInvestment(investments).investor
+}
+
+function payToBank(amount, gameState) {
+  gameState.money[gameState.currentCountry] -= amount
+  return gameState
 }
 
 function leadingAustrianInvestment(investments) {
