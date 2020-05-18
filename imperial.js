@@ -11,19 +11,18 @@ function selectAction(gameState) {
 
 function getAustrianPlayer(investors) {
   return Object.entries(investors).filter((entry) => {
-    return entry[1].austriaHungary === Math.max(...allInvestorsInAustria(investors).map(investor => investor[1]))
+    return entry[1].austriaHungary === Math.max(...investorsInvestmentsInAustria(allInvestorsInAustria(investors)))
   })[0][0]
 }
 
-function allInvestorsInAustria(investors) {
-  return Object.entries(investors).map((entry) => {
-    const investorName = entry[0];
-    const investments = entry[1];
+function investorsInvestmentsInAustria(investors) {
+  return investors.map(investor => investor[1].austriaHungary);
+}
 
-    if (Number.isInteger(investments.austriaHungary)) {
-      return [investorName, investments.austriaHungary]
-    }
-  }).filter(Boolean);
+function allInvestorsInAustria(investors) {
+  return Object.entries(investors).filter((entry) => {
+    return (Number.isInteger(entry[1].austriaHungary))
+  })
 }
 
 module.exports = imperial;
