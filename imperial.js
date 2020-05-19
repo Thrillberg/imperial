@@ -1,13 +1,14 @@
 const imperial = {
   play(gameState) {
-    if (this.selectAction(0, gameState) === 0) {
+    if (this.selectAction(0, gameState).rondelPositions.franzJosef === 0) {
       return this.buildFactory(gameState)
     }
   },
 
   selectAction(actionIndex, gameState) {
-    gameState.rondel[actionIndex].push(this.getAustrianPlayer(gameState.investments))
-    return actionIndex
+    const austrianPlayer = this.getAustrianPlayer(gameState.investments)
+    let newRondelPositions = Object.assign({}, gameState.rondelPositions, {[austrianPlayer]: actionIndex})
+    return Object.assign({}, gameState, {rondelPositions: newRondelPositions})
   },
   
   buildFactory(gameState) {
@@ -28,9 +29,7 @@ const imperial = {
   },
   
   isLeadingAustrianInvestment(investments) {
-    return function(investment) {
-      return investment.amount === Math.max(this.allAustrianInvestments(investments))
-    }
+    return investment => investment.amount === Math.max(this.allAustrianInvestments(investments))
   },
   
   allAustrianInvestments(investments) {

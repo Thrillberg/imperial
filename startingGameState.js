@@ -8,7 +8,14 @@ const startingGameState = {
     germany: 2,
     russia: 2
   },
-  rondel: [[],[],[],[],[],[],[],[]],
+  rondelPositions: {
+    franzJosef: null,
+    victor: null,
+    raymond: null,
+    uk: null,
+    germany: null,
+    russia: null
+  },
   taxChart: {},
   countries: {
     austriaHungary: { score: 0 },
