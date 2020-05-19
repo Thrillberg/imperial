@@ -6,9 +6,10 @@ const imperial = {
   },
 
   selectAction(actionIndex, gameState) {
+    const key = "rondelPositions"
     const austrianPlayer = this.getAustrianPlayer(gameState.investments)
-    let newRondelPositions = Object.assign({}, gameState.rondelPositions, {[austrianPlayer]: actionIndex})
-    return Object.assign({}, gameState, {rondelPositions: newRondelPositions})
+    const value = this.updateGameState(gameState.rondelPositions, austrianPlayer, actionIndex)
+    return this.updateGameState(gameState, key, value)
   },
   
   buildFactory(gameState) {
@@ -20,8 +21,10 @@ const imperial = {
   },
   
   payToBank(amount, gameState) {
-    gameState.money[gameState.currentCountry] -= amount
-    return amount
+    const key = "money"
+    const currentCountry = gameState.currentCountry
+    const value = this.updateGameState(gameState.money, currentCountry, gameState.money[currentCountry] - amount)
+    return this.updateGameState(gameState, key, value)
   },
   
   leadingAustrianInvestment(investments) {
@@ -42,6 +45,10 @@ const imperial = {
   
   investmentAmount(investment) {
     return investment.amount;
+  },
+
+  updateGameState(gameState, key, value) {
+    return Object.assign({}, gameState, {[key]: value})
   }
 }
 
