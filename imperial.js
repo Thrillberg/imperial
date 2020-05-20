@@ -6,10 +6,8 @@ const imperial = {
   },
 
   selectAction(actionIndex, gameState) {
-    const key = "rondelPositions"
     const austrianPlayer = this.getAustrianPlayer(gameState.investments)
-    const value = this.updateGameState(gameState.rondelPositions, austrianPlayer, actionIndex)
-    return this.updateGameState(gameState, key, value)
+    return this.updateRondelPositions(gameState, austrianPlayer, actionIndex)
   },
   
   buildFactory(gameState) {
@@ -21,10 +19,9 @@ const imperial = {
   },
   
   payToBank(amount, gameState) {
-    const key = "money"
     const currentCountry = gameState.currentCountry
-    const value = this.updateGameState(gameState.money, currentCountry, gameState.money[currentCountry] - amount)
-    return this.updateGameState(gameState, key, value)
+    const newAmount = gameState.money[currentCountry] - amount
+    return this.updateMoney(gameState, currentCountry, newAmount)
   },
   
   leadingAustrianInvestment(investments) {
@@ -47,8 +44,18 @@ const imperial = {
     return investment.amount;
   },
 
-  updateGameState(gameState, key, value) {
-    return Object.assign({}, gameState, {[key]: value})
+  update(object, key, value) {
+    return Object.assign({}, object, {[key]: value})
+  },
+
+  updateRondelPositions(gameState, key, value) {
+    const newRondelPositions = this.update(gameState.rondelPositions, key, value)
+    return this.update(gameState, "rondelPositions", newRondelPositions)
+  },
+
+  updateMoney(gameState, key, value) {
+    const newMoney = this.update(gameState.money, key, value)
+    return this.update(gameState, "money", newMoney)
   }
 }
 
