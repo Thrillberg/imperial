@@ -41,4 +41,5 @@ const startingGameState = {
   ]
 }
 
-module.exports = startingGameState;
+module.exports = startingGameState
+// define(startingGameState)

@@ -59,4 +59,5 @@ const imperial = {
   }
 }
 
-module.exports = imperial;
+module.exports = imperial
+// define(imperial)

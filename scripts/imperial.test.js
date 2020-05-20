@@ -1,5 +1,5 @@
 const imperial = require("./imperial");
-let gameState = require('./startingGameState');
+const gameState = require('./startingGameState');
 
 describe("Austria-Hungary selects their first turn action", () => {
   test("franzJosef is on the first rondel space", () => {
