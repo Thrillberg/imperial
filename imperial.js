@@ -60,4 +60,45 @@ const imperial = {
 }
 
 module.exports = imperial
-// define(imperial)
+module.exports.getAvailableActions = (log) => {
+  if (log.length == 0 || log[log.length - 1].type == 'buildFactory') {
+    // find the last 'rondel' nation
+    // boop up by one on the list of nations
+    return new Set(['factory', 'production1', 'maneuver1', 'investor', 'import', 'production2', 'maneuver2', 
+    'taxation'].map((slot) => ({
+      type: 'rondel', payload: {nation: 'AH', cost: 0, slot}
+    })))
+  } else {
+    return new Set([
+      'trieste', 'prague', 'lemburg'
+    ].map((province) => ({type: 'buildFactory', payload: {province}})))
+  }
+}
+
+/*
+events = []
+initial = {}
+
+at setup:
+score == 0
+2-5 in the tax chart
+predetermined territories
+  (2 factories each, in the square cities)
+
+assume 6 players for now
+13mm per player
+pay 9mm -> their "own" nation
+pay 2mm -> their "sister" nation
+
+rondel is empty
+*/
+
+/*
+<- events is empty
+-> it's austria-hungary's controller's turn
+-> validRondelPositions(Country) -> [RondelSlot]
+*/
+
+/*
+<- events has {AH placed token in rondel @ ??}
+*/
