@@ -63,6 +63,48 @@ describe("available actions", () => {
       );
       expect(actions).toEqual(expected);
     });
+
+    test("GB", () => {
+      const log = [
+        { type: "rondel", payload: { nation: "GB", cost: 0, slot: "factory" } },
+      ];
+      const actions = imperial.getAvailableActions(log);
+      const expected = new Set(
+        ["dublin", "sheffield", "edinburgh"].map((province) => ({
+          type: "buildFactory",
+          payload: { province },
+        }))
+      );
+      expect(actions).toEqual(expected);
+    });
+
+    test("GE", () => {
+      const log = [
+        { type: "rondel", payload: { nation: "GE", cost: 0, slot: "factory" } },
+      ];
+      const actions = imperial.getAvailableActions(log);
+      const expected = new Set(
+        ["danzig", "munich", "cologne"].map((province) => ({
+          type: "buildFactory",
+          payload: { province },
+        }))
+      );
+      expect(actions).toEqual(expected);
+    });
+
+    test("RU", () => {
+      const log = [
+        { type: "rondel", payload: { nation: "RU", cost: 0, slot: "factory" } },
+      ];
+      const actions = imperial.getAvailableActions(log);
+      const expected = new Set(
+        ["kiev", "st. petersburg", "warsaw"].map((province) => ({
+          type: "buildFactory",
+          payload: { province },
+        }))
+      );
+      expect(actions).toEqual(expected);
+    });
   });
 
   test("AH built a factory in Trieste", () => {

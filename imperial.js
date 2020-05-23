@@ -109,6 +109,9 @@ const imperial = {
       AH: ["trieste", "prague", "lemburg"],
       IT: ["genoa", "venice", "florence"],
       FR: ["brest", "dijon", "marseille"],
+      GB: ["dublin", "sheffield", "edinburgh"],
+      GE: ["danzig", "munich", "cologne"],
+      RU: ["kiev", "st. petersburg", "warsaw"],
     };
     return new Set(
       factoryLocations[nation].map((province) => ({
