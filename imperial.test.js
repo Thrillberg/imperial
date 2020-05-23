@@ -21,18 +21,48 @@ describe("available actions", () => {
     expect(actions).toEqual(new Set(expected));
   });
 
-  test("AH moved to the factory slot", () => {
-    const log = [
-      { type: "rondel", payload: { nation: "AH", cost: 0, slot: "factory" } },
-    ];
-    const actions = imperial.getAvailableActions(log);
-    const expected = new Set(
-      ["trieste", "prague", "lemburg"].map((province) => ({
-        type: "buildFactory",
-        payload: { province },
-      }))
-    );
-    expect(actions).toEqual(expected);
+  describe("moving to the factory slot", () => {
+    test("AH", () => {
+      const log = [
+        { type: "rondel", payload: { nation: "AH", cost: 0, slot: "factory" } },
+      ];
+      const actions = imperial.getAvailableActions(log);
+      const expected = new Set(
+        ["trieste", "prague", "lemburg"].map((province) => ({
+          type: "buildFactory",
+          payload: { province },
+        }))
+      );
+      expect(actions).toEqual(expected);
+    });
+
+    test("IT", () => {
+      const log = [
+        { type: "rondel", payload: { nation: "IT", cost: 0, slot: "factory" } },
+      ];
+      const actions = imperial.getAvailableActions(log);
+      const expected = new Set(
+        ["genoa", "venice", "florence"].map((province) => ({
+          type: "buildFactory",
+          payload: { province },
+        }))
+      );
+      expect(actions).toEqual(expected);
+    });
+
+    test("FR", () => {
+      const log = [
+        { type: "rondel", payload: { nation: "FR", cost: 0, slot: "factory" } },
+      ];
+      const actions = imperial.getAvailableActions(log);
+      const expected = new Set(
+        ["brest", "dijon", "marseille"].map((province) => ({
+          type: "buildFactory",
+          payload: { province },
+        }))
+      );
+      expect(actions).toEqual(expected);
+    });
   });
 
   test("AH built a factory in Trieste", () => {
