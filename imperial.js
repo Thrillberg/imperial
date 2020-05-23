@@ -111,31 +111,3 @@ const imperial = {
 };
 
 module.exports = imperial;
-
-/*
-events = []
-initial = {}
-
-at setup:
-score == 0
-2-5 in the tax chart
-predetermined territories
-  (2 factories each, in the square cities)
-
-assume 6 players for now
-13mm per player
-pay 9mm -> their "own" nation
-pay 2mm -> their "sister" nation
-
-rondel is empty
-*/
-
-/*
-<- events is empty
--> it's austria-hungary's controller's turn
--> validRondelPositions(Country) -> [RondelSlot]
-*/
-
-/*
-<- events has {AH placed token in rondel @ ??}
-*/
