@@ -30,7 +30,8 @@ const imperial = {
       this.lastMoveWasProduction(lastMove) ||
       this.lastMoveWasManeuver(lastMove) ||
       this.lastMoveWasInvestor(lastMove) ||
-      this.lastMoveWasImport(lastMove)
+      this.lastMoveWasImport(lastMove) ||
+      this.lastMoveWasTaxation(lastMove)
     );
   },
 
@@ -80,7 +81,11 @@ const imperial = {
   },
 
   lastMoveWasManeuver(lastMove) {
-    return lastMove.type === "rondel" && lastMove.payload.slot === "maneuver1";
+    return (
+      lastMove.type === "rondel" &&
+      (lastMove.payload.slot === "maneuver1" ||
+        lastMove.payload.slot === "maneuver2")
+    );
   },
 
   lastMoveWasInvestor(lastMove) {
@@ -89,6 +94,10 @@ const imperial = {
 
   lastMoveWasImport(lastMove) {
     return lastMove.type === "import";
+  },
+
+  lastMoveWasTaxation(lastMove) {
+    return lastMove.type === "rondel" && lastMove.payload.slot === "taxation";
   },
 
   nextNation(lastTurnNation) {

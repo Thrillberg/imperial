@@ -256,4 +256,102 @@ describe("available actions", () => {
     }));
     expect(actions).toEqual(new Set(expected));
   });
+
+  test("AH moved to the maneuver2 slot", () => {
+    const log = [
+      { type: "rondel", payload: { nation: "AH", cost: 0, slot: "factory" } },
+      { type: "buildFactory", payload: { province: "trieste" } },
+      {
+        type: "rondel",
+        payload: { nation: "IT", cost: 0, slot: "production1" },
+      },
+      {
+        type: "rondel",
+        payload: { nation: "FR", cost: 0, slot: "maneuver1" },
+      },
+      {
+        type: "rondel",
+        payload: { nation: "GB", cost: 0, slot: "investor" },
+      },
+      {
+        type: "rondel",
+        payload: { nation: "GE", cost: 0, slot: "import" },
+      },
+      { type: "import", payload: { province: "berlin" } },
+      {
+        type: "rondel",
+        payload: { nation: "RU", cost: 0, slot: "production2" },
+      },
+      {
+        type: "rondel",
+        payload: { nation: "AH", cost: 0, slot: "maneuver2" },
+      },
+    ];
+    const actions = imperial.getAvailableActions(log);
+    const expected = [
+      "factory",
+      "production1",
+      "maneuver1",
+      "investor",
+      "import",
+      "production2",
+      "maneuver2",
+      "taxation",
+    ].map((slot) => ({
+      type: "rondel",
+      payload: { nation: "IT", cost: 0, slot },
+    }));
+    expect(actions).toEqual(new Set(expected));
+  });
+
+  test("IT moved to the taxation slot", () => {
+    const log = [
+      { type: "rondel", payload: { nation: "AH", cost: 0, slot: "factory" } },
+      { type: "buildFactory", payload: { province: "trieste" } },
+      {
+        type: "rondel",
+        payload: { nation: "IT", cost: 0, slot: "production1" },
+      },
+      {
+        type: "rondel",
+        payload: { nation: "FR", cost: 0, slot: "maneuver1" },
+      },
+      {
+        type: "rondel",
+        payload: { nation: "GB", cost: 0, slot: "investor" },
+      },
+      {
+        type: "rondel",
+        payload: { nation: "GE", cost: 0, slot: "import" },
+      },
+      { type: "import", payload: { province: "berlin" } },
+      {
+        type: "rondel",
+        payload: { nation: "RU", cost: 0, slot: "production2" },
+      },
+      {
+        type: "rondel",
+        payload: { nation: "AH", cost: 0, slot: "maneuver2" },
+      },
+      {
+        type: "rondel",
+        payload: { nation: "IT", cost: 0, slot: "taxation" },
+      },
+    ];
+    const actions = imperial.getAvailableActions(log);
+    const expected = [
+      "factory",
+      "production1",
+      "maneuver1",
+      "investor",
+      "import",
+      "production2",
+      "maneuver2",
+      "taxation",
+    ].map((slot) => ({
+      type: "rondel",
+      payload: { nation: "FR", cost: 0, slot },
+    }));
+    expect(actions).toEqual(new Set(expected));
+  });
 });
