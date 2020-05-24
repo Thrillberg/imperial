@@ -3,17 +3,27 @@ const imperial = {
     const lastMove = log[log.length - 1];
     if (this.shouldReturnRondelActions(lastMove)) {
       return this.rondelActions(this.getNation(log));
-    } else if (
-      lastMove.type === "rondel" &&
-      lastMove.payload.slot === "factory"
-    ) {
-      return this.buildFactoryAction(lastMove.payload.nation);
-    } else if (
-      lastMove.type === "rondel" &&
-      lastMove.payload.slot === "import"
-    ) {
-      return this.importAction(lastMove.payload.nation);
+    } else if (lastMove.type === "rondel") {
+      if (lastMove.payload.slot === "factory") {
+        return this.buildFactoryAction(lastMove.payload.nation);
+      } else if (lastMove.payload.slot === "import") {
+        return this.importAction(lastMove.payload.nation);
+      }
     }
+  },
+
+  getTreasury(nation, log) {
+    let nationsTreasury = 0;
+    const importActions = log.filter(
+      (action) =>
+        action.type === "import" &&
+        this.importLocations(nation).includes(action.payload.province)
+    );
+    return 2 - importActions.length;
+  },
+
+  unitCount(province) {
+    return 1;
   },
 
   shouldReturnRondelActions(lastMove) {
@@ -119,17 +129,25 @@ const imperial = {
     );
   },
 
+  importLocations(nation) {
+    if (nation === "AH") {
+      return ["vienna", "budapest", "prague", "lemberg", "trieste"];
+    } else if (nation === "IT") {
+      return ["rome", "naples"];
+    } else if (nation === "FR") {
+      return ["paris", "bordeaux"];
+    } else if (nation === "GB") {
+      return ["london", "liverpool"];
+    } else if (nation === "GE") {
+      return ["berlin", "hamburg"];
+    } else if (nation === "RU") {
+      return ["moscow", "odessa"];
+    }
+  },
+
   importAction(nation) {
-    const importLocations = {
-      AH: ["vienna", "budapest"],
-      IT: ["rome", "naples"],
-      FR: ["paris", "bordeaux"],
-      GB: ["london", "liverpool"],
-      GE: ["berlin", "hamburg"],
-      RU: ["moscow", "odessa"],
-    };
     return new Set(
-      importLocations[nation].map((province) => ({
+      this.importLocations(nation).map((province) => ({
         type: "import",
         payload: { province },
       }))

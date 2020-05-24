@@ -174,7 +174,13 @@ describe("available actions", () => {
         },
       ];
       const actions = imperial.getAvailableActions(log);
-      const expected = ["vienna", "budapest"].map((province) => ({
+      const expected = [
+        "vienna",
+        "budapest",
+        "prague",
+        "lemberg",
+        "trieste",
+      ].map((province) => ({
         type: "import",
         payload: { province },
       }));
