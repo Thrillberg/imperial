@@ -165,19 +165,96 @@ describe("available actions", () => {
     expect(actions).toEqual(new Set(expected));
   });
 
-  test("GE moved to the import slot", () => {
-    const log = [
-      {
-        type: "rondel",
-        payload: { nation: "GE", cost: 0, slot: "import" },
-      },
-    ];
-    const actions = imperial.getAvailableActions(log);
-    const expected = ["berlin", "hamburg"].map((province) => ({
-      type: "import",
-      payload: { province },
-    }));
-    expect(actions).toEqual(new Set(expected));
+  describe("moving to the import slot", () => {
+    test("AH moved to the import slot", () => {
+      const log = [
+        {
+          type: "rondel",
+          payload: { nation: "AH", cost: 0, slot: "import" },
+        },
+      ];
+      const actions = imperial.getAvailableActions(log);
+      const expected = ["vienna", "budapest"].map((province) => ({
+        type: "import",
+        payload: { province },
+      }));
+      expect(actions).toEqual(new Set(expected));
+    });
+
+    test("IT moved to the import slot", () => {
+      const log = [
+        {
+          type: "rondel",
+          payload: { nation: "IT", cost: 0, slot: "import" },
+        },
+      ];
+      const actions = imperial.getAvailableActions(log);
+      const expected = ["rome", "naples"].map((province) => ({
+        type: "import",
+        payload: { province },
+      }));
+      expect(actions).toEqual(new Set(expected));
+    });
+
+    test("FR moved to the import slot", () => {
+      const log = [
+        {
+          type: "rondel",
+          payload: { nation: "FR", cost: 0, slot: "import" },
+        },
+      ];
+      const actions = imperial.getAvailableActions(log);
+      const expected = ["paris", "bordeaux"].map((province) => ({
+        type: "import",
+        payload: { province },
+      }));
+      expect(actions).toEqual(new Set(expected));
+    });
+
+    test("GB moved to the import slot", () => {
+      const log = [
+        {
+          type: "rondel",
+          payload: { nation: "GB", cost: 0, slot: "import" },
+        },
+      ];
+      const actions = imperial.getAvailableActions(log);
+      const expected = ["london", "liverpool"].map((province) => ({
+        type: "import",
+        payload: { province },
+      }));
+      expect(actions).toEqual(new Set(expected));
+    });
+
+    test("GE moved to the import slot", () => {
+      const log = [
+        {
+          type: "rondel",
+          payload: { nation: "GE", cost: 0, slot: "import" },
+        },
+      ];
+      const actions = imperial.getAvailableActions(log);
+      const expected = ["berlin", "hamburg"].map((province) => ({
+        type: "import",
+        payload: { province },
+      }));
+      expect(actions).toEqual(new Set(expected));
+    });
+
+    test("RU moved to the import slot", () => {
+      const log = [
+        {
+          type: "rondel",
+          payload: { nation: "RU", cost: 0, slot: "import" },
+        },
+      ];
+      const actions = imperial.getAvailableActions(log);
+      const expected = ["moscow", "odessa"].map((province) => ({
+        type: "import",
+        payload: { province },
+      }));
+      expect(actions).toEqual(new Set(expected));
+    });
   });
 
   test("GE imported an army in Berlin", () => {

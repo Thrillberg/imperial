@@ -8,13 +8,11 @@ const imperial = {
       lastMove.payload.slot === "factory"
     ) {
       return this.buildFactoryAction(lastMove.payload.nation);
-    } else {
-      return new Set(
-        ["berlin", "hamburg"].map((province) => ({
-          type: "import",
-          payload: { province },
-        }))
-      );
+    } else if (
+      lastMove.type === "rondel" &&
+      lastMove.payload.slot === "import"
+    ) {
+      return this.importAction(lastMove.payload.nation);
     }
   },
 
@@ -116,6 +114,23 @@ const imperial = {
     return new Set(
       factoryLocations[nation].map((province) => ({
         type: "buildFactory",
+        payload: { province },
+      }))
+    );
+  },
+
+  importAction(nation) {
+    const importLocations = {
+      AH: ["vienna", "budapest"],
+      IT: ["rome", "naples"],
+      FR: ["paris", "bordeaux"],
+      GB: ["london", "liverpool"],
+      GE: ["berlin", "hamburg"],
+      RU: ["moscow", "odessa"],
+    };
+    return new Set(
+      importLocations[nation].map((province) => ({
+        type: "import",
         payload: { province },
       }))
     );
