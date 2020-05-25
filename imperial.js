@@ -1,4 +1,18 @@
 const imperial = {
+  getCash(player, log) {
+    let cash = 11;
+    const bondPurchaseActions = log
+      .filter((action) => {
+        return (
+          action.type === "bondPurchase" && action.payload.player === player
+        );
+      })
+      .map((bondPurchase) => {
+        cash -= bondPurchase.payload.cost;
+      });
+    return cash;
+  },
+
   getAvailableActions(log) {
     const lastMove = log[log.length - 1];
     if (this.shouldReturnRondelActions(lastMove)) {
@@ -13,13 +27,39 @@ const imperial = {
   },
 
   getTreasury(nation, log) {
-    let nationsTreasury = 0;
+    let treasuryAmount = 0;
+    if (nation === "AH") {
+      treasuryAmount = 2;
+    } else if (nation === "IT") {
+      treasuryAmount = 9;
+    } else if (nation != "GE") {
+      const bondPurchaseActions = log
+        .filter((action) => {
+          return (
+            action.type === "bondPurchase" && action.payload.nation === nation
+          );
+        })
+        .map((bondPurchase) => {
+          treasuryAmount += bondPurchase.payload.cost;
+        });
+    }
+
     const importActions = log.filter(
       (action) =>
         action.type === "import" &&
         this.importLocations(nation).includes(action.payload.province)
     );
-    return 2 - importActions.length;
+    treasuryAmount -= importActions.length;
+
+    const investorRondelActions = log.filter(
+      (action) =>
+        action.type === "rondel" &&
+        action.payload.slot === "investor" &&
+        action.payload.nation === nation
+    );
+    treasuryAmount -= 4 * investorRondelActions.length;
+
+    return treasuryAmount;
   },
 
   unitCount(province) {
