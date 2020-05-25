@@ -47,21 +47,15 @@ const imperial = {
 
   getTreasury(nation, log) {
     let treasuryAmount = 0;
-    if (nation === "AH") {
-      treasuryAmount = 2;
-    } else if (nation === "IT") {
-      treasuryAmount = 9;
-    } else if (nation != "GE") {
-      log
-        .filter((action) => {
-          return (
-            action.type === "bondPurchase" && action.payload.nation === nation
-          );
-        })
-        .map((bondPurchase) => {
-          treasuryAmount += bondPurchase.payload.cost;
-        });
-    }
+    // log
+    //   .filter((action) => {
+    //     return (
+    //       action.type === "bondPurchase" && action.payload.nation === nation
+    //     );
+    //   })
+    //   .map((bondPurchase) => {
+    //     treasuryAmount += bondPurchase.payload.cost;
+    //   });
 
     const importActions = log.filter(
       (action) =>
@@ -76,7 +70,36 @@ const imperial = {
         action.payload.slot === "investor" &&
         action.payload.nation === nation
     );
-    treasuryAmount -= 4 * investorRondelActions.length;
+
+    if (this.investmentHasBeenSold(nation, 4, log)) {
+      treasuryAmount += 9;
+      treasuryAmount -= 4 * investorRondelActions.length;
+    }
+    if (this.investmentHasBeenSold(nation, 2, log)) {
+      treasuryAmount += 4;
+      treasuryAmount -= 2 * investorRondelActions.length;
+    }
+    if (this.investmentHasBeenSold(nation, 1, log)) {
+      treasuryAmount += 2;
+      treasuryAmount -= 1 * investorRondelActions.length;
+    }
+
+    const factoryLocations = {
+      AH: ["trieste", "prague", "lemburg"],
+      IT: ["genoa", "venice", "florence"],
+      FR: ["brest", "dijon", "marseille"],
+      GB: ["dublin", "sheffield", "edinburgh"],
+      GE: ["danzig", "munich", "cologne"],
+      RU: ["kiev", "st. petersburg", "warsaw"],
+    };
+
+    const buildFactoryActions = log.filter((action) => {
+      return (
+        action.type === "buildFactory" &&
+        factoryLocations[nation].includes(action.payload.province)
+      );
+    });
+    treasuryAmount -= 5 * buildFactoryActions.length;
 
     return treasuryAmount;
   },
@@ -106,7 +129,18 @@ const imperial = {
         return playerSeatingAction.payload.order;
       })[0];
     const indexOfInvestorCardHolder = order.indexOf(AHController) - 1;
-    return order[indexOfInvestorCardHolder];
+
+    const investorCardAdvancements = log.filter((action) => {
+      return action.type === "investorCardAdvancement";
+    });
+    if (indexOfInvestorCardHolder - investorCardAdvancements.length === -1) {
+      return order[order.length - 1];
+    }
+    return order[indexOfInvestorCardHolder - investorCardAdvancements.length];
+  },
+
+  hasFactory(province, log) {
+    return true;
   },
 
   unitCount(province) {
@@ -134,6 +168,26 @@ const imperial = {
     } else {
       return "AH";
     }
+  },
+
+  investmentHasBeenSold(nation, value, log) {
+    const bondValues = {
+      1: 2,
+      2: 4,
+      4: 9,
+    };
+    if (
+      log.filter((action) => {
+        return (
+          action.type === "bondPurchase" &&
+          action.payload.nation === nation &&
+          bondValues[value] === action.payload.cost
+        );
+      }).length > 0
+    ) {
+      return true;
+    }
+    return false;
   },
 
   rondelActions(nation) {
