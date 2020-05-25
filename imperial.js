@@ -1,7 +1,7 @@
 const imperial = {
   getCash(player, log) {
     let cash = 11;
-    const bondPurchaseActions = log
+    log
       .filter((action) => {
         return (
           action.type === "bondPurchase" && action.payload.player === player
@@ -10,6 +10,15 @@ const imperial = {
       .map((bondPurchase) => {
         cash -= bondPurchase.payload.cost;
       });
+    const investorActions = log.filter((action) => {
+      return (
+        action.type === "rondel" &&
+        action.payload.slot === "investor" &&
+        this.getController(action.payload.nation, log) === player
+      );
+    });
+    cash += 4 * investorActions.length;
+
     return cash;
   },
 
@@ -33,7 +42,7 @@ const imperial = {
     } else if (nation === "IT") {
       treasuryAmount = 9;
     } else if (nation != "GE") {
-      const bondPurchaseActions = log
+      log
         .filter((action) => {
           return (
             action.type === "bondPurchase" && action.payload.nation === nation
@@ -60,6 +69,21 @@ const imperial = {
     treasuryAmount -= 4 * investorRondelActions.length;
 
     return treasuryAmount;
+  },
+
+  getController(nation, log) {
+    return log
+      .filter(
+        (action) =>
+          action.type === "bondPurchase" && action.payload.nation === nation
+      )
+      .reduce((highestBondPurchase, bondPurchase, index, bondPurchases) => {
+        if (bondPurchase.cost > bondPurchases[index - 1]) {
+          highestBondPurchase = bondPurchase;
+        }
+
+        return highestBondPurchase;
+      }).payload.player;
   },
 
   unitCount(province) {

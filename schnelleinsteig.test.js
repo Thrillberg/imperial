@@ -10,6 +10,41 @@ const rondelSlots = [
   "taxation",
 ];
 
+const setupLog = [
+  {
+    type: "bondPurchase",
+    payload: { nation: "AH", player: "Claudia", cost: 2 },
+  },
+  {
+    type: "bondPurchase",
+    payload: { nation: "IT", player: "Anton", cost: 9 },
+  },
+  {
+    type: "bondPurchase",
+    payload: { nation: "FR", player: "Claudia", cost: 9 },
+  },
+  {
+    type: "bondPurchase",
+    payload: { nation: "FR", player: "Daniel", cost: 2 },
+  },
+  {
+    type: "bondPurchase",
+    payload: { nation: "GB", player: "Anton", cost: 2 },
+  },
+  {
+    type: "bondPurchase",
+    payload: { nation: "GB", player: "Bert", cost: 9 },
+  },
+  {
+    type: "bondPurchase",
+    payload: { nation: "RU", player: "Bert", cost: 2 },
+  },
+  {
+    type: "bondPurchase",
+    payload: { nation: "RU", player: "Daniel", cost: 9 },
+  },
+];
+
 describe("Schnelleinsteig", () => {
   describe("setup for four players", () => {
     test("All players receive 11 million", () => {
@@ -143,6 +178,7 @@ describe("Schnelleinsteig", () => {
   describe("AH imports at Trieste and Lemberg", () => {
     test("AH moved to the import slot", () => {
       const log = [
+        ...setupLog,
         {
           type: "rondel",
           payload: { nation: "AH", cost: 0, slot: "import" },
@@ -165,6 +201,7 @@ describe("Schnelleinsteig", () => {
     describe("consequences", () => {
       test("AH's treasury is empty and Trieste & Lemberg have units", () => {
         const log = [
+          ...setupLog,
           { type: "import", payload: { province: "trieste" } },
           { type: "import", payload: { province: "lemberg" } },
         ];
@@ -179,6 +216,7 @@ describe("Schnelleinsteig", () => {
   describe("IT invests", () => {
     test("IT moved to investor slot", () => {
       const log = [
+        ...setupLog,
         {
           type: "rondel",
           payload: { nation: "IT", cost: 0, slot: "investor" },
@@ -195,6 +233,7 @@ describe("Schnelleinsteig", () => {
     describe("consequences", () => {
       test("IT has 5 million left in the treasury", () => {
         const log = [
+          ...setupLog,
           {
             type: "rondel",
             payload: { nation: "IT", cost: 0, slot: "investor" },
@@ -202,14 +241,17 @@ describe("Schnelleinsteig", () => {
         ];
         expect(imperial.getTreasury("IT", log)).toEqual(5);
       });
-      xtest("IT's controller (Anton) has 4 million in cash", () => {
+
+      test("IT's controller (Anton) has 4 million in cash", () => {
         const log = [
+          ...setupLog,
           {
             type: "rondel",
             payload: { nation: "IT", cost: 0, slot: "investor" },
           },
         ];
-        expect(imperial.getController("IT", log).cash).toEqual(4);
+        const controller = imperial.getController("IT", log);
+        expect(imperial.getCash(controller, log)).toEqual(4);
       });
       test("Investor-card holder has 4 million in cash", () => {});
       describe("Investor-card holder buys the 2 bond of GE", () => {
