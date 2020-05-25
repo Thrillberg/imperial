@@ -12,6 +12,10 @@ const rondelSlots = [
 
 const setupLog = [
   {
+    type: "playerSeating",
+    payload: { order: ["Daniel", "Claudia", "Bert", "Anton"] },
+  },
+  {
     type: "bondPurchase",
     payload: { nation: "AH", player: "Claudia", cost: 2 },
   },
@@ -253,7 +257,19 @@ describe("Schnelleinsteig", () => {
         const controller = imperial.getController("IT", log);
         expect(imperial.getCash(controller, log)).toEqual(4);
       });
-      test("Investor-card holder has 4 million in cash", () => {});
+
+      test("Investor-card holder has 4 million in cash", () => {
+        const log = [
+          ...setupLog,
+          {
+            type: "rondel",
+            payload: { nation: "IT", cost: 0, slot: "investor" },
+          },
+        ];
+        const investorCardHolder = imperial.getInvestorCardHolder(log);
+        expect(imperial.getCash(investorCardHolder, log)).toEqual(4);
+      });
+
       describe("Investor-card holder buys the 2 bond of GE", () => {
         test("Investor-card holder has no cash", () => {});
         test("GE treasury has 6 million", () => {});

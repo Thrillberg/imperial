@@ -10,6 +10,7 @@ const imperial = {
       .map((bondPurchase) => {
         cash -= bondPurchase.payload.cost;
       });
+
     const investorActions = log.filter((action) => {
       return (
         action.type === "rondel" &&
@@ -18,6 +19,15 @@ const imperial = {
       );
     });
     cash += 4 * investorActions.length;
+
+    const investorActionsAsInvestorCardHolder = log.filter((action) => {
+      return (
+        action.type === "rondel" &&
+        action.payload.slot === "investor" &&
+        this.getInvestorCardHolder(log) === player
+      );
+    });
+    cash += 4 * investorActionsAsInvestorCardHolder.length;
 
     return cash;
   },
@@ -84,6 +94,19 @@ const imperial = {
 
         return highestBondPurchase;
       }).payload.player;
+  },
+
+  getInvestorCardHolder(log) {
+    const AHController = this.getController("AH", log);
+    const order = log
+      .filter((action) => {
+        return action.type === "playerSeating";
+      })
+      .map((playerSeatingAction) => {
+        return playerSeatingAction.payload.order;
+      })[0];
+    const indexOfInvestorCardHolder = order.indexOf(AHController) - 1;
+    return order[indexOfInvestorCardHolder];
   },
 
   unitCount(province) {
