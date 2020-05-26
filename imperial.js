@@ -10,6 +10,7 @@ class Imperial {
   get state() {
     return {
       availableActions: this.availableActions(),
+      nations: this.nations(),
       players: this.players(),
     };
   }
@@ -27,6 +28,16 @@ class Imperial {
     }
   }
 
+  nations() {
+    let nations = {};
+    ["AH", "IT", "FR", "GB", "GE", "RU"].map((nation) => {
+      nations[nation] = {
+        treasury: this.getTreasury(nation, this.log),
+      };
+    });
+    return nations;
+  }
+
   players() {
     let players = {};
     const seatingAction = this.log.find((action) => {
@@ -34,7 +45,7 @@ class Imperial {
     });
     seatingAction.payload.order.map((player) => {
       players[player] = {
-        balance: this.getCash(player, this.log),
+        cash: this.getCash(player, this.log),
       };
     });
     return players;
@@ -168,6 +179,75 @@ class Imperial {
     );
   }
 
+  getTreasury(nation, log) {
+    let treasuryAmount = 0;
+    const importActions = log.filter(
+      (action) =>
+        action.type === "import" &&
+        this.importLocations(nation).includes(action.payload.province)
+    );
+    treasuryAmount -= importActions.length;
+
+    const investorRondelActions = log.filter(
+      (action) =>
+        action.type === "rondel" &&
+        action.payload.slot === "investor" &&
+        action.payload.nation === nation
+    );
+
+    if (this.investmentHasBeenSold(nation, 4, log)) {
+      treasuryAmount += 9;
+      treasuryAmount -= 4 * investorRondelActions.length;
+    }
+    if (this.investmentHasBeenSold(nation, 2, log)) {
+      treasuryAmount += 4;
+      treasuryAmount -= 2 * investorRondelActions.length;
+    }
+    if (this.investmentHasBeenSold(nation, 1, log)) {
+      treasuryAmount += 2;
+      treasuryAmount -= 1 * investorRondelActions.length;
+    }
+
+    const factoryLocations = {
+      AH: ["trieste", "prague", "lemburg"],
+      IT: ["genoa", "venice", "florence"],
+      FR: ["brest", "dijon", "marseille"],
+      GB: ["dublin", "sheffield", "edinburgh"],
+      GE: ["danzig", "munich", "cologne"],
+      RU: ["kiev", "st. petersburg", "warsaw"],
+    };
+
+    const buildFactoryActions = log.filter((action) => {
+      return (
+        action.type === "buildFactory" &&
+        factoryLocations[nation].includes(action.payload.province)
+      );
+    });
+    treasuryAmount -= 5 * buildFactoryActions.length;
+
+    return treasuryAmount;
+  }
+
+  investmentHasBeenSold(nation, value, log) {
+    const bondValues = {
+      1: 2,
+      2: 4,
+      4: 9,
+    };
+    if (
+      log.filter((action) => {
+        return (
+          action.type === "bondPurchase" &&
+          action.payload.nation === nation &&
+          bondValues[value] === action.payload.cost
+        );
+      }).length > 0
+    ) {
+      return true;
+    }
+    return false;
+  }
+
   getCash(player, log) {
     let cash = 11;
     log
@@ -249,7 +329,7 @@ class Imperial {
 
 const imperial = {
   getCash(player, log) {
-    return Imperial.fromLog(log).state.players[player].balance;
+    return Imperial.fromLog(log).state.players[player].cash;
   },
 
   getAvailableActions(log) {
@@ -257,52 +337,7 @@ const imperial = {
   },
 
   getTreasury(nation, log) {
-    let treasuryAmount = 0;
-    const importActions = log.filter(
-      (action) =>
-        action.type === "import" &&
-        this.importLocations(nation).includes(action.payload.province)
-    );
-    treasuryAmount -= importActions.length;
-
-    const investorRondelActions = log.filter(
-      (action) =>
-        action.type === "rondel" &&
-        action.payload.slot === "investor" &&
-        action.payload.nation === nation
-    );
-
-    if (this.investmentHasBeenSold(nation, 4, log)) {
-      treasuryAmount += 9;
-      treasuryAmount -= 4 * investorRondelActions.length;
-    }
-    if (this.investmentHasBeenSold(nation, 2, log)) {
-      treasuryAmount += 4;
-      treasuryAmount -= 2 * investorRondelActions.length;
-    }
-    if (this.investmentHasBeenSold(nation, 1, log)) {
-      treasuryAmount += 2;
-      treasuryAmount -= 1 * investorRondelActions.length;
-    }
-
-    const factoryLocations = {
-      AH: ["trieste", "prague", "lemburg"],
-      IT: ["genoa", "venice", "florence"],
-      FR: ["brest", "dijon", "marseille"],
-      GB: ["dublin", "sheffield", "edinburgh"],
-      GE: ["danzig", "munich", "cologne"],
-      RU: ["kiev", "st. petersburg", "warsaw"],
-    };
-
-    const buildFactoryActions = log.filter((action) => {
-      return (
-        action.type === "buildFactory" &&
-        factoryLocations[nation].includes(action.payload.province)
-      );
-    });
-    treasuryAmount -= 5 * buildFactoryActions.length;
-
-    return treasuryAmount;
+    return Imperial.fromLog(log).state.nations[nation].treasury;
   },
 
   getController(nation, log) {
@@ -352,26 +387,6 @@ const imperial = {
 
   unitCount(province) {
     return 1;
-  },
-
-  investmentHasBeenSold(nation, value, log) {
-    const bondValues = {
-      1: 2,
-      2: 4,
-      4: 9,
-    };
-    if (
-      log.filter((action) => {
-        return (
-          action.type === "bondPurchase" &&
-          action.payload.nation === nation &&
-          bondValues[value] === action.payload.cost
-        );
-      }).length > 0
-    ) {
-      return true;
-    }
-    return false;
   },
 
   importLocations(nation) {

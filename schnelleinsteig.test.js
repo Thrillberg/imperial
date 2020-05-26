@@ -169,7 +169,12 @@ describe("Schnelleinsteig", () => {
     });
 
     test("GE receives 0", () => {
-      const log = [];
+      const log = [
+        {
+          type: "playerSeating",
+          payload: { order: ["Daniel", "Claudia", "Bert", "Anton"] },
+        },
+      ];
       expect(imperial.getTreasury("GE", log)).toEqual(0);
     });
 
