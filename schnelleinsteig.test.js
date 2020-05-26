@@ -52,13 +52,22 @@ const setupLog = [
 describe("Schnelleinsteig", () => {
   describe("setup for four players", () => {
     test("All players receive 11 million", () => {
-      const log = [];
+      const log = [
+        {
+          type: "playerSeating",
+          payload: { order: ["Daniel", "Claudia", "Bert", "Anton"] },
+        },
+      ];
       ["Daniel", "Claudia", "Bert", "Anton"].forEach((player) => {
         expect(imperial.getCash(player, log)).toEqual(11);
       });
     });
     test("Claudia buys a 2 million AH bond", () => {
       const log = [
+        {
+          type: "playerSeating",
+          payload: { order: ["Daniel", "Claudia", "Bert", "Anton"] },
+        },
         {
           type: "bondPurchase",
           payload: { nation: "AH", player: "Claudia", cost: 2 },
@@ -71,6 +80,10 @@ describe("Schnelleinsteig", () => {
     test("Anton buys a 9 million IT bond", () => {
       const log = [
         {
+          type: "playerSeating",
+          payload: { order: ["Daniel", "Claudia", "Bert", "Anton"] },
+        },
+        {
           type: "bondPurchase",
           payload: { nation: "IT", player: "Anton", cost: 9 },
         },
@@ -81,6 +94,10 @@ describe("Schnelleinsteig", () => {
 
     test("Claudia buys a 9 million FR bond", () => {
       const log = [
+        {
+          type: "playerSeating",
+          payload: { order: ["Daniel", "Claudia", "Bert", "Anton"] },
+        },
         {
           type: "bondPurchase",
           payload: { nation: "AH", player: "Claudia", cost: 2 },
@@ -97,6 +114,10 @@ describe("Schnelleinsteig", () => {
     test("Daniel buys a 2 million FR bond", () => {
       const log = [
         {
+          type: "playerSeating",
+          payload: { order: ["Daniel", "Claudia", "Bert", "Anton"] },
+        },
+        {
           type: "bondPurchase",
           payload: { nation: "FR", player: "Claudia", cost: 9 },
         },
@@ -112,6 +133,10 @@ describe("Schnelleinsteig", () => {
     test("Anton buys a 2 million GB bond", () => {
       const log = [
         {
+          type: "playerSeating",
+          payload: { order: ["Daniel", "Claudia", "Bert", "Anton"] },
+        },
+        {
           type: "bondPurchase",
           payload: { nation: "IT", player: "Anton", cost: 9 },
         },
@@ -126,6 +151,10 @@ describe("Schnelleinsteig", () => {
 
     test("Bert buys a 9 million GB bond", () => {
       const log = [
+        {
+          type: "playerSeating",
+          payload: { order: ["Daniel", "Claudia", "Bert", "Anton"] },
+        },
         {
           type: "bondPurchase",
           payload: { nation: "GB", player: "Anton", cost: 2 },
@@ -147,6 +176,10 @@ describe("Schnelleinsteig", () => {
     test("Bert buys a 2 million RU bond", () => {
       const log = [
         {
+          type: "playerSeating",
+          payload: { order: ["Daniel", "Claudia", "Bert", "Anton"] },
+        },
+        {
           type: "bondPurchase",
           payload: { nation: "GB", player: "Bert", cost: 9 },
         },
@@ -161,6 +194,10 @@ describe("Schnelleinsteig", () => {
 
     test("Daniel buys a 9 million RU bond", () => {
       const log = [
+        {
+          type: "playerSeating",
+          payload: { order: ["Daniel", "Claudia", "Bert", "Anton"] },
+        },
         {
           type: "bondPurchase",
           payload: { nation: "FR", player: "Daniel", cost: 2 },
@@ -271,7 +308,7 @@ describe("Schnelleinsteig", () => {
           expect(imperial.getCash(investorCardHolder, log)).toEqual(4);
         });
 
-        describe("Investor-card holder buys the 4 million bond of GE", () => {
+        describe("Investor-card holder (Daniel) buys the 4 million bond of GE", () => {
           test("Investor-card holder has no cash", () => {
             const log = [
               ...setupLog,
@@ -306,10 +343,6 @@ describe("Schnelleinsteig", () => {
               {
                 type: "rondel",
                 payload: { nation: "IT", cost: 0, slot: "investor" },
-              },
-              {
-                type: "investorCardAdvancement",
-                payload: { player: "Daniel" },
               },
             ];
             expect(imperial.getInvestorCardHolder(log)).toEqual("Anton");
@@ -388,7 +421,7 @@ describe("Schnelleinsteig", () => {
       });
     });
 
-    describe("6. RU invests", () => {
+    xdescribe("6. RU invests", () => {
       test("RU moved to investor slot", () => {
         const log = [
           ...setupLog,
@@ -416,6 +449,27 @@ describe("Schnelleinsteig", () => {
           ];
           expect(imperial.getTreasury("RU", log)).toEqual(6);
         });
+
+        test("Daniel has 4 million in cash", () => {
+          const log = [
+            ...setupLog,
+            {
+              type: "rondel",
+              payload: { nation: "IT", cost: 0, slot: "investor" },
+            },
+            {
+              type: "bondPurchase",
+              payload: { nation: "GE", player: "Daniel", cost: 4 },
+            },
+            {
+              type: "rondel",
+              payload: { nation: "RU", cost: 0, slot: "investor" },
+            },
+          ];
+          expect(imperial.getCash("Daniel", log)).toEqual(4);
+        });
+
+        test("Bert has 1 million in cash", () => {});
 
         xtest("IT's controller (Anton) has 4 million in cash", () => {
           const log = [
@@ -476,10 +530,6 @@ describe("Schnelleinsteig", () => {
               {
                 type: "rondel",
                 payload: { nation: "IT", cost: 0, slot: "investor" },
-              },
-              {
-                type: "investorCardAdvancement",
-                payload: { player: "Daniel" },
               },
             ];
             expect(imperial.getInvestorCardHolder(log)).toEqual("Anton");

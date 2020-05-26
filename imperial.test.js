@@ -12,7 +12,12 @@ const rondelSlots = [
 
 describe("available actions", () => {
   test("empty state", () => {
-    const log = [];
+    const log = [
+      {
+        type: "playerSeating",
+        payload: { order: ["Daniel", "Claudia", "Bert", "Anton"] },
+      },
+    ];
     const actions = imperial.getAvailableActions(log);
     const expected = rondelSlots.map((slot) => ({
       type: "rondel",
@@ -24,6 +29,10 @@ describe("available actions", () => {
   describe("moving to the factory slot", () => {
     test("AH", () => {
       const log = [
+        {
+          type: "playerSeating",
+          payload: { order: ["Daniel", "Claudia", "Bert", "Anton"] },
+        },
         { type: "rondel", payload: { nation: "AH", cost: 0, slot: "factory" } },
       ];
       const actions = imperial.getAvailableActions(log);
@@ -38,6 +47,10 @@ describe("available actions", () => {
 
     test("IT", () => {
       const log = [
+        {
+          type: "playerSeating",
+          payload: { order: ["Daniel", "Claudia", "Bert", "Anton"] },
+        },
         { type: "rondel", payload: { nation: "IT", cost: 0, slot: "factory" } },
       ];
       const actions = imperial.getAvailableActions(log);
@@ -52,6 +65,10 @@ describe("available actions", () => {
 
     test("FR", () => {
       const log = [
+        {
+          type: "playerSeating",
+          payload: { order: ["Daniel", "Claudia", "Bert", "Anton"] },
+        },
         { type: "rondel", payload: { nation: "FR", cost: 0, slot: "factory" } },
       ];
       const actions = imperial.getAvailableActions(log);
@@ -66,6 +83,10 @@ describe("available actions", () => {
 
     test("GB", () => {
       const log = [
+        {
+          type: "playerSeating",
+          payload: { order: ["Daniel", "Claudia", "Bert", "Anton"] },
+        },
         { type: "rondel", payload: { nation: "GB", cost: 0, slot: "factory" } },
       ];
       const actions = imperial.getAvailableActions(log);
@@ -80,6 +101,10 @@ describe("available actions", () => {
 
     test("GE", () => {
       const log = [
+        {
+          type: "playerSeating",
+          payload: { order: ["Daniel", "Claudia", "Bert", "Anton"] },
+        },
         { type: "rondel", payload: { nation: "GE", cost: 0, slot: "factory" } },
       ];
       const actions = imperial.getAvailableActions(log);
@@ -94,6 +119,10 @@ describe("available actions", () => {
 
     test("RU", () => {
       const log = [
+        {
+          type: "playerSeating",
+          payload: { order: ["Daniel", "Claudia", "Bert", "Anton"] },
+        },
         { type: "rondel", payload: { nation: "RU", cost: 0, slot: "factory" } },
       ];
       const actions = imperial.getAvailableActions(log);
@@ -109,6 +138,10 @@ describe("available actions", () => {
 
   test("AH built a factory in Trieste", () => {
     const log = [
+      {
+        type: "playerSeating",
+        payload: { order: ["Daniel", "Claudia", "Bert", "Anton"] },
+      },
       { type: "rondel", payload: { nation: "AH", cost: 0, slot: "factory" } },
       { type: "buildFactory", payload: { province: "trieste" } },
     ];
@@ -122,6 +155,10 @@ describe("available actions", () => {
 
   test("IT moved to the production1 slot", () => {
     const log = [
+      {
+        type: "playerSeating",
+        payload: { order: ["Daniel", "Claudia", "Bert", "Anton"] },
+      },
       {
         type: "rondel",
         payload: { nation: "IT", cost: 0, slot: "production1" },
@@ -138,6 +175,10 @@ describe("available actions", () => {
   test("FR moved to the maneuver1 slot", () => {
     const log = [
       {
+        type: "playerSeating",
+        payload: { order: ["Daniel", "Claudia", "Bert", "Anton"] },
+      },
+      {
         type: "rondel",
         payload: { nation: "FR", cost: 0, slot: "maneuver1" },
       },
@@ -152,6 +193,10 @@ describe("available actions", () => {
 
   test("GB moved to the investor slot", () => {
     const log = [
+      {
+        type: "playerSeating",
+        payload: { order: ["Daniel", "Claudia", "Bert", "Anton"] },
+      },
       {
         type: "rondel",
         payload: { nation: "GB", cost: 0, slot: "investor" },
@@ -168,6 +213,10 @@ describe("available actions", () => {
   describe("moving to the import slot", () => {
     test("AH moved to the import slot", () => {
       const log = [
+        {
+          type: "playerSeating",
+          payload: { order: ["Daniel", "Claudia", "Bert", "Anton"] },
+        },
         {
           type: "rondel",
           payload: { nation: "AH", cost: 0, slot: "import" },
@@ -190,6 +239,10 @@ describe("available actions", () => {
     test("IT moved to the import slot", () => {
       const log = [
         {
+          type: "playerSeating",
+          payload: { order: ["Daniel", "Claudia", "Bert", "Anton"] },
+        },
+        {
           type: "rondel",
           payload: { nation: "IT", cost: 0, slot: "import" },
         },
@@ -204,6 +257,10 @@ describe("available actions", () => {
 
     test("FR moved to the import slot", () => {
       const log = [
+        {
+          type: "playerSeating",
+          payload: { order: ["Daniel", "Claudia", "Bert", "Anton"] },
+        },
         {
           type: "rondel",
           payload: { nation: "FR", cost: 0, slot: "import" },
@@ -220,6 +277,10 @@ describe("available actions", () => {
     test("GB moved to the import slot", () => {
       const log = [
         {
+          type: "playerSeating",
+          payload: { order: ["Daniel", "Claudia", "Bert", "Anton"] },
+        },
+        {
           type: "rondel",
           payload: { nation: "GB", cost: 0, slot: "import" },
         },
@@ -235,6 +296,10 @@ describe("available actions", () => {
     test("GE moved to the import slot", () => {
       const log = [
         {
+          type: "playerSeating",
+          payload: { order: ["Daniel", "Claudia", "Bert", "Anton"] },
+        },
+        {
           type: "rondel",
           payload: { nation: "GE", cost: 0, slot: "import" },
         },
@@ -249,6 +314,10 @@ describe("available actions", () => {
 
     test("RU moved to the import slot", () => {
       const log = [
+        {
+          type: "playerSeating",
+          payload: { order: ["Daniel", "Claudia", "Bert", "Anton"] },
+        },
         {
           type: "rondel",
           payload: { nation: "RU", cost: 0, slot: "import" },
@@ -266,6 +335,10 @@ describe("available actions", () => {
   test("GE imported an army in Berlin", () => {
     const log = [
       {
+        type: "playerSeating",
+        payload: { order: ["Daniel", "Claudia", "Bert", "Anton"] },
+      },
+      {
         type: "rondel",
         payload: { nation: "GE", cost: 0, slot: "import" },
       },
@@ -282,6 +355,10 @@ describe("available actions", () => {
   test("RU moved to the production2 slot", () => {
     const log = [
       {
+        type: "playerSeating",
+        payload: { order: ["Daniel", "Claudia", "Bert", "Anton"] },
+      },
+      {
         type: "rondel",
         payload: { nation: "RU", cost: 0, slot: "production2" },
       },
@@ -297,6 +374,10 @@ describe("available actions", () => {
   test("AH moved to the maneuver2 slot", () => {
     const log = [
       {
+        type: "playerSeating",
+        payload: { order: ["Daniel", "Claudia", "Bert", "Anton"] },
+      },
+      {
         type: "rondel",
         payload: { nation: "AH", cost: 0, slot: "maneuver2" },
       },
@@ -311,6 +392,10 @@ describe("available actions", () => {
 
   test("IT moved to the taxation slot", () => {
     const log = [
+      {
+        type: "playerSeating",
+        payload: { order: ["Daniel", "Claudia", "Bert", "Anton"] },
+      },
       {
         type: "rondel",
         payload: { nation: "IT", cost: 0, slot: "taxation" },
