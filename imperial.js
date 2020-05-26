@@ -10,8 +10,10 @@ class Imperial {
   get state() {
     return {
       availableActions: this.availableActions(),
+      investorCardHolder: this.investorCardHolder(),
       nations: this.nations(),
       players: this.players(),
+      provinces: this.provinces(),
     };
   }
 
@@ -28,10 +30,32 @@ class Imperial {
     }
   }
 
+  investorCardHolder() {
+    const AHController = this.getController("AH", this.log);
+    const order = this.log
+      .filter((action) => {
+        return action.type === "playerSeating";
+      })
+      .map((playerSeatingAction) => {
+        return playerSeatingAction.payload.order;
+      })[0];
+    const indexOfInvestorCardHolder = order.indexOf(AHController) - 1;
+
+    const investorRondelActions = this.log.filter(
+      (action) => action.type === "rondel" && action.payload.slot === "investor"
+    );
+    if (indexOfInvestorCardHolder - investorRondelActions.length === -1) {
+      return order[order.length - 1];
+    }
+
+    return order[indexOfInvestorCardHolder - investorRondelActions.length];
+  }
+
   nations() {
     let nations = {};
     ["AH", "IT", "FR", "GB", "GE", "RU"].map((nation) => {
       nations[nation] = {
+        controller: this.getController(nation, this.log),
         treasury: this.getTreasury(nation, this.log),
       };
     });
@@ -49,6 +73,24 @@ class Imperial {
       };
     });
     return players;
+  }
+
+  provinces() {
+    let provinces = {};
+    [
+      "berlin",
+      "bordeaux",
+      "hamburg",
+      "lemberg",
+      "liverpool",
+      "london",
+      "marseille",
+      "paris",
+      "trieste",
+    ].forEach((province) => {
+      provinces[province] = { hasFactory: true, unitCount: 1 };
+    });
+    return provinces;
   }
 
   shouldReturnRondelActions(lastMove) {
@@ -341,68 +383,19 @@ const imperial = {
   },
 
   getController(nation, log) {
-    const out = log
-      .filter(
-        (action) =>
-          action.type === "bondPurchase" && action.payload.nation === nation
-      )
-      .sort((a, b) => {
-        const costA = a.payload.cost;
-        const costB = b.payload.cost;
-        if (costA < costB) {
-          return 1;
-        } else if (costA == costB) {
-          return 0;
-        } else {
-          return -1;
-        }
-      });
-    return out[0].payload.player;
+    return Imperial.fromLog(log).state.nations[nation].controller;
   },
 
   getInvestorCardHolder(log) {
-    const AHController = this.getController("AH", log);
-    const order = log
-      .filter((action) => {
-        return action.type === "playerSeating";
-      })
-      .map((playerSeatingAction) => {
-        return playerSeatingAction.payload.order;
-      })[0];
-    const indexOfInvestorCardHolder = order.indexOf(AHController) - 1;
-
-    const investorRondelActions = log.filter(
-      (action) => action.type === "rondel" && action.payload.slot === "investor"
-    );
-    if (indexOfInvestorCardHolder - investorRondelActions.length === -1) {
-      return order[order.length - 1];
-    }
-
-    return order[indexOfInvestorCardHolder - investorRondelActions.length];
+    return Imperial.fromLog(log).state.investorCardHolder;
   },
 
   hasFactory(province, log) {
-    return true;
+    return Imperial.fromLog(log).state.provinces[province].hasFactory;
   },
 
-  unitCount(province) {
-    return 1;
-  },
-
-  importLocations(nation) {
-    if (nation === "AH") {
-      return ["vienna", "budapest", "prague", "lemberg", "trieste"];
-    } else if (nation === "IT") {
-      return ["rome", "naples"];
-    } else if (nation === "FR") {
-      return ["paris", "bordeaux"];
-    } else if (nation === "GB") {
-      return ["london", "liverpool"];
-    } else if (nation === "GE") {
-      return ["berlin", "hamburg"];
-    } else if (nation === "RU") {
-      return ["moscow", "odessa"];
-    }
+  unitCount(province, log) {
+    return Imperial.fromLog(log).state.provinces[province].unitCount;
   },
 };
 

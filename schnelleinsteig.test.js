@@ -254,8 +254,8 @@ describe("Schnelleinsteig", () => {
           ];
           expect(imperial.getTreasury("AH", log)).toEqual(0);
 
-          expect(imperial.unitCount("trieste")).toEqual(1);
-          expect(imperial.unitCount("lemberg")).toEqual(1);
+          expect(imperial.unitCount("trieste", log)).toEqual(1);
+          expect(imperial.unitCount("lemberg", log)).toEqual(1);
         });
       });
     });
@@ -403,8 +403,8 @@ describe("Schnelleinsteig", () => {
             payload: { province: "liverpool" },
           },
         ];
-        expect(imperial.unitCount("london")).toEqual(1);
-        expect(imperial.unitCount("liverpool")).toEqual(1);
+        expect(imperial.unitCount("london", log)).toEqual(1);
+        expect(imperial.unitCount("liverpool", log)).toEqual(1);
       });
     });
 
@@ -421,8 +421,8 @@ describe("Schnelleinsteig", () => {
             payload: { province: "hamburg" },
           },
         ];
-        expect(imperial.unitCount("berlin")).toEqual(1);
-        expect(imperial.unitCount("hamburg")).toEqual(1);
+        expect(imperial.unitCount("berlin", log)).toEqual(1);
+        expect(imperial.unitCount("hamburg", log)).toEqual(1);
       });
     });
 
