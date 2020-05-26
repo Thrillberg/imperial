@@ -369,34 +369,4 @@ class Imperial {
   }
 }
 
-const imperial = {
-  getCash(player, log) {
-    return Imperial.fromLog(log).state.players[player].cash;
-  },
-
-  getAvailableActions(log) {
-    return Imperial.fromLog(log).state.availableActions;
-  },
-
-  getTreasury(nation, log) {
-    return Imperial.fromLog(log).state.nations[nation].treasury;
-  },
-
-  getController(nation, log) {
-    return Imperial.fromLog(log).state.nations[nation].controller;
-  },
-
-  getInvestorCardHolder(log) {
-    return Imperial.fromLog(log).state.investorCardHolder;
-  },
-
-  hasFactory(province, log) {
-    return Imperial.fromLog(log).state.provinces[province].hasFactory;
-  },
-
-  unitCount(province, log) {
-    return Imperial.fromLog(log).state.provinces[province].unitCount;
-  },
-};
-
-module.exports = imperial;
+module.exports = Imperial;

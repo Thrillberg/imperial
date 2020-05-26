@@ -1,4 +1,4 @@
-const imperial = require("./imperial");
+const Imperial = require("./imperial");
 const rondelSlots = [
   "factory",
   "production1",
@@ -59,7 +59,8 @@ describe("Schnelleinsteig", () => {
         },
       ];
       ["Daniel", "Claudia", "Bert", "Anton"].forEach((player) => {
-        expect(imperial.getCash(player, log)).toEqual(11);
+        const cash = Imperial.fromLog(log).state.players[player].cash;
+        expect(cash).toEqual(11);
       });
     });
     test("Claudia buys a 2 million AH bond", () => {
@@ -73,8 +74,10 @@ describe("Schnelleinsteig", () => {
           payload: { nation: "AH", player: "Claudia", cost: 2 },
         },
       ];
-      expect(imperial.getCash("Claudia", log)).toEqual(9);
-      expect(imperial.getTreasury("AH", log)).toEqual(2);
+      const cash = Imperial.fromLog(log).state.players["Claudia"].cash;
+      const treasury = Imperial.fromLog(log).state.nations["AH"].treasury;
+      expect(cash).toEqual(9);
+      expect(treasury).toEqual(2);
     });
 
     test("Anton buys a 9 million IT bond", () => {
@@ -88,8 +91,10 @@ describe("Schnelleinsteig", () => {
           payload: { nation: "IT", player: "Anton", cost: 9 },
         },
       ];
-      expect(imperial.getCash("Anton", log)).toEqual(2);
-      expect(imperial.getTreasury("IT", log)).toEqual(9);
+      const cash = Imperial.fromLog(log).state.players["Anton"].cash;
+      const treasury = Imperial.fromLog(log).state.nations["IT"].treasury;
+      expect(cash).toEqual(2);
+      expect(treasury).toEqual(9);
     });
 
     test("Claudia buys a 9 million FR bond", () => {
@@ -107,8 +112,10 @@ describe("Schnelleinsteig", () => {
           payload: { nation: "FR", player: "Claudia", cost: 9 },
         },
       ];
-      expect(imperial.getCash("Claudia", log)).toEqual(0);
-      expect(imperial.getTreasury("FR", log)).toEqual(9);
+      const cash = Imperial.fromLog(log).state.players["Claudia"].cash;
+      const treasury = Imperial.fromLog(log).state.nations["FR"].treasury;
+      expect(cash).toEqual(0);
+      expect(treasury).toEqual(9);
     });
 
     test("Daniel buys a 2 million FR bond", () => {
@@ -126,8 +133,10 @@ describe("Schnelleinsteig", () => {
           payload: { nation: "FR", player: "Daniel", cost: 2 },
         },
       ];
-      expect(imperial.getCash("Daniel", log)).toEqual(9);
-      expect(imperial.getTreasury("FR", log)).toEqual(11);
+      const cash = Imperial.fromLog(log).state.players["Daniel"].cash;
+      const treasury = Imperial.fromLog(log).state.nations["FR"].treasury;
+      expect(cash).toEqual(9);
+      expect(treasury).toEqual(11);
     });
 
     test("Anton buys a 2 million GB bond", () => {
@@ -145,8 +154,10 @@ describe("Schnelleinsteig", () => {
           payload: { nation: "GB", player: "Anton", cost: 2 },
         },
       ];
-      expect(imperial.getCash("Anton", log)).toEqual(0);
-      expect(imperial.getTreasury("GB", log)).toEqual(2);
+      const cash = Imperial.fromLog(log).state.players["Anton"].cash;
+      const treasury = Imperial.fromLog(log).state.nations["GB"].treasury;
+      expect(cash).toEqual(0);
+      expect(treasury).toEqual(2);
     });
 
     test("Bert buys a 9 million GB bond", () => {
@@ -164,8 +175,10 @@ describe("Schnelleinsteig", () => {
           payload: { nation: "GB", player: "Bert", cost: 9 },
         },
       ];
-      expect(imperial.getCash("Bert", log)).toEqual(2);
-      expect(imperial.getTreasury("GB", log)).toEqual(11);
+      const cash = Imperial.fromLog(log).state.players["Bert"].cash;
+      const treasury = Imperial.fromLog(log).state.nations["GB"].treasury;
+      expect(cash).toEqual(2);
+      expect(treasury).toEqual(11);
     });
 
     test("GE receives 0", () => {
@@ -175,7 +188,8 @@ describe("Schnelleinsteig", () => {
           payload: { order: ["Daniel", "Claudia", "Bert", "Anton"] },
         },
       ];
-      expect(imperial.getTreasury("GE", log)).toEqual(0);
+      const treasury = Imperial.fromLog(log).state.nations["GE"].treasury;
+      expect(treasury).toEqual(0);
     });
 
     test("Bert buys a 2 million RU bond", () => {
@@ -193,8 +207,10 @@ describe("Schnelleinsteig", () => {
           payload: { nation: "RU", player: "Bert", cost: 2 },
         },
       ];
-      expect(imperial.getCash("Bert", log)).toEqual(0);
-      expect(imperial.getTreasury("RU", log)).toEqual(2);
+      const cash = Imperial.fromLog(log).state.players["Bert"].cash;
+      const treasury = Imperial.fromLog(log).state.nations["RU"].treasury;
+      expect(cash).toEqual(0);
+      expect(treasury).toEqual(2);
     });
 
     test("Daniel buys a 9 million RU bond", () => {
@@ -216,8 +232,10 @@ describe("Schnelleinsteig", () => {
           payload: { nation: "RU", player: "Daniel", cost: 9 },
         },
       ];
-      expect(imperial.getCash("Daniel", log)).toEqual(0);
-      expect(imperial.getTreasury("RU", log)).toEqual(11);
+      const cash = Imperial.fromLog(log).state.players["Daniel"].cash;
+      const treasury = Imperial.fromLog(log).state.nations["RU"].treasury;
+      expect(cash).toEqual(0);
+      expect(treasury).toEqual(11);
     });
   });
 
@@ -231,7 +249,7 @@ describe("Schnelleinsteig", () => {
             payload: { nation: "AH", cost: 0, slot: "import" },
           },
         ];
-        const actions = imperial.getAvailableActions(log);
+        const actions = Imperial.fromLog(log).state.availableActions;
         const expected = [
           "vienna",
           "budapest",
@@ -252,10 +270,16 @@ describe("Schnelleinsteig", () => {
             { type: "import", payload: { province: "trieste" } },
             { type: "import", payload: { province: "lemberg" } },
           ];
-          expect(imperial.getTreasury("AH", log)).toEqual(0);
-
-          expect(imperial.unitCount("trieste", log)).toEqual(1);
-          expect(imperial.unitCount("lemberg", log)).toEqual(1);
+          const treasury = Imperial.fromLog(log).state.nations["AH"].treasury;
+          const triesteUnitCount = Imperial.fromLog(log).state.provinces[
+            "trieste"
+          ].unitCount;
+          const lembergUnitCount = Imperial.fromLog(log).state.provinces[
+            "lemberg"
+          ].unitCount;
+          expect(treasury).toEqual(0);
+          expect(triesteUnitCount).toEqual(1);
+          expect(lembergUnitCount).toEqual(1);
         });
       });
     });
@@ -269,7 +293,7 @@ describe("Schnelleinsteig", () => {
             payload: { nation: "IT", cost: 0, slot: "investor" },
           },
         ];
-        const actions = imperial.getAvailableActions(log);
+        const actions = Imperial.fromLog(log).state.availableActions;
         const expected = rondelSlots.map((slot) => ({
           type: "rondel",
           payload: { nation: "FR", cost: 0, slot },
@@ -286,7 +310,8 @@ describe("Schnelleinsteig", () => {
               payload: { nation: "IT", cost: 0, slot: "investor" },
             },
           ];
-          expect(imperial.getTreasury("IT", log)).toEqual(5);
+          const treasury = Imperial.fromLog(log).state.nations["IT"].treasury;
+          expect(treasury).toEqual(5);
         });
 
         test("IT's controller (Anton) has 4 million in cash", () => {
@@ -297,8 +322,10 @@ describe("Schnelleinsteig", () => {
               payload: { nation: "IT", cost: 0, slot: "investor" },
             },
           ];
-          const controller = imperial.getController("IT", log);
-          expect(imperial.getCash(controller, log)).toEqual(4);
+          const controller = Imperial.fromLog(log).state.nations["IT"]
+            .controller;
+          const cash = Imperial.fromLog(log).state.players[controller].cash;
+          expect(cash).toEqual(4);
         });
 
         test("Investor-card holder has 4 million in cash", () => {
@@ -309,8 +336,11 @@ describe("Schnelleinsteig", () => {
               payload: { nation: "IT", cost: 0, slot: "investor" },
             },
           ];
-          const investorCardHolder = imperial.getInvestorCardHolder(log);
-          expect(imperial.getCash(investorCardHolder, log)).toEqual(4);
+          const investorCardHolder = Imperial.fromLog(log).state
+            .investorCardHolder;
+          const cash = Imperial.fromLog(log).state.players[investorCardHolder]
+            .cash;
+          expect(cash).toEqual(4);
         });
 
         describe("Investor-card holder (Daniel) buys the 4 million bond of GE", () => {
@@ -326,7 +356,8 @@ describe("Schnelleinsteig", () => {
                 payload: { nation: "GE", player: "Daniel", cost: 4 },
               },
             ];
-            expect(imperial.getCash("Daniel", log)).toEqual(0);
+            const cash = Imperial.fromLog(log).state.players["Daniel"].cash;
+            expect(cash).toEqual(0);
           });
           test("GE treasury has 4 million", () => {
             const log = [
@@ -340,7 +371,8 @@ describe("Schnelleinsteig", () => {
                 payload: { nation: "GE", player: "Daniel", cost: 4 },
               },
             ];
-            expect(imperial.getTreasury("GE", log)).toEqual(4);
+            const treasury = Imperial.fromLog(log).state.nations["GE"].treasury;
+            expect(treasury).toEqual(4);
           });
           test("Investor-card moves to next player", () => {
             const log = [
@@ -350,7 +382,9 @@ describe("Schnelleinsteig", () => {
                 payload: { nation: "IT", cost: 0, slot: "investor" },
               },
             ];
-            expect(imperial.getInvestorCardHolder(log)).toEqual("Anton");
+            const investorCardHolder = Imperial.fromLog(log).state
+              .investorCardHolder;
+            expect(investorCardHolder).toEqual("Anton");
           });
         });
       });
@@ -365,7 +399,9 @@ describe("Schnelleinsteig", () => {
             payload: { province: "marseille" },
           },
         ];
-        expect(imperial.hasFactory("marseille", log)).toEqual(true);
+        const hasFactory = Imperial.fromLog(log).state.provinces["marseille"]
+          .hasFactory;
+        expect(hasFactory).toEqual(true);
       });
 
       test("FR has 6 million in its treasury", () => {
@@ -376,17 +412,22 @@ describe("Schnelleinsteig", () => {
             payload: { province: "marseille" },
           },
         ];
-        expect(imperial.getTreasury("FR", log)).toEqual(6);
+        const treasury = Imperial.fromLog(log).state.nations["FR"].treasury;
+        expect(treasury).toEqual(6);
       });
 
       test("Paris has a factory", () => {
         const log = [...setupLog];
-        expect(imperial.hasFactory("paris", log));
+        const hasFactory = Imperial.fromLog(log).state.provinces["paris"]
+          .hasFactory;
+        expect(hasFactory).toEqual(true);
       });
 
       test("Bordeaux has a factory", () => {
         const log = [...setupLog];
-        expect(imperial.hasFactory("bordeaux", log));
+        const hasFactory = Imperial.fromLog(log).state.provinces["bordeaux"]
+          .hasFactory;
+        expect(hasFactory).toEqual(true);
       });
     });
 
@@ -403,8 +444,13 @@ describe("Schnelleinsteig", () => {
             payload: { province: "liverpool" },
           },
         ];
-        expect(imperial.unitCount("london", log)).toEqual(1);
-        expect(imperial.unitCount("liverpool", log)).toEqual(1);
+        const londonUnitCount = Imperial.fromLog(log).state.provinces["london"]
+          .unitCount;
+        const liverpoolUnitCount = Imperial.fromLog(log).state.provinces[
+          "liverpool"
+        ].unitCount;
+        expect(londonUnitCount).toEqual(1);
+        expect(liverpoolUnitCount).toEqual(1);
       });
     });
 
@@ -421,8 +467,13 @@ describe("Schnelleinsteig", () => {
             payload: { province: "hamburg" },
           },
         ];
-        expect(imperial.unitCount("berlin", log)).toEqual(1);
-        expect(imperial.unitCount("hamburg", log)).toEqual(1);
+        const berlinUnitCount = Imperial.fromLog(log).state.provinces["berlin"]
+          .unitCount;
+        const hamburgUnitCount = Imperial.fromLog(log).state.provinces[
+          "hamburg"
+        ].unitCount;
+        expect(berlinUnitCount).toEqual(1);
+        expect(hamburgUnitCount).toEqual(1);
       });
     });
 

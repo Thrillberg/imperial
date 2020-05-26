@@ -1,4 +1,4 @@
-const imperial = require("./imperial");
+const Imperial = require("./imperial");
 const rondelSlots = [
   "factory",
   "production1",
@@ -18,7 +18,7 @@ describe("available actions", () => {
         payload: { order: ["Daniel", "Claudia", "Bert", "Anton"] },
       },
     ];
-    const actions = imperial.getAvailableActions(log);
+    const actions = Imperial.fromLog(log).state.availableActions;
     const expected = rondelSlots.map((slot) => ({
       type: "rondel",
       payload: { nation: "AH", cost: 0, slot },
@@ -35,7 +35,7 @@ describe("available actions", () => {
         },
         { type: "rondel", payload: { nation: "AH", cost: 0, slot: "factory" } },
       ];
-      const actions = imperial.getAvailableActions(log);
+      const actions = Imperial.fromLog(log).state.availableActions;
       const expected = new Set(
         ["trieste", "prague", "lemburg"].map((province) => ({
           type: "buildFactory",
@@ -53,7 +53,7 @@ describe("available actions", () => {
         },
         { type: "rondel", payload: { nation: "IT", cost: 0, slot: "factory" } },
       ];
-      const actions = imperial.getAvailableActions(log);
+      const actions = Imperial.fromLog(log).state.availableActions;
       const expected = new Set(
         ["genoa", "venice", "florence"].map((province) => ({
           type: "buildFactory",
@@ -71,7 +71,7 @@ describe("available actions", () => {
         },
         { type: "rondel", payload: { nation: "FR", cost: 0, slot: "factory" } },
       ];
-      const actions = imperial.getAvailableActions(log);
+      const actions = Imperial.fromLog(log).state.availableActions;
       const expected = new Set(
         ["brest", "dijon", "marseille"].map((province) => ({
           type: "buildFactory",
@@ -89,7 +89,7 @@ describe("available actions", () => {
         },
         { type: "rondel", payload: { nation: "GB", cost: 0, slot: "factory" } },
       ];
-      const actions = imperial.getAvailableActions(log);
+      const actions = Imperial.fromLog(log).state.availableActions;
       const expected = new Set(
         ["dublin", "sheffield", "edinburgh"].map((province) => ({
           type: "buildFactory",
@@ -107,7 +107,7 @@ describe("available actions", () => {
         },
         { type: "rondel", payload: { nation: "GE", cost: 0, slot: "factory" } },
       ];
-      const actions = imperial.getAvailableActions(log);
+      const actions = Imperial.fromLog(log).state.availableActions;
       const expected = new Set(
         ["danzig", "munich", "cologne"].map((province) => ({
           type: "buildFactory",
@@ -125,7 +125,7 @@ describe("available actions", () => {
         },
         { type: "rondel", payload: { nation: "RU", cost: 0, slot: "factory" } },
       ];
-      const actions = imperial.getAvailableActions(log);
+      const actions = Imperial.fromLog(log).state.availableActions;
       const expected = new Set(
         ["kiev", "st. petersburg", "warsaw"].map((province) => ({
           type: "buildFactory",
@@ -145,7 +145,7 @@ describe("available actions", () => {
       { type: "rondel", payload: { nation: "AH", cost: 0, slot: "factory" } },
       { type: "buildFactory", payload: { province: "trieste" } },
     ];
-    const actions = imperial.getAvailableActions(log);
+    const actions = Imperial.fromLog(log).state.availableActions;
     const expected = rondelSlots.map((slot) => ({
       type: "rondel",
       payload: { nation: "IT", cost: 0, slot },
@@ -164,7 +164,7 @@ describe("available actions", () => {
         payload: { nation: "IT", cost: 0, slot: "production1" },
       },
     ];
-    const actions = imperial.getAvailableActions(log);
+    const actions = Imperial.fromLog(log).state.availableActions;
     const expected = rondelSlots.map((slot) => ({
       type: "rondel",
       payload: { nation: "FR", cost: 0, slot },
@@ -183,7 +183,7 @@ describe("available actions", () => {
         payload: { nation: "FR", cost: 0, slot: "maneuver1" },
       },
     ];
-    const actions = imperial.getAvailableActions(log);
+    const actions = Imperial.fromLog(log).state.availableActions;
     const expected = rondelSlots.map((slot) => ({
       type: "rondel",
       payload: { nation: "GB", cost: 0, slot },
@@ -202,7 +202,7 @@ describe("available actions", () => {
         payload: { nation: "GB", cost: 0, slot: "investor" },
       },
     ];
-    const actions = imperial.getAvailableActions(log);
+    const actions = Imperial.fromLog(log).state.availableActions;
     const expected = rondelSlots.map((slot) => ({
       type: "rondel",
       payload: { nation: "GE", cost: 0, slot },
@@ -222,7 +222,7 @@ describe("available actions", () => {
           payload: { nation: "AH", cost: 0, slot: "import" },
         },
       ];
-      const actions = imperial.getAvailableActions(log);
+      const actions = Imperial.fromLog(log).state.availableActions;
       const expected = [
         "vienna",
         "budapest",
@@ -247,7 +247,7 @@ describe("available actions", () => {
           payload: { nation: "IT", cost: 0, slot: "import" },
         },
       ];
-      const actions = imperial.getAvailableActions(log);
+      const actions = Imperial.fromLog(log).state.availableActions;
       const expected = ["rome", "naples"].map((province) => ({
         type: "import",
         payload: { province },
@@ -266,7 +266,7 @@ describe("available actions", () => {
           payload: { nation: "FR", cost: 0, slot: "import" },
         },
       ];
-      const actions = imperial.getAvailableActions(log);
+      const actions = Imperial.fromLog(log).state.availableActions;
       const expected = ["paris", "bordeaux"].map((province) => ({
         type: "import",
         payload: { province },
@@ -285,7 +285,7 @@ describe("available actions", () => {
           payload: { nation: "GB", cost: 0, slot: "import" },
         },
       ];
-      const actions = imperial.getAvailableActions(log);
+      const actions = Imperial.fromLog(log).state.availableActions;
       const expected = ["london", "liverpool"].map((province) => ({
         type: "import",
         payload: { province },
@@ -304,7 +304,7 @@ describe("available actions", () => {
           payload: { nation: "GE", cost: 0, slot: "import" },
         },
       ];
-      const actions = imperial.getAvailableActions(log);
+      const actions = Imperial.fromLog(log).state.availableActions;
       const expected = ["berlin", "hamburg"].map((province) => ({
         type: "import",
         payload: { province },
@@ -323,7 +323,7 @@ describe("available actions", () => {
           payload: { nation: "RU", cost: 0, slot: "import" },
         },
       ];
-      const actions = imperial.getAvailableActions(log);
+      const actions = Imperial.fromLog(log).state.availableActions;
       const expected = ["moscow", "odessa"].map((province) => ({
         type: "import",
         payload: { province },
@@ -344,7 +344,7 @@ describe("available actions", () => {
       },
       { type: "import", payload: { province: "berlin" } },
     ];
-    const actions = imperial.getAvailableActions(log);
+    const actions = Imperial.fromLog(log).state.availableActions;
     const expected = rondelSlots.map((slot) => ({
       type: "rondel",
       payload: { nation: "RU", cost: 0, slot },
@@ -363,7 +363,7 @@ describe("available actions", () => {
         payload: { nation: "RU", cost: 0, slot: "production2" },
       },
     ];
-    const actions = imperial.getAvailableActions(log);
+    const actions = Imperial.fromLog(log).state.availableActions;
     const expected = rondelSlots.map((slot) => ({
       type: "rondel",
       payload: { nation: "AH", cost: 0, slot },
@@ -382,7 +382,7 @@ describe("available actions", () => {
         payload: { nation: "AH", cost: 0, slot: "maneuver2" },
       },
     ];
-    const actions = imperial.getAvailableActions(log);
+    const actions = Imperial.fromLog(log).state.availableActions;
     const expected = rondelSlots.map((slot) => ({
       type: "rondel",
       payload: { nation: "IT", cost: 0, slot },
@@ -401,7 +401,7 @@ describe("available actions", () => {
         payload: { nation: "IT", cost: 0, slot: "taxation" },
       },
     ];
-    const actions = imperial.getAvailableActions(log);
+    const actions = Imperial.fromLog(log).state.availableActions;
     const expected = rondelSlots.map((slot) => ({
       type: "rondel",
       payload: { nation: "FR", cost: 0, slot },
