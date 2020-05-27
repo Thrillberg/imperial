@@ -535,7 +535,7 @@ describe("Schnelleinsteig", () => {
           expect(cash).toEqual(4);
         });
 
-        xtest("Bert has 1 million in cash", () => {
+        test("Bert has 3 million in cash", () => {
           const log = [
             ...setupLog,
             {
@@ -552,31 +552,42 @@ describe("Schnelleinsteig", () => {
             },
           ];
           const cash = Imperial.fromLog(log).state.players["Bert"].cash;
-          expect(cash).toEqual(1);
+          expect(cash).toEqual(3);
         });
 
-        xtest("IT's controller (Anton) has 4 million in cash", () => {
+        test("IT's controller (Anton) has 8 million in cash", () => {
           const log = [
             ...setupLog,
             {
               type: "rondel",
               payload: { nation: "IT", cost: 0, slot: "investor" },
             },
+            {
+              type: "rondel",
+              payload: { nation: "RU", cost: 0, slot: "investor" },
+            },
           ];
-          const controller = imperial.getController("IT", log);
-          expect(imperial.getCash(controller, log)).toEqual(4);
+          const cash = Imperial.fromLog(log).state.players["Anton"].cash;
+          expect(cash).toEqual(8);
         });
 
-        xtest("Investor-card holder has 4 million in cash", () => {
+        test("Investor-card holder has 8 million in cash", () => {
           const log = [
             ...setupLog,
             {
               type: "rondel",
               payload: { nation: "IT", cost: 0, slot: "investor" },
             },
+            {
+              type: "rondel",
+              payload: { nation: "RU", cost: 0, slot: "investor" },
+            },
           ];
-          const investorCardHolder = imperial.getInvestorCardHolder(log);
-          expect(imperial.getCash(investorCardHolder, log)).toEqual(4);
+          const investorCardHolder = Imperial.fromLog(log).state
+            .investorCardHolder;
+          const cash = Imperial.fromLog(log).state.players[investorCardHolder]
+            .cash;
+          expect(cash).toEqual(8);
         });
 
         xdescribe("Investor-card holder buys the 4 million bond of GE", () => {

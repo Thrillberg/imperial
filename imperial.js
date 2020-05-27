@@ -310,6 +310,16 @@ class Imperial {
         ) {
           cash += 4;
         }
+
+        if (
+          this.hasSmallInvestment(
+            investorAction.action.payload.nation,
+            player,
+            log
+          )
+        ) {
+          cash += 1;
+        }
       }
     });
 
@@ -336,6 +346,22 @@ class Imperial {
       return out[0].payload.player;
     } else {
       return null;
+    }
+  }
+
+  hasSmallInvestment(nation, player, log) {
+    const bondPurchases = log.filter((action) => {
+      return (
+        action.type === "bondPurchase" &&
+        action.payload.nation === nation &&
+        action.payload.player === player &&
+        action.payload.cost === 2
+      );
+    });
+    if (bondPurchases.length > 0) {
+      return true;
+    } else {
+      return false;
     }
   }
 
