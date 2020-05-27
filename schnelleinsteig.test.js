@@ -477,7 +477,7 @@ describe("Schnelleinsteig", () => {
       });
     });
 
-    xdescribe("6. RU invests", () => {
+    describe("6. RU invests", () => {
       test("RU moved to investor slot", () => {
         const log = [
           ...setupLog,
@@ -486,7 +486,7 @@ describe("Schnelleinsteig", () => {
             payload: { nation: "RU", cost: 0, slot: "investor" },
           },
         ];
-        const actions = imperial.getAvailableActions(log);
+        const actions = Imperial.fromLog(log).state.availableActions;
         const expected = rondelSlots.map((slot) => ({
           type: "rondel",
           payload: { nation: "AH", cost: 0, slot },
@@ -503,7 +503,8 @@ describe("Schnelleinsteig", () => {
               payload: { nation: "RU", cost: 0, slot: "investor" },
             },
           ];
-          expect(imperial.getTreasury("RU", log)).toEqual(6);
+          const treasury = Imperial.fromLog(log).state.nations["RU"].treasury;
+          expect(treasury).toEqual(6);
         });
 
         test("Daniel has 4 million in cash", () => {
@@ -522,10 +523,11 @@ describe("Schnelleinsteig", () => {
               payload: { nation: "RU", cost: 0, slot: "investor" },
             },
           ];
-          expect(imperial.getCash("Daniel", log)).toEqual(4);
+          const cash = Imperial.fromLog(log).state.players["Daniel"].cash;
+          expect(cash).toEqual(4);
         });
 
-        test("Bert has 1 million in cash", () => {});
+        xtest("Bert has 1 million in cash", () => {});
 
         xtest("IT's controller (Anton) has 4 million in cash", () => {
           const log = [

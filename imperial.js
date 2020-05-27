@@ -302,44 +302,31 @@ class Imperial {
         cash -= bondPurchase.payload.cost;
       });
 
-    const investorActions = log.filter((action) => {
-      return (
-        action.type === "rondel" &&
-        action.payload.slot === "investor" &&
-        this.getController(action.payload.nation, log) === player
-      );
+    const allInvestorActions = log.filter((action, index) => {
+      return action.type === "rondel" && action.payload.slot === "investor";
     });
-    cash += 4 * investorActions.length;
-
-    const investorActionsAsInvestorCardHolder = log.filter((action) => {
-      return (
-        action.type === "rondel" &&
-        action.payload.slot === "investor" &&
-        this.getPreviousInvestorCardHolder(log) === player
-      );
-    });
-    cash += 4 * investorActionsAsInvestorCardHolder.length;
+    cash += 4 * allInvestorActions.length;
 
     return cash;
   }
 
   getController(nation, log) {
-    const out = log
-      .filter(
-        (action) =>
-          action.type === "bondPurchase" && action.payload.nation === nation
-      )
-      .sort((a, b) => {
-        const costA = a.payload.cost;
-        const costB = b.payload.cost;
-        if (costA < costB) {
-          return 1;
-        } else if (costA == costB) {
-          return 0;
-        } else {
-          return -1;
-        }
-      });
+    const bondPurchases = log.filter((action) => {
+      return action.type === "bondPurchase" && action.payload.nation === nation;
+    });
+
+    const out = bondPurchases.sort((a, b) => {
+      const costA = a.payload.cost;
+      const costB = b.payload.cost;
+      if (costA < costB) {
+        return 1;
+      } else if (costA == costB) {
+        return 0;
+      } else {
+        return -1;
+      }
+    });
+
     if (out.length > 0) {
       return out[0].payload.player;
     } else {
@@ -347,25 +334,21 @@ class Imperial {
     }
   }
 
-  getPreviousInvestorCardHolder(log) {
+  getInvestorCardHolder(log) {
     const AHController = this.getController("AH", log);
-    const order = log
-      .filter((action) => {
-        return action.type === "playerSeating";
-      })
-      .map((playerSeatingAction) => {
-        return playerSeatingAction.payload.order;
-      })[0];
-    const indexOfInvestorCardHolder = order.indexOf(AHController) - 1;
+    const order = log.find((action) => {
+      return action.type === "playerSeating";
+    }).payload.order;
+    const indexOfInitialCardHolder = order.indexOf(AHController) - 1;
 
-    const investorRondelActions = log.filter(
+    const numberOfInvestorRondelActions = log.filter(
       (action) => action.type === "rondel" && action.payload.slot === "investor"
-    );
-    if (indexOfInvestorCardHolder - investorRondelActions.length === -1) {
-      return order[0];
+    ).length;
+    if (indexOfInitialCardHolder - numberOfInvestorRondelActions < 0) {
+      return order[order.length - 1];
     }
 
-    return order[indexOfInvestorCardHolder - investorRondelActions.length + 1];
+    return order[indexOfInitialCardHolder - numberOfInvestorRondelActions];
   }
 }
 
