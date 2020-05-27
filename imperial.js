@@ -63,13 +63,17 @@ class Imperial {
     [
       "berlin",
       "bordeaux",
+      "budapest",
       "hamburg",
       "lemberg",
       "liverpool",
       "london",
       "marseille",
+      "naples",
       "paris",
+      "rome",
       "trieste",
+      "vienna",
     ].forEach((province) => {
       provinces[province] = { hasFactory: true, unitCount: 1 };
     });

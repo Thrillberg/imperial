@@ -49,6 +49,64 @@ const setupLog = [
   },
 ];
 
+const firstRoundLog = [
+  ...setupLog,
+  {
+    type: "rondel",
+    payload: { nation: "AH", cost: 0, slot: "import" },
+  },
+  { type: "import", payload: { province: "trieste" } },
+  { type: "import", payload: { province: "lemberg" } },
+  {
+    type: "rondel",
+    payload: { nation: "IT", cost: 0, slot: "investor" },
+  },
+  {
+    type: "bondPurchase",
+    payload: { nation: "GE", player: "Daniel", cost: 4 },
+  },
+  {
+    type: "rondel",
+    payload: { nation: "FR", cost: 0, slot: "factory" },
+  },
+  {
+    type: "buildFactory",
+    payload: { province: "marseille" },
+  },
+  {
+    type: "rondel",
+    payload: { nation: "GB", cost: 0, slot: "production1" },
+  },
+  {
+    type: "production",
+    payload: { province: "london" },
+  },
+  {
+    type: "production",
+    payload: { province: "liverpool" },
+  },
+  {
+    type: "rondel",
+    payload: { nation: "GE", cost: 0, slot: "production2" },
+  },
+  {
+    type: "production",
+    payload: { province: "berlin" },
+  },
+  {
+    type: "production",
+    payload: { province: "hamburg" },
+  },
+  {
+    type: "rondel",
+    payload: { nation: "RU", cost: 0, slot: "investor" },
+  },
+  {
+    type: "bondPurchase",
+    payload: { nation: "GE", player: "Anton", cost: 6 },
+  },
+];
+
 describe("Schnelleinsteig", () => {
   describe("setup for four players", () => {
     test("All players receive 13 million", () => {
@@ -383,6 +441,10 @@ describe("Schnelleinsteig", () => {
         const log = [
           ...setupLog,
           {
+            type: "rondel",
+            payload: { nation: "FR", cost: 0, slot: "factory" },
+          },
+          {
             type: "buildFactory",
             payload: { province: "marseille" },
           },
@@ -424,6 +486,10 @@ describe("Schnelleinsteig", () => {
         const log = [
           ...setupLog,
           {
+            type: "rondel",
+            payload: { nation: "GB", cost: 0, slot: "production1" },
+          },
+          {
             type: "production",
             payload: { province: "london" },
           },
@@ -446,6 +512,18 @@ describe("Schnelleinsteig", () => {
       test("Berlin and Hamburg have units", () => {
         const log = [
           ...setupLog,
+          {
+            type: "production",
+            payload: { province: "london" },
+          },
+          {
+            type: "production",
+            payload: { province: "liverpool" },
+          },
+          {
+            type: "rondel",
+            payload: { nation: "GE", cost: 0, slot: "production2" },
+          },
           {
             type: "production",
             payload: { province: "berlin" },
@@ -659,6 +737,57 @@ describe("Schnelleinsteig", () => {
             expect(controller).toEqual("Anton");
           });
         });
+      });
+    });
+  });
+
+  describe("second round", () => {
+    describe("1. AH does production2", () => {
+      test("vienna and budapest have 1 unit each", () => {
+        const log = [
+          ...firstRoundLog,
+          {
+            type: "rondel",
+            payload: { nation: "AH", cost: 0, slot: "production2" },
+          },
+        ];
+        const viennaUnitCount = Imperial.fromLog(log).state.provinces["vienna"]
+          .unitCount;
+        const budapestUnitCount = Imperial.fromLog(log).state.provinces[
+          "budapest"
+        ].unitCount;
+        expect(viennaUnitCount).toEqual(1);
+        expect(budapestUnitCount).toEqual(1);
+      });
+
+      test("AH treasury remains empty", () => {
+        const log = [
+          ...firstRoundLog,
+          {
+            type: "rondel",
+            payload: { nation: "AH", cost: 0, slot: "production2" },
+          },
+        ];
+        const AHTreasury = Imperial.fromLog(log).state.nations["AH"].treasury;
+        expect(AHTreasury).toEqual(0);
+      });
+    });
+
+    describe("2. IT does production2", () => {
+      test("rome and naples have 1 unit each", () => {
+        const log = [
+          ...firstRoundLog,
+          {
+            type: "rondel",
+            payload: { nation: "IT", cost: 0, slot: "production2" },
+          },
+        ];
+        const romeUnitCount = Imperial.fromLog(log).state.provinces["rome"]
+          .unitCount;
+        const naplesUnitCount = Imperial.fromLog(log).state.provinces["naples"]
+          .unitCount;
+        expect(romeUnitCount).toEqual(1);
+        expect(naplesUnitCount).toEqual(1);
       });
     });
   });
