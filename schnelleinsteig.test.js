@@ -515,7 +515,7 @@ describe("Schnelleinsteig", () => {
           expect(treasury).toEqual(6);
         });
 
-        test.only("Daniel has 4 million in cash", () => {
+        test("Daniel has 4 million in cash", () => {
           const log = [
             ...setupLog,
             {

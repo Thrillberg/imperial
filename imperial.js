@@ -292,42 +292,26 @@ class Imperial {
         }
       })
       .filter(Boolean);
-    const playerInvestorActionCount = allInvestorActions.filter((action) => {
-      return player === this.getController(action.action.payload.nation, log);
-    }).length;
-    // cash += 4 * playerInvestorActionCount;
 
     allInvestorActions.map((investorAction) => {
       if (!!investorAction) {
-        console.log(
-          this.getInvestorCardHolder(
-            log.slice(investorAction.logIndex, log.length - 1),
-            log
-          )
-        );
         if (
           this.getInvestorCardHolder(
-            log.slice(investorAction.logIndex, log.length - 1),
+            log.slice(0, investorAction.logIndex + 1),
             log
           ) === player
         ) {
           cash += 2;
         }
 
-        // if (
-        //   this.getController(
-        //     investorAction.action.payload.nation,
-        //     log.slice(investorAction.logIndex, log.length - 1)
-        //   ) === player
-        // ) {
-        //   console.log("nation controller");
-
-        //   cash += 4;
-        // }
+        if (
+          this.getController(investorAction.action.payload.nation, log) ===
+          player
+        ) {
+          cash += 4;
+        }
       }
     });
-
-    // cash += 4 * allInvestorActions.length;
 
     return cash;
   }
@@ -357,15 +341,10 @@ class Imperial {
 
   getInvestorCardHolder(log, fullLog) {
     const AHController = this.getController("AH", fullLog);
-    const order = log
-      .filter((action) => {
-        return action.type === "playerSeating";
-      })
-      .map((playerSeatingAction) => {
-        return playerSeatingAction.payload.order;
-      });
+    const order = fullLog.find((action) => {
+      return action.type === "playerSeating";
+    }).payload.order;
     const indexOfInvestorCardHolder = order.indexOf(AHController);
-    console.log(order);
 
     const investorRondelActions = log.filter(
       (action) => action.type === "rondel" && action.payload.slot === "investor"
@@ -377,26 +356,6 @@ class Imperial {
 
     return order[index];
   }
-
-  // getInvestorCardHolder(log, fullLog) {
-  //   const AHController = this.getController("AH", fullLog);
-  //   console.log(AHController);
-  //   const order = fullLog.find((action) => {
-  //     return action.type === "playerSeating";
-  //   }).payload.order;
-  //   const indexOfInitialCardHolder = order.indexOf(AHController);
-
-  //   const numberOfInvestorRondelActions = log.filter(
-  //     (action) => action.type === "rondel" && action.payload.slot === "investor"
-  //   ).length;
-  //   const index = indexOfInitialCardHolder - numberOfInvestorRondelActions;
-
-  //   if (index < 0) {
-  //     return order[order.length - 1];
-  //   }
-
-  //   return order[index];
-  // }
 }
 
 module.exports = Imperial;
