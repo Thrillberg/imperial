@@ -51,7 +51,7 @@ const setupLog = [
 
 describe("Schnelleinsteig", () => {
   describe("setup for four players", () => {
-    test("All players receive 11 million", () => {
+    test("All players receive 13 million", () => {
       const log = [
         {
           type: "playerSeating",
@@ -60,7 +60,7 @@ describe("Schnelleinsteig", () => {
       ];
       ["Daniel", "Claudia", "Bert", "Anton"].forEach((player) => {
         const cash = Imperial.fromLog(log).state.players[player].cash;
-        expect(cash).toEqual(11);
+        expect(cash).toEqual(13);
       });
     });
     test("Claudia buys a 2 million AH bond", () => {
@@ -76,7 +76,7 @@ describe("Schnelleinsteig", () => {
       ];
       const cash = Imperial.fromLog(log).state.players["Claudia"].cash;
       const treasury = Imperial.fromLog(log).state.nations["AH"].treasury;
-      expect(cash).toEqual(9);
+      expect(cash).toEqual(11);
       expect(treasury).toEqual(2);
     });
 
@@ -93,7 +93,7 @@ describe("Schnelleinsteig", () => {
       ];
       const cash = Imperial.fromLog(log).state.players["Anton"].cash;
       const treasury = Imperial.fromLog(log).state.nations["IT"].treasury;
-      expect(cash).toEqual(2);
+      expect(cash).toEqual(4);
       expect(treasury).toEqual(9);
     });
 
@@ -114,7 +114,7 @@ describe("Schnelleinsteig", () => {
       ];
       const cash = Imperial.fromLog(log).state.players["Claudia"].cash;
       const treasury = Imperial.fromLog(log).state.nations["FR"].treasury;
-      expect(cash).toEqual(0);
+      expect(cash).toEqual(2);
       expect(treasury).toEqual(9);
     });
 
@@ -135,7 +135,7 @@ describe("Schnelleinsteig", () => {
       ];
       const cash = Imperial.fromLog(log).state.players["Daniel"].cash;
       const treasury = Imperial.fromLog(log).state.nations["FR"].treasury;
-      expect(cash).toEqual(9);
+      expect(cash).toEqual(11);
       expect(treasury).toEqual(11);
     });
 
@@ -156,7 +156,7 @@ describe("Schnelleinsteig", () => {
       ];
       const cash = Imperial.fromLog(log).state.players["Anton"].cash;
       const treasury = Imperial.fromLog(log).state.nations["GB"].treasury;
-      expect(cash).toEqual(0);
+      expect(cash).toEqual(2);
       expect(treasury).toEqual(2);
     });
 
@@ -177,7 +177,7 @@ describe("Schnelleinsteig", () => {
       ];
       const cash = Imperial.fromLog(log).state.players["Bert"].cash;
       const treasury = Imperial.fromLog(log).state.nations["GB"].treasury;
-      expect(cash).toEqual(2);
+      expect(cash).toEqual(4);
       expect(treasury).toEqual(11);
     });
 
@@ -209,7 +209,7 @@ describe("Schnelleinsteig", () => {
       ];
       const cash = Imperial.fromLog(log).state.players["Bert"].cash;
       const treasury = Imperial.fromLog(log).state.nations["RU"].treasury;
-      expect(cash).toEqual(0);
+      expect(cash).toEqual(2);
       expect(treasury).toEqual(2);
     });
 
@@ -234,7 +234,7 @@ describe("Schnelleinsteig", () => {
       ];
       const cash = Imperial.fromLog(log).state.players["Daniel"].cash;
       const treasury = Imperial.fromLog(log).state.nations["RU"].treasury;
-      expect(cash).toEqual(0);
+      expect(cash).toEqual(2);
       expect(treasury).toEqual(11);
     });
   });
@@ -314,7 +314,7 @@ describe("Schnelleinsteig", () => {
           expect(treasury).toEqual(5);
         });
 
-        test("IT's controller (Anton) has 4 million in cash", () => {
+        test("IT's controller (Anton) has 6 million in cash", () => {
           const log = [
             ...setupLog,
             {
@@ -325,7 +325,7 @@ describe("Schnelleinsteig", () => {
           const controller = Imperial.fromLog(log).state.nations["IT"]
             .controller;
           const cash = Imperial.fromLog(log).state.players[controller].cash;
-          expect(cash).toEqual(4);
+          expect(cash).toEqual(6);
         });
 
         test("Investor-card holder has 4 million in cash", () => {
@@ -373,18 +373,6 @@ describe("Schnelleinsteig", () => {
             ];
             const treasury = Imperial.fromLog(log).state.nations["GE"].treasury;
             expect(treasury).toEqual(4);
-          });
-          test("Investor-card moves to next player", () => {
-            const log = [
-              ...setupLog,
-              {
-                type: "rondel",
-                payload: { nation: "IT", cost: 0, slot: "investor" },
-              },
-            ];
-            const investorCardHolder = Imperial.fromLog(log).state
-              .investorCardHolder;
-            expect(investorCardHolder).toEqual("Anton");
           });
         });
       });
@@ -495,6 +483,26 @@ describe("Schnelleinsteig", () => {
       });
 
       describe("consequences", () => {
+        test("Anton has the investor card now", () => {
+          const log = [
+            ...setupLog,
+            {
+              type: "rondel",
+              payload: { nation: "IT", cost: 0, slot: "investor" },
+            },
+            {
+              type: "bondPurchase",
+              payload: { nation: "GE", player: "Daniel", cost: 4 },
+            },
+            {
+              type: "rondel",
+              payload: { nation: "RU", cost: 0, slot: "investor" },
+            },
+          ];
+          const investorCardHolder = Imperial.fromLog(log).state
+            .investorCardHolder;
+          expect(investorCardHolder).toEqual("Anton");
+        });
         test("RU has 6 million left in the treasury", () => {
           const log = [
             ...setupLog,
@@ -507,7 +515,7 @@ describe("Schnelleinsteig", () => {
           expect(treasury).toEqual(6);
         });
 
-        test("Daniel has 4 million in cash", () => {
+        test.only("Daniel has 4 million in cash", () => {
           const log = [
             ...setupLog,
             {
@@ -527,7 +535,25 @@ describe("Schnelleinsteig", () => {
           expect(cash).toEqual(4);
         });
 
-        xtest("Bert has 1 million in cash", () => {});
+        xtest("Bert has 1 million in cash", () => {
+          const log = [
+            ...setupLog,
+            {
+              type: "rondel",
+              payload: { nation: "IT", cost: 0, slot: "investor" },
+            },
+            {
+              type: "bondPurchase",
+              payload: { nation: "GE", player: "Daniel", cost: 4 },
+            },
+            {
+              type: "rondel",
+              payload: { nation: "RU", cost: 0, slot: "investor" },
+            },
+          ];
+          const cash = Imperial.fromLog(log).state.players["Bert"].cash;
+          expect(cash).toEqual(1);
+        });
 
         xtest("IT's controller (Anton) has 4 million in cash", () => {
           const log = [
