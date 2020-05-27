@@ -224,6 +224,10 @@ class Imperial {
       treasuryAmount += 9;
       treasuryAmount -= 4 * investorRondelActions.length;
     }
+    if (this.investmentHasBeenSold(nation, 3, log)) {
+      treasuryAmount += 6;
+      treasuryAmount -= 3 * investorRondelActions.length;
+    }
     if (this.investmentHasBeenSold(nation, 2, log)) {
       treasuryAmount += 4;
       treasuryAmount -= 2 * investorRondelActions.length;
@@ -257,6 +261,7 @@ class Imperial {
     const bondValues = {
       1: 2,
       2: 4,
+      3: 6,
       4: 9,
     };
     if (

@@ -590,8 +590,27 @@ describe("Schnelleinsteig", () => {
           expect(cash).toEqual(8);
         });
 
-        xdescribe("Investor-card holder buys the 4 million bond of GE", () => {
-          test("Investor-card holder has no cash", () => {
+        describe("Investor-card holder (Anton) buys the 6 million bond of GE", () => {
+          test("Investor-card holder (Anton) 2 million in cash", () => {
+            const log = [
+              ...setupLog,
+              {
+                type: "rondel",
+                payload: { nation: "IT", cost: 0, slot: "investor" },
+              },
+              {
+                type: "rondel",
+                payload: { nation: "RU", cost: 0, slot: "investor" },
+              },
+              {
+                type: "bondPurchase",
+                payload: { nation: "GE", player: "Anton", cost: 6 },
+              },
+            ];
+            const cash = Imperial.fromLog(log).state.players["Anton"].cash;
+            expect(cash).toEqual(2);
+          });
+          test("GE treasury has 10 million", () => {
             const log = [
               ...setupLog,
               {
@@ -602,10 +621,20 @@ describe("Schnelleinsteig", () => {
                 type: "bondPurchase",
                 payload: { nation: "GE", player: "Daniel", cost: 4 },
               },
+              {
+                type: "rondel",
+                payload: { nation: "RU", cost: 0, slot: "investor" },
+              },
+              {
+                type: "bondPurchase",
+                payload: { nation: "GE", player: "Anton", cost: 6 },
+              },
             ];
-            expect(imperial.getCash("Daniel", log)).toEqual(0);
+            const treasury = Imperial.fromLog(log).state.nations["GE"].treasury;
+            expect(treasury).toEqual(10);
           });
-          test("GE treasury has 4 million", () => {
+
+          test("Anton controls GE", () => {
             const log = [
               ...setupLog,
               {
@@ -616,18 +645,18 @@ describe("Schnelleinsteig", () => {
                 type: "bondPurchase",
                 payload: { nation: "GE", player: "Daniel", cost: 4 },
               },
-            ];
-            expect(imperial.getTreasury("GE", log)).toEqual(4);
-          });
-          test("Investor-card moves to next player", () => {
-            const log = [
-              ...setupLog,
               {
                 type: "rondel",
-                payload: { nation: "IT", cost: 0, slot: "investor" },
+                payload: { nation: "RU", cost: 0, slot: "investor" },
+              },
+              {
+                type: "bondPurchase",
+                payload: { nation: "GE", player: "Anton", cost: 6 },
               },
             ];
-            expect(imperial.getInvestorCardHolder(log)).toEqual("Anton");
+            const controller = Imperial.fromLog(log).state.nations["GE"]
+              .controller;
+            expect(controller).toEqual("Anton");
           });
         });
       });
