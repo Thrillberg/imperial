@@ -305,7 +305,13 @@ describe("available actions", () => {
         },
       ];
       const actions = Imperial.fromLog(log).state.availableActions;
-      const expected = ["moscow", "odessa"].map((province) => ({
+      const expected = [
+        "moscow",
+        "st. petersburg",
+        "odessa",
+        "kiev",
+        "warsaw",
+      ].map((province) => ({
         type: "import",
         payload: { province },
       }));

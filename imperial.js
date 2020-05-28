@@ -140,17 +140,20 @@ class Imperial {
       "liverpool",
       "london",
       "marseille",
+      "moscow",
       "naples",
       "north atlantic",
       "north sea",
       "norway",
       "paris",
       "rome",
+      "st. petersburg",
       "trieste",
       "vienna",
     ].forEach((province) => {
       const flag = this.getFlag(province);
-      provinces[province] = { hasFactory: true, unitCount: 1, flag };
+      const unitCount = this.getUnitCount(province);
+      provinces[province] = { hasFactory: true, unitCount, flag };
     });
     return provinces;
   }
@@ -177,6 +180,18 @@ class Imperial {
     });
     if (!!lastManeuverAction) {
       return lastManeuverAction.payload.nation;
+    }
+  }
+
+  getUnitCount(province) {
+    const importsCount = this.log.filter((action) => {
+      return action.type === "import" && action.payload.province === province;
+    }).length;
+
+    if (importsCount === 0) {
+      return 1;
+    } else {
+      return importsCount;
     }
   }
 
@@ -286,7 +301,7 @@ class Imperial {
     } else if (nation === "GE") {
       return ["berlin", "hamburg"];
     } else if (nation === "RU") {
-      return ["moscow", "odessa"];
+      return ["moscow", "st. petersburg", "odessa", "kiev", "warsaw"];
     }
   }
 

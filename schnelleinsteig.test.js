@@ -960,5 +960,66 @@ describe("Schnelleinsteig", () => {
         expect(norwayFlag).toEqual("GE");
       });
     });
+
+    describe("6. Russia imports", () => {
+      test("RU moves to the import slot", () => {
+        const log = [
+          ...firstRoundLog,
+          {
+            type: "rondel",
+            payload: { nation: "RU", cost: 0, slot: "import" },
+          },
+        ];
+        const actions = Imperial.fromLog(log).state.availableActions;
+        const expected = [
+          "moscow",
+          "st. petersburg",
+          "odessa",
+          "kiev",
+          "warsaw",
+        ].map((province) => ({
+          type: "import",
+          payload: { province },
+        }));
+        expect(actions).toEqual(new Set(expected));
+      });
+
+      describe("consequences", () => {
+        test("RU has 1 unit in st. petersburg and 2 units in moscow", () => {
+          const log = [
+            ...firstRoundLog,
+            {
+              type: "rondel",
+              payload: { nation: "RU", cost: 0, slot: "import" },
+            },
+            { type: "import", payload: { province: "st. petersburg" } },
+            { type: "import", payload: { province: "moscow" } },
+            { type: "import", payload: { province: "moscow" } },
+          ];
+          const stPetersburgUnits = Imperial.fromLog(log).state.provinces[
+            "st. petersburg"
+          ].unitCount;
+          const moscowUnits = Imperial.fromLog(log).state.provinces["moscow"]
+            .unitCount;
+          expect(stPetersburgUnits).toEqual(1);
+          expect(moscowUnits).toEqual(2);
+        });
+
+        test("RU has 3 million in treasury", () => {
+          const log = [
+            ...firstRoundLog,
+            {
+              type: "rondel",
+              payload: { nation: "RU", cost: 0, slot: "import" },
+            },
+            { type: "import", payload: { province: "st. petersburg" } },
+            { type: "import", payload: { province: "moscow" } },
+            { type: "import", payload: { province: "moscow" } },
+          ];
+          const treasury = Imperial.fromLog(log).state.nations["RU"].treasury;
+          expect(treasury).toEqual(3);
+        });
+      });
+    });
   });
 });
