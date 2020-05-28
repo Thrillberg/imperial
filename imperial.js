@@ -37,6 +37,65 @@ class Imperial {
             payload: { origin: "london", destination: "english channel" },
           },
         ];
+      } else if (lastMove.payload.slot === "maneuver2") {
+        return [
+          {
+            type: "manuever",
+            payload: { origin: "hamburg", destination: "north sea" },
+          },
+          {
+            type: "manuever",
+            payload: { origin: "berlin", destination: "danzig" },
+          },
+          {
+            type: "manuever",
+            payload: { origin: "berlin", destination: "prague" },
+          },
+          {
+            type: "manuever",
+            payload: { origin: "berlin", destination: "munich" },
+          },
+          {
+            type: "manuever",
+            payload: { origin: "berlin", destination: "cologne" },
+          },
+          {
+            type: "manuever",
+            payload: { origin: "berlin", destination: "hamburg" },
+          },
+          {
+            type: "manuever",
+            payload: { origin: "berlin", destination: "dijon" },
+          },
+          {
+            type: "manuever",
+            payload: { origin: "berlin", destination: "belgium" },
+          },
+          {
+            type: "manuever",
+            payload: { origin: "berlin", destination: "holland" },
+          },
+          {
+            type: "manuever",
+            payload: { origin: "berlin", destination: "denmark" },
+          },
+          {
+            type: "manuever",
+            payload: { origin: "berlin", destination: "london" },
+          },
+          {
+            type: "manuever",
+            payload: { origin: "berlin", destination: "sheffield" },
+          },
+          {
+            type: "manuever",
+            payload: { origin: "berlin", destination: "edinburgh" },
+          },
+          {
+            type: "manuever",
+            payload: { origin: "berlin", destination: "norway" },
+          },
+        ];
       }
     }
   }
@@ -83,14 +142,42 @@ class Imperial {
       "marseille",
       "naples",
       "north atlantic",
+      "north sea",
+      "norway",
       "paris",
       "rome",
       "trieste",
       "vienna",
     ].forEach((province) => {
-      provinces[province] = { hasFactory: true, unitCount: 1, flag: "GB" };
+      const flag = this.getFlag(province);
+      provinces[province] = { hasFactory: true, unitCount: 1, flag };
     });
     return provinces;
+  }
+
+  getFlag(province) {
+    const maneuverIndices = this.log.map((action, index) => {
+      if (
+        action.type === "maneuver" &&
+        action.payload.destination === province
+      ) {
+        return {
+          logIndex: index,
+        };
+      }
+    });
+    const lastManeuverIndex = maneuverIndices[maneuverIndices.length - 1];
+    const reversedLog = this.log.slice(0, lastManeuverIndex).reverse();
+    const lastManeuverAction = reversedLog.find((action) => {
+      return (
+        action.type === "rondel" &&
+        (action.payload.slot === "maneuver1" ||
+          action.payload.slot === "maneuver2")
+      );
+    });
+    if (!!lastManeuverAction) {
+      return lastManeuverAction.payload.nation;
+    }
   }
 
   shouldReturnRondelActions(lastMove) {

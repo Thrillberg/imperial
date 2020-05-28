@@ -864,5 +864,101 @@ describe("Schnelleinsteig", () => {
         expect(englishChannelFlag).toEqual("GB");
       });
     });
+
+    describe("5. GE does maneuver2", () => {
+      test("GE's available actions are to move hamburg and berlin units", () => {
+        const log = [
+          ...firstRoundLog,
+          {
+            type: "rondel",
+            payload: { nation: "GE", cost: 0, slot: "maneuver2" },
+          },
+        ];
+        const availableActions = [
+          {
+            type: "manuever",
+            payload: { origin: "hamburg", destination: "north sea" },
+          },
+          {
+            type: "manuever",
+            payload: { origin: "berlin", destination: "danzig" },
+          },
+          {
+            type: "manuever",
+            payload: { origin: "berlin", destination: "prague" },
+          },
+          {
+            type: "manuever",
+            payload: { origin: "berlin", destination: "munich" },
+          },
+          {
+            type: "manuever",
+            payload: { origin: "berlin", destination: "cologne" },
+          },
+          {
+            type: "manuever",
+            payload: { origin: "berlin", destination: "hamburg" },
+          },
+          {
+            type: "manuever",
+            payload: { origin: "berlin", destination: "dijon" },
+          },
+          {
+            type: "manuever",
+            payload: { origin: "berlin", destination: "belgium" },
+          },
+          {
+            type: "manuever",
+            payload: { origin: "berlin", destination: "holland" },
+          },
+          {
+            type: "manuever",
+            payload: { origin: "berlin", destination: "denmark" },
+          },
+          {
+            type: "manuever",
+            payload: { origin: "berlin", destination: "london" },
+          },
+          {
+            type: "manuever",
+            payload: { origin: "berlin", destination: "sheffield" },
+          },
+          {
+            type: "manuever",
+            payload: { origin: "berlin", destination: "edinburgh" },
+          },
+          {
+            type: "manuever",
+            payload: { origin: "berlin", destination: "norway" },
+          },
+        ];
+        expect(Imperial.fromLog(log).state.availableActions).toEqual(
+          availableActions
+        );
+      });
+
+      test("north sea and norway have GE flags", () => {
+        const log = [
+          ...firstRoundLog,
+          {
+            type: "rondel",
+            payload: { nation: "GE", cost: 0, slot: "maneuver2" },
+          },
+          {
+            type: "manuever",
+            payload: { origin: "hamburg", destination: "north sea" },
+          },
+          {
+            type: "manuever",
+            payload: { origin: "berlin", destination: "norway" },
+          },
+        ];
+        const northSeaFlag = Imperial.fromLog(log).state.provinces["north sea"]
+          .flag;
+        const norwayFlag = Imperial.fromLog(log).state.provinces["norway"].flag;
+        expect(northSeaFlag).toEqual("GE");
+        expect(norwayFlag).toEqual("GE");
+      });
+    });
   });
 });
