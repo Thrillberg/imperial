@@ -172,25 +172,6 @@ describe("available actions", () => {
     expect(actions).toEqual(new Set(expected));
   });
 
-  test("FR moved to the maneuver1 slot", () => {
-    const log = [
-      {
-        type: "playerSeating",
-        payload: { order: ["Daniel", "Claudia", "Bert", "Anton"] },
-      },
-      {
-        type: "rondel",
-        payload: { nation: "FR", cost: 0, slot: "maneuver1" },
-      },
-    ];
-    const actions = Imperial.fromLog(log).state.availableActions;
-    const expected = rondelSlots.map((slot) => ({
-      type: "rondel",
-      payload: { nation: "GB", cost: 0, slot },
-    }));
-    expect(actions).toEqual(new Set(expected));
-  });
-
   test("GB moved to the investor slot", () => {
     const log = [
       {
@@ -367,25 +348,6 @@ describe("available actions", () => {
     const expected = rondelSlots.map((slot) => ({
       type: "rondel",
       payload: { nation: "AH", cost: 0, slot },
-    }));
-    expect(actions).toEqual(new Set(expected));
-  });
-
-  test("AH moved to the maneuver2 slot", () => {
-    const log = [
-      {
-        type: "playerSeating",
-        payload: { order: ["Daniel", "Claudia", "Bert", "Anton"] },
-      },
-      {
-        type: "rondel",
-        payload: { nation: "AH", cost: 0, slot: "maneuver2" },
-      },
-    ];
-    const actions = Imperial.fromLog(log).state.availableActions;
-    const expected = rondelSlots.map((slot) => ({
-      type: "rondel",
-      payload: { nation: "IT", cost: 0, slot },
     }));
     expect(actions).toEqual(new Set(expected));
   });

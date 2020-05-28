@@ -790,5 +790,79 @@ describe("Schnelleinsteig", () => {
         expect(naplesUnitCount).toEqual(1);
       });
     });
+
+    describe("3. FR does production1", () => {
+      test("bordeaux, marseille, and paris have 1 unit each", () => {
+        const log = [
+          ...firstRoundLog,
+          {
+            type: "rondel",
+            payload: { nation: "FR", cost: 0, slot: "production1" },
+          },
+        ];
+        const bordeauxUnitCount = Imperial.fromLog(log).state.provinces[
+          "bordeaux"
+        ].unitCount;
+        const marseilleUnitCount = Imperial.fromLog(log).state.provinces[
+          "marseille"
+        ].unitCount;
+        const parisUnitCount = Imperial.fromLog(log).state.provinces["paris"]
+          .unitCount;
+        expect(bordeauxUnitCount).toEqual(1);
+        expect(marseilleUnitCount).toEqual(1);
+        expect(parisUnitCount).toEqual(1);
+      });
+    });
+
+    describe("4. GB does maneuver1", () => {
+      test("GB's available actions are to move liverpool and london units", () => {
+        const log = [
+          ...firstRoundLog,
+          {
+            type: "rondel",
+            payload: { nation: "GB", cost: 0, slot: "maneuver1" },
+          },
+        ];
+        const availableActions = [
+          {
+            type: "manuever",
+            payload: { origin: "liverpool", destination: "north atlantic" },
+          },
+          {
+            type: "manuever",
+            payload: { origin: "london", destination: "english channel" },
+          },
+        ];
+        expect(Imperial.fromLog(log).state.availableActions).toEqual(
+          availableActions
+        );
+      });
+
+      test("north atlantic and english channel have GB flags", () => {
+        const log = [
+          ...firstRoundLog,
+          {
+            type: "rondel",
+            payload: { nation: "GB", cost: 0, slot: "maneuver1" },
+          },
+          {
+            type: "manuever",
+            payload: { origin: "liverpool", destination: "north atlantic" },
+          },
+          {
+            type: "manuever",
+            payload: { origin: "london", destination: "english channel" },
+          },
+        ];
+        const northAtlanticFlag = Imperial.fromLog(log).state.provinces[
+          "north atlantic"
+        ].flag;
+        const englishChannelFlag = Imperial.fromLog(log).state.provinces[
+          "english channel"
+        ].flag;
+        expect(northAtlanticFlag).toEqual("GB");
+        expect(englishChannelFlag).toEqual("GB");
+      });
+    });
   });
 });

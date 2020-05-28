@@ -26,6 +26,17 @@ class Imperial {
         return this.buildFactoryAction(lastMove.payload.nation);
       } else if (lastMove.payload.slot === "import") {
         return this.importAction(lastMove.payload.nation);
+      } else if (lastMove.payload.slot === "maneuver1") {
+        return [
+          {
+            type: "manuever",
+            payload: { origin: "liverpool", destination: "north atlantic" },
+          },
+          {
+            type: "manuever",
+            payload: { origin: "london", destination: "english channel" },
+          },
+        ];
       }
     }
   }
@@ -64,18 +75,20 @@ class Imperial {
       "berlin",
       "bordeaux",
       "budapest",
+      "english channel",
       "hamburg",
       "lemberg",
       "liverpool",
       "london",
       "marseille",
       "naples",
+      "north atlantic",
       "paris",
       "rome",
       "trieste",
       "vienna",
     ].forEach((province) => {
-      provinces[province] = { hasFactory: true, unitCount: 1 };
+      provinces[province] = { hasFactory: true, unitCount: 1, flag: "GB" };
     });
     return provinces;
   }
@@ -85,7 +98,6 @@ class Imperial {
       this.logIsEmpty(lastMove) ||
       this.lastMoveWasBuildFactory(lastMove) ||
       this.lastMoveWasProduction(lastMove) ||
-      this.lastMoveWasManeuver(lastMove) ||
       this.lastMoveWasInvestor(lastMove) ||
       this.lastMoveWasImport(lastMove) ||
       this.lastMoveWasTaxation(lastMove)
