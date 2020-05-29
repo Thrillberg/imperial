@@ -37,7 +37,10 @@ class Imperial {
             payload: { origin: "london", destination: "english channel" },
           },
         ];
-      } else if (lastMove.payload.slot === "maneuver2") {
+      } else if (
+        lastMove.payload.slot === "maneuver2" &&
+        lastMove.payload.nation === "GE"
+      ) {
         return [
           {
             type: "manuever",
@@ -96,6 +99,52 @@ class Imperial {
             payload: { origin: "berlin", destination: "norway" },
           },
         ];
+      } else {
+        const landDestinations = [
+          "warsaw",
+          "kiev",
+          "budapest",
+          "prague",
+          "romania",
+          "danzig",
+          "munich",
+          "genoa",
+          "venice",
+          "berlin",
+          "vienna",
+          "trieste",
+          "west balkan",
+          "rome",
+          "naples",
+          "greece",
+          "tunis",
+        ];
+        let lembergActions = [];
+        let budapestActions = [];
+        let viennaActions = [];
+        landDestinations.map((province) => {
+          lembergActions.push({
+            type: "manuever",
+            payload: { origin: "trieste", destination: province },
+          });
+          budapestActions.push({
+            type: "manuever",
+            payload: { origin: "budapest", destination: province },
+          });
+          viennaActions.push({
+            type: "manuever",
+            payload: { origin: "vienna", destination: province },
+          });
+        });
+        return [
+          {
+            type: "manuever",
+            payload: { origin: "trieste", destination: "ionian sea" },
+          },
+          ...lembergActions,
+          ...budapestActions,
+          ...viennaActions,
+        ];
       }
     }
   }
@@ -136,6 +185,7 @@ class Imperial {
       "budapest",
       "english channel",
       "hamburg",
+      "ionian sea",
       "lemberg",
       "liverpool",
       "london",
@@ -146,10 +196,13 @@ class Imperial {
       "north sea",
       "norway",
       "paris",
+      "romania",
       "rome",
       "st. petersburg",
       "trieste",
+      "tunis",
       "vienna",
+      "west balkan",
     ].forEach((province) => {
       const flag = this.getFlag(province);
       const unitCount = this.getUnitCount(province);

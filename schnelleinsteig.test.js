@@ -1022,4 +1022,107 @@ describe("Schnelleinsteig", () => {
       });
     });
   });
+
+  describe("third round", () => {
+    describe("1. AH does maneuver2", () => {
+      test("AH's available actions are to move trieste, lemberg, budapest, and vienna", () => {
+        const log = [
+          ...firstRoundLog,
+          {
+            type: "rondel",
+            payload: { nation: "AH", cost: 0, slot: "maneuver2" },
+          },
+        ];
+        const landDestinations = [
+          "warsaw",
+          "kiev",
+          "budapest",
+          "prague",
+          "romania",
+          "danzig",
+          "munich",
+          "genoa",
+          "venice",
+          "berlin",
+          "vienna",
+          "trieste",
+          "west balkan",
+          "rome",
+          "naples",
+          "greece",
+          "tunis",
+        ];
+        let lembergActions = [];
+        let budapestActions = [];
+        let viennaActions = [];
+        landDestinations.map((province) => {
+          lembergActions.push({
+            type: "manuever",
+            payload: { origin: "trieste", destination: province },
+          });
+          budapestActions.push({
+            type: "manuever",
+            payload: { origin: "budapest", destination: province },
+          });
+          viennaActions.push({
+            type: "manuever",
+            payload: { origin: "vienna", destination: province },
+          });
+        });
+
+        const availableActions = [
+          {
+            type: "manuever",
+            payload: { origin: "trieste", destination: "ionian sea" },
+          },
+          ...lembergActions,
+          ...budapestActions,
+          ...viennaActions,
+        ];
+        expect(Imperial.fromLog(log).state.availableActions).toEqual(
+          availableActions
+        );
+      });
+
+      test("ionian sea, romania, west balkan, and tunis have AH flags", () => {
+        const log = [
+          ...firstRoundLog,
+          {
+            type: "rondel",
+            payload: { nation: "AH", cost: 0, slot: "maneuver2" },
+          },
+          {
+            type: "manuever",
+            payload: { origin: "trieste", destination: "ionian sea" },
+          },
+          {
+            type: "manuever",
+            payload: { origin: "lemberg", destination: "romania" },
+          },
+          {
+            type: "manuever",
+            payload: { origin: "budapest", destination: "west balkan" },
+          },
+          {
+            type: "manuever",
+            payload: { origin: "vienna", destination: "tunis" },
+          },
+        ];
+        const ionianSeaFlag = Imperial.fromLog(log).state.provinces[
+          "ionian sea"
+        ].flag;
+        const romaniaFlag = Imperial.fromLog(log).state.provinces["romania"]
+          .flag;
+        const westBalkanFlag = Imperial.fromLog(log).state.provinces[
+          "west balkan"
+        ].flag;
+        const tunisFlag = Imperial.fromLog(log).state.provinces["tunis"].flag;
+
+        expect(ionianSeaFlag).toEqual("AH");
+        expect(romaniaFlag).toEqual("AH");
+        expect(westBalkanFlag).toEqual("AH");
+        expect(tunisFlag).toEqual("AH");
+      });
+    });
+  });
 });
