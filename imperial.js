@@ -27,16 +27,53 @@ class Imperial {
       } else if (lastMove.payload.slot === "import") {
         return this.importAction(lastMove.payload.nation);
       } else if (lastMove.payload.slot === "maneuver1") {
-        return [
-          {
-            type: "manuever",
-            payload: { origin: "liverpool", destination: "north atlantic" },
-          },
-          {
-            type: "manuever",
-            payload: { origin: "london", destination: "english channel" },
-          },
-        ];
+        if (lastMove.payload.nation === "FR") {
+          const landDestinations = [
+            "brest",
+            "dijon",
+            "bordeaux",
+            "marseille",
+            "belgium",
+            "genoa",
+            "munich",
+            "spain",
+          ];
+          let parisActions = [];
+          landDestinations.map((province) => {
+            parisActions.push({
+              type: "manuever",
+              payload: { origin: "paris", destination: province },
+            });
+          });
+          return [
+            {
+              type: "manuever",
+              payload: {
+                origin: "bordeaux",
+                destination: "bay of biscay",
+              },
+            },
+            {
+              type: "manuever",
+              payload: {
+                origin: "marseille",
+                destination: "western mediterranean sea",
+              },
+            },
+            ...parisActions,
+          ];
+        } else {
+          return [
+            {
+              type: "manuever",
+              payload: { origin: "liverpool", destination: "north atlantic" },
+            },
+            {
+              type: "manuever",
+              payload: { origin: "london", destination: "english channel" },
+            },
+          ];
+        }
       } else if (
         lastMove.payload.slot === "maneuver2" &&
         lastMove.payload.nation === "GE"
@@ -99,7 +136,7 @@ class Imperial {
             payload: { origin: "berlin", destination: "norway" },
           },
         ];
-      } else {
+      } else if (lastMove.payload.nation === "AH") {
         const landDestinations = [
           "warsaw",
           "kiev",
@@ -144,6 +181,36 @@ class Imperial {
           ...lembergActions,
           ...budapestActions,
           ...viennaActions,
+        ];
+      } else if (lastMove.payload.nation === "IT") {
+        const landDestinations = [
+          "naples",
+          "tunis",
+          "algeria",
+          "spain",
+          "marseille",
+          "genoa",
+          "florence",
+          "venice",
+          "vienna",
+          "trieste",
+        ];
+        let romeActions = [];
+        landDestinations.map((province) => {
+          romeActions.push({
+            type: "manuever",
+            payload: { origin: "rome", destination: province },
+          });
+        });
+        return [
+          {
+            type: "manuever",
+            payload: {
+              origin: "naples",
+              destination: "western mediterranean sea",
+            },
+          },
+          ...romeActions,
         ];
       }
     }
@@ -198,11 +265,13 @@ class Imperial {
       "paris",
       "romania",
       "rome",
+      "spain",
       "st. petersburg",
       "trieste",
       "tunis",
       "vienna",
       "west balkan",
+      "western mediterranean sea",
     ].forEach((province) => {
       const flag = this.getFlag(province);
       const unitCount = this.getUnitCount(province);

@@ -1124,5 +1124,177 @@ describe("Schnelleinsteig", () => {
         expect(tunisFlag).toEqual("AH");
       });
     });
+
+    describe("2. IT does maneuver2", () => {
+      test("IT's available actions are to move naples and rome", () => {
+        const log = [
+          ...firstRoundLog,
+          {
+            type: "rondel",
+            payload: { nation: "IT", cost: 0, slot: "maneuver2" },
+          },
+        ];
+        const landDestinations = [
+          "naples",
+          "tunis",
+          "algeria",
+          "spain",
+          "marseille",
+          "genoa",
+          "florence",
+          "venice",
+          "vienna",
+          "trieste",
+        ];
+        let romeActions = [];
+        landDestinations.map((province) => {
+          romeActions.push({
+            type: "manuever",
+            payload: { origin: "rome", destination: province },
+          });
+        });
+
+        const availableActions = [
+          {
+            type: "manuever",
+            payload: {
+              origin: "naples",
+              destination: "western mediterranean sea",
+            },
+          },
+          ...romeActions,
+        ];
+        expect(Imperial.fromLog(log).state.availableActions).toEqual(
+          availableActions
+        );
+      });
+
+      test("spain and western mediterranean sea have IT flags", () => {
+        const log = [
+          ...firstRoundLog,
+          {
+            type: "rondel",
+            payload: { nation: "IT", cost: 0, slot: "maneuver2" },
+          },
+          {
+            type: "manuever",
+            payload: {
+              origin: "naples",
+              destination: "western mediterranean sea",
+            },
+          },
+          {
+            type: "manuever",
+            payload: { origin: "rome", destination: "spain" },
+          },
+        ];
+        const westernMediterraneanSeaFlag = Imperial.fromLog(log).state
+          .provinces["western mediterranean sea"].flag;
+        const spainFlag = Imperial.fromLog(log).state.provinces["spain"].flag;
+
+        expect(westernMediterraneanSeaFlag).toEqual("IT");
+        expect(spainFlag).toEqual("IT");
+      });
+    });
+
+    describe("3. FR does maneuver1", () => {
+      test("FR's available actions are to move bordeaux, marseille, and paris", () => {
+        const log = [
+          ...firstRoundLog,
+          {
+            type: "rondel",
+            payload: { nation: "FR", cost: 0, slot: "maneuver1" },
+          },
+        ];
+        const landDestinations = [
+          "brest",
+          "dijon",
+          "bordeaux",
+          "marseille",
+          "belgium",
+          "genoa",
+          "munich",
+          "spain",
+        ];
+        let parisActions = [];
+        landDestinations.map((province) => {
+          parisActions.push({
+            type: "manuever",
+            payload: { origin: "paris", destination: province },
+          });
+        });
+
+        const availableActions = [
+          {
+            type: "manuever",
+            payload: {
+              origin: "bordeaux",
+              destination: "bay of biscay",
+            },
+          },
+          {
+            type: "manuever",
+            payload: {
+              origin: "marseille",
+              destination: "western mediterranean sea",
+            },
+          },
+          ...parisActions,
+        ];
+        expect(Imperial.fromLog(log).state.availableActions).toEqual(
+          availableActions
+        );
+      });
+
+      test("IT controller (Anton) can choose whether to fight or allow FR fleet to coexist in western mediterranean sea", () => {
+        const log = [
+          ...firstRoundLog,
+          {
+            type: "rondel",
+            payload: { nation: "IT", cost: 0, slot: "maneuver2" },
+          },
+          {
+            type: "manuever",
+            payload: {
+              origin: "naples",
+              destination: "western mediterranean sea",
+            },
+          },
+          {
+            type: "rondel",
+            payload: { nation: "FR", cost: 0, slot: "maneuver1" },
+          },
+          {
+            type: "manuever",
+            payload: {
+              origin: "marseille",
+              destination: "western mediterranean sea",
+            },
+          },
+        ];
+        const expectedActions = [
+          {
+            type: "coexist",
+            payload: {
+              province: "western mediterranean sea",
+              incumbent: "IT",
+              challenger: "FR",
+            },
+          },
+          {
+            type: "fight",
+            payload: {
+              province: "western mediterranean sea",
+              incumbent: "IT",
+              challenger: "FR",
+            },
+          },
+          ,
+        ];
+        expect(Imperial.fromLog(log).state.availableActions).toEqual(
+          expectedActions
+        );
+      });
+    });
   });
 });
