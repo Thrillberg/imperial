@@ -1254,7 +1254,7 @@ describe("Schnelleinsteig", () => {
             payload: { nation: "IT", cost: 0, slot: "maneuver2" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: {
               origin: "naples",
               destination: "western mediterranean sea",
@@ -1265,7 +1265,7 @@ describe("Schnelleinsteig", () => {
             payload: { nation: "FR", cost: 0, slot: "maneuver1" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: {
               origin: "marseille",
               destination: "western mediterranean sea",
