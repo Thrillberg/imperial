@@ -1295,6 +1295,87 @@ describe("Schnelleinsteig", () => {
           expectedActions
         );
       });
+
+      test("IT chooses to fight so both fleets get removed", () => {
+        const log = [
+          ...firstRoundLog,
+          {
+            type: "rondel",
+            payload: { nation: "IT", cost: 0, slot: "maneuver2" },
+          },
+          {
+            type: "maneuver",
+            payload: {
+              origin: "naples",
+              destination: "western mediterranean sea",
+            },
+          },
+          {
+            type: "rondel",
+            payload: { nation: "FR", cost: 0, slot: "maneuver1" },
+          },
+          {
+            type: "maneuver",
+            payload: {
+              origin: "marseille",
+              destination: "western mediterranean sea",
+            },
+          },
+          {
+            type: "fight",
+            payload: {
+              province: "western mediterranean sea",
+              incumbent: "IT",
+              challenger: "FR",
+            },
+          },
+        ];
+
+        expect(
+          Imperial.fromLog(log).state.provinces["western mediterranean sea"]
+            .unitCount
+        ).toEqual(0);
+        expect(
+          Imperial.fromLog(log).state.provinces["western mediterranean sea"]
+            .flag
+        ).toEqual("IT");
+      });
+
+      test("Morocco and bay of biscay have FR flags", () => {
+        const log = [
+          ...firstRoundLog,
+          {
+            type: "rondel",
+            payload: { nation: "FR", cost: 0, slot: "maneuver1" },
+          },
+          {
+            type: "manuever",
+            payload: {
+              origin: "bordeaux",
+              destination: "bay of biscay",
+            },
+          },
+          {
+            type: "manuever",
+            payload: {
+              origin: "paris",
+              destination: "morocco",
+            },
+          },
+        ];
+        expect(
+          Imperial.fromLog(log).state.provinces["bay of biscay"].unitCount
+        ).toEqual(1);
+        expect(
+          Imperial.fromLog(log).state.provinces["bay of biscay"].flag
+        ).toEqual("FR");
+        expect(
+          Imperial.fromLog(log).state.provinces["morocco"].unitCount
+        ).toEqual(1);
+        expect(Imperial.fromLog(log).state.provinces["morocco"].flag).toEqual(
+          "FR"
+        );
+      });
     });
   });
 });

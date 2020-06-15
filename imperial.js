@@ -269,6 +269,7 @@ class Imperial {
   provinces() {
     let provinces = {};
     [
+      "bay of biscay",
       "berlin",
       "bordeaux",
       "budapest",
@@ -279,6 +280,7 @@ class Imperial {
       "liverpool",
       "london",
       "marseille",
+      "morocco",
       "moscow",
       "naples",
       "north atlantic",
@@ -314,7 +316,23 @@ class Imperial {
       }
     });
     const lastManeuverIndex = maneuverIndices[maneuverIndices.length - 1];
-    const reversedLog = this.log.slice(0, lastManeuverIndex).reverse();
+    let reversedLog = this.log.slice(0, lastManeuverIndex).reverse();
+    const fightsCount = this.log.filter((action) => {
+      return action.type === "fight" && action.payload.province === province;
+    }).length;
+    reversedLog = reversedLog.slice(0, reversedLog.length - 1);
+    if (fightsCount === 1) {
+      reversedLog.splice(
+        reversedLog.findIndex((action) => {
+          return (
+            action.type === "rondel" &&
+            (action.payload.slot === "maneuver1" ||
+              action.payload.slot === "maneuver2")
+          );
+        }),
+        1
+      );
+    }
     const lastManeuverAction = reversedLog.find((action) => {
       return (
         action.type === "rondel" &&
@@ -332,8 +350,22 @@ class Imperial {
       return action.type === "import" && action.payload.province === province;
     }).length;
 
+    const maneuverCount = this.log.filter((action) => {
+      return (
+        action.type === "maneuver" && action.payload.destination === province
+      );
+    }).length;
+
+    const fightCount = this.log.filter((action) => {
+      return action.type === "fight" && action.payload.province === province;
+    }).length;
+
     if (importsCount === 0) {
-      return 1;
+      if (maneuverCount === 0) {
+        return 1;
+      } else {
+        return maneuverCount - fightCount * 2;
+      }
     } else {
       return importsCount;
     }
