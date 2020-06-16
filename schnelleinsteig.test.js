@@ -2181,7 +2181,225 @@ describe("Schnelleinsteig", () => {
       });
 
       describe("consequences", () => {
-        test("", () => {});
+        test("GE has 14 million in its treasury", () => {
+          const log = [
+            ...secondRoundLog,
+            {
+              type: "rondel",
+              payload: { nation: "AH", cost: 0, slot: "maneuver2" },
+            },
+            {
+              type: "manuever",
+              payload: { origin: "trieste", destination: "ionian sea" },
+            },
+            {
+              type: "manuever",
+              payload: { origin: "lemberg", destination: "romania" },
+            },
+            {
+              type: "manuever",
+              payload: { origin: "budapest", destination: "west balkan" },
+            },
+            {
+              type: "manuever",
+              payload: { origin: "vienna", destination: "tunis" },
+            },
+            {
+              type: "rondel",
+              payload: { nation: "IT", cost: 0, slot: "maneuver2" },
+            },
+            {
+              type: "manuever",
+              payload: {
+                origin: "naples",
+                destination: "western mediterranean sea",
+              },
+            },
+            {
+              type: "manuever",
+              payload: { origin: "rome", destination: "spain" },
+            },
+            {
+              type: "rondel",
+              payload: { nation: "FR", cost: 0, slot: "maneuver1" },
+            },
+            {
+              type: "manuever",
+              payload: {
+                origin: "bordeaux",
+                destination: "bay of biscay",
+              },
+            },
+            {
+              type: "manuever",
+              payload: {
+                origin: "paris",
+                destination: "morocco",
+              },
+            },
+            {
+              type: "rondel",
+              payload: { nation: "GB", cost: 0, slot: "investor" },
+            },
+            {
+              type: "bondPurchase",
+              payload: { nation: "RU", player: "Bert", cost: 6 },
+            },
+            {
+              type: "rondel",
+              payload: { nation: "GE", cost: 0, slot: "taxation" },
+            },
+          ];
+          const treasury = Imperial.fromLog(log).state.nations["GE"].treasury;
+          expect(treasury).toEqual(14);
+        });
+
+        test("GE moves up one field on tax chart", () => {
+          const log = [
+            ...secondRoundLog,
+            {
+              type: "rondel",
+              payload: { nation: "AH", cost: 0, slot: "maneuver2" },
+            },
+            {
+              type: "manuever",
+              payload: { origin: "trieste", destination: "ionian sea" },
+            },
+            {
+              type: "manuever",
+              payload: { origin: "lemberg", destination: "romania" },
+            },
+            {
+              type: "manuever",
+              payload: { origin: "budapest", destination: "west balkan" },
+            },
+            {
+              type: "manuever",
+              payload: { origin: "vienna", destination: "tunis" },
+            },
+            {
+              type: "rondel",
+              payload: { nation: "IT", cost: 0, slot: "maneuver2" },
+            },
+            {
+              type: "manuever",
+              payload: {
+                origin: "naples",
+                destination: "western mediterranean sea",
+              },
+            },
+            {
+              type: "manuever",
+              payload: { origin: "rome", destination: "spain" },
+            },
+            {
+              type: "rondel",
+              payload: { nation: "FR", cost: 0, slot: "maneuver1" },
+            },
+            {
+              type: "manuever",
+              payload: {
+                origin: "bordeaux",
+                destination: "bay of biscay",
+              },
+            },
+            {
+              type: "manuever",
+              payload: {
+                origin: "paris",
+                destination: "morocco",
+              },
+            },
+            {
+              type: "rondel",
+              payload: { nation: "GB", cost: 0, slot: "investor" },
+            },
+            {
+              type: "bondPurchase",
+              payload: { nation: "RU", player: "Bert", cost: 6 },
+            },
+            {
+              type: "rondel",
+              payload: { nation: "GE", cost: 0, slot: "taxation" },
+            },
+          ];
+          const taxChartPosition = Imperial.fromLog(log).state.nations["GE"]
+            .taxChartPosition;
+          expect(taxChartPosition).toEqual("6");
+        });
+
+        xtest("Daniel has 5 million cash", () => {
+          const log = [
+            ...secondRoundLog,
+            {
+              type: "rondel",
+              payload: { nation: "AH", cost: 0, slot: "maneuver2" },
+            },
+            {
+              type: "manuever",
+              payload: { origin: "trieste", destination: "ionian sea" },
+            },
+            {
+              type: "manuever",
+              payload: { origin: "lemberg", destination: "romania" },
+            },
+            {
+              type: "manuever",
+              payload: { origin: "budapest", destination: "west balkan" },
+            },
+            {
+              type: "manuever",
+              payload: { origin: "vienna", destination: "tunis" },
+            },
+            {
+              type: "rondel",
+              payload: { nation: "IT", cost: 0, slot: "maneuver2" },
+            },
+            {
+              type: "manuever",
+              payload: {
+                origin: "naples",
+                destination: "western mediterranean sea",
+              },
+            },
+            {
+              type: "manuever",
+              payload: { origin: "rome", destination: "spain" },
+            },
+            {
+              type: "rondel",
+              payload: { nation: "FR", cost: 0, slot: "maneuver1" },
+            },
+            {
+              type: "manuever",
+              payload: {
+                origin: "bordeaux",
+                destination: "bay of biscay",
+              },
+            },
+            {
+              type: "manuever",
+              payload: {
+                origin: "paris",
+                destination: "morocco",
+              },
+            },
+            {
+              type: "rondel",
+              payload: { nation: "GB", cost: 0, slot: "investor" },
+            },
+            {
+              type: "bondPurchase",
+              payload: { nation: "RU", player: "Bert", cost: 6 },
+            },
+            {
+              type: "rondel",
+              payload: { nation: "GE", cost: 0, slot: "taxation" },
+            },
+          ];
+          const cash = Imperial.fromLog(log).state.players["Daniel"].cash;
+          expect(cash).toEqual(5);
+        });
       });
     });
   });

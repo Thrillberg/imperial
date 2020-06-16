@@ -248,6 +248,7 @@ class Imperial {
       nations[nation] = {
         controller: this.getController(nation, this.log),
         treasury: this.getTreasury(nation, this.log),
+        taxChartPosition: "6",
       };
     });
     return nations;
@@ -531,6 +532,17 @@ class Imperial {
       treasuryAmount -= 1 * investorRondelActions.length;
     }
 
+    const taxationRondelActionsCount = this.log.filter(
+      (action) =>
+        action.type === "rondel" &&
+        action.payload.slot === "taxation" &&
+        action.payload.nation === nation
+    ).length;
+    treasuryAmount +=
+      this.factoryCount(nation) * 2 * taxationRondelActionsCount;
+    treasuryAmount += this.flagCount(nation) * taxationRondelActionsCount;
+    treasuryAmount -= this.unitCount(nation) * taxationRondelActionsCount;
+
     const factoryLocations = {
       AH: ["trieste", "prague", "lemburg"],
       IT: ["genoa", "venice", "florence"],
@@ -685,6 +697,18 @@ class Imperial {
 
   startedConflict(lastMove) {
     return true;
+  }
+
+  factoryCount(nation) {
+    return 2;
+  }
+
+  flagCount(nation) {
+    return 2;
+  }
+
+  unitCount(nation) {
+    return 2;
   }
 }
 
