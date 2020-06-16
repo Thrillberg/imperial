@@ -1,3 +1,5 @@
+const { Nation } = require("./constants")
+
 class Imperial {
   static fromLog(log) {
     return new Imperial(log);
@@ -23,7 +25,7 @@ class Imperial {
       return this.rondelActions(this.getNation(this.log));
     } else if (this.lastMoveWasRondelManeuver(lastMove)) {
       switch (lastMove.payload.nation) {
-        case "FR":
+        case Nation.FR:
           const FRLandDestinations = [
             "brest",
             "dijon",
@@ -58,7 +60,7 @@ class Imperial {
             },
             ...parisActions,
           ];
-        case "GB":
+        case Nation.GB:
           return [
             {
               type: "manuever",
@@ -128,7 +130,7 @@ class Imperial {
               payload: { origin: "berlin", destination: "norway" },
             },
           ];
-        case "AH":
+        case Nation.AH:
           const AHLandDestinations = [
             "warsaw",
             "kiev",
@@ -174,7 +176,7 @@ class Imperial {
             ...budapestActions,
             ...viennaActions,
           ];
-        case "IT":
+        case Nation.IT:
           const ITLandDestinations = [
             "naples",
             "tunis",
@@ -218,16 +220,16 @@ class Imperial {
             type: "coexist",
             payload: {
               province: "western mediterranean sea",
-              incumbent: "IT",
-              challenger: "FR",
+              incumbent: Nation.IT,
+              challenger: Nation.FR,
             },
           },
           {
             type: "fight",
             payload: {
               province: "western mediterranean sea",
-              incumbent: "IT",
-              challenger: "FR",
+              incumbent: Nation.IT,
+              challenger: Nation.FR,
             },
           },
           ,
@@ -244,12 +246,12 @@ class Imperial {
 
   nations() {
     let nations = {};
-    ["AH", "IT", "FR", "GB", "GE", "RU"].map((nation) => {
+    for (const nation of Nation) {
       nations[nation] = {
         controller: this.getController(nation, this.log),
         treasury: this.getTreasury(nation, this.log),
       };
-    });
+    };
     return nations;
   }
 
@@ -407,7 +409,7 @@ class Imperial {
         rondelActions[rondelActions.length - 1].payload.nation;
       return this.nextNation(lastTurnNation);
     } else {
-      return "AH";
+      return Nation.AH;
     }
   }
 
@@ -448,11 +450,18 @@ class Imperial {
   }
 
   nextNation(lastTurnNation) {
-    const nations = ["AH", "IT", "FR", "GB", "GE", "RU"];
-    if (lastTurnNation === "RU") {
-      return "AH";
+    const turnOrder = [
+      Nation.AH,
+      Nation.IT,
+      Nation.FR,
+      Nation.GB,
+      Nation.GE,
+      Nation.RU,
+    ];
+    if (lastTurnNation === Nation.RU) {
+      return Nation.AH;
     } else {
-      return nations[nations.indexOf(lastTurnNation) + 1];
+      return turnOrder[turnOrder.indexOf(lastTurnNation) + 1];
     }
   }
 
@@ -466,29 +475,29 @@ class Imperial {
   }
 
   importLocations(nation) {
-    if (nation === "AH") {
+    if (nation === Nation.AH) {
       return ["vienna", "budapest", "prague", "lemberg", "trieste"];
-    } else if (nation === "IT") {
+    } else if (nation === Nation.IT) {
       return ["rome", "naples"];
-    } else if (nation === "FR") {
+    } else if (nation === Nation.FR) {
       return ["paris", "bordeaux"];
-    } else if (nation === "GB") {
+    } else if (nation === Nation.GB) {
       return ["london", "liverpool"];
-    } else if (nation === "GE") {
+    } else if (nation === Nation.GE) {
       return ["berlin", "hamburg"];
-    } else if (nation === "RU") {
+    } else if (nation === Nation.RU) {
       return ["moscow", "st. petersburg", "odessa", "kiev", "warsaw"];
     }
   }
 
   buildFactoryAction(nation) {
     const factoryLocations = {
-      AH: ["trieste", "prague", "lemburg"],
-      IT: ["genoa", "venice", "florence"],
-      FR: ["brest", "dijon", "marseille"],
-      GB: ["dublin", "sheffield", "edinburgh"],
-      GE: ["danzig", "munich", "cologne"],
-      RU: ["kiev", "st. petersburg", "warsaw"],
+      [Nation.AH]: ["trieste", "prague", "lemburg"],
+      [Nation.IT]: ["genoa", "venice", "florence"],
+      [Nation.FR]: ["brest", "dijon", "marseille"],
+      [Nation.GB]: ["dublin", "sheffield", "edinburgh"],
+      [Nation.GE]: ["danzig", "munich", "cologne"],
+      [Nation.RU]: ["kiev", "st. petersburg", "warsaw"],
     };
     return new Set(
       factoryLocations[nation].map((province) => ({
@@ -532,12 +541,12 @@ class Imperial {
     }
 
     const factoryLocations = {
-      AH: ["trieste", "prague", "lemburg"],
-      IT: ["genoa", "venice", "florence"],
-      FR: ["brest", "dijon", "marseille"],
-      GB: ["dublin", "sheffield", "edinburgh"],
-      GE: ["danzig", "munich", "cologne"],
-      RU: ["kiev", "st. petersburg", "warsaw"],
+      [Nation.AH]: ["trieste", "prague", "lemburg"],
+      [Nation.IT]: ["genoa", "venice", "florence"],
+      [Nation.FR]: ["brest", "dijon", "marseille"],
+      [Nation.GB]: ["dublin", "sheffield", "edinburgh"],
+      [Nation.GE]: ["danzig", "munich", "cologne"],
+      [Nation.RU]: ["kiev", "st. petersburg", "warsaw"],
     };
 
     const buildFactoryActions = log.filter((action) => {
@@ -665,7 +674,7 @@ class Imperial {
   }
 
   getInvestorCardHolder(log, fullLog) {
-    const AHController = this.getController("AH", fullLog);
+    const AHController = this.getController(Nation.AH, fullLog);
     const order = fullLog.find((action) => {
       return action.type === "playerSeating";
     }).payload.order;
