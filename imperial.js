@@ -674,10 +674,11 @@ class Imperial {
     const investorRondelActions = log.filter(
       (action) => action.type === "rondel" && action.payload.slot === "investor"
     );
-    const index = indexOfInvestorCardHolder - investorRondelActions.length;
+    let index = indexOfInvestorCardHolder - investorRondelActions.length;
     if (index === -1) {
       return order[order.length - 1];
     }
+    index = Math.abs(index);
 
     return order[index];
   }
