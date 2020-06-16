@@ -10,7 +10,7 @@ const rondelSlots = [
   "taxation",
 ];
 
-describe("available actions", () => {
+xdescribe("available actions", () => {
   test("empty state", () => {
     const log = [
       {
