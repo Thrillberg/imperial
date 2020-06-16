@@ -1960,38 +1960,228 @@ describe("Schnelleinsteig", () => {
           expect(cash).toEqual(9);
         });
 
-        xdescribe("Investor-card holder (Daniel) buys the 4 million bond of GE", () => {
-          test("Investor-card holder has no cash", () => {
+        describe("Investor-card holder (Bert) buys the 6 million bond of RU", () => {
+          test("Investor-card holder has 3 million", () => {
             const log = [
-              ...setupLog,
+              ...secondRoundLog,
               {
                 type: "rondel",
-                payload: { nation: "IT", cost: 0, slot: "investor" },
+                payload: { nation: "AH", cost: 0, slot: "maneuver2" },
+              },
+              {
+                type: "manuever",
+                payload: { origin: "trieste", destination: "ionian sea" },
+              },
+              {
+                type: "manuever",
+                payload: { origin: "lemberg", destination: "romania" },
+              },
+              {
+                type: "manuever",
+                payload: { origin: "budapest", destination: "west balkan" },
+              },
+              {
+                type: "manuever",
+                payload: { origin: "vienna", destination: "tunis" },
+              },
+              {
+                type: "rondel",
+                payload: { nation: "IT", cost: 0, slot: "maneuver2" },
+              },
+              {
+                type: "manuever",
+                payload: {
+                  origin: "naples",
+                  destination: "western mediterranean sea",
+                },
+              },
+              {
+                type: "manuever",
+                payload: { origin: "rome", destination: "spain" },
+              },
+              {
+                type: "rondel",
+                payload: { nation: "FR", cost: 0, slot: "maneuver1" },
+              },
+              {
+                type: "manuever",
+                payload: {
+                  origin: "bordeaux",
+                  destination: "bay of biscay",
+                },
+              },
+              {
+                type: "manuever",
+                payload: {
+                  origin: "paris",
+                  destination: "morocco",
+                },
+              },
+              {
+                type: "rondel",
+                payload: { nation: "GB", cost: 0, slot: "investor" },
               },
               {
                 type: "bondPurchase",
-                payload: { nation: "GE", player: "Daniel", cost: 4 },
+                payload: { nation: "RU", player: "Bert", cost: 6 },
               },
             ];
-            const cash = Imperial.fromLog(log).state.players["Daniel"].cash;
-            expect(cash).toEqual(0);
+            const cash = Imperial.fromLog(log).state.players["Bert"].cash;
+            expect(cash).toEqual(3);
           });
-          test("GE treasury has 4 million", () => {
+
+          test("RU treasury has 6 million", () => {
             const log = [
-              ...setupLog,
+              ...secondRoundLog,
               {
                 type: "rondel",
-                payload: { nation: "IT", cost: 0, slot: "investor" },
+                payload: { nation: "AH", cost: 0, slot: "maneuver2" },
+              },
+              {
+                type: "manuever",
+                payload: { origin: "trieste", destination: "ionian sea" },
+              },
+              {
+                type: "manuever",
+                payload: { origin: "lemberg", destination: "romania" },
+              },
+              {
+                type: "manuever",
+                payload: { origin: "budapest", destination: "west balkan" },
+              },
+              {
+                type: "manuever",
+                payload: { origin: "vienna", destination: "tunis" },
+              },
+              {
+                type: "rondel",
+                payload: { nation: "IT", cost: 0, slot: "maneuver2" },
+              },
+              {
+                type: "manuever",
+                payload: {
+                  origin: "naples",
+                  destination: "western mediterranean sea",
+                },
+              },
+              {
+                type: "manuever",
+                payload: { origin: "rome", destination: "spain" },
+              },
+              {
+                type: "rondel",
+                payload: { nation: "FR", cost: 0, slot: "maneuver1" },
+              },
+              {
+                type: "manuever",
+                payload: {
+                  origin: "bordeaux",
+                  destination: "bay of biscay",
+                },
+              },
+              {
+                type: "manuever",
+                payload: {
+                  origin: "paris",
+                  destination: "morocco",
+                },
+              },
+              {
+                type: "rondel",
+                payload: { nation: "GB", cost: 0, slot: "investor" },
               },
               {
                 type: "bondPurchase",
-                payload: { nation: "GE", player: "Daniel", cost: 4 },
+                payload: { nation: "RU", player: "Bert", cost: 6 },
               },
             ];
-            const treasury = Imperial.fromLog(log).state.nations["GE"].treasury;
-            expect(treasury).toEqual(4);
+            const treasury = Imperial.fromLog(log).state.nations["RU"].treasury;
+            expect(treasury).toEqual(6);
           });
         });
+      });
+    });
+
+    describe("5. GE does taxation", () => {
+      test("GE moves to the taxation slot", () => {
+        const log = [
+          ...secondRoundLog,
+          {
+            type: "rondel",
+            payload: { nation: "AH", cost: 0, slot: "maneuver2" },
+          },
+          {
+            type: "manuever",
+            payload: { origin: "trieste", destination: "ionian sea" },
+          },
+          {
+            type: "manuever",
+            payload: { origin: "lemberg", destination: "romania" },
+          },
+          {
+            type: "manuever",
+            payload: { origin: "budapest", destination: "west balkan" },
+          },
+          {
+            type: "manuever",
+            payload: { origin: "vienna", destination: "tunis" },
+          },
+          {
+            type: "rondel",
+            payload: { nation: "IT", cost: 0, slot: "maneuver2" },
+          },
+          {
+            type: "manuever",
+            payload: {
+              origin: "naples",
+              destination: "western mediterranean sea",
+            },
+          },
+          {
+            type: "manuever",
+            payload: { origin: "rome", destination: "spain" },
+          },
+          {
+            type: "rondel",
+            payload: { nation: "FR", cost: 0, slot: "maneuver1" },
+          },
+          {
+            type: "manuever",
+            payload: {
+              origin: "bordeaux",
+              destination: "bay of biscay",
+            },
+          },
+          {
+            type: "manuever",
+            payload: {
+              origin: "paris",
+              destination: "morocco",
+            },
+          },
+          {
+            type: "rondel",
+            payload: { nation: "GB", cost: 0, slot: "investor" },
+          },
+          {
+            type: "bondPurchase",
+            payload: { nation: "RU", player: "Bert", cost: 6 },
+          },
+          {
+            type: "rondel",
+            payload: { nation: "GE", cost: 0, slot: "taxation" },
+          },
+        ];
+        const actions = Imperial.fromLog(log).state.availableActions;
+        const expected = rondelSlots.map((slot) => ({
+          type: "rondel",
+          payload: { nation: "RU", cost: 0, slot },
+        }));
+        expect(actions).toEqual(new Set(expected));
+      });
+
+      describe("consequences", () => {
+        test("", () => {});
       });
     });
   });
