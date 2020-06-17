@@ -154,6 +154,79 @@ const secondRoundLog = [
   { type: "import", payload: { province: "moscow" } },
 ];
 
+const thirdRoundLog = [
+  ...secondRoundLog,
+  {
+    type: "rondel",
+    payload: { nation: "AH", cost: 0, slot: "maneuver2" },
+  },
+  {
+    type: "maneuver",
+    payload: { origin: "trieste", destination: "ionian sea" },
+  },
+  {
+    type: "maneuver",
+    payload: { origin: "lemberg", destination: "romania" },
+  },
+  {
+    type: "maneuver",
+    payload: { origin: "budapest", destination: "west balkan" },
+  },
+  {
+    type: "maneuver",
+    payload: { origin: "vienna", destination: "tunis" },
+  },
+  {
+    type: "rondel",
+    payload: { nation: "IT", cost: 0, slot: "maneuver2" },
+  },
+  {
+    type: "maneuver",
+    payload: {
+      origin: "naples",
+      destination: "western mediterranean sea",
+    },
+  },
+  {
+    type: "maneuver",
+    payload: { origin: "rome", destination: "spain" },
+  },
+  {
+    type: "rondel",
+    payload: { nation: "FR", cost: 0, slot: "maneuver1" },
+  },
+  {
+    type: "maneuver",
+    payload: {
+      origin: "bordeaux",
+      destination: "bay of biscay",
+    },
+  },
+  {
+    type: "maneuver",
+    payload: {
+      origin: "paris",
+      destination: "morocco",
+    },
+  },
+  {
+    type: "rondel",
+    payload: { nation: "GB", cost: 0, slot: "investor" },
+  },
+  {
+    type: "bondPurchase",
+    payload: { nation: "RU", player: "Bert", cost: 6 },
+  },
+  {
+    type: "rondel",
+    payload: { nation: "GE", cost: 0, slot: "taxation" },
+  },
+  {
+    type: "rondel",
+    payload: { nation: "RU", cost: 0, slot: "production2" },
+  },
+];
+
 describe("Schnelleinsteig", () => {
   describe("setup for four players", () => {
     test("All players receive 13 million", () => {
@@ -2546,6 +2619,78 @@ describe("Schnelleinsteig", () => {
           .unitCount;
         expect(odessaUnitCount).toEqual(1);
         expect(moscowUnitCount).toEqual(3);
+      });
+    });
+  });
+
+  describe("fourth round", () => {
+    describe("1. AH does taxation", () => {
+      test("AH moves to the taxation slot", () => {
+        const log = [
+          ...thirdRoundLog,
+          {
+            type: "rondel",
+            payload: { nation: "AH", cost: 0, slot: "taxation" },
+          },
+        ];
+        const actions = Imperial.fromLog(log).state.availableActions;
+        const expected = rondelSlots.map((slot) => ({
+          type: "rondel",
+          payload: { nation: "IT", cost: 0, slot },
+        }));
+        expect(actions).toEqual(new Set(expected));
+      });
+
+      describe("consequences", () => {
+        test("AH has 4 million in its treasury", () => {
+          const log = [
+            ...thirdRoundLog,
+            {
+              type: "rondel",
+              payload: { nation: "AH", cost: 0, slot: "taxation" },
+            },
+          ];
+          const treasury = Imperial.fromLog(log).state.nations["AH"].treasury;
+          expect(treasury).toEqual(4);
+        });
+
+        test("AH moves up three field on tax chart", () => {
+          const log = [
+            ...thirdRoundLog,
+            {
+              type: "rondel",
+              payload: { nation: "AH", cost: 0, slot: "taxation" },
+            },
+          ];
+          const taxChartPosition = Imperial.fromLog(log).state.nations["AH"]
+            .taxChartPosition;
+          expect(taxChartPosition).toEqual("8");
+        });
+
+        test("AH receives 3 power points", () => {
+          const log = [
+            ...thirdRoundLog,
+            {
+              type: "rondel",
+              payload: { nation: "AH", cost: 0, slot: "taxation" },
+            },
+          ];
+          const powerPoints = Imperial.fromLog(log).state.nations["AH"]
+            .powerPoints;
+          expect(powerPoints).toEqual(3);
+        });
+
+        xtest("Claudia has 5 million cash", () => {
+          const log = [
+            ...thirdRoundLog,
+            {
+              type: "rondel",
+              payload: { nation: "AH", cost: 0, slot: "taxation" },
+            },
+          ];
+          const cash = Imperial.fromLog(log).state.players["Claudia"].cash;
+          expect(cash).toEqual(5);
+        });
       });
     });
   });

@@ -248,8 +248,8 @@ class Imperial {
       nations[nation] = {
         controller: this.getController(nation, this.log),
         treasury: this.getTreasury(nation, this.log),
-        taxChartPosition: "6",
-        powerPoints: 1,
+        taxChartPosition: this.getTaxChartPosition(nation),
+        powerPoints: this.getPowerPoints(nation),
       };
     });
     return nations;
@@ -360,6 +360,28 @@ class Imperial {
     unitCount += productionCount;
 
     return unitCount;
+  }
+
+  getTaxChartPosition(nation) {
+    const factoryCount =
+      this.log.filter(
+        (action) =>
+          action.type === "buildFactory" &&
+          this.homeProvinces(nation).includes(action.payload.province)
+      ).length + 2;
+    const flagCount = [
+      "romania",
+      "west balkan",
+      "ionian sea",
+      "tunis",
+      "norway",
+      "north sea",
+    ].filter((province) => this.getFlag(province) === nation).length;
+    return (factoryCount * 2 + flagCount).toString();
+  }
+
+  getPowerPoints(nation) {
+    return parseInt(this.getTaxChartPosition(nation)) - 5;
   }
 
   shouldReturnRondelActions(lastMove) {
