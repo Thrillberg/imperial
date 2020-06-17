@@ -37,20 +37,20 @@ class Imperial {
           let parisActions = [];
           FRLandDestinations.map((province) => {
             parisActions.push({
-              type: "manuever",
+              type: "maneuver",
               payload: { origin: "paris", destination: province },
             });
           });
           return [
             {
-              type: "manuever",
+              type: "maneuver",
               payload: {
                 origin: "bordeaux",
                 destination: "bay of biscay",
               },
             },
             {
-              type: "manuever",
+              type: "maneuver",
               payload: {
                 origin: "marseille",
                 destination: "western mediterranean sea",
@@ -61,70 +61,70 @@ class Imperial {
         case "GB":
           return [
             {
-              type: "manuever",
+              type: "maneuver",
               payload: { origin: "liverpool", destination: "north atlantic" },
             },
             {
-              type: "manuever",
+              type: "maneuver",
               payload: { origin: "london", destination: "english channel" },
             },
           ];
         case "GE":
           return [
             {
-              type: "manuever",
+              type: "maneuver",
               payload: { origin: "hamburg", destination: "north sea" },
             },
             {
-              type: "manuever",
+              type: "maneuver",
               payload: { origin: "berlin", destination: "danzig" },
             },
             {
-              type: "manuever",
+              type: "maneuver",
               payload: { origin: "berlin", destination: "prague" },
             },
             {
-              type: "manuever",
+              type: "maneuver",
               payload: { origin: "berlin", destination: "munich" },
             },
             {
-              type: "manuever",
+              type: "maneuver",
               payload: { origin: "berlin", destination: "cologne" },
             },
             {
-              type: "manuever",
+              type: "maneuver",
               payload: { origin: "berlin", destination: "hamburg" },
             },
             {
-              type: "manuever",
+              type: "maneuver",
               payload: { origin: "berlin", destination: "dijon" },
             },
             {
-              type: "manuever",
+              type: "maneuver",
               payload: { origin: "berlin", destination: "belgium" },
             },
             {
-              type: "manuever",
+              type: "maneuver",
               payload: { origin: "berlin", destination: "holland" },
             },
             {
-              type: "manuever",
+              type: "maneuver",
               payload: { origin: "berlin", destination: "denmark" },
             },
             {
-              type: "manuever",
+              type: "maneuver",
               payload: { origin: "berlin", destination: "london" },
             },
             {
-              type: "manuever",
+              type: "maneuver",
               payload: { origin: "berlin", destination: "sheffield" },
             },
             {
-              type: "manuever",
+              type: "maneuver",
               payload: { origin: "berlin", destination: "edinburgh" },
             },
             {
-              type: "manuever",
+              type: "maneuver",
               payload: { origin: "berlin", destination: "norway" },
             },
           ];
@@ -153,21 +153,21 @@ class Imperial {
           let viennaActions = [];
           AHLandDestinations.map((province) => {
             lembergActions.push({
-              type: "manuever",
+              type: "maneuver",
               payload: { origin: "trieste", destination: province },
             });
             budapestActions.push({
-              type: "manuever",
+              type: "maneuver",
               payload: { origin: "budapest", destination: province },
             });
             viennaActions.push({
-              type: "manuever",
+              type: "maneuver",
               payload: { origin: "vienna", destination: province },
             });
           });
           return [
             {
-              type: "manuever",
+              type: "maneuver",
               payload: { origin: "trieste", destination: "ionian sea" },
             },
             ...lembergActions,
@@ -190,13 +190,13 @@ class Imperial {
           let romeActions = [];
           ITLandDestinations.map((province) => {
             romeActions.push({
-              type: "manuever",
+              type: "maneuver",
               payload: { origin: "rome", destination: province },
             });
           });
           return [
             {
-              type: "manuever",
+              type: "maneuver",
               payload: {
                 origin: "naples",
                 destination: "western mediterranean sea",
@@ -249,6 +249,7 @@ class Imperial {
         controller: this.getController(nation, this.log),
         treasury: this.getTreasury(nation, this.log),
         taxChartPosition: "6",
+        powerPoints: 1,
       };
     });
     return nations;
@@ -287,6 +288,7 @@ class Imperial {
       "north atlantic",
       "north sea",
       "norway",
+      "odessa",
       "paris",
       "romania",
       "rome",
@@ -306,70 +308,58 @@ class Imperial {
   }
 
   getFlag(province) {
-    const maneuverIndices = this.log.map((action, index) => {
-      if (
-        action.type === "maneuver" &&
-        action.payload.destination === province
-      ) {
-        return {
-          logIndex: index,
-        };
-      }
-    });
-    const lastManeuverIndex = maneuverIndices[maneuverIndices.length - 1];
-    let reversedLog = this.log.slice(0, lastManeuverIndex).reverse();
-    const fightsCount = this.log.filter((action) => {
-      return action.type === "fight" && action.payload.province === province;
-    }).length;
-    reversedLog = reversedLog.slice(0, reversedLog.length - 1);
-    if (fightsCount === 1) {
-      reversedLog.splice(
-        reversedLog.findIndex((action) => {
-          return (
+    const actionsWithIndex = this.log.map((action, index) => ({
+      ...action,
+      index,
+    }));
+    const maneuverActions = actionsWithIndex.filter(
+      (action, index) =>
+        action.type === "maneuver" && action.payload.destination === province
+    );
+    if (maneuverActions.length > 0) {
+      return this.log
+        .slice(0, maneuverActions[0].index)
+        .reverse()
+        .find(
+          (action) =>
             action.type === "rondel" &&
             (action.payload.slot === "maneuver1" ||
               action.payload.slot === "maneuver2")
-          );
-        }),
-        1
-      );
-    }
-    const lastManeuverAction = reversedLog.find((action) => {
-      return (
-        action.type === "rondel" &&
-        (action.payload.slot === "maneuver1" ||
-          action.payload.slot === "maneuver2")
-      );
-    });
-    if (!!lastManeuverAction) {
-      return lastManeuverAction.payload.nation;
+        ).payload.nation;
     }
   }
 
   getUnitCount(province) {
+    let unitCount = 0;
+
     const importsCount = this.log.filter((action) => {
       return action.type === "import" && action.payload.province === province;
     }).length;
+    unitCount += importsCount;
 
-    const maneuverCount = this.log.filter((action) => {
-      return (
+    const maneuverCount = this.log.filter(
+      (action) =>
         action.type === "maneuver" && action.payload.destination === province
+    ).length;
+    unitCount += maneuverCount;
+
+    const fightCount = this.log.filter(
+      (action) =>
+        action.type === "fight" && action.payload.province === province
+    ).length;
+    unitCount -= fightCount * 2;
+
+    const productionCount = this.log.filter((action) => {
+      return (
+        action.type === "rondel" &&
+        (action.payload.slot === "production1" ||
+          action.payload.slot === "production2") &&
+        this.homeProvinces(action.payload.nation).includes(province)
       );
     }).length;
+    unitCount += productionCount;
 
-    const fightCount = this.log.filter((action) => {
-      return action.type === "fight" && action.payload.province === province;
-    }).length;
-
-    if (importsCount === 0) {
-      if (maneuverCount === 0) {
-        return 1;
-      } else {
-        return maneuverCount - fightCount * 2;
-      }
-    } else {
-      return importsCount;
-    }
+    return unitCount;
   }
 
   shouldReturnRondelActions(lastMove) {
@@ -634,6 +624,11 @@ class Imperial {
       }
     });
 
+    const taxationActionsCount = this.log.filter(
+      (action) => action.type === "rondel" && action.payload.slot === "taxation"
+    ).length;
+    cash += taxationActionsCount;
+
     return cash;
   }
 
@@ -709,6 +704,22 @@ class Imperial {
 
   unitCount(nation) {
     return 2;
+  }
+
+  homeProvinces(nation) {
+    if (nation === "AH") {
+      return ["vienna", "budapest", "prague", "lemberg", "trieste"];
+    } else if (nation === "IT") {
+      return ["rome", "naples"];
+    } else if (nation === "FR") {
+      return ["paris", "bordeaux", "marseille"];
+    } else if (nation === "GB") {
+      return ["london", "liverpool"];
+    } else if (nation === "GE") {
+      return ["berlin", "hamburg"];
+    } else if (nation === "RU") {
+      return ["moscow", "st. petersburg", "odessa", "kiev", "warsaw"];
+    }
   }
 }
 

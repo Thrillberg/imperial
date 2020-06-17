@@ -126,11 +126,11 @@ const secondRoundLog = [
     payload: { nation: "GB", cost: 0, slot: "maneuver1" },
   },
   {
-    type: "manuever",
+    type: "maneuver",
     payload: { origin: "liverpool", destination: "north atlantic" },
   },
   {
-    type: "manuever",
+    type: "maneuver",
     payload: { origin: "london", destination: "english channel" },
   },
   {
@@ -138,11 +138,11 @@ const secondRoundLog = [
     payload: { nation: "GE", cost: 0, slot: "maneuver2" },
   },
   {
-    type: "manuever",
+    type: "maneuver",
     payload: { origin: "hamburg", destination: "north sea" },
   },
   {
-    type: "manuever",
+    type: "maneuver",
     payload: { origin: "berlin", destination: "norway" },
   },
   {
@@ -892,11 +892,11 @@ describe("Schnelleinsteig", () => {
         ];
         const availableActions = [
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "liverpool", destination: "north atlantic" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "london", destination: "english channel" },
           },
         ];
@@ -925,11 +925,11 @@ describe("Schnelleinsteig", () => {
             payload: { nation: "GB", cost: 0, slot: "maneuver1" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "liverpool", destination: "north atlantic" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "london", destination: "english channel" },
           },
         ];
@@ -965,11 +965,11 @@ describe("Schnelleinsteig", () => {
             payload: { nation: "GB", cost: 0, slot: "maneuver1" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "liverpool", destination: "north atlantic" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "london", destination: "english channel" },
           },
           {
@@ -979,59 +979,59 @@ describe("Schnelleinsteig", () => {
         ];
         const availableActions = [
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "hamburg", destination: "north sea" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "berlin", destination: "danzig" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "berlin", destination: "prague" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "berlin", destination: "munich" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "berlin", destination: "cologne" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "berlin", destination: "hamburg" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "berlin", destination: "dijon" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "berlin", destination: "belgium" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "berlin", destination: "holland" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "berlin", destination: "denmark" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "berlin", destination: "london" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "berlin", destination: "sheffield" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "berlin", destination: "edinburgh" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "berlin", destination: "norway" },
           },
         ];
@@ -1060,11 +1060,11 @@ describe("Schnelleinsteig", () => {
             payload: { nation: "GB", cost: 0, slot: "maneuver1" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "liverpool", destination: "north atlantic" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "london", destination: "english channel" },
           },
           {
@@ -1072,11 +1072,11 @@ describe("Schnelleinsteig", () => {
             payload: { nation: "GE", cost: 0, slot: "maneuver2" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "hamburg", destination: "north sea" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "berlin", destination: "norway" },
           },
         ];
@@ -1109,11 +1109,11 @@ describe("Schnelleinsteig", () => {
             payload: { nation: "GB", cost: 0, slot: "maneuver1" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "liverpool", destination: "north atlantic" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "london", destination: "english channel" },
           },
           {
@@ -1121,11 +1121,11 @@ describe("Schnelleinsteig", () => {
             payload: { nation: "GE", cost: 0, slot: "maneuver2" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "hamburg", destination: "north sea" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "berlin", destination: "norway" },
           },
           {
@@ -1168,11 +1168,11 @@ describe("Schnelleinsteig", () => {
               payload: { nation: "GB", cost: 0, slot: "maneuver1" },
             },
             {
-              type: "manuever",
+              type: "maneuver",
               payload: { origin: "liverpool", destination: "north atlantic" },
             },
             {
-              type: "manuever",
+              type: "maneuver",
               payload: { origin: "london", destination: "english channel" },
             },
             {
@@ -1180,11 +1180,11 @@ describe("Schnelleinsteig", () => {
               payload: { nation: "GE", cost: 0, slot: "maneuver2" },
             },
             {
-              type: "manuever",
+              type: "maneuver",
               payload: { origin: "hamburg", destination: "north sea" },
             },
             {
-              type: "manuever",
+              type: "maneuver",
               payload: { origin: "berlin", destination: "norway" },
             },
             {
@@ -1256,22 +1256,22 @@ describe("Schnelleinsteig", () => {
         let viennaActions = [];
         landDestinations.map((province) => {
           lembergActions.push({
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "trieste", destination: province },
           });
           budapestActions.push({
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "budapest", destination: province },
           });
           viennaActions.push({
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "vienna", destination: province },
           });
         });
 
         const availableActions = [
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "trieste", destination: "ionian sea" },
           },
           ...lembergActions,
@@ -1291,19 +1291,19 @@ describe("Schnelleinsteig", () => {
             payload: { nation: "AH", cost: 0, slot: "maneuver2" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "trieste", destination: "ionian sea" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "lemberg", destination: "romania" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "budapest", destination: "west balkan" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "vienna", destination: "tunis" },
           },
         ];
@@ -1333,19 +1333,19 @@ describe("Schnelleinsteig", () => {
             payload: { nation: "AH", cost: 0, slot: "maneuver2" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "trieste", destination: "ionian sea" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "lemberg", destination: "romania" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "budapest", destination: "west balkan" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "vienna", destination: "tunis" },
           },
           {
@@ -1368,14 +1368,14 @@ describe("Schnelleinsteig", () => {
         let romeActions = [];
         landDestinations.map((province) => {
           romeActions.push({
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "rome", destination: province },
           });
         });
 
         const availableActions = [
           {
-            type: "manuever",
+            type: "maneuver",
             payload: {
               origin: "naples",
               destination: "western mediterranean sea",
@@ -1396,19 +1396,19 @@ describe("Schnelleinsteig", () => {
             payload: { nation: "AH", cost: 0, slot: "maneuver2" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "trieste", destination: "ionian sea" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "lemberg", destination: "romania" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "budapest", destination: "west balkan" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "vienna", destination: "tunis" },
           },
           {
@@ -1416,14 +1416,14 @@ describe("Schnelleinsteig", () => {
             payload: { nation: "IT", cost: 0, slot: "maneuver2" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: {
               origin: "naples",
               destination: "western mediterranean sea",
             },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "rome", destination: "spain" },
           },
         ];
@@ -1445,19 +1445,19 @@ describe("Schnelleinsteig", () => {
             payload: { nation: "AH", cost: 0, slot: "maneuver2" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "trieste", destination: "ionian sea" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "lemberg", destination: "romania" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "budapest", destination: "west balkan" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "vienna", destination: "tunis" },
           },
           {
@@ -1465,14 +1465,14 @@ describe("Schnelleinsteig", () => {
             payload: { nation: "IT", cost: 0, slot: "maneuver2" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: {
               origin: "naples",
               destination: "western mediterranean sea",
             },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "rome", destination: "spain" },
           },
           {
@@ -1493,21 +1493,21 @@ describe("Schnelleinsteig", () => {
         let parisActions = [];
         landDestinations.map((province) => {
           parisActions.push({
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "paris", destination: province },
           });
         });
 
         const availableActions = [
           {
-            type: "manuever",
+            type: "maneuver",
             payload: {
               origin: "bordeaux",
               destination: "bay of biscay",
             },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: {
               origin: "marseille",
               destination: "western mediterranean sea",
@@ -1528,19 +1528,19 @@ describe("Schnelleinsteig", () => {
             payload: { nation: "AH", cost: 0, slot: "maneuver2" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "trieste", destination: "ionian sea" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "lemberg", destination: "romania" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "budapest", destination: "west balkan" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "vienna", destination: "tunis" },
           },
           {
@@ -1548,14 +1548,14 @@ describe("Schnelleinsteig", () => {
             payload: { nation: "IT", cost: 0, slot: "maneuver2" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: {
               origin: "naples",
               destination: "western mediterranean sea",
             },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "rome", destination: "spain" },
           },
           {
@@ -1613,35 +1613,20 @@ describe("Schnelleinsteig", () => {
             payload: { nation: "AH", cost: 0, slot: "maneuver2" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "trieste", destination: "ionian sea" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "lemberg", destination: "romania" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "budapest", destination: "west balkan" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "vienna", destination: "tunis" },
-          },
-          {
-            type: "rondel",
-            payload: { nation: "IT", cost: 0, slot: "maneuver2" },
-          },
-          {
-            type: "manuever",
-            payload: {
-              origin: "naples",
-              destination: "western mediterranean sea",
-            },
-          },
-          {
-            type: "manuever",
-            payload: { origin: "rome", destination: "spain" },
           },
           {
             type: "rondel",
@@ -1653,6 +1638,10 @@ describe("Schnelleinsteig", () => {
               origin: "naples",
               destination: "western mediterranean sea",
             },
+          },
+          {
+            type: "maneuver",
+            payload: { origin: "rome", destination: "spain" },
           },
           {
             type: "rondel",
@@ -1693,19 +1682,19 @@ describe("Schnelleinsteig", () => {
             payload: { nation: "AH", cost: 0, slot: "maneuver2" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "trieste", destination: "ionian sea" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "lemberg", destination: "romania" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "budapest", destination: "west balkan" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "vienna", destination: "tunis" },
           },
           {
@@ -1713,14 +1702,14 @@ describe("Schnelleinsteig", () => {
             payload: { nation: "IT", cost: 0, slot: "maneuver2" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: {
               origin: "naples",
               destination: "western mediterranean sea",
             },
           },
           {
-            type: "manuever",
+            type: "manuver",
             payload: { origin: "rome", destination: "spain" },
           },
           {
@@ -1728,14 +1717,14 @@ describe("Schnelleinsteig", () => {
             payload: { nation: "FR", cost: 0, slot: "maneuver1" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: {
               origin: "bordeaux",
               destination: "bay of biscay",
             },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: {
               origin: "paris",
               destination: "morocco",
@@ -1766,19 +1755,19 @@ describe("Schnelleinsteig", () => {
             payload: { nation: "AH", cost: 0, slot: "maneuver2" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "trieste", destination: "ionian sea" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "lemberg", destination: "romania" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "budapest", destination: "west balkan" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "vienna", destination: "tunis" },
           },
           {
@@ -1786,14 +1775,14 @@ describe("Schnelleinsteig", () => {
             payload: { nation: "IT", cost: 0, slot: "maneuver2" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: {
               origin: "naples",
               destination: "western mediterranean sea",
             },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "rome", destination: "spain" },
           },
           {
@@ -1801,14 +1790,14 @@ describe("Schnelleinsteig", () => {
             payload: { nation: "FR", cost: 0, slot: "maneuver1" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: {
               origin: "bordeaux",
               destination: "bay of biscay",
             },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: {
               origin: "paris",
               destination: "morocco",
@@ -1836,19 +1825,19 @@ describe("Schnelleinsteig", () => {
               payload: { nation: "AH", cost: 0, slot: "maneuver2" },
             },
             {
-              type: "manuever",
+              type: "maneuver",
               payload: { origin: "trieste", destination: "ionian sea" },
             },
             {
-              type: "manuever",
+              type: "maneuver",
               payload: { origin: "lemberg", destination: "romania" },
             },
             {
-              type: "manuever",
+              type: "maneuver",
               payload: { origin: "budapest", destination: "west balkan" },
             },
             {
-              type: "manuever",
+              type: "maneuver",
               payload: { origin: "vienna", destination: "tunis" },
             },
             {
@@ -1856,14 +1845,14 @@ describe("Schnelleinsteig", () => {
               payload: { nation: "IT", cost: 0, slot: "maneuver2" },
             },
             {
-              type: "manuever",
+              type: "maneuver",
               payload: {
                 origin: "naples",
                 destination: "western mediterranean sea",
               },
             },
             {
-              type: "manuever",
+              type: "maneuver",
               payload: { origin: "rome", destination: "spain" },
             },
             {
@@ -1871,14 +1860,14 @@ describe("Schnelleinsteig", () => {
               payload: { nation: "FR", cost: 0, slot: "maneuver1" },
             },
             {
-              type: "manuever",
+              type: "maneuver",
               payload: {
                 origin: "bordeaux",
                 destination: "bay of biscay",
               },
             },
             {
-              type: "manuever",
+              type: "maneuver",
               payload: {
                 origin: "paris",
                 destination: "morocco",
@@ -1901,19 +1890,19 @@ describe("Schnelleinsteig", () => {
               payload: { nation: "AH", cost: 0, slot: "maneuver2" },
             },
             {
-              type: "manuever",
+              type: "maneuver",
               payload: { origin: "trieste", destination: "ionian sea" },
             },
             {
-              type: "manuever",
+              type: "maneuver",
               payload: { origin: "lemberg", destination: "romania" },
             },
             {
-              type: "manuever",
+              type: "maneuver",
               payload: { origin: "budapest", destination: "west balkan" },
             },
             {
-              type: "manuever",
+              type: "maneuver",
               payload: { origin: "vienna", destination: "tunis" },
             },
             {
@@ -1921,14 +1910,14 @@ describe("Schnelleinsteig", () => {
               payload: { nation: "IT", cost: 0, slot: "maneuver2" },
             },
             {
-              type: "manuever",
+              type: "maneuver",
               payload: {
                 origin: "naples",
                 destination: "western mediterranean sea",
               },
             },
             {
-              type: "manuever",
+              type: "maneuver",
               payload: { origin: "rome", destination: "spain" },
             },
             {
@@ -1936,14 +1925,14 @@ describe("Schnelleinsteig", () => {
               payload: { nation: "FR", cost: 0, slot: "maneuver1" },
             },
             {
-              type: "manuever",
+              type: "maneuver",
               payload: {
                 origin: "bordeaux",
                 destination: "bay of biscay",
               },
             },
             {
-              type: "manuever",
+              type: "maneuver",
               payload: {
                 origin: "paris",
                 destination: "morocco",
@@ -1969,19 +1958,19 @@ describe("Schnelleinsteig", () => {
                 payload: { nation: "AH", cost: 0, slot: "maneuver2" },
               },
               {
-                type: "manuever",
+                type: "maneuver",
                 payload: { origin: "trieste", destination: "ionian sea" },
               },
               {
-                type: "manuever",
+                type: "maneuver",
                 payload: { origin: "lemberg", destination: "romania" },
               },
               {
-                type: "manuever",
+                type: "maneuver",
                 payload: { origin: "budapest", destination: "west balkan" },
               },
               {
-                type: "manuever",
+                type: "maneuver",
                 payload: { origin: "vienna", destination: "tunis" },
               },
               {
@@ -1989,14 +1978,14 @@ describe("Schnelleinsteig", () => {
                 payload: { nation: "IT", cost: 0, slot: "maneuver2" },
               },
               {
-                type: "manuever",
+                type: "maneuver",
                 payload: {
                   origin: "naples",
                   destination: "western mediterranean sea",
                 },
               },
               {
-                type: "manuever",
+                type: "maneuver",
                 payload: { origin: "rome", destination: "spain" },
               },
               {
@@ -2004,14 +1993,14 @@ describe("Schnelleinsteig", () => {
                 payload: { nation: "FR", cost: 0, slot: "maneuver1" },
               },
               {
-                type: "manuever",
+                type: "maneuver",
                 payload: {
                   origin: "bordeaux",
                   destination: "bay of biscay",
                 },
               },
               {
-                type: "manuever",
+                type: "maneuver",
                 payload: {
                   origin: "paris",
                   destination: "morocco",
@@ -2038,19 +2027,19 @@ describe("Schnelleinsteig", () => {
                 payload: { nation: "AH", cost: 0, slot: "maneuver2" },
               },
               {
-                type: "manuever",
+                type: "maneuver",
                 payload: { origin: "trieste", destination: "ionian sea" },
               },
               {
-                type: "manuever",
+                type: "maneuver",
                 payload: { origin: "lemberg", destination: "romania" },
               },
               {
-                type: "manuever",
+                type: "maneuver",
                 payload: { origin: "budapest", destination: "west balkan" },
               },
               {
-                type: "manuever",
+                type: "maneuver",
                 payload: { origin: "vienna", destination: "tunis" },
               },
               {
@@ -2058,14 +2047,14 @@ describe("Schnelleinsteig", () => {
                 payload: { nation: "IT", cost: 0, slot: "maneuver2" },
               },
               {
-                type: "manuever",
+                type: "maneuver",
                 payload: {
                   origin: "naples",
                   destination: "western mediterranean sea",
                 },
               },
               {
-                type: "manuever",
+                type: "maneuver",
                 payload: { origin: "rome", destination: "spain" },
               },
               {
@@ -2073,14 +2062,14 @@ describe("Schnelleinsteig", () => {
                 payload: { nation: "FR", cost: 0, slot: "maneuver1" },
               },
               {
-                type: "manuever",
+                type: "maneuver",
                 payload: {
                   origin: "bordeaux",
                   destination: "bay of biscay",
                 },
               },
               {
-                type: "manuever",
+                type: "maneuver",
                 payload: {
                   origin: "paris",
                   destination: "morocco",
@@ -2111,19 +2100,19 @@ describe("Schnelleinsteig", () => {
             payload: { nation: "AH", cost: 0, slot: "maneuver2" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "trieste", destination: "ionian sea" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "lemberg", destination: "romania" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "budapest", destination: "west balkan" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "vienna", destination: "tunis" },
           },
           {
@@ -2131,14 +2120,14 @@ describe("Schnelleinsteig", () => {
             payload: { nation: "IT", cost: 0, slot: "maneuver2" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: {
               origin: "naples",
               destination: "western mediterranean sea",
             },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: { origin: "rome", destination: "spain" },
           },
           {
@@ -2146,14 +2135,14 @@ describe("Schnelleinsteig", () => {
             payload: { nation: "FR", cost: 0, slot: "maneuver1" },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: {
               origin: "bordeaux",
               destination: "bay of biscay",
             },
           },
           {
-            type: "manuever",
+            type: "maneuver",
             payload: {
               origin: "paris",
               destination: "morocco",
@@ -2189,19 +2178,19 @@ describe("Schnelleinsteig", () => {
               payload: { nation: "AH", cost: 0, slot: "maneuver2" },
             },
             {
-              type: "manuever",
+              type: "maneuver",
               payload: { origin: "trieste", destination: "ionian sea" },
             },
             {
-              type: "manuever",
+              type: "maneuver",
               payload: { origin: "lemberg", destination: "romania" },
             },
             {
-              type: "manuever",
+              type: "maneuver",
               payload: { origin: "budapest", destination: "west balkan" },
             },
             {
-              type: "manuever",
+              type: "maneuver",
               payload: { origin: "vienna", destination: "tunis" },
             },
             {
@@ -2209,14 +2198,14 @@ describe("Schnelleinsteig", () => {
               payload: { nation: "IT", cost: 0, slot: "maneuver2" },
             },
             {
-              type: "manuever",
+              type: "maneuver",
               payload: {
                 origin: "naples",
                 destination: "western mediterranean sea",
               },
             },
             {
-              type: "manuever",
+              type: "maneuver",
               payload: { origin: "rome", destination: "spain" },
             },
             {
@@ -2224,14 +2213,14 @@ describe("Schnelleinsteig", () => {
               payload: { nation: "FR", cost: 0, slot: "maneuver1" },
             },
             {
-              type: "manuever",
+              type: "maneuver",
               payload: {
                 origin: "bordeaux",
                 destination: "bay of biscay",
               },
             },
             {
-              type: "manuever",
+              type: "maneuver",
               payload: {
                 origin: "paris",
                 destination: "morocco",
@@ -2262,19 +2251,19 @@ describe("Schnelleinsteig", () => {
               payload: { nation: "AH", cost: 0, slot: "maneuver2" },
             },
             {
-              type: "manuever",
+              type: "maneuver",
               payload: { origin: "trieste", destination: "ionian sea" },
             },
             {
-              type: "manuever",
+              type: "maneuver",
               payload: { origin: "lemberg", destination: "romania" },
             },
             {
-              type: "manuever",
+              type: "maneuver",
               payload: { origin: "budapest", destination: "west balkan" },
             },
             {
-              type: "manuever",
+              type: "maneuver",
               payload: { origin: "vienna", destination: "tunis" },
             },
             {
@@ -2282,14 +2271,14 @@ describe("Schnelleinsteig", () => {
               payload: { nation: "IT", cost: 0, slot: "maneuver2" },
             },
             {
-              type: "manuever",
+              type: "maneuver",
               payload: {
                 origin: "naples",
                 destination: "western mediterranean sea",
               },
             },
             {
-              type: "manuever",
+              type: "maneuver",
               payload: { origin: "rome", destination: "spain" },
             },
             {
@@ -2297,14 +2286,14 @@ describe("Schnelleinsteig", () => {
               payload: { nation: "FR", cost: 0, slot: "maneuver1" },
             },
             {
-              type: "manuever",
+              type: "maneuver",
               payload: {
                 origin: "bordeaux",
                 destination: "bay of biscay",
               },
             },
             {
-              type: "manuever",
+              type: "maneuver",
               payload: {
                 origin: "paris",
                 destination: "morocco",
@@ -2328,7 +2317,7 @@ describe("Schnelleinsteig", () => {
           expect(taxChartPosition).toEqual("6");
         });
 
-        xtest("Daniel has 5 million cash", () => {
+        test("GE receives 1 power point", () => {
           const log = [
             ...secondRoundLog,
             {
@@ -2336,19 +2325,19 @@ describe("Schnelleinsteig", () => {
               payload: { nation: "AH", cost: 0, slot: "maneuver2" },
             },
             {
-              type: "manuever",
+              type: "maneuver",
               payload: { origin: "trieste", destination: "ionian sea" },
             },
             {
-              type: "manuever",
+              type: "maneuver",
               payload: { origin: "lemberg", destination: "romania" },
             },
             {
-              type: "manuever",
+              type: "maneuver",
               payload: { origin: "budapest", destination: "west balkan" },
             },
             {
-              type: "manuever",
+              type: "maneuver",
               payload: { origin: "vienna", destination: "tunis" },
             },
             {
@@ -2356,14 +2345,14 @@ describe("Schnelleinsteig", () => {
               payload: { nation: "IT", cost: 0, slot: "maneuver2" },
             },
             {
-              type: "manuever",
+              type: "maneuver",
               payload: {
                 origin: "naples",
                 destination: "western mediterranean sea",
               },
             },
             {
-              type: "manuever",
+              type: "maneuver",
               payload: { origin: "rome", destination: "spain" },
             },
             {
@@ -2371,14 +2360,14 @@ describe("Schnelleinsteig", () => {
               payload: { nation: "FR", cost: 0, slot: "maneuver1" },
             },
             {
-              type: "manuever",
+              type: "maneuver",
               payload: {
                 origin: "bordeaux",
                 destination: "bay of biscay",
               },
             },
             {
-              type: "manuever",
+              type: "maneuver",
               payload: {
                 origin: "paris",
                 destination: "morocco",
@@ -2397,9 +2386,166 @@ describe("Schnelleinsteig", () => {
               payload: { nation: "GE", cost: 0, slot: "taxation" },
             },
           ];
-          const cash = Imperial.fromLog(log).state.players["Daniel"].cash;
-          expect(cash).toEqual(5);
+          const powerPoints = Imperial.fromLog(log).state.nations["GE"]
+            .powerPoints;
+          expect(powerPoints).toEqual(1);
         });
+
+        test("Anton has 4 million cash", () => {
+          const log = [
+            ...secondRoundLog,
+            {
+              type: "rondel",
+              payload: { nation: "AH", cost: 0, slot: "maneuver2" },
+            },
+            {
+              type: "maneuver",
+              payload: { origin: "trieste", destination: "ionian sea" },
+            },
+            {
+              type: "maneuver",
+              payload: { origin: "lemberg", destination: "romania" },
+            },
+            {
+              type: "maneuver",
+              payload: { origin: "budapest", destination: "west balkan" },
+            },
+            {
+              type: "maneuver",
+              payload: { origin: "vienna", destination: "tunis" },
+            },
+            {
+              type: "rondel",
+              payload: { nation: "IT", cost: 0, slot: "maneuver2" },
+            },
+            {
+              type: "maneuver",
+              payload: {
+                origin: "naples",
+                destination: "western mediterranean sea",
+              },
+            },
+            {
+              type: "maneuver",
+              payload: { origin: "rome", destination: "spain" },
+            },
+            {
+              type: "rondel",
+              payload: { nation: "FR", cost: 0, slot: "maneuver1" },
+            },
+            {
+              type: "maneuver",
+              payload: {
+                origin: "bordeaux",
+                destination: "bay of biscay",
+              },
+            },
+            {
+              type: "maneuver",
+              payload: {
+                origin: "paris",
+                destination: "morocco",
+              },
+            },
+            {
+              type: "rondel",
+              payload: { nation: "GB", cost: 0, slot: "investor" },
+            },
+            {
+              type: "bondPurchase",
+              payload: { nation: "RU", player: "Bert", cost: 6 },
+            },
+            {
+              type: "rondel",
+              payload: { nation: "GE", cost: 0, slot: "taxation" },
+            },
+          ];
+          const cash = Imperial.fromLog(log).state.players["Anton"].cash;
+          expect(cash).toEqual(4);
+        });
+      });
+    });
+
+    describe("6. RU does production2", () => {
+      test("Odessa and Moscow have units", () => {
+        const log = [
+          ...secondRoundLog,
+          {
+            type: "rondel",
+            payload: { nation: "AH", cost: 0, slot: "maneuver2" },
+          },
+          {
+            type: "maneuver",
+            payload: { origin: "trieste", destination: "ionian sea" },
+          },
+          {
+            type: "maneuver",
+            payload: { origin: "lemberg", destination: "romania" },
+          },
+          {
+            type: "maneuver",
+            payload: { origin: "budapest", destination: "west balkan" },
+          },
+          {
+            type: "maneuver",
+            payload: { origin: "vienna", destination: "tunis" },
+          },
+          {
+            type: "rondel",
+            payload: { nation: "IT", cost: 0, slot: "maneuver2" },
+          },
+          {
+            type: "maneuver",
+            payload: {
+              origin: "naples",
+              destination: "western mediterranean sea",
+            },
+          },
+          {
+            type: "maneuver",
+            payload: { origin: "rome", destination: "spain" },
+          },
+          {
+            type: "rondel",
+            payload: { nation: "FR", cost: 0, slot: "maneuver1" },
+          },
+          {
+            type: "maneuver",
+            payload: {
+              origin: "bordeaux",
+              destination: "bay of biscay",
+            },
+          },
+          {
+            type: "maneuver",
+            payload: {
+              origin: "paris",
+              destination: "morocco",
+            },
+          },
+          {
+            type: "rondel",
+            payload: { nation: "GB", cost: 0, slot: "investor" },
+          },
+          {
+            type: "bondPurchase",
+            payload: { nation: "RU", player: "Bert", cost: 6 },
+          },
+          {
+            type: "rondel",
+            payload: { nation: "GE", cost: 0, slot: "taxation" },
+          },
+          {
+            type: "rondel",
+            payload: { nation: "RU", cost: 0, slot: "production2" },
+          },
+        ];
+        const odessaUnitCount = Imperial.fromLog(log).state.provinces["odessa"]
+          .unitCount;
+        const moscowUnitCount = Imperial.fromLog(log).state.provinces["moscow"]
+          .unitCount;
+        expect(odessaUnitCount).toEqual(1);
+        expect(moscowUnitCount).toEqual(3);
       });
     });
   });
