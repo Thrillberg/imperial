@@ -198,6 +198,13 @@ const thirdRoundLog = [
   {
     type: "maneuver",
     payload: {
+      origin: "marseille",
+      destination: "western mediterranean sea",
+    },
+  },
+  {
+    type: "maneuver",
+    payload: {
       origin: "bordeaux",
       destination: "bay of biscay",
     },
@@ -2714,6 +2721,45 @@ describe("Schnelleinsteig", () => {
           .unitCount;
         expect(romeUnitCount).toEqual(1);
         expect(naplesUnitCount).toEqual(1);
+      });
+    });
+
+    describe("3. FR does production2", () => {
+      test("Bordeaux, Marseille and Paris have units", () => {
+        const log = [
+          ...thirdRoundLog,
+          {
+            type: "rondel",
+            payload: { nation: "AH", cost: 0, slot: "taxation" },
+          },
+          {
+            type: "rondel",
+            payload: { nation: "IT", cost: 0, slot: "production1" },
+          },
+          {
+            type: "rondel",
+            payload: { nation: "FR", cost: 0, slot: "production2" },
+          },
+        ];
+
+        const bordeauxUnitCount = Imperial.fromLog(log).state.provinces[
+          "bordeaux"
+        ].unitCount;
+        const marseilleUnitCount = Imperial.fromLog(log).state.provinces[
+          "marseille"
+        ].unitCount;
+        const parisUnitCount = Imperial.fromLog(log).state.provinces["paris"]
+          .unitCount;
+        expect(bordeauxUnitCount).toEqual(1);
+        expect(marseilleUnitCount).toEqual(1);
+        expect(parisUnitCount).toEqual(1);
+      });
+
+      describe("investor card is activated", () => {
+        test("Claudia (investor card owner) has 7 million", () => {});
+        test("Claudia can buy a bond", () => {});
+        test("Claudia buys a 6 million AH bond", () => {});
+        test("Daniel is the investor card owner", () => {});
       });
     });
   });
