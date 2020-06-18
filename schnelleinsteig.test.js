@@ -2680,7 +2680,7 @@ describe("Schnelleinsteig", () => {
           expect(powerPoints).toEqual(3);
         });
 
-        xtest("Claudia has 5 million cash", () => {
+        test("Claudia has 5 million cash", () => {
           const log = [
             ...thirdRoundLog,
             {
@@ -2691,6 +2691,29 @@ describe("Schnelleinsteig", () => {
           const cash = Imperial.fromLog(log).state.players["Claudia"].cash;
           expect(cash).toEqual(5);
         });
+      });
+    });
+
+    describe("2. IT does production1", () => {
+      test("Rome and Naples have units", () => {
+        const log = [
+          ...thirdRoundLog,
+          {
+            type: "rondel",
+            payload: { nation: "AH", cost: 0, slot: "taxation" },
+          },
+          {
+            type: "rondel",
+            payload: { nation: "IT", cost: 0, slot: "production1" },
+          },
+        ];
+
+        const romeUnitCount = Imperial.fromLog(log).state.provinces["rome"]
+          .unitCount;
+        const naplesUnitCount = Imperial.fromLog(log).state.provinces["naples"]
+          .unitCount;
+        expect(romeUnitCount).toEqual(1);
+        expect(naplesUnitCount).toEqual(1);
       });
     });
   });

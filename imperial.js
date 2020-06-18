@@ -343,6 +343,12 @@ class Imperial {
     ).length;
     unitCount += maneuverCount;
 
+    const evacuationCount = this.log.filter(
+      (action) =>
+        action.type === "maneuver" && action.payload.origin === province
+    ).length;
+    unitCount -= evacuationCount;
+
     const fightCount = this.log.filter(
       (action) =>
         action.type === "fight" && action.payload.province === province
@@ -646,16 +652,24 @@ class Imperial {
       }
     });
 
-    const taxationActionsCount = this.log.filter(
-      (action) => action.type === "rondel" && action.payload.slot === "taxation"
-    ).length;
-    cash += taxationActionsCount;
+    const taxationActions = this.log.filter(
+      (action) =>
+        action.type === "rondel" &&
+        action.payload.slot === "taxation" &&
+        player === this.getController(action.payload.nation)
+    );
+    if (taxationActions.length > 0) {
+      const powerPointsCash = this.getPowerPoints(
+        taxationActions[0].payload.nation
+      );
+      cash += powerPointsCash;
+    }
 
     return cash;
   }
 
   getController(nation, log) {
-    const bondPurchases = log.filter((action) => {
+    const bondPurchases = this.log.filter((action) => {
       return action.type === "bondPurchase" && action.payload.nation === nation;
     });
 
