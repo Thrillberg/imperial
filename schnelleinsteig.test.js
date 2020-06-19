@@ -2756,8 +2756,92 @@ describe("Schnelleinsteig", () => {
       });
 
       describe("investor card is activated", () => {
-        test("Claudia (investor card owner) has 7 million", () => {});
-        test("Claudia can buy a bond", () => {});
+        test("Claudia (investor card owner) has 7 million", () => {
+          const log = [
+            ...thirdRoundLog,
+            {
+              type: "rondel",
+              payload: { nation: "AH", cost: 0, slot: "taxation" },
+            },
+            {
+              type: "rondel",
+              payload: { nation: "IT", cost: 0, slot: "production1" },
+            },
+            {
+              type: "rondel",
+              payload: { nation: "FR", cost: 0, slot: "production2" },
+            },
+          ];
+          const cash = Imperial.fromLog(log).state.players["Claudia"].cash;
+          expect(cash).toEqual(7);
+        });
+
+        xtest("Claudia can buy a bond", () => {
+          const log = [
+            ...thirdRoundLog,
+            {
+              type: "rondel",
+              payload: { nation: "AH", cost: 0, slot: "taxation" },
+            },
+            {
+              type: "rondel",
+              payload: { nation: "IT", cost: 0, slot: "production1" },
+            },
+            {
+              type: "rondel",
+              payload: { nation: "FR", cost: 0, slot: "production2" },
+            },
+          ];
+          const expectedActions = [
+            {
+              type: "bondPurchase",
+              payload: { nation: "AH", player: "Claudia", cost: 4 },
+            },
+            {
+              type: "bondPurchase",
+              payload: { nation: "AH", player: "Claudia", cost: 6 },
+            },
+            {
+              type: "bondPurchase",
+              payload: { nation: "IT", player: "Claudia", cost: 2 },
+            },
+            {
+              type: "bondPurchase",
+              payload: { nation: "IT", player: "Claudia", cost: 4 },
+            },
+            {
+              type: "bondPurchase",
+              payload: { nation: "IT", player: "Claudia", cost: 6 },
+            },
+            {
+              type: "bondPurchase",
+              payload: { nation: "FR", player: "Claudia", cost: 4 },
+            },
+            {
+              type: "bondPurchase",
+              payload: { nation: "FR", player: "Claudia", cost: 6 },
+            },
+            {
+              type: "bondPurchase",
+              payload: { nation: "GB", player: "Claudia", cost: 4 },
+            },
+            {
+              type: "bondPurchase",
+              payload: { nation: "GB", player: "Claudia", cost: 6 },
+            },
+            {
+              type: "bondPurchase",
+              payload: { nation: "GE", player: "Claudia", cost: 2 },
+            },
+            {
+              type: "bondPurchase",
+              payload: { nation: "RU", player: "Claudia", cost: 4 },
+            },
+          ];
+          expect(Imperial.fromLog(log).availableActions()).toEqual(
+            expectedActions
+          );
+        });
         test("Claudia buys a 6 million AH bond", () => {});
         test("Daniel is the investor card owner", () => {});
       });

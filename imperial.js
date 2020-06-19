@@ -665,7 +665,27 @@ class Imperial {
       cash += powerPointsCash;
     }
 
+    const postInvestorSlots = ["import", "production2"];
+    const investorSlotSkippedCount = this.log.filter(
+      (action) =>
+        action.type === "rondel" &&
+        postInvestorSlots.includes(action.payload.slot) &&
+        this.previousRondelPosition(action.payload.nation) === "maneuver1"
+    ).length;
+    if (investorSlotSkippedCount === 1) {
+      cash += 2;
+    }
+
     return cash;
+  }
+
+  previousRondelPosition(nation) {
+    const rondelActions = this.log.filter(
+      (action) => action.type === "rondel" && action.payload.nation === nation
+    );
+    if (rondelActions.length > 2) {
+      return rondelActions[rondelActions.length - 2].payload.slot;
+    }
   }
 
   getController(nation, log) {
