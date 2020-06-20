@@ -72,6 +72,58 @@ class Imperial {
           payload: { nation: "RU", player: "Claudia", cost: 4 },
         },
       ];
+    } else if (this.lastMoveWasInvestor(lastMove)) {
+      const purchasedBonds = this.log.filter(
+        (action) => action.type === "bondPurchase"
+      );
+      const allRemainingBonds = this.allBonds().filter((bond) => {
+        const { nation, cost } = bond;
+        return !this.toBonds(purchasedBonds).some((purchasedBond) => {
+          if (nation === purchasedBond.nation && cost === purchasedBond.cost) {
+            return true;
+          } else {
+            return false;
+          }
+        });
+      });
+      return this.affordableBonds(
+        this.getController(lastMove.payload.nation),
+        allRemainingBonds
+      );
+      return [
+        {
+          type: "bondPurchase",
+          payload: { nation: "AH", player: "Daniel", cost: 4 },
+        },
+        {
+          type: "bondPurchase",
+          payload: { nation: "IT", player: "Daniel", cost: 2 },
+        },
+        {
+          type: "bondPurchase",
+          payload: { nation: "IT", player: "Daniel", cost: 4 },
+        },
+        {
+          type: "bondPurchase",
+          payload: { nation: "FR", player: "Daniel", cost: 4 },
+        },
+        {
+          type: "bondPurchase",
+          payload: { nation: "GB", player: "Daniel", cost: 4 },
+        },
+        {
+          type: "bondPurchase",
+          payload: { nation: "GE", player: "Daniel", cost: 2 },
+        },
+        {
+          type: "bondPurchase",
+          payload: { nation: "GE", player: "Daniel", cost: 4 },
+        },
+        {
+          type: "bondPurchase",
+          payload: { nation: "RU", player: "Daniel", cost: 4 },
+        },
+      ];
     } else if (this.shouldReturnRondelActions(lastMove)) {
       return this.rondelActions(this.getNation(this.log));
     } else if (this.lastMoveWasRondelManeuver(lastMove)) {
@@ -291,6 +343,34 @@ class Imperial {
     }
   }
 
+  allBonds() {
+    return ["AH", "IT", "FR", "GB", "GE", "RU"]
+      .map((nation) => {
+        return [2, 4, 6, 9, 12, 16, 20, 25, 30].map((cost) => {
+          return { nation: nation, cost: cost };
+        });
+      })
+      .reduce((acc, val) => acc.concat(val), []);
+  }
+
+  toBonds(bondActions) {
+    return bondActions.map((action) => {
+      return { nation: action.payload.nation, cost: action.payload.cost };
+    });
+  }
+
+  affordableBonds(player, bonds) {
+    const cash = this.getCash(player);
+    const affordableBonds = bonds.filter((bond) => bond.cost <= cash);
+    return affordableBonds.map((bond) => {
+      const { nation, cost } = bond;
+      return {
+        type: "bondPurchase",
+        payload: { nation, player, cost },
+      };
+    });
+  }
+
   investorCardHolder() {
     return this.getInvestorCardHolder(this.log, this.log);
   }
@@ -450,7 +530,6 @@ class Imperial {
       this.logIsEmpty(lastMove) ||
       this.lastMoveWasBuildFactory(lastMove) ||
       this.lastMoveWasProduction(lastMove) ||
-      this.lastMoveWasInvestor(lastMove) ||
       this.lastMoveWasImport(lastMove) ||
       this.lastMoveWasTaxation(lastMove)
     );
@@ -657,9 +736,9 @@ class Imperial {
     return false;
   }
 
-  getCash(player, log) {
+  getCash(player) {
     let cash = 13;
-    log
+    this.log
       .filter((action) => {
         return (
           action.type === "bondPurchase" && action.payload.player === player
@@ -669,7 +748,7 @@ class Imperial {
         cash -= bondPurchase.payload.cost;
       });
 
-    const allInvestorActions = log
+    const allInvestorActions = this.log
       .map((action, index) => {
         if (action.type === "rondel" && action.payload.slot === "investor") {
           return { logIndex: index, action };
@@ -681,15 +760,15 @@ class Imperial {
       if (!!investorAction) {
         if (
           this.getInvestorCardHolder(
-            log.slice(0, investorAction.logIndex + 1),
-            log
+            this.log.slice(0, investorAction.logIndex + 1),
+            this.log
           ) === player
         ) {
           cash += 2;
         }
 
         if (
-          this.getController(investorAction.action.payload.nation, log) ===
+          this.getController(investorAction.action.payload.nation, this.log) ===
           player
         ) {
           cash += 4;
@@ -699,7 +778,7 @@ class Imperial {
           this.hasSmallInvestment(
             investorAction.action.payload.nation,
             player,
-            log
+            this.log
           )
         ) {
           cash += 1;
@@ -751,7 +830,7 @@ class Imperial {
     }
   }
 
-  getController(nation, log) {
+  getController(nation) {
     const bondPurchases = this.log.filter((action) => {
       return action.type === "bondPurchase" && action.payload.nation === nation;
     });

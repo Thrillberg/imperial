@@ -172,7 +172,7 @@ describe("available actions", () => {
     expect(actions).toEqual(new Set(expected));
   });
 
-  test("GB moved to the investor slot", () => {
+  xtest("GB moved to the investor slot", () => {
     const log = [
       {
         type: "playerSeating",
