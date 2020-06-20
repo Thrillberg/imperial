@@ -2923,5 +2923,223 @@ describe("Schnelleinsteig", () => {
         });
       });
     });
+
+    describe("4. GB does production2", () => {
+      test("London and Liverpool have units", () => {
+        const log = [
+          ...thirdRoundLog,
+          {
+            type: "rondel",
+            payload: { nation: "AH", cost: 0, slot: "taxation" },
+          },
+          {
+            type: "rondel",
+            payload: { nation: "IT", cost: 0, slot: "production1" },
+          },
+          {
+            type: "rondel",
+            payload: { nation: "FR", cost: 0, slot: "production2" },
+          },
+          {
+            type: "bondPurchase",
+            payload: { nation: "AH", player: "Claudia", cost: 6 },
+          },
+          {
+            type: "rondel",
+            payload: { nation: "GB", cost: 0, slot: "production2" },
+          },
+        ];
+        const londonUnitCount = Imperial.fromLog(log).state.provinces["london"]
+          .unitCount;
+        const liverpoolUnitCount = Imperial.fromLog(log).state.provinces[
+          "liverpool"
+        ].unitCount;
+        expect(londonUnitCount).toEqual(1);
+        expect(liverpoolUnitCount).toEqual(1);
+      });
+    });
+
+    describe("5. GE builds a factory", () => {
+      test("GE can choose where to build the factory", () => {
+        const log = [
+          ...thirdRoundLog,
+          {
+            type: "rondel",
+            payload: { nation: "AH", cost: 0, slot: "taxation" },
+          },
+          {
+            type: "rondel",
+            payload: { nation: "IT", cost: 0, slot: "production1" },
+          },
+          {
+            type: "rondel",
+            payload: { nation: "FR", cost: 0, slot: "production2" },
+          },
+          {
+            type: "bondPurchase",
+            payload: { nation: "AH", player: "Claudia", cost: 6 },
+          },
+          {
+            type: "rondel",
+            payload: { nation: "GB", cost: 0, slot: "production2" },
+          },
+          {
+            type: "rondel",
+            payload: { nation: "GE", cost: 0, slot: "factory" },
+          },
+        ];
+        const expected = new Set(
+          ["danzig", "munich", "cologne"].map((province) => ({
+            type: "buildFactory",
+            payload: { province },
+          }))
+        );
+        expect(Imperial.fromLog(log).state.availableActions).toEqual(expected);
+      });
+      describe("GE builds a factory in Cologne", () => {
+        test("Cologne has a factory", () => {
+          const log = [
+            ...thirdRoundLog,
+            {
+              type: "rondel",
+              payload: { nation: "AH", cost: 0, slot: "taxation" },
+            },
+            {
+              type: "rondel",
+              payload: { nation: "IT", cost: 0, slot: "production1" },
+            },
+            {
+              type: "rondel",
+              payload: { nation: "FR", cost: 0, slot: "production2" },
+            },
+            {
+              type: "bondPurchase",
+              payload: { nation: "AH", player: "Claudia", cost: 6 },
+            },
+            {
+              type: "rondel",
+              payload: { nation: "GB", cost: 0, slot: "production2" },
+            },
+            {
+              type: "rondel",
+              payload: { nation: "GE", cost: 0, slot: "factory" },
+            },
+            {
+              type: "buildFactory",
+              payload: { province: "cologne" },
+            },
+          ];
+          const hasFactory = Imperial.fromLog(log).state.provinces["cologne"]
+            .hasFactory;
+          expect(hasFactory).toEqual(true);
+        });
+        test("GE has 9 treasury", () => {
+          const log = [
+            ...thirdRoundLog,
+            {
+              type: "rondel",
+              payload: { nation: "AH", cost: 0, slot: "taxation" },
+            },
+            {
+              type: "rondel",
+              payload: { nation: "IT", cost: 0, slot: "production1" },
+            },
+            {
+              type: "rondel",
+              payload: { nation: "FR", cost: 0, slot: "production2" },
+            },
+            {
+              type: "bondPurchase",
+              payload: { nation: "AH", player: "Claudia", cost: 6 },
+            },
+            {
+              type: "rondel",
+              payload: { nation: "GB", cost: 0, slot: "production2" },
+            },
+            {
+              type: "rondel",
+              payload: { nation: "GE", cost: 0, slot: "factory" },
+            },
+            {
+              type: "buildFactory",
+              payload: { province: "cologne" },
+            },
+          ];
+          const treasury = Imperial.fromLog(log).state.nations["GE"].treasury;
+          expect(treasury).toEqual(9);
+        });
+      });
+    });
+
+    describe("6. RU does maneuver2", () => {
+      xtest("RU's available actions are to move st. petersburg, odessa, and moscow (x3)", () => {
+        const log = [
+          ...thirdRoundLog,
+          {
+            type: "rondel",
+            payload: { nation: "AH", cost: 0, slot: "taxation" },
+          },
+          {
+            type: "rondel",
+            payload: { nation: "IT", cost: 0, slot: "production1" },
+          },
+          {
+            type: "rondel",
+            payload: { nation: "FR", cost: 0, slot: "production2" },
+          },
+          {
+            type: "bondPurchase",
+            payload: { nation: "AH", player: "Claudia", cost: 6 },
+          },
+          {
+            type: "rondel",
+            payload: { nation: "GB", cost: 0, slot: "production2" },
+          },
+          {
+            type: "rondel",
+            payload: { nation: "GE", cost: 0, slot: "factory" },
+          },
+          {
+            type: "buildFactory",
+            payload: { province: "cologne" },
+          },
+          {
+            type: "rondel",
+            paylaod: { nation: "RU", cost: 0, slot: "maneuver2" },
+          },
+        ];
+        const landDestinations = [];
+        let moscowActions = [];
+        landDestinations.map((province) => {
+          moscowActions.push({
+            type: "maneuver",
+            payload: { origin: "moscow", destination: province },
+          });
+        });
+
+        const availableActions = [
+          {
+            type: "maneuver",
+            payload: {
+              origin: "st. petersburg",
+              destination: "baltic sea",
+            },
+          },
+          {
+            type: "maneuver",
+            payload: {
+              origin: "odessa",
+              destination: "black sea",
+            },
+          },
+          ...moscowActions,
+          ...moscowActions,
+          ...moscowActions,
+        ];
+        expect(Imperial.fromLog(log).state.availableActions).toEqual(
+          availableActions
+        );
+      });
+    });
   });
 });

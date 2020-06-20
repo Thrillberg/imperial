@@ -329,6 +329,7 @@ class Imperial {
       "berlin",
       "bordeaux",
       "budapest",
+      "cologne",
       "english channel",
       "hamburg",
       "ionian sea",
