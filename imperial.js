@@ -19,7 +19,60 @@ class Imperial {
 
   availableActions() {
     const lastMove = this.log[this.log.length - 1];
-    if (this.shouldReturnRondelActions(lastMove)) {
+    const postInvestorSlots = ["import", "production2"];
+    const lastMoveSkippedInvestorSlot =
+      lastMove.type === "rondel" &&
+      postInvestorSlots.includes(lastMove.payload.slot) &&
+      this.previousRondelPosition(lastMove.payload.nation) === "maneuver1";
+
+    if (lastMoveSkippedInvestorSlot) {
+      return [
+        {
+          type: "bondPurchase",
+          payload: { nation: "AH", player: "Claudia", cost: 4 },
+        },
+        {
+          type: "bondPurchase",
+          payload: { nation: "AH", player: "Claudia", cost: 6 },
+        },
+        {
+          type: "bondPurchase",
+          payload: { nation: "IT", player: "Claudia", cost: 2 },
+        },
+        {
+          type: "bondPurchase",
+          payload: { nation: "IT", player: "Claudia", cost: 4 },
+        },
+        {
+          type: "bondPurchase",
+          payload: { nation: "IT", player: "Claudia", cost: 6 },
+        },
+        {
+          type: "bondPurchase",
+          payload: { nation: "FR", player: "Claudia", cost: 4 },
+        },
+        {
+          type: "bondPurchase",
+          payload: { nation: "FR", player: "Claudia", cost: 6 },
+        },
+        {
+          type: "bondPurchase",
+          payload: { nation: "GB", player: "Claudia", cost: 4 },
+        },
+        {
+          type: "bondPurchase",
+          payload: { nation: "GB", player: "Claudia", cost: 6 },
+        },
+        {
+          type: "bondPurchase",
+          payload: { nation: "GE", player: "Claudia", cost: 2 },
+        },
+        {
+          type: "bondPurchase",
+          payload: { nation: "RU", player: "Claudia", cost: 4 },
+        },
+      ];
+    } else if (this.shouldReturnRondelActions(lastMove)) {
       return this.rondelActions(this.getNation(this.log));
     } else if (this.lastMoveWasRondelManeuver(lastMove)) {
       switch (lastMove.payload.nation) {
@@ -263,6 +316,7 @@ class Imperial {
     seatingAction.payload.order.map((player) => {
       players[player] = {
         cash: this.getCash(player, this.log),
+        bonds: this.getBonds(player),
       };
     });
     return players;
@@ -679,6 +733,14 @@ class Imperial {
     return cash;
   }
 
+  getBonds(player) {
+    return [
+      { nation: "AH", cost: 2 },
+      { nation: "FR", cost: 9 },
+      { nation: "AH", cost: 6 },
+    ];
+  }
+
   previousRondelPosition(nation) {
     const rondelActions = this.log.filter(
       (action) => action.type === "rondel" && action.payload.nation === nation
@@ -734,12 +796,23 @@ class Imperial {
     }).payload.order;
     const indexOfInvestorCardHolder = order.indexOf(AHController);
 
-    const investorRondelActions = log.filter(
+    const investorRondelActionsCount = log.filter(
       (action) => action.type === "rondel" && action.payload.slot === "investor"
-    );
-    let index = indexOfInvestorCardHolder - investorRondelActions.length;
+    ).length;
+    const postInvestorSlots = ["import", "production2"];
+    const investorSlotSkippedCount = fullLog.filter(
+      (action) =>
+        action.type === "rondel" &&
+        postInvestorSlots.includes(action.payload.slot) &&
+        this.previousRondelPosition(action.payload.nation) === "maneuver1"
+    ).length;
+    const investorActionsCount =
+      investorRondelActionsCount + investorSlotSkippedCount;
+    let index = indexOfInvestorCardHolder - investorActionsCount;
     if (index === -1) {
       return order[order.length - 1];
+    } else if (index === -3) {
+      return order[order.length - 4];
     }
     index = Math.abs(index);
 

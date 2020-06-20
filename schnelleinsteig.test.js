@@ -2776,7 +2776,7 @@ describe("Schnelleinsteig", () => {
           expect(cash).toEqual(7);
         });
 
-        xtest("Claudia can buy a bond", () => {
+        test("Claudia can buy a bond", () => {
           const log = [
             ...thirdRoundLog,
             {
@@ -2842,8 +2842,85 @@ describe("Schnelleinsteig", () => {
             expectedActions
           );
         });
-        test("Claudia buys a 6 million AH bond", () => {});
-        test("Daniel is the investor card owner", () => {});
+
+        describe("Claudia buys a 6 million AH bond", () => {
+          test("Claudia has 1 million in cash", () => {
+            const log = [
+              ...thirdRoundLog,
+              {
+                type: "rondel",
+                payload: { nation: "AH", cost: 0, slot: "taxation" },
+              },
+              {
+                type: "rondel",
+                payload: { nation: "IT", cost: 0, slot: "production1" },
+              },
+              {
+                type: "rondel",
+                payload: { nation: "FR", cost: 0, slot: "production2" },
+              },
+              {
+                type: "bondPurchase",
+                payload: { nation: "AH", player: "Claudia", cost: 6 },
+              },
+            ];
+            const cash = Imperial.fromLog(log).state.players["Claudia"].cash;
+            expect(cash).toEqual(1);
+          });
+
+          test("Claudia has the #3 AH bond", () => {
+            const log = [
+              ...thirdRoundLog,
+              {
+                type: "rondel",
+                payload: { nation: "AH", cost: 0, slot: "taxation" },
+              },
+              {
+                type: "rondel",
+                payload: { nation: "IT", cost: 0, slot: "production1" },
+              },
+              {
+                type: "rondel",
+                payload: { nation: "FR", cost: 0, slot: "production2" },
+              },
+              {
+                type: "bondPurchase",
+                payload: { nation: "AH", player: "Claudia", cost: 6 },
+              },
+            ];
+            const bonds = Imperial.fromLog(log).state.players["Claudia"].bonds;
+            expect(bonds).toEqual([
+              { nation: "AH", cost: 2 },
+              { nation: "FR", cost: 9 },
+              { nation: "AH", cost: 6 },
+            ]);
+          });
+        });
+
+        test("Daniel is the investor card owner", () => {
+          const log = [
+            ...thirdRoundLog,
+            {
+              type: "rondel",
+              payload: { nation: "AH", cost: 0, slot: "taxation" },
+            },
+            {
+              type: "rondel",
+              payload: { nation: "IT", cost: 0, slot: "production1" },
+            },
+            {
+              type: "rondel",
+              payload: { nation: "FR", cost: 0, slot: "production2" },
+            },
+            {
+              type: "bondPurchase",
+              payload: { nation: "AH", player: "Claudia", cost: 6 },
+            },
+          ];
+          const investorCardHolder = Imperial.fromLog(log).state
+            .investorCardHolder;
+          expect(investorCardHolder).toEqual("Daniel");
+        });
       });
     });
   });
