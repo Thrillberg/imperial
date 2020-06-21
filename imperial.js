@@ -87,7 +87,7 @@ class Imperial {
         });
       });
       return this.affordableBonds(
-        this.getController(lastMove.payload.nation),
+        this.getInvestorCardHolder(),
         allRemainingBonds
       );
       return [
@@ -869,18 +869,18 @@ class Imperial {
     }
   }
 
-  getInvestorCardHolder(log, fullLog) {
-    const AHController = this.getController("AH", fullLog);
-    const order = fullLog.find((action) => {
+  getInvestorCardHolder() {
+    const AHController = this.getController("AH", this.log);
+    const order = this.log.find((action) => {
       return action.type === "playerSeating";
     }).payload.order;
     const indexOfInvestorCardHolder = order.indexOf(AHController);
 
-    const investorRondelActionsCount = log.filter(
+    const investorRondelActionsCount = this.log.filter(
       (action) => action.type === "rondel" && action.payload.slot === "investor"
     ).length;
     const postInvestorSlots = ["import", "production2"];
-    const investorSlotSkippedCount = fullLog.filter(
+    const investorSlotSkippedCount = this.log.filter(
       (action) =>
         action.type === "rondel" &&
         postInvestorSlots.includes(action.payload.slot) &&

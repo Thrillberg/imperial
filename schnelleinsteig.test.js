@@ -510,7 +510,7 @@ describe("Schnelleinsteig", () => {
         expect(cash).toEqual(4);
       });
 
-      xtest("Daniel can buy a bond", () => {
+      test("Daniel can buy a bond", () => {
         const log = [
           ...setupLog,
           {
@@ -733,7 +733,7 @@ describe("Schnelleinsteig", () => {
         expect(treasury).toEqual(6);
       });
 
-      test("Daniel has 4 million in cash", () => {
+      test.only("Daniel has 4 million in cash", () => {
         const log = [
           ...setupLog,
           {
