@@ -1,4 +1,5 @@
-const { Nation } = require("./constants")
+const { Nation } = require("./constants");
+const { bondPurchase, maneuver } = require("./actions");
 
 class Imperial {
   static fromLog(log) {
@@ -29,50 +30,17 @@ class Imperial {
 
     if (lastMoveSkippedInvestorSlot) {
       return [
-        {
-          type: "bondPurchase",
-          payload: { nation: Nation.AH, player: "Claudia", cost: 4 },
-        },
-        {
-          type: "bondPurchase",
-          payload: { nation: Nation.AH, player: "Claudia", cost: 6 },
-        },
-        {
-          type: "bondPurchase",
-          payload: { nation: Nation.IT, player: "Claudia", cost: 2 },
-        },
-        {
-          type: "bondPurchase",
-          payload: { nation: Nation.IT, player: "Claudia", cost: 4 },
-        },
-        {
-          type: "bondPurchase",
-          payload: { nation: Nation.IT, player: "Claudia", cost: 6 },
-        },
-        {
-          type: "bondPurchase",
-          payload: { nation: Nation.FR, player: "Claudia", cost: 4 },
-        },
-        {
-          type: "bondPurchase",
-          payload: { nation: Nation.FR, player: "Claudia", cost: 6 },
-        },
-        {
-          type: "bondPurchase",
-          payload: { nation: Nation.GB, player: "Claudia", cost: 4 },
-        },
-        {
-          type: "bondPurchase",
-          payload: { nation: Nation.GB, player: "Claudia", cost: 6 },
-        },
-        {
-          type: "bondPurchase",
-          payload: { nation: Nation.GE, player: "Claudia", cost: 2 },
-        },
-        {
-          type: "bondPurchase",
-          payload: { nation: Nation.RU, player: "Claudia", cost: 4 },
-        },
+        bondPurchase(Nation.AH, "Claudia", 4),
+        bondPurchase(Nation.AH, "Claudia", 6),
+        bondPurchase(Nation.IT, "Claudia", 2),
+        bondPurchase(Nation.IT, "Claudia", 4),
+        bondPurchase(Nation.IT, "Claudia", 6),
+        bondPurchase(Nation.FR, "Claudia", 4),
+        bondPurchase(Nation.FR, "Claudia", 6),
+        bondPurchase(Nation.GB, "Claudia", 4),
+        bondPurchase(Nation.GB, "Claudia", 6),
+        bondPurchase(Nation.GE, "Claudia", 2),
+        bondPurchase(Nation.RU, "Claudia", 4),
       ];
     } else if (this.shouldReturnRondelActions(lastMove)) {
       return this.rondelActions(this.getNation(this.log));
@@ -91,97 +59,34 @@ class Imperial {
           ];
           let parisActions = [];
           FRLandDestinations.map((province) => {
-            parisActions.push({
-              type: "maneuver",
-              payload: { origin: "paris", destination: province },
-            });
+            parisActions.push(maneuver("paris", province));
           });
           return [
-            {
-              type: "maneuver",
-              payload: {
-                origin: "bordeaux",
-                destination: "bay of biscay",
-              },
-            },
-            {
-              type: "maneuver",
-              payload: {
-                origin: "marseille",
-                destination: "western mediterranean sea",
-              },
-            },
+            maneuver("bordeaux", "bay of biscay"),
+            maneuver("marseille", "western mediterranean sea"),
             ...parisActions,
           ];
         case Nation.GB:
           return [
-            {
-              type: "maneuver",
-              payload: { origin: "liverpool", destination: "north atlantic" },
-            },
-            {
-              type: "maneuver",
-              payload: { origin: "london", destination: "english channel" },
-            },
+            maneuver("liverpool", "north atlantic"),
+            maneuver("london", "english channel"),
           ];
         case Nation.GE:
           return [
-            {
-              type: "maneuver",
-              payload: { origin: "hamburg", destination: "north sea" },
-            },
-            {
-              type: "maneuver",
-              payload: { origin: "berlin", destination: "danzig" },
-            },
-            {
-              type: "maneuver",
-              payload: { origin: "berlin", destination: "prague" },
-            },
-            {
-              type: "maneuver",
-              payload: { origin: "berlin", destination: "munich" },
-            },
-            {
-              type: "maneuver",
-              payload: { origin: "berlin", destination: "cologne" },
-            },
-            {
-              type: "maneuver",
-              payload: { origin: "berlin", destination: "hamburg" },
-            },
-            {
-              type: "maneuver",
-              payload: { origin: "berlin", destination: "dijon" },
-            },
-            {
-              type: "maneuver",
-              payload: { origin: "berlin", destination: "belgium" },
-            },
-            {
-              type: "maneuver",
-              payload: { origin: "berlin", destination: "holland" },
-            },
-            {
-              type: "maneuver",
-              payload: { origin: "berlin", destination: "denmark" },
-            },
-            {
-              type: "maneuver",
-              payload: { origin: "berlin", destination: "london" },
-            },
-            {
-              type: "maneuver",
-              payload: { origin: "berlin", destination: "sheffield" },
-            },
-            {
-              type: "maneuver",
-              payload: { origin: "berlin", destination: "edinburgh" },
-            },
-            {
-              type: "maneuver",
-              payload: { origin: "berlin", destination: "norway" },
-            },
+            maneuver("hamburg", "north sea"),
+            maneuver("berlin", "danzig"),
+            maneuver("berlin", "prague"),
+            maneuver("berlin", "munich"),
+            maneuver("berlin", "cologne"),
+            maneuver("berlin", "hamburg"),
+            maneuver("berlin", "dijon"),
+            maneuver("berlin", "belgium"),
+            maneuver("berlin", "holland"),
+            maneuver("berlin", "denmark"),
+            maneuver("berlin", "london"),
+            maneuver("berlin", "sheffield"),
+            maneuver("berlin", "edinburgh"),
+            maneuver("berlin", "norway"),
           ];
         case Nation.AH:
           const AHLandDestinations = [
@@ -207,24 +112,12 @@ class Imperial {
           let budapestActions = [];
           let viennaActions = [];
           AHLandDestinations.map((province) => {
-            lembergActions.push({
-              type: "maneuver",
-              payload: { origin: "trieste", destination: province },
-            });
-            budapestActions.push({
-              type: "maneuver",
-              payload: { origin: "budapest", destination: province },
-            });
-            viennaActions.push({
-              type: "maneuver",
-              payload: { origin: "vienna", destination: province },
-            });
+            lembergActions.push(maneuver("trieste", province));
+            budapestActions.push(maneuver("budapest", province));
+            viennaActions.push(maneuver("vienna", province));
           });
           return [
-            {
-              type: "maneuver",
-              payload: { origin: "trieste", destination: "ionian sea" },
-            },
+            maneuver("trieste", "ionian sea"),
             ...lembergActions,
             ...budapestActions,
             ...viennaActions,
@@ -244,19 +137,10 @@ class Imperial {
           ];
           let romeActions = [];
           ITLandDestinations.map((province) => {
-            romeActions.push({
-              type: "maneuver",
-              payload: { origin: "rome", destination: province },
-            });
+            romeActions.push(maneuver("rome", province));
           });
           return [
-            {
-              type: "maneuver",
-              payload: {
-                origin: "naples",
-                destination: "western mediterranean sea",
-              },
-            },
+            maneuver("naples", "western mediterranean sea"),
             ...romeActions,
           ];
       }
@@ -298,7 +182,7 @@ class Imperial {
   }
 
   nations() {
-    const nations = new Map()
+    const nations = new Map();
     for (const nation of Nation) {
       nations.set(nation, {
         controller: this.getController(nation, this.log),
@@ -306,7 +190,7 @@ class Imperial {
         taxChartPosition: this.getTaxChartPosition(nation),
         powerPoints: this.getPowerPoints(nation),
       });
-    };
+    }
     return nations;
   }
 
@@ -531,7 +415,7 @@ class Imperial {
       GB: () => Nation.GE,
       GE: () => Nation.RU,
       RU: () => Nation.AH,
-    })
+    });
   }
 
   importAction(nation) {
@@ -560,17 +444,21 @@ class Imperial {
   }
 
   buildFactoryAction(nation) {
-    return new Set(nation.when({
-      AH: () => ["trieste", "prague", "lemburg"],
-      IT: () => ["genoa", "venice", "florence"],
-      FR: () => ["brest", "dijon", "marseille"],
-      GB: () => ["dublin", "sheffield", "edinburgh"],
-      GE: () => ["danzig", "munich", "cologne"],
-      RU: () => ["kiev", "st. petersburg", "warsaw"],
-    }).map((province) => ({
-      type: "buildFactory",
-      payload: { province },
-    })));
+    return new Set(
+      nation
+        .when({
+          AH: () => ["trieste", "prague", "lemburg"],
+          IT: () => ["genoa", "venice", "florence"],
+          FR: () => ["brest", "dijon", "marseille"],
+          GB: () => ["dublin", "sheffield", "edinburgh"],
+          GE: () => ["danzig", "munich", "cologne"],
+          RU: () => ["kiev", "st. petersburg", "warsaw"],
+        })
+        .map((province) => ({
+          type: "buildFactory",
+          payload: { province },
+        }))
+    );
   }
 
   getTreasury(nation, log) {
@@ -620,14 +508,16 @@ class Imperial {
     const buildFactoryActions = log.filter((action) => {
       return (
         action.type === "buildFactory" &&
-        nation.when({
-          AH: () => ["trieste", "prague", "lemburg"],
-          IT: () => ["genoa", "venice", "florence"],
-          FR: () => ["brest", "dijon", "marseille"],
-          GB: () => ["dublin", "sheffield", "edinburgh"],
-          GE: () => ["danzig", "munich", "cologne"],
-          RU: () => ["kiev", "st. petersburg", "warsaw"],
-        }).includes(action.payload.province)
+        nation
+          .when({
+            AH: () => ["trieste", "prague", "lemburg"],
+            IT: () => ["genoa", "venice", "florence"],
+            FR: () => ["brest", "dijon", "marseille"],
+            GB: () => ["dublin", "sheffield", "edinburgh"],
+            GE: () => ["danzig", "munich", "cologne"],
+            RU: () => ["kiev", "st. petersburg", "warsaw"],
+          })
+          .includes(action.payload.province)
       );
     });
     treasuryAmount -= 5 * buildFactoryActions.length;
