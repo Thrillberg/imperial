@@ -1,3 +1,4 @@
+const { Nation } = require("./constants");
 const Imperial = require("./imperial");
 const rondelSlots = [
   "factory",
@@ -17,35 +18,35 @@ const setupLog = [
   },
   {
     type: "bondPurchase",
-    payload: { nation: "AH", player: "Claudia", cost: 2 },
+    payload: { nation: Nation.AH, player: "Claudia", cost: 2 },
   },
   {
     type: "bondPurchase",
-    payload: { nation: "IT", player: "Anton", cost: 9 },
+    payload: { nation: Nation.IT, player: "Anton", cost: 9 },
   },
   {
     type: "bondPurchase",
-    payload: { nation: "FR", player: "Claudia", cost: 9 },
+    payload: { nation: Nation.FR, player: "Claudia", cost: 9 },
   },
   {
     type: "bondPurchase",
-    payload: { nation: "FR", player: "Daniel", cost: 2 },
+    payload: { nation: Nation.FR, player: "Daniel", cost: 2 },
   },
   {
     type: "bondPurchase",
-    payload: { nation: "GB", player: "Anton", cost: 2 },
+    payload: { nation: Nation.GB, player: "Anton", cost: 2 },
   },
   {
     type: "bondPurchase",
-    payload: { nation: "GB", player: "Bert", cost: 9 },
+    payload: { nation: Nation.GB, player: "Bert", cost: 9 },
   },
   {
     type: "bondPurchase",
-    payload: { nation: "RU", player: "Bert", cost: 2 },
+    payload: { nation: Nation.RU, player: "Bert", cost: 2 },
   },
   {
     type: "bondPurchase",
-    payload: { nation: "RU", player: "Daniel", cost: 9 },
+    payload: { nation: Nation.RU, player: "Daniel", cost: 9 },
   },
 ];
 
@@ -53,21 +54,21 @@ const firstRoundLog = [
   ...setupLog,
   {
     type: "rondel",
-    payload: { nation: "AH", cost: 0, slot: "import" },
+    payload: { nation: Nation.AH, cost: 0, slot: "import" },
   },
   { type: "import", payload: { province: "trieste" } },
   { type: "import", payload: { province: "lemberg" } },
   {
     type: "rondel",
-    payload: { nation: "IT", cost: 0, slot: "investor" },
+    payload: { nation: Nation.IT, cost: 0, slot: "investor" },
   },
   {
     type: "bondPurchase",
-    payload: { nation: "GE", player: "Daniel", cost: 4 },
+    payload: { nation: Nation.GE, player: "Daniel", cost: 4 },
   },
   {
     type: "rondel",
-    payload: { nation: "FR", cost: 0, slot: "factory" },
+    payload: { nation: Nation.FR, cost: 0, slot: "factory" },
   },
   {
     type: "buildFactory",
@@ -75,7 +76,7 @@ const firstRoundLog = [
   },
   {
     type: "rondel",
-    payload: { nation: "GB", cost: 0, slot: "production1" },
+    payload: { nation: Nation.GB, cost: 0, slot: "production1" },
   },
   {
     type: "production",
@@ -87,7 +88,7 @@ const firstRoundLog = [
   },
   {
     type: "rondel",
-    payload: { nation: "GE", cost: 0, slot: "production2" },
+    payload: { nation: Nation.GE, cost: 0, slot: "production2" },
   },
   {
     type: "production",
@@ -99,11 +100,11 @@ const firstRoundLog = [
   },
   {
     type: "rondel",
-    payload: { nation: "RU", cost: 0, slot: "investor" },
+    payload: { nation: Nation.RU, cost: 0, slot: "investor" },
   },
   {
     type: "bondPurchase",
-    payload: { nation: "GE", player: "Anton", cost: 6 },
+    payload: { nation: Nation.GE, player: "Anton", cost: 6 },
   },
 ];
 
@@ -111,19 +112,19 @@ const secondRoundLog = [
   ...firstRoundLog,
   {
     type: "rondel",
-    payload: { nation: "AH", cost: 0, slot: "production2" },
+    payload: { nation: Nation.AH, cost: 0, slot: "production2" },
   },
   {
     type: "rondel",
-    payload: { nation: "IT", cost: 0, slot: "production2" },
+    payload: { nation: Nation.IT, cost: 0, slot: "production2" },
   },
   {
     type: "rondel",
-    payload: { nation: "FR", cost: 0, slot: "production1" },
+    payload: { nation: Nation.FR, cost: 0, slot: "production1" },
   },
   {
     type: "rondel",
-    payload: { nation: "GB", cost: 0, slot: "maneuver1" },
+    payload: { nation: Nation.GB, cost: 0, slot: "maneuver1" },
   },
   {
     type: "maneuver",
@@ -135,7 +136,7 @@ const secondRoundLog = [
   },
   {
     type: "rondel",
-    payload: { nation: "GE", cost: 0, slot: "maneuver2" },
+    payload: { nation: Nation.GE, cost: 0, slot: "maneuver2" },
   },
   {
     type: "maneuver",
@@ -147,7 +148,7 @@ const secondRoundLog = [
   },
   {
     type: "rondel",
-    payload: { nation: "RU", cost: 0, slot: "import" },
+    payload: { nation: Nation.RU, cost: 0, slot: "import" },
   },
   { type: "import", payload: { province: "st. petersburg" } },
   { type: "import", payload: { province: "moscow" } },
@@ -158,7 +159,7 @@ const thirdRoundLog = [
   ...secondRoundLog,
   {
     type: "rondel",
-    payload: { nation: "AH", cost: 0, slot: "maneuver2" },
+    payload: { nation: Nation.AH, cost: 0, slot: "maneuver2" },
   },
   {
     type: "maneuver",
@@ -178,7 +179,7 @@ const thirdRoundLog = [
   },
   {
     type: "rondel",
-    payload: { nation: "IT", cost: 0, slot: "maneuver2" },
+    payload: { nation: Nation.IT, cost: 0, slot: "maneuver2" },
   },
   {
     type: "maneuver",
@@ -193,7 +194,7 @@ const thirdRoundLog = [
   },
   {
     type: "rondel",
-    payload: { nation: "FR", cost: 0, slot: "maneuver1" },
+    payload: { nation: Nation.FR, cost: 0, slot: "maneuver1" },
   },
   {
     type: "maneuver",
@@ -218,19 +219,19 @@ const thirdRoundLog = [
   },
   {
     type: "rondel",
-    payload: { nation: "GB", cost: 0, slot: "investor" },
+    payload: { nation: Nation.GB, cost: 0, slot: "investor" },
   },
   {
     type: "bondPurchase",
-    payload: { nation: "RU", player: "Bert", cost: 6 },
+    payload: { nation: Nation.RU, player: "Bert", cost: 6 },
   },
   {
     type: "rondel",
-    payload: { nation: "GE", cost: 0, slot: "taxation" },
+    payload: { nation: Nation.GE, cost: 0, slot: "taxation" },
   },
   {
     type: "rondel",
-    payload: { nation: "RU", cost: 0, slot: "production2" },
+    payload: { nation: Nation.RU, cost: 0, slot: "production2" },
   },
 ];
 
@@ -256,11 +257,11 @@ describe("Schnelleinsteig", () => {
         },
         {
           type: "bondPurchase",
-          payload: { nation: "AH", player: "Claudia", cost: 2 },
+          payload: { nation: Nation.AH, player: "Claudia", cost: 2 },
         },
       ];
       const cash = Imperial.fromLog(log).state.players["Claudia"].cash;
-      const treasury = Imperial.fromLog(log).state.nations["AH"].treasury;
+      const treasury = Imperial.fromLog(log).state.nations.get(Nation.AH).treasury;
       expect(cash).toEqual(11);
       expect(treasury).toEqual(2);
     });
@@ -273,11 +274,11 @@ describe("Schnelleinsteig", () => {
         },
         {
           type: "bondPurchase",
-          payload: { nation: "IT", player: "Anton", cost: 9 },
+          payload: { nation: Nation.IT, player: "Anton", cost: 9 },
         },
       ];
       const cash = Imperial.fromLog(log).state.players["Anton"].cash;
-      const treasury = Imperial.fromLog(log).state.nations["IT"].treasury;
+      const treasury = Imperial.fromLog(log).state.nations.get(Nation.IT).treasury;
       expect(cash).toEqual(4);
       expect(treasury).toEqual(9);
     });
@@ -290,15 +291,15 @@ describe("Schnelleinsteig", () => {
         },
         {
           type: "bondPurchase",
-          payload: { nation: "AH", player: "Claudia", cost: 2 },
+          payload: { nation: Nation.AH, player: "Claudia", cost: 2 },
         },
         {
           type: "bondPurchase",
-          payload: { nation: "FR", player: "Claudia", cost: 9 },
+          payload: { nation: Nation.FR, player: "Claudia", cost: 9 },
         },
       ];
       const cash = Imperial.fromLog(log).state.players["Claudia"].cash;
-      const treasury = Imperial.fromLog(log).state.nations["FR"].treasury;
+      const treasury = Imperial.fromLog(log).state.nations.get(Nation.FR).treasury;
       expect(cash).toEqual(2);
       expect(treasury).toEqual(9);
     });
@@ -311,15 +312,15 @@ describe("Schnelleinsteig", () => {
         },
         {
           type: "bondPurchase",
-          payload: { nation: "FR", player: "Claudia", cost: 9 },
+          payload: { nation: Nation.FR, player: "Claudia", cost: 9 },
         },
         {
           type: "bondPurchase",
-          payload: { nation: "FR", player: "Daniel", cost: 2 },
+          payload: { nation: Nation.FR, player: "Daniel", cost: 2 },
         },
       ];
       const cash = Imperial.fromLog(log).state.players["Daniel"].cash;
-      const treasury = Imperial.fromLog(log).state.nations["FR"].treasury;
+      const treasury = Imperial.fromLog(log).state.nations.get(Nation.FR).treasury;
       expect(cash).toEqual(11);
       expect(treasury).toEqual(11);
     });
@@ -332,15 +333,15 @@ describe("Schnelleinsteig", () => {
         },
         {
           type: "bondPurchase",
-          payload: { nation: "IT", player: "Anton", cost: 9 },
+          payload: { nation: Nation.IT, player: "Anton", cost: 9 },
         },
         {
           type: "bondPurchase",
-          payload: { nation: "GB", player: "Anton", cost: 2 },
+          payload: { nation: Nation.GB, player: "Anton", cost: 2 },
         },
       ];
       const cash = Imperial.fromLog(log).state.players["Anton"].cash;
-      const treasury = Imperial.fromLog(log).state.nations["GB"].treasury;
+      const treasury = Imperial.fromLog(log).state.nations.get(Nation.GB).treasury;
       expect(cash).toEqual(2);
       expect(treasury).toEqual(2);
     });
@@ -353,15 +354,15 @@ describe("Schnelleinsteig", () => {
         },
         {
           type: "bondPurchase",
-          payload: { nation: "GB", player: "Anton", cost: 2 },
+          payload: { nation: Nation.GB, player: "Anton", cost: 2 },
         },
         {
           type: "bondPurchase",
-          payload: { nation: "GB", player: "Bert", cost: 9 },
+          payload: { nation: Nation.GB, player: "Bert", cost: 9 },
         },
       ];
       const cash = Imperial.fromLog(log).state.players["Bert"].cash;
-      const treasury = Imperial.fromLog(log).state.nations["GB"].treasury;
+      const treasury = Imperial.fromLog(log).state.nations.get(Nation.GB).treasury;
       expect(cash).toEqual(4);
       expect(treasury).toEqual(11);
     });
@@ -373,7 +374,7 @@ describe("Schnelleinsteig", () => {
           payload: { order: ["Daniel", "Claudia", "Bert", "Anton"] },
         },
       ];
-      const treasury = Imperial.fromLog(log).state.nations["GE"].treasury;
+      const treasury = Imperial.fromLog(log).state.nations.get(Nation.GE).treasury;
       expect(treasury).toEqual(0);
     });
 
@@ -385,15 +386,15 @@ describe("Schnelleinsteig", () => {
         },
         {
           type: "bondPurchase",
-          payload: { nation: "GB", player: "Bert", cost: 9 },
+          payload: { nation: Nation.GB, player: "Bert", cost: 9 },
         },
         {
           type: "bondPurchase",
-          payload: { nation: "RU", player: "Bert", cost: 2 },
+          payload: { nation: Nation.RU, player: "Bert", cost: 2 },
         },
       ];
       const cash = Imperial.fromLog(log).state.players["Bert"].cash;
-      const treasury = Imperial.fromLog(log).state.nations["RU"].treasury;
+      const treasury = Imperial.fromLog(log).state.nations.get(Nation.RU).treasury;
       expect(cash).toEqual(2);
       expect(treasury).toEqual(2);
     });
@@ -406,19 +407,19 @@ describe("Schnelleinsteig", () => {
         },
         {
           type: "bondPurchase",
-          payload: { nation: "FR", player: "Daniel", cost: 2 },
+          payload: { nation: Nation.FR, player: "Daniel", cost: 2 },
         },
         {
           type: "bondPurchase",
-          payload: { nation: "RU", player: "Bert", cost: 2 },
+          payload: { nation: Nation.RU, player: "Bert", cost: 2 },
         },
         {
           type: "bondPurchase",
-          payload: { nation: "RU", player: "Daniel", cost: 9 },
+          payload: { nation: Nation.RU, player: "Daniel", cost: 9 },
         },
       ];
       const cash = Imperial.fromLog(log).state.players["Daniel"].cash;
-      const treasury = Imperial.fromLog(log).state.nations["RU"].treasury;
+      const treasury = Imperial.fromLog(log).state.nations.get(Nation.RU).treasury;
       expect(cash).toEqual(2);
       expect(treasury).toEqual(11);
     });
@@ -431,7 +432,7 @@ describe("Schnelleinsteig", () => {
           ...setupLog,
           {
             type: "rondel",
-            payload: { nation: "AH", cost: 0, slot: "import" },
+            payload: { nation: Nation.AH, cost: 0, slot: "import" },
           },
         ];
         const actions = Imperial.fromLog(log).state.availableActions;
@@ -455,7 +456,7 @@ describe("Schnelleinsteig", () => {
             { type: "import", payload: { province: "trieste" } },
             { type: "import", payload: { province: "lemberg" } },
           ];
-          const treasury = Imperial.fromLog(log).state.nations["AH"].treasury;
+          const treasury = Imperial.fromLog(log).state.nations.get(Nation.AH).treasury;
           const triesteUnitCount = Imperial.fromLog(log).state.provinces[
             "trieste"
           ].unitCount;
@@ -475,13 +476,13 @@ describe("Schnelleinsteig", () => {
           ...setupLog,
           {
             type: "rondel",
-            payload: { nation: "IT", cost: 0, slot: "investor" },
+            payload: { nation: Nation.IT, cost: 0, slot: "investor" },
           },
         ];
         const actions = Imperial.fromLog(log).state.availableActions;
         const expected = rondelSlots.map((slot) => ({
           type: "rondel",
-          payload: { nation: "FR", cost: 0, slot },
+          payload: { nation: Nation.FR, cost: 0, slot },
         }));
         expect(actions).toEqual(new Set(expected));
       });
@@ -492,10 +493,10 @@ describe("Schnelleinsteig", () => {
             ...setupLog,
             {
               type: "rondel",
-              payload: { nation: "IT", cost: 0, slot: "investor" },
+              payload: { nation: Nation.IT, cost: 0, slot: "investor" },
             },
           ];
-          const treasury = Imperial.fromLog(log).state.nations["IT"].treasury;
+          const treasury = Imperial.fromLog(log).state.nations.get(Nation.IT).treasury;
           expect(treasury).toEqual(5);
         });
 
@@ -504,10 +505,10 @@ describe("Schnelleinsteig", () => {
             ...setupLog,
             {
               type: "rondel",
-              payload: { nation: "IT", cost: 0, slot: "investor" },
+              payload: { nation: Nation.IT, cost: 0, slot: "investor" },
             },
           ];
-          const controller = Imperial.fromLog(log).state.nations["IT"]
+          const controller = Imperial.fromLog(log).state.nations.get(Nation.IT)
             .controller;
           const cash = Imperial.fromLog(log).state.players[controller].cash;
           expect(cash).toEqual(6);
@@ -518,7 +519,7 @@ describe("Schnelleinsteig", () => {
             ...setupLog,
             {
               type: "rondel",
-              payload: { nation: "IT", cost: 0, slot: "investor" },
+              payload: { nation: Nation.IT, cost: 0, slot: "investor" },
             },
           ];
           const investorCardHolder = Imperial.fromLog(log).state
@@ -534,11 +535,11 @@ describe("Schnelleinsteig", () => {
               ...setupLog,
               {
                 type: "rondel",
-                payload: { nation: "IT", cost: 0, slot: "investor" },
+                payload: { nation: Nation.IT, cost: 0, slot: "investor" },
               },
               {
                 type: "bondPurchase",
-                payload: { nation: "GE", player: "Daniel", cost: 4 },
+                payload: { nation: Nation.GE, player: "Daniel", cost: 4 },
               },
             ];
             const cash = Imperial.fromLog(log).state.players["Daniel"].cash;
@@ -549,14 +550,14 @@ describe("Schnelleinsteig", () => {
               ...setupLog,
               {
                 type: "rondel",
-                payload: { nation: "IT", cost: 0, slot: "investor" },
+                payload: { nation: Nation.IT, cost: 0, slot: "investor" },
               },
               {
                 type: "bondPurchase",
-                payload: { nation: "GE", player: "Daniel", cost: 4 },
+                payload: { nation: Nation.GE, player: "Daniel", cost: 4 },
               },
             ];
-            const treasury = Imperial.fromLog(log).state.nations["GE"].treasury;
+            const treasury = Imperial.fromLog(log).state.nations.get(Nation.GE).treasury;
             expect(treasury).toEqual(4);
           });
         });
@@ -569,7 +570,7 @@ describe("Schnelleinsteig", () => {
           ...setupLog,
           {
             type: "rondel",
-            payload: { nation: "FR", cost: 0, slot: "factory" },
+            payload: { nation: Nation.FR, cost: 0, slot: "factory" },
           },
           {
             type: "buildFactory",
@@ -589,7 +590,7 @@ describe("Schnelleinsteig", () => {
             payload: { province: "marseille" },
           },
         ];
-        const treasury = Imperial.fromLog(log).state.nations["FR"].treasury;
+        const treasury = Imperial.fromLog(log).state.nations.get(Nation.FR).treasury;
         expect(treasury).toEqual(6);
       });
 
@@ -614,7 +615,7 @@ describe("Schnelleinsteig", () => {
           ...setupLog,
           {
             type: "rondel",
-            payload: { nation: "GB", cost: 0, slot: "production1" },
+            payload: { nation: Nation.GB, cost: 0, slot: "production1" },
           },
           {
             type: "production",
@@ -649,7 +650,7 @@ describe("Schnelleinsteig", () => {
           },
           {
             type: "rondel",
-            payload: { nation: "GE", cost: 0, slot: "production2" },
+            payload: { nation: Nation.GE, cost: 0, slot: "production2" },
           },
           {
             type: "production",
@@ -676,13 +677,13 @@ describe("Schnelleinsteig", () => {
           ...setupLog,
           {
             type: "rondel",
-            payload: { nation: "RU", cost: 0, slot: "investor" },
+            payload: { nation: Nation.RU, cost: 0, slot: "investor" },
           },
         ];
         const actions = Imperial.fromLog(log).state.availableActions;
         const expected = rondelSlots.map((slot) => ({
           type: "rondel",
-          payload: { nation: "AH", cost: 0, slot },
+          payload: { nation: Nation.AH, cost: 0, slot },
         }));
         expect(actions).toEqual(new Set(expected));
       });
@@ -693,15 +694,15 @@ describe("Schnelleinsteig", () => {
             ...setupLog,
             {
               type: "rondel",
-              payload: { nation: "IT", cost: 0, slot: "investor" },
+              payload: { nation: Nation.IT, cost: 0, slot: "investor" },
             },
             {
               type: "bondPurchase",
-              payload: { nation: "GE", player: "Daniel", cost: 4 },
+              payload: { nation: Nation.GE, player: "Daniel", cost: 4 },
             },
             {
               type: "rondel",
-              payload: { nation: "RU", cost: 0, slot: "investor" },
+              payload: { nation: Nation.RU, cost: 0, slot: "investor" },
             },
           ];
           const investorCardHolder = Imperial.fromLog(log).state
@@ -713,10 +714,10 @@ describe("Schnelleinsteig", () => {
             ...setupLog,
             {
               type: "rondel",
-              payload: { nation: "RU", cost: 0, slot: "investor" },
+              payload: { nation: Nation.RU, cost: 0, slot: "investor" },
             },
           ];
-          const treasury = Imperial.fromLog(log).state.nations["RU"].treasury;
+          const treasury = Imperial.fromLog(log).state.nations.get(Nation.RU).treasury;
           expect(treasury).toEqual(6);
         });
 
@@ -725,15 +726,15 @@ describe("Schnelleinsteig", () => {
             ...setupLog,
             {
               type: "rondel",
-              payload: { nation: "IT", cost: 0, slot: "investor" },
+              payload: { nation: Nation.IT, cost: 0, slot: "investor" },
             },
             {
               type: "bondPurchase",
-              payload: { nation: "GE", player: "Daniel", cost: 4 },
+              payload: { nation: Nation.GE, player: "Daniel", cost: 4 },
             },
             {
               type: "rondel",
-              payload: { nation: "RU", cost: 0, slot: "investor" },
+              payload: { nation: Nation.RU, cost: 0, slot: "investor" },
             },
           ];
           const cash = Imperial.fromLog(log).state.players["Daniel"].cash;
@@ -745,11 +746,11 @@ describe("Schnelleinsteig", () => {
             ...setupLog,
             {
               type: "rondel",
-              payload: { nation: "IT", cost: 0, slot: "investor" },
+              payload: { nation: Nation.IT, cost: 0, slot: "investor" },
             },
             {
               type: "rondel",
-              payload: { nation: "RU", cost: 0, slot: "investor" },
+              payload: { nation: Nation.RU, cost: 0, slot: "investor" },
             },
           ];
           const cash = Imperial.fromLog(log).state.players["Bert"].cash;
@@ -761,11 +762,11 @@ describe("Schnelleinsteig", () => {
             ...setupLog,
             {
               type: "rondel",
-              payload: { nation: "IT", cost: 0, slot: "investor" },
+              payload: { nation: Nation.IT, cost: 0, slot: "investor" },
             },
             {
               type: "rondel",
-              payload: { nation: "RU", cost: 0, slot: "investor" },
+              payload: { nation: Nation.RU, cost: 0, slot: "investor" },
             },
           ];
           const cash = Imperial.fromLog(log).state.players["Anton"].cash;
@@ -777,11 +778,11 @@ describe("Schnelleinsteig", () => {
             ...setupLog,
             {
               type: "rondel",
-              payload: { nation: "IT", cost: 0, slot: "investor" },
+              payload: { nation: Nation.IT, cost: 0, slot: "investor" },
             },
             {
               type: "rondel",
-              payload: { nation: "RU", cost: 0, slot: "investor" },
+              payload: { nation: Nation.RU, cost: 0, slot: "investor" },
             },
           ];
           const investorCardHolder = Imperial.fromLog(log).state
@@ -797,15 +798,15 @@ describe("Schnelleinsteig", () => {
               ...setupLog,
               {
                 type: "rondel",
-                payload: { nation: "IT", cost: 0, slot: "investor" },
+                payload: { nation: Nation.IT, cost: 0, slot: "investor" },
               },
               {
                 type: "rondel",
-                payload: { nation: "RU", cost: 0, slot: "investor" },
+                payload: { nation: Nation.RU, cost: 0, slot: "investor" },
               },
               {
                 type: "bondPurchase",
-                payload: { nation: "GE", player: "Anton", cost: 6 },
+                payload: { nation: Nation.GE, player: "Anton", cost: 6 },
               },
             ];
             const cash = Imperial.fromLog(log).state.players["Anton"].cash;
@@ -816,22 +817,22 @@ describe("Schnelleinsteig", () => {
               ...setupLog,
               {
                 type: "rondel",
-                payload: { nation: "IT", cost: 0, slot: "investor" },
+                payload: { nation: Nation.IT, cost: 0, slot: "investor" },
               },
               {
                 type: "bondPurchase",
-                payload: { nation: "GE", player: "Daniel", cost: 4 },
+                payload: { nation: Nation.GE, player: "Daniel", cost: 4 },
               },
               {
                 type: "rondel",
-                payload: { nation: "RU", cost: 0, slot: "investor" },
+                payload: { nation: Nation.RU, cost: 0, slot: "investor" },
               },
               {
                 type: "bondPurchase",
-                payload: { nation: "GE", player: "Anton", cost: 6 },
+                payload: { nation: Nation.GE, player: "Anton", cost: 6 },
               },
             ];
-            const treasury = Imperial.fromLog(log).state.nations["GE"].treasury;
+            const treasury = Imperial.fromLog(log).state.nations.get(Nation.GE).treasury;
             expect(treasury).toEqual(10);
           });
 
@@ -840,22 +841,22 @@ describe("Schnelleinsteig", () => {
               ...setupLog,
               {
                 type: "rondel",
-                payload: { nation: "IT", cost: 0, slot: "investor" },
+                payload: { nation: Nation.IT, cost: 0, slot: "investor" },
               },
               {
                 type: "bondPurchase",
-                payload: { nation: "GE", player: "Daniel", cost: 4 },
+                payload: { nation: Nation.GE, player: "Daniel", cost: 4 },
               },
               {
                 type: "rondel",
-                payload: { nation: "RU", cost: 0, slot: "investor" },
+                payload: { nation: Nation.RU, cost: 0, slot: "investor" },
               },
               {
                 type: "bondPurchase",
-                payload: { nation: "GE", player: "Anton", cost: 6 },
+                payload: { nation: Nation.GE, player: "Anton", cost: 6 },
               },
             ];
-            const controller = Imperial.fromLog(log).state.nations["GE"]
+            const controller = Imperial.fromLog(log).state.nations.get(Nation.GE)
               .controller;
             expect(controller).toEqual("Anton");
           });
@@ -871,7 +872,7 @@ describe("Schnelleinsteig", () => {
           ...firstRoundLog,
           {
             type: "rondel",
-            payload: { nation: "AH", cost: 0, slot: "production2" },
+            payload: { nation: Nation.AH, cost: 0, slot: "production2" },
           },
         ];
         const viennaUnitCount = Imperial.fromLog(log).state.provinces["vienna"]
@@ -888,10 +889,10 @@ describe("Schnelleinsteig", () => {
           ...firstRoundLog,
           {
             type: "rondel",
-            payload: { nation: "AH", cost: 0, slot: "production2" },
+            payload: { nation: Nation.AH, cost: 0, slot: "production2" },
           },
         ];
-        const AHTreasury = Imperial.fromLog(log).state.nations["AH"].treasury;
+        const AHTreasury = Imperial.fromLog(log).state.nations.get(Nation.AH).treasury;
         expect(AHTreasury).toEqual(0);
       });
     });
@@ -902,11 +903,11 @@ describe("Schnelleinsteig", () => {
           ...firstRoundLog,
           {
             type: "rondel",
-            payload: { nation: "AH", cost: 0, slot: "production2" },
+            payload: { nation: Nation.AH, cost: 0, slot: "production2" },
           },
           {
             type: "rondel",
-            payload: { nation: "IT", cost: 0, slot: "production2" },
+            payload: { nation: Nation.IT, cost: 0, slot: "production2" },
           },
         ];
         const romeUnitCount = Imperial.fromLog(log).state.provinces["rome"]
@@ -924,15 +925,15 @@ describe("Schnelleinsteig", () => {
           ...firstRoundLog,
           {
             type: "rondel",
-            payload: { nation: "AH", cost: 0, slot: "production2" },
+            payload: { nation: Nation.AH, cost: 0, slot: "production2" },
           },
           {
             type: "rondel",
-            payload: { nation: "IT", cost: 0, slot: "production2" },
+            payload: { nation: Nation.IT, cost: 0, slot: "production2" },
           },
           {
             type: "rondel",
-            payload: { nation: "FR", cost: 0, slot: "production1" },
+            payload: { nation: Nation.FR, cost: 0, slot: "production1" },
           },
         ];
         const bordeauxUnitCount = Imperial.fromLog(log).state.provinces[
@@ -955,19 +956,19 @@ describe("Schnelleinsteig", () => {
           ...firstRoundLog,
           {
             type: "rondel",
-            payload: { nation: "AH", cost: 0, slot: "production2" },
+            payload: { nation: Nation.AH, cost: 0, slot: "production2" },
           },
           {
             type: "rondel",
-            payload: { nation: "IT", cost: 0, slot: "production2" },
+            payload: { nation: Nation.IT, cost: 0, slot: "production2" },
           },
           {
             type: "rondel",
-            payload: { nation: "FR", cost: 0, slot: "production1" },
+            payload: { nation: Nation.FR, cost: 0, slot: "production1" },
           },
           {
             type: "rondel",
-            payload: { nation: "GB", cost: 0, slot: "maneuver1" },
+            payload: { nation: Nation.GB, cost: 0, slot: "maneuver1" },
           },
         ];
         const availableActions = [
@@ -990,19 +991,19 @@ describe("Schnelleinsteig", () => {
           ...firstRoundLog,
           {
             type: "rondel",
-            payload: { nation: "AH", cost: 0, slot: "production2" },
+            payload: { nation: Nation.AH, cost: 0, slot: "production2" },
           },
           {
             type: "rondel",
-            payload: { nation: "IT", cost: 0, slot: "production2" },
+            payload: { nation: Nation.IT, cost: 0, slot: "production2" },
           },
           {
             type: "rondel",
-            payload: { nation: "FR", cost: 0, slot: "production1" },
+            payload: { nation: Nation.FR, cost: 0, slot: "production1" },
           },
           {
             type: "rondel",
-            payload: { nation: "GB", cost: 0, slot: "maneuver1" },
+            payload: { nation: Nation.GB, cost: 0, slot: "maneuver1" },
           },
           {
             type: "maneuver",
@@ -1019,8 +1020,8 @@ describe("Schnelleinsteig", () => {
         const englishChannelFlag = Imperial.fromLog(log).state.provinces[
           "english channel"
         ].flag;
-        expect(northAtlanticFlag).toEqual("GB");
-        expect(englishChannelFlag).toEqual("GB");
+        expect(northAtlanticFlag).toEqual(Nation.GB);
+        expect(englishChannelFlag).toEqual(Nation.GB);
       });
     });
 
@@ -1030,19 +1031,19 @@ describe("Schnelleinsteig", () => {
           ...firstRoundLog,
           {
             type: "rondel",
-            payload: { nation: "AH", cost: 0, slot: "production2" },
+            payload: { nation: Nation.AH, cost: 0, slot: "production2" },
           },
           {
             type: "rondel",
-            payload: { nation: "IT", cost: 0, slot: "production2" },
+            payload: { nation: Nation.IT, cost: 0, slot: "production2" },
           },
           {
             type: "rondel",
-            payload: { nation: "FR", cost: 0, slot: "production1" },
+            payload: { nation: Nation.FR, cost: 0, slot: "production1" },
           },
           {
             type: "rondel",
-            payload: { nation: "GB", cost: 0, slot: "maneuver1" },
+            payload: { nation: Nation.GB, cost: 0, slot: "maneuver1" },
           },
           {
             type: "maneuver",
@@ -1054,7 +1055,7 @@ describe("Schnelleinsteig", () => {
           },
           {
             type: "rondel",
-            payload: { nation: "GE", cost: 0, slot: "maneuver2" },
+            payload: { nation: Nation.GE, cost: 0, slot: "maneuver2" },
           },
         ];
         const availableActions = [
@@ -1125,19 +1126,19 @@ describe("Schnelleinsteig", () => {
           ...firstRoundLog,
           {
             type: "rondel",
-            payload: { nation: "AH", cost: 0, slot: "production2" },
+            payload: { nation: Nation.AH, cost: 0, slot: "production2" },
           },
           {
             type: "rondel",
-            payload: { nation: "IT", cost: 0, slot: "production2" },
+            payload: { nation: Nation.IT, cost: 0, slot: "production2" },
           },
           {
             type: "rondel",
-            payload: { nation: "FR", cost: 0, slot: "production1" },
+            payload: { nation: Nation.FR, cost: 0, slot: "production1" },
           },
           {
             type: "rondel",
-            payload: { nation: "GB", cost: 0, slot: "maneuver1" },
+            payload: { nation: Nation.GB, cost: 0, slot: "maneuver1" },
           },
           {
             type: "maneuver",
@@ -1149,7 +1150,7 @@ describe("Schnelleinsteig", () => {
           },
           {
             type: "rondel",
-            payload: { nation: "GE", cost: 0, slot: "maneuver2" },
+            payload: { nation: Nation.GE, cost: 0, slot: "maneuver2" },
           },
           {
             type: "maneuver",
@@ -1163,8 +1164,8 @@ describe("Schnelleinsteig", () => {
         const northSeaFlag = Imperial.fromLog(log).state.provinces["north sea"]
           .flag;
         const norwayFlag = Imperial.fromLog(log).state.provinces["norway"].flag;
-        expect(northSeaFlag).toEqual("GE");
-        expect(norwayFlag).toEqual("GE");
+        expect(northSeaFlag).toEqual(Nation.GE);
+        expect(norwayFlag).toEqual(Nation.GE);
       });
     });
 
@@ -1174,19 +1175,19 @@ describe("Schnelleinsteig", () => {
           ...firstRoundLog,
           {
             type: "rondel",
-            payload: { nation: "AH", cost: 0, slot: "production2" },
+            payload: { nation: Nation.AH, cost: 0, slot: "production2" },
           },
           {
             type: "rondel",
-            payload: { nation: "IT", cost: 0, slot: "production2" },
+            payload: { nation: Nation.IT, cost: 0, slot: "production2" },
           },
           {
             type: "rondel",
-            payload: { nation: "FR", cost: 0, slot: "production1" },
+            payload: { nation: Nation.FR, cost: 0, slot: "production1" },
           },
           {
             type: "rondel",
-            payload: { nation: "GB", cost: 0, slot: "maneuver1" },
+            payload: { nation: Nation.GB, cost: 0, slot: "maneuver1" },
           },
           {
             type: "maneuver",
@@ -1198,7 +1199,7 @@ describe("Schnelleinsteig", () => {
           },
           {
             type: "rondel",
-            payload: { nation: "GE", cost: 0, slot: "maneuver2" },
+            payload: { nation: Nation.GE, cost: 0, slot: "maneuver2" },
           },
           {
             type: "maneuver",
@@ -1210,7 +1211,7 @@ describe("Schnelleinsteig", () => {
           },
           {
             type: "rondel",
-            payload: { nation: "RU", cost: 0, slot: "import" },
+            payload: { nation: Nation.RU, cost: 0, slot: "import" },
           },
         ];
         const actions = Imperial.fromLog(log).state.availableActions;
@@ -1233,19 +1234,19 @@ describe("Schnelleinsteig", () => {
             ...firstRoundLog,
             {
               type: "rondel",
-              payload: { nation: "AH", cost: 0, slot: "production2" },
+              payload: { nation: Nation.AH, cost: 0, slot: "production2" },
             },
             {
               type: "rondel",
-              payload: { nation: "IT", cost: 0, slot: "production2" },
+              payload: { nation: Nation.IT, cost: 0, slot: "production2" },
             },
             {
               type: "rondel",
-              payload: { nation: "FR", cost: 0, slot: "production1" },
+              payload: { nation: Nation.FR, cost: 0, slot: "production1" },
             },
             {
               type: "rondel",
-              payload: { nation: "GB", cost: 0, slot: "maneuver1" },
+              payload: { nation: Nation.GB, cost: 0, slot: "maneuver1" },
             },
             {
               type: "maneuver",
@@ -1257,7 +1258,7 @@ describe("Schnelleinsteig", () => {
             },
             {
               type: "rondel",
-              payload: { nation: "GE", cost: 0, slot: "maneuver2" },
+              payload: { nation: Nation.GE, cost: 0, slot: "maneuver2" },
             },
             {
               type: "maneuver",
@@ -1269,7 +1270,7 @@ describe("Schnelleinsteig", () => {
             },
             {
               type: "rondel",
-              payload: { nation: "RU", cost: 0, slot: "import" },
+              payload: { nation: Nation.RU, cost: 0, slot: "import" },
             },
             { type: "import", payload: { province: "st. petersburg" } },
             { type: "import", payload: { province: "moscow" } },
@@ -1289,13 +1290,13 @@ describe("Schnelleinsteig", () => {
             ...firstRoundLog,
             {
               type: "rondel",
-              payload: { nation: "RU", cost: 0, slot: "import" },
+              payload: { nation: Nation.RU, cost: 0, slot: "import" },
             },
             { type: "import", payload: { province: "st. petersburg" } },
             { type: "import", payload: { province: "moscow" } },
             { type: "import", payload: { province: "moscow" } },
           ];
-          const treasury = Imperial.fromLog(log).state.nations["RU"].treasury;
+          const treasury = Imperial.fromLog(log).state.nations.get(Nation.RU).treasury;
           expect(treasury).toEqual(3);
         });
       });
@@ -1309,7 +1310,7 @@ describe("Schnelleinsteig", () => {
           ...secondRoundLog,
           {
             type: "rondel",
-            payload: { nation: "AH", cost: 0, slot: "maneuver2" },
+            payload: { nation: Nation.AH, cost: 0, slot: "maneuver2" },
           },
         ];
         const landDestinations = [
@@ -1368,7 +1369,7 @@ describe("Schnelleinsteig", () => {
           ...secondRoundLog,
           {
             type: "rondel",
-            payload: { nation: "AH", cost: 0, slot: "maneuver2" },
+            payload: { nation: Nation.AH, cost: 0, slot: "maneuver2" },
           },
           {
             type: "maneuver",
@@ -1397,10 +1398,10 @@ describe("Schnelleinsteig", () => {
         ].flag;
         const tunisFlag = Imperial.fromLog(log).state.provinces["tunis"].flag;
 
-        expect(ionianSeaFlag).toEqual("AH");
-        expect(romaniaFlag).toEqual("AH");
-        expect(westBalkanFlag).toEqual("AH");
-        expect(tunisFlag).toEqual("AH");
+        expect(ionianSeaFlag).toEqual(Nation.AH);
+        expect(romaniaFlag).toEqual(Nation.AH);
+        expect(westBalkanFlag).toEqual(Nation.AH);
+        expect(tunisFlag).toEqual(Nation.AH);
       });
     });
 
@@ -1410,7 +1411,7 @@ describe("Schnelleinsteig", () => {
           ...secondRoundLog,
           {
             type: "rondel",
-            payload: { nation: "AH", cost: 0, slot: "maneuver2" },
+            payload: { nation: Nation.AH, cost: 0, slot: "maneuver2" },
           },
           {
             type: "maneuver",
@@ -1430,7 +1431,7 @@ describe("Schnelleinsteig", () => {
           },
           {
             type: "rondel",
-            payload: { nation: "IT", cost: 0, slot: "maneuver2" },
+            payload: { nation: Nation.IT, cost: 0, slot: "maneuver2" },
           },
         ];
         const landDestinations = [
@@ -1473,7 +1474,7 @@ describe("Schnelleinsteig", () => {
           ...secondRoundLog,
           {
             type: "rondel",
-            payload: { nation: "AH", cost: 0, slot: "maneuver2" },
+            payload: { nation: Nation.AH, cost: 0, slot: "maneuver2" },
           },
           {
             type: "maneuver",
@@ -1493,7 +1494,7 @@ describe("Schnelleinsteig", () => {
           },
           {
             type: "rondel",
-            payload: { nation: "IT", cost: 0, slot: "maneuver2" },
+            payload: { nation: Nation.IT, cost: 0, slot: "maneuver2" },
           },
           {
             type: "maneuver",
@@ -1511,8 +1512,8 @@ describe("Schnelleinsteig", () => {
           .provinces["western mediterranean sea"].flag;
         const spainFlag = Imperial.fromLog(log).state.provinces["spain"].flag;
 
-        expect(westernMediterraneanSeaFlag).toEqual("IT");
-        expect(spainFlag).toEqual("IT");
+        expect(westernMediterraneanSeaFlag).toEqual(Nation.IT);
+        expect(spainFlag).toEqual(Nation.IT);
       });
     });
 
@@ -1522,7 +1523,7 @@ describe("Schnelleinsteig", () => {
           ...secondRoundLog,
           {
             type: "rondel",
-            payload: { nation: "AH", cost: 0, slot: "maneuver2" },
+            payload: { nation: Nation.AH, cost: 0, slot: "maneuver2" },
           },
           {
             type: "maneuver",
@@ -1542,7 +1543,7 @@ describe("Schnelleinsteig", () => {
           },
           {
             type: "rondel",
-            payload: { nation: "IT", cost: 0, slot: "maneuver2" },
+            payload: { nation: Nation.IT, cost: 0, slot: "maneuver2" },
           },
           {
             type: "maneuver",
@@ -1557,7 +1558,7 @@ describe("Schnelleinsteig", () => {
           },
           {
             type: "rondel",
-            payload: { nation: "FR", cost: 0, slot: "maneuver1" },
+            payload: { nation: Nation.FR, cost: 0, slot: "maneuver1" },
           },
         ];
         const landDestinations = [
@@ -1605,7 +1606,7 @@ describe("Schnelleinsteig", () => {
           ...secondRoundLog,
           {
             type: "rondel",
-            payload: { nation: "AH", cost: 0, slot: "maneuver2" },
+            payload: { nation: Nation.AH, cost: 0, slot: "maneuver2" },
           },
           {
             type: "maneuver",
@@ -1625,7 +1626,7 @@ describe("Schnelleinsteig", () => {
           },
           {
             type: "rondel",
-            payload: { nation: "IT", cost: 0, slot: "maneuver2" },
+            payload: { nation: Nation.IT, cost: 0, slot: "maneuver2" },
           },
           {
             type: "maneuver",
@@ -1640,7 +1641,7 @@ describe("Schnelleinsteig", () => {
           },
           {
             type: "rondel",
-            payload: { nation: "IT", cost: 0, slot: "maneuver2" },
+            payload: { nation: Nation.IT, cost: 0, slot: "maneuver2" },
           },
           {
             type: "maneuver",
@@ -1651,7 +1652,7 @@ describe("Schnelleinsteig", () => {
           },
           {
             type: "rondel",
-            payload: { nation: "FR", cost: 0, slot: "maneuver1" },
+            payload: { nation: Nation.FR, cost: 0, slot: "maneuver1" },
           },
           {
             type: "maneuver",
@@ -1666,16 +1667,16 @@ describe("Schnelleinsteig", () => {
             type: "coexist",
             payload: {
               province: "western mediterranean sea",
-              incumbent: "IT",
-              challenger: "FR",
+              incumbent: Nation.IT,
+              challenger: Nation.FR,
             },
           },
           {
             type: "fight",
             payload: {
               province: "western mediterranean sea",
-              incumbent: "IT",
-              challenger: "FR",
+              incumbent: Nation.IT,
+              challenger: Nation.FR,
             },
           },
           ,
@@ -1690,7 +1691,7 @@ describe("Schnelleinsteig", () => {
           ...secondRoundLog,
           {
             type: "rondel",
-            payload: { nation: "AH", cost: 0, slot: "maneuver2" },
+            payload: { nation: Nation.AH, cost: 0, slot: "maneuver2" },
           },
           {
             type: "maneuver",
@@ -1710,7 +1711,7 @@ describe("Schnelleinsteig", () => {
           },
           {
             type: "rondel",
-            payload: { nation: "IT", cost: 0, slot: "maneuver2" },
+            payload: { nation: Nation.IT, cost: 0, slot: "maneuver2" },
           },
           {
             type: "maneuver",
@@ -1725,7 +1726,7 @@ describe("Schnelleinsteig", () => {
           },
           {
             type: "rondel",
-            payload: { nation: "FR", cost: 0, slot: "maneuver1" },
+            payload: { nation: Nation.FR, cost: 0, slot: "maneuver1" },
           },
           {
             type: "maneuver",
@@ -1738,8 +1739,8 @@ describe("Schnelleinsteig", () => {
             type: "fight",
             payload: {
               province: "western mediterranean sea",
-              incumbent: "IT",
-              challenger: "FR",
+              incumbent: Nation.IT,
+              challenger: Nation.FR,
             },
           },
         ];
@@ -1751,7 +1752,7 @@ describe("Schnelleinsteig", () => {
         expect(
           Imperial.fromLog(log).state.provinces["western mediterranean sea"]
             .flag
-        ).toEqual("IT");
+        ).toEqual(Nation.IT);
       });
 
       test("Morocco and bay of biscay have FR flags", () => {
@@ -1759,7 +1760,7 @@ describe("Schnelleinsteig", () => {
           ...secondRoundLog,
           {
             type: "rondel",
-            payload: { nation: "AH", cost: 0, slot: "maneuver2" },
+            payload: { nation: Nation.AH, cost: 0, slot: "maneuver2" },
           },
           {
             type: "maneuver",
@@ -1779,7 +1780,7 @@ describe("Schnelleinsteig", () => {
           },
           {
             type: "rondel",
-            payload: { nation: "IT", cost: 0, slot: "maneuver2" },
+            payload: { nation: Nation.IT, cost: 0, slot: "maneuver2" },
           },
           {
             type: "maneuver",
@@ -1794,7 +1795,7 @@ describe("Schnelleinsteig", () => {
           },
           {
             type: "rondel",
-            payload: { nation: "FR", cost: 0, slot: "maneuver1" },
+            payload: { nation: Nation.FR, cost: 0, slot: "maneuver1" },
           },
           {
             type: "maneuver",
@@ -1816,12 +1817,12 @@ describe("Schnelleinsteig", () => {
         ).toEqual(1);
         expect(
           Imperial.fromLog(log).state.provinces["bay of biscay"].flag
-        ).toEqual("FR");
+        ).toEqual(Nation.FR);
         expect(
           Imperial.fromLog(log).state.provinces["morocco"].unitCount
         ).toEqual(1);
         expect(Imperial.fromLog(log).state.provinces["morocco"].flag).toEqual(
-          "FR"
+          Nation.FR
         );
       });
     });
@@ -1832,7 +1833,7 @@ describe("Schnelleinsteig", () => {
           ...secondRoundLog,
           {
             type: "rondel",
-            payload: { nation: "AH", cost: 0, slot: "maneuver2" },
+            payload: { nation: Nation.AH, cost: 0, slot: "maneuver2" },
           },
           {
             type: "maneuver",
@@ -1852,7 +1853,7 @@ describe("Schnelleinsteig", () => {
           },
           {
             type: "rondel",
-            payload: { nation: "IT", cost: 0, slot: "maneuver2" },
+            payload: { nation: Nation.IT, cost: 0, slot: "maneuver2" },
           },
           {
             type: "maneuver",
@@ -1867,7 +1868,7 @@ describe("Schnelleinsteig", () => {
           },
           {
             type: "rondel",
-            payload: { nation: "FR", cost: 0, slot: "maneuver1" },
+            payload: { nation: Nation.FR, cost: 0, slot: "maneuver1" },
           },
           {
             type: "maneuver",
@@ -1885,13 +1886,13 @@ describe("Schnelleinsteig", () => {
           },
           {
             type: "rondel",
-            payload: { nation: "GB", cost: 0, slot: "investor" },
+            payload: { nation: Nation.GB, cost: 0, slot: "investor" },
           },
         ];
         const actions = Imperial.fromLog(log).state.availableActions;
         const expected = rondelSlots.map((slot) => ({
           type: "rondel",
-          payload: { nation: "GE", cost: 0, slot },
+          payload: { nation: Nation.GE, cost: 0, slot },
         }));
         expect(actions).toEqual(new Set(expected));
       });
@@ -1902,7 +1903,7 @@ describe("Schnelleinsteig", () => {
             ...secondRoundLog,
             {
               type: "rondel",
-              payload: { nation: "AH", cost: 0, slot: "maneuver2" },
+              payload: { nation: Nation.AH, cost: 0, slot: "maneuver2" },
             },
             {
               type: "maneuver",
@@ -1922,7 +1923,7 @@ describe("Schnelleinsteig", () => {
             },
             {
               type: "rondel",
-              payload: { nation: "IT", cost: 0, slot: "maneuver2" },
+              payload: { nation: Nation.IT, cost: 0, slot: "maneuver2" },
             },
             {
               type: "maneuver",
@@ -1937,7 +1938,7 @@ describe("Schnelleinsteig", () => {
             },
             {
               type: "rondel",
-              payload: { nation: "FR", cost: 0, slot: "maneuver1" },
+              payload: { nation: Nation.FR, cost: 0, slot: "maneuver1" },
             },
             {
               type: "maneuver",
@@ -1955,10 +1956,10 @@ describe("Schnelleinsteig", () => {
             },
             {
               type: "rondel",
-              payload: { nation: "GB", cost: 0, slot: "investor" },
+              payload: { nation: Nation.GB, cost: 0, slot: "investor" },
             },
           ];
-          const treasury = Imperial.fromLog(log).state.nations["GB"].treasury;
+          const treasury = Imperial.fromLog(log).state.nations.get(Nation.GB).treasury;
           expect(treasury).toEqual(6);
         });
 
@@ -1967,7 +1968,7 @@ describe("Schnelleinsteig", () => {
             ...secondRoundLog,
             {
               type: "rondel",
-              payload: { nation: "AH", cost: 0, slot: "maneuver2" },
+              payload: { nation: Nation.AH, cost: 0, slot: "maneuver2" },
             },
             {
               type: "maneuver",
@@ -1987,7 +1988,7 @@ describe("Schnelleinsteig", () => {
             },
             {
               type: "rondel",
-              payload: { nation: "IT", cost: 0, slot: "maneuver2" },
+              payload: { nation: Nation.IT, cost: 0, slot: "maneuver2" },
             },
             {
               type: "maneuver",
@@ -2002,7 +2003,7 @@ describe("Schnelleinsteig", () => {
             },
             {
               type: "rondel",
-              payload: { nation: "FR", cost: 0, slot: "maneuver1" },
+              payload: { nation: Nation.FR, cost: 0, slot: "maneuver1" },
             },
             {
               type: "maneuver",
@@ -2020,10 +2021,10 @@ describe("Schnelleinsteig", () => {
             },
             {
               type: "rondel",
-              payload: { nation: "GB", cost: 0, slot: "investor" },
+              payload: { nation: Nation.GB, cost: 0, slot: "investor" },
             },
           ];
-          const controller = Imperial.fromLog(log).state.nations["GB"]
+          const controller = Imperial.fromLog(log).state.nations.get(Nation.GB)
             .controller;
           const cash = Imperial.fromLog(log).state.players[controller].cash;
           expect(cash).toEqual(9);
@@ -2035,7 +2036,7 @@ describe("Schnelleinsteig", () => {
               ...secondRoundLog,
               {
                 type: "rondel",
-                payload: { nation: "AH", cost: 0, slot: "maneuver2" },
+                payload: { nation: Nation.AH, cost: 0, slot: "maneuver2" },
               },
               {
                 type: "maneuver",
@@ -2055,7 +2056,7 @@ describe("Schnelleinsteig", () => {
               },
               {
                 type: "rondel",
-                payload: { nation: "IT", cost: 0, slot: "maneuver2" },
+                payload: { nation: Nation.IT, cost: 0, slot: "maneuver2" },
               },
               {
                 type: "maneuver",
@@ -2070,7 +2071,7 @@ describe("Schnelleinsteig", () => {
               },
               {
                 type: "rondel",
-                payload: { nation: "FR", cost: 0, slot: "maneuver1" },
+                payload: { nation: Nation.FR, cost: 0, slot: "maneuver1" },
               },
               {
                 type: "maneuver",
@@ -2088,11 +2089,11 @@ describe("Schnelleinsteig", () => {
               },
               {
                 type: "rondel",
-                payload: { nation: "GB", cost: 0, slot: "investor" },
+                payload: { nation: Nation.GB, cost: 0, slot: "investor" },
               },
               {
                 type: "bondPurchase",
-                payload: { nation: "RU", player: "Bert", cost: 6 },
+                payload: { nation: Nation.RU, player: "Bert", cost: 6 },
               },
             ];
             const cash = Imperial.fromLog(log).state.players["Bert"].cash;
@@ -2104,7 +2105,7 @@ describe("Schnelleinsteig", () => {
               ...secondRoundLog,
               {
                 type: "rondel",
-                payload: { nation: "AH", cost: 0, slot: "maneuver2" },
+                payload: { nation: Nation.AH, cost: 0, slot: "maneuver2" },
               },
               {
                 type: "maneuver",
@@ -2124,7 +2125,7 @@ describe("Schnelleinsteig", () => {
               },
               {
                 type: "rondel",
-                payload: { nation: "IT", cost: 0, slot: "maneuver2" },
+                payload: { nation: Nation.IT, cost: 0, slot: "maneuver2" },
               },
               {
                 type: "maneuver",
@@ -2139,7 +2140,7 @@ describe("Schnelleinsteig", () => {
               },
               {
                 type: "rondel",
-                payload: { nation: "FR", cost: 0, slot: "maneuver1" },
+                payload: { nation: Nation.FR, cost: 0, slot: "maneuver1" },
               },
               {
                 type: "maneuver",
@@ -2157,14 +2158,14 @@ describe("Schnelleinsteig", () => {
               },
               {
                 type: "rondel",
-                payload: { nation: "GB", cost: 0, slot: "investor" },
+                payload: { nation: Nation.GB, cost: 0, slot: "investor" },
               },
               {
                 type: "bondPurchase",
-                payload: { nation: "RU", player: "Bert", cost: 6 },
+                payload: { nation: Nation.RU, player: "Bert", cost: 6 },
               },
             ];
-            const treasury = Imperial.fromLog(log).state.nations["RU"].treasury;
+            const treasury = Imperial.fromLog(log).state.nations.get(Nation.RU).treasury;
             expect(treasury).toEqual(6);
           });
         });
@@ -2177,7 +2178,7 @@ describe("Schnelleinsteig", () => {
           ...secondRoundLog,
           {
             type: "rondel",
-            payload: { nation: "AH", cost: 0, slot: "maneuver2" },
+            payload: { nation: Nation.AH, cost: 0, slot: "maneuver2" },
           },
           {
             type: "maneuver",
@@ -2197,7 +2198,7 @@ describe("Schnelleinsteig", () => {
           },
           {
             type: "rondel",
-            payload: { nation: "IT", cost: 0, slot: "maneuver2" },
+            payload: { nation: Nation.IT, cost: 0, slot: "maneuver2" },
           },
           {
             type: "maneuver",
@@ -2212,7 +2213,7 @@ describe("Schnelleinsteig", () => {
           },
           {
             type: "rondel",
-            payload: { nation: "FR", cost: 0, slot: "maneuver1" },
+            payload: { nation: Nation.FR, cost: 0, slot: "maneuver1" },
           },
           {
             type: "maneuver",
@@ -2230,21 +2231,21 @@ describe("Schnelleinsteig", () => {
           },
           {
             type: "rondel",
-            payload: { nation: "GB", cost: 0, slot: "investor" },
+            payload: { nation: Nation.GB, cost: 0, slot: "investor" },
           },
           {
             type: "bondPurchase",
-            payload: { nation: "RU", player: "Bert", cost: 6 },
+            payload: { nation: Nation.RU, player: "Bert", cost: 6 },
           },
           {
             type: "rondel",
-            payload: { nation: "GE", cost: 0, slot: "taxation" },
+            payload: { nation: Nation.GE, cost: 0, slot: "taxation" },
           },
         ];
         const actions = Imperial.fromLog(log).state.availableActions;
         const expected = rondelSlots.map((slot) => ({
           type: "rondel",
-          payload: { nation: "RU", cost: 0, slot },
+          payload: { nation: Nation.RU, cost: 0, slot },
         }));
         expect(actions).toEqual(new Set(expected));
       });
@@ -2255,7 +2256,7 @@ describe("Schnelleinsteig", () => {
             ...secondRoundLog,
             {
               type: "rondel",
-              payload: { nation: "AH", cost: 0, slot: "maneuver2" },
+              payload: { nation: Nation.AH, cost: 0, slot: "maneuver2" },
             },
             {
               type: "maneuver",
@@ -2275,7 +2276,7 @@ describe("Schnelleinsteig", () => {
             },
             {
               type: "rondel",
-              payload: { nation: "IT", cost: 0, slot: "maneuver2" },
+              payload: { nation: Nation.IT, cost: 0, slot: "maneuver2" },
             },
             {
               type: "maneuver",
@@ -2290,7 +2291,7 @@ describe("Schnelleinsteig", () => {
             },
             {
               type: "rondel",
-              payload: { nation: "FR", cost: 0, slot: "maneuver1" },
+              payload: { nation: Nation.FR, cost: 0, slot: "maneuver1" },
             },
             {
               type: "maneuver",
@@ -2308,18 +2309,18 @@ describe("Schnelleinsteig", () => {
             },
             {
               type: "rondel",
-              payload: { nation: "GB", cost: 0, slot: "investor" },
+              payload: { nation: Nation.GB, cost: 0, slot: "investor" },
             },
             {
               type: "bondPurchase",
-              payload: { nation: "RU", player: "Bert", cost: 6 },
+              payload: { nation: Nation.RU, player: "Bert", cost: 6 },
             },
             {
               type: "rondel",
-              payload: { nation: "GE", cost: 0, slot: "taxation" },
+              payload: { nation: Nation.GE, cost: 0, slot: "taxation" },
             },
           ];
-          const treasury = Imperial.fromLog(log).state.nations["GE"].treasury;
+          const treasury = Imperial.fromLog(log).state.nations.get(Nation.GE).treasury;
           expect(treasury).toEqual(14);
         });
 
@@ -2328,7 +2329,7 @@ describe("Schnelleinsteig", () => {
             ...secondRoundLog,
             {
               type: "rondel",
-              payload: { nation: "AH", cost: 0, slot: "maneuver2" },
+              payload: { nation: Nation.AH, cost: 0, slot: "maneuver2" },
             },
             {
               type: "maneuver",
@@ -2348,7 +2349,7 @@ describe("Schnelleinsteig", () => {
             },
             {
               type: "rondel",
-              payload: { nation: "IT", cost: 0, slot: "maneuver2" },
+              payload: { nation: Nation.IT, cost: 0, slot: "maneuver2" },
             },
             {
               type: "maneuver",
@@ -2363,7 +2364,7 @@ describe("Schnelleinsteig", () => {
             },
             {
               type: "rondel",
-              payload: { nation: "FR", cost: 0, slot: "maneuver1" },
+              payload: { nation: Nation.FR, cost: 0, slot: "maneuver1" },
             },
             {
               type: "maneuver",
@@ -2381,18 +2382,18 @@ describe("Schnelleinsteig", () => {
             },
             {
               type: "rondel",
-              payload: { nation: "GB", cost: 0, slot: "investor" },
+              payload: { nation: Nation.GB, cost: 0, slot: "investor" },
             },
             {
               type: "bondPurchase",
-              payload: { nation: "RU", player: "Bert", cost: 6 },
+              payload: { nation: Nation.RU, player: "Bert", cost: 6 },
             },
             {
               type: "rondel",
-              payload: { nation: "GE", cost: 0, slot: "taxation" },
+              payload: { nation: Nation.GE, cost: 0, slot: "taxation" },
             },
           ];
-          const taxChartPosition = Imperial.fromLog(log).state.nations["GE"]
+          const taxChartPosition = Imperial.fromLog(log).state.nations.get(Nation.GE)
             .taxChartPosition;
           expect(taxChartPosition).toEqual("6");
         });
@@ -2402,7 +2403,7 @@ describe("Schnelleinsteig", () => {
             ...secondRoundLog,
             {
               type: "rondel",
-              payload: { nation: "AH", cost: 0, slot: "maneuver2" },
+              payload: { nation: Nation.AH, cost: 0, slot: "maneuver2" },
             },
             {
               type: "maneuver",
@@ -2422,7 +2423,7 @@ describe("Schnelleinsteig", () => {
             },
             {
               type: "rondel",
-              payload: { nation: "IT", cost: 0, slot: "maneuver2" },
+              payload: { nation: Nation.IT, cost: 0, slot: "maneuver2" },
             },
             {
               type: "maneuver",
@@ -2437,7 +2438,7 @@ describe("Schnelleinsteig", () => {
             },
             {
               type: "rondel",
-              payload: { nation: "FR", cost: 0, slot: "maneuver1" },
+              payload: { nation: Nation.FR, cost: 0, slot: "maneuver1" },
             },
             {
               type: "maneuver",
@@ -2455,18 +2456,18 @@ describe("Schnelleinsteig", () => {
             },
             {
               type: "rondel",
-              payload: { nation: "GB", cost: 0, slot: "investor" },
+              payload: { nation: Nation.GB, cost: 0, slot: "investor" },
             },
             {
               type: "bondPurchase",
-              payload: { nation: "RU", player: "Bert", cost: 6 },
+              payload: { nation: Nation.RU, player: "Bert", cost: 6 },
             },
             {
               type: "rondel",
-              payload: { nation: "GE", cost: 0, slot: "taxation" },
+              payload: { nation: Nation.GE, cost: 0, slot: "taxation" },
             },
           ];
-          const powerPoints = Imperial.fromLog(log).state.nations["GE"]
+          const powerPoints = Imperial.fromLog(log).state.nations.get(Nation.GE)
             .powerPoints;
           expect(powerPoints).toEqual(1);
         });
@@ -2476,7 +2477,7 @@ describe("Schnelleinsteig", () => {
             ...secondRoundLog,
             {
               type: "rondel",
-              payload: { nation: "AH", cost: 0, slot: "maneuver2" },
+              payload: { nation: Nation.AH, cost: 0, slot: "maneuver2" },
             },
             {
               type: "maneuver",
@@ -2496,7 +2497,7 @@ describe("Schnelleinsteig", () => {
             },
             {
               type: "rondel",
-              payload: { nation: "IT", cost: 0, slot: "maneuver2" },
+              payload: { nation: Nation.IT, cost: 0, slot: "maneuver2" },
             },
             {
               type: "maneuver",
@@ -2511,7 +2512,7 @@ describe("Schnelleinsteig", () => {
             },
             {
               type: "rondel",
-              payload: { nation: "FR", cost: 0, slot: "maneuver1" },
+              payload: { nation: Nation.FR, cost: 0, slot: "maneuver1" },
             },
             {
               type: "maneuver",
@@ -2529,15 +2530,15 @@ describe("Schnelleinsteig", () => {
             },
             {
               type: "rondel",
-              payload: { nation: "GB", cost: 0, slot: "investor" },
+              payload: { nation: Nation.GB, cost: 0, slot: "investor" },
             },
             {
               type: "bondPurchase",
-              payload: { nation: "RU", player: "Bert", cost: 6 },
+              payload: { nation: Nation.RU, player: "Bert", cost: 6 },
             },
             {
               type: "rondel",
-              payload: { nation: "GE", cost: 0, slot: "taxation" },
+              payload: { nation: Nation.GE, cost: 0, slot: "taxation" },
             },
           ];
           const cash = Imperial.fromLog(log).state.players["Anton"].cash;
@@ -2552,7 +2553,7 @@ describe("Schnelleinsteig", () => {
           ...secondRoundLog,
           {
             type: "rondel",
-            payload: { nation: "AH", cost: 0, slot: "maneuver2" },
+            payload: { nation: Nation.AH, cost: 0, slot: "maneuver2" },
           },
           {
             type: "maneuver",
@@ -2572,7 +2573,7 @@ describe("Schnelleinsteig", () => {
           },
           {
             type: "rondel",
-            payload: { nation: "IT", cost: 0, slot: "maneuver2" },
+            payload: { nation: Nation.IT, cost: 0, slot: "maneuver2" },
           },
           {
             type: "maneuver",
@@ -2587,7 +2588,7 @@ describe("Schnelleinsteig", () => {
           },
           {
             type: "rondel",
-            payload: { nation: "FR", cost: 0, slot: "maneuver1" },
+            payload: { nation: Nation.FR, cost: 0, slot: "maneuver1" },
           },
           {
             type: "maneuver",
@@ -2605,19 +2606,19 @@ describe("Schnelleinsteig", () => {
           },
           {
             type: "rondel",
-            payload: { nation: "GB", cost: 0, slot: "investor" },
+            payload: { nation: Nation.GB, cost: 0, slot: "investor" },
           },
           {
             type: "bondPurchase",
-            payload: { nation: "RU", player: "Bert", cost: 6 },
+            payload: { nation: Nation.RU, player: "Bert", cost: 6 },
           },
           {
             type: "rondel",
-            payload: { nation: "GE", cost: 0, slot: "taxation" },
+            payload: { nation: Nation.GE, cost: 0, slot: "taxation" },
           },
           {
             type: "rondel",
-            payload: { nation: "RU", cost: 0, slot: "production2" },
+            payload: { nation: Nation.RU, cost: 0, slot: "production2" },
           },
         ];
         const odessaUnitCount = Imperial.fromLog(log).state.provinces["odessa"]
@@ -2637,13 +2638,13 @@ describe("Schnelleinsteig", () => {
           ...thirdRoundLog,
           {
             type: "rondel",
-            payload: { nation: "AH", cost: 0, slot: "taxation" },
+            payload: { nation: Nation.AH, cost: 0, slot: "taxation" },
           },
         ];
         const actions = Imperial.fromLog(log).state.availableActions;
         const expected = rondelSlots.map((slot) => ({
           type: "rondel",
-          payload: { nation: "IT", cost: 0, slot },
+          payload: { nation: Nation.IT, cost: 0, slot },
         }));
         expect(actions).toEqual(new Set(expected));
       });
@@ -2654,10 +2655,10 @@ describe("Schnelleinsteig", () => {
             ...thirdRoundLog,
             {
               type: "rondel",
-              payload: { nation: "AH", cost: 0, slot: "taxation" },
+              payload: { nation: Nation.AH, cost: 0, slot: "taxation" },
             },
           ];
-          const treasury = Imperial.fromLog(log).state.nations["AH"].treasury;
+          const treasury = Imperial.fromLog(log).state.nations.get(Nation.AH).treasury;
           expect(treasury).toEqual(4);
         });
 
@@ -2666,10 +2667,10 @@ describe("Schnelleinsteig", () => {
             ...thirdRoundLog,
             {
               type: "rondel",
-              payload: { nation: "AH", cost: 0, slot: "taxation" },
+              payload: { nation: Nation.AH, cost: 0, slot: "taxation" },
             },
           ];
-          const taxChartPosition = Imperial.fromLog(log).state.nations["AH"]
+          const taxChartPosition = Imperial.fromLog(log).state.nations.get(Nation.AH)
             .taxChartPosition;
           expect(taxChartPosition).toEqual("8");
         });
@@ -2679,10 +2680,10 @@ describe("Schnelleinsteig", () => {
             ...thirdRoundLog,
             {
               type: "rondel",
-              payload: { nation: "AH", cost: 0, slot: "taxation" },
+              payload: { nation: Nation.AH, cost: 0, slot: "taxation" },
             },
           ];
-          const powerPoints = Imperial.fromLog(log).state.nations["AH"]
+          const powerPoints = Imperial.fromLog(log).state.nations.get(Nation.AH)
             .powerPoints;
           expect(powerPoints).toEqual(3);
         });
@@ -2692,7 +2693,7 @@ describe("Schnelleinsteig", () => {
             ...thirdRoundLog,
             {
               type: "rondel",
-              payload: { nation: "AH", cost: 0, slot: "taxation" },
+              payload: { nation: Nation.AH, cost: 0, slot: "taxation" },
             },
           ];
           const cash = Imperial.fromLog(log).state.players["Claudia"].cash;
@@ -2707,11 +2708,11 @@ describe("Schnelleinsteig", () => {
           ...thirdRoundLog,
           {
             type: "rondel",
-            payload: { nation: "AH", cost: 0, slot: "taxation" },
+            payload: { nation: Nation.AH, cost: 0, slot: "taxation" },
           },
           {
             type: "rondel",
-            payload: { nation: "IT", cost: 0, slot: "production1" },
+            payload: { nation: Nation.IT, cost: 0, slot: "production1" },
           },
         ];
 
@@ -2730,15 +2731,15 @@ describe("Schnelleinsteig", () => {
           ...thirdRoundLog,
           {
             type: "rondel",
-            payload: { nation: "AH", cost: 0, slot: "taxation" },
+            payload: { nation: Nation.AH, cost: 0, slot: "taxation" },
           },
           {
             type: "rondel",
-            payload: { nation: "IT", cost: 0, slot: "production1" },
+            payload: { nation: Nation.IT, cost: 0, slot: "production1" },
           },
           {
             type: "rondel",
-            payload: { nation: "FR", cost: 0, slot: "production2" },
+            payload: { nation: Nation.FR, cost: 0, slot: "production2" },
           },
         ];
 
@@ -2761,15 +2762,15 @@ describe("Schnelleinsteig", () => {
             ...thirdRoundLog,
             {
               type: "rondel",
-              payload: { nation: "AH", cost: 0, slot: "taxation" },
+              payload: { nation: Nation.AH, cost: 0, slot: "taxation" },
             },
             {
               type: "rondel",
-              payload: { nation: "IT", cost: 0, slot: "production1" },
+              payload: { nation: Nation.IT, cost: 0, slot: "production1" },
             },
             {
               type: "rondel",
-              payload: { nation: "FR", cost: 0, slot: "production2" },
+              payload: { nation: Nation.FR, cost: 0, slot: "production2" },
             },
           ];
           const cash = Imperial.fromLog(log).state.players["Claudia"].cash;
@@ -2781,61 +2782,61 @@ describe("Schnelleinsteig", () => {
             ...thirdRoundLog,
             {
               type: "rondel",
-              payload: { nation: "AH", cost: 0, slot: "taxation" },
+              payload: { nation: Nation.AH, cost: 0, slot: "taxation" },
             },
             {
               type: "rondel",
-              payload: { nation: "IT", cost: 0, slot: "production1" },
+              payload: { nation: Nation.IT, cost: 0, slot: "production1" },
             },
             {
               type: "rondel",
-              payload: { nation: "FR", cost: 0, slot: "production2" },
+              payload: { nation: Nation.FR, cost: 0, slot: "production2" },
             },
           ];
           const expectedActions = [
             {
               type: "bondPurchase",
-              payload: { nation: "AH", player: "Claudia", cost: 4 },
+              payload: { nation: Nation.AH, player: "Claudia", cost: 4 },
             },
             {
               type: "bondPurchase",
-              payload: { nation: "AH", player: "Claudia", cost: 6 },
+              payload: { nation: Nation.AH, player: "Claudia", cost: 6 },
             },
             {
               type: "bondPurchase",
-              payload: { nation: "IT", player: "Claudia", cost: 2 },
+              payload: { nation: Nation.IT, player: "Claudia", cost: 2 },
             },
             {
               type: "bondPurchase",
-              payload: { nation: "IT", player: "Claudia", cost: 4 },
+              payload: { nation: Nation.IT, player: "Claudia", cost: 4 },
             },
             {
               type: "bondPurchase",
-              payload: { nation: "IT", player: "Claudia", cost: 6 },
+              payload: { nation: Nation.IT, player: "Claudia", cost: 6 },
             },
             {
               type: "bondPurchase",
-              payload: { nation: "FR", player: "Claudia", cost: 4 },
+              payload: { nation: Nation.FR, player: "Claudia", cost: 4 },
             },
             {
               type: "bondPurchase",
-              payload: { nation: "FR", player: "Claudia", cost: 6 },
+              payload: { nation: Nation.FR, player: "Claudia", cost: 6 },
             },
             {
               type: "bondPurchase",
-              payload: { nation: "GB", player: "Claudia", cost: 4 },
+              payload: { nation: Nation.GB, player: "Claudia", cost: 4 },
             },
             {
               type: "bondPurchase",
-              payload: { nation: "GB", player: "Claudia", cost: 6 },
+              payload: { nation: Nation.GB, player: "Claudia", cost: 6 },
             },
             {
               type: "bondPurchase",
-              payload: { nation: "GE", player: "Claudia", cost: 2 },
+              payload: { nation: Nation.GE, player: "Claudia", cost: 2 },
             },
             {
               type: "bondPurchase",
-              payload: { nation: "RU", player: "Claudia", cost: 4 },
+              payload: { nation: Nation.RU, player: "Claudia", cost: 4 },
             },
           ];
           expect(Imperial.fromLog(log).availableActions()).toEqual(
@@ -2849,19 +2850,19 @@ describe("Schnelleinsteig", () => {
               ...thirdRoundLog,
               {
                 type: "rondel",
-                payload: { nation: "AH", cost: 0, slot: "taxation" },
+                payload: { nation: Nation.AH, cost: 0, slot: "taxation" },
               },
               {
                 type: "rondel",
-                payload: { nation: "IT", cost: 0, slot: "production1" },
+                payload: { nation: Nation.IT, cost: 0, slot: "production1" },
               },
               {
                 type: "rondel",
-                payload: { nation: "FR", cost: 0, slot: "production2" },
+                payload: { nation: Nation.FR, cost: 0, slot: "production2" },
               },
               {
                 type: "bondPurchase",
-                payload: { nation: "AH", player: "Claudia", cost: 6 },
+                payload: { nation: Nation.AH, player: "Claudia", cost: 6 },
               },
             ];
             const cash = Imperial.fromLog(log).state.players["Claudia"].cash;
@@ -2873,26 +2874,26 @@ describe("Schnelleinsteig", () => {
               ...thirdRoundLog,
               {
                 type: "rondel",
-                payload: { nation: "AH", cost: 0, slot: "taxation" },
+                payload: { nation: Nation.AH, cost: 0, slot: "taxation" },
               },
               {
                 type: "rondel",
-                payload: { nation: "IT", cost: 0, slot: "production1" },
+                payload: { nation: Nation.IT, cost: 0, slot: "production1" },
               },
               {
                 type: "rondel",
-                payload: { nation: "FR", cost: 0, slot: "production2" },
+                payload: { nation: Nation.FR, cost: 0, slot: "production2" },
               },
               {
                 type: "bondPurchase",
-                payload: { nation: "AH", player: "Claudia", cost: 6 },
+                payload: { nation: Nation.AH, player: "Claudia", cost: 6 },
               },
             ];
             const bonds = Imperial.fromLog(log).state.players["Claudia"].bonds;
             expect(bonds).toEqual([
-              { nation: "AH", cost: 2 },
-              { nation: "FR", cost: 9 },
-              { nation: "AH", cost: 6 },
+              { nation: Nation.AH, cost: 2 },
+              { nation: Nation.FR, cost: 9 },
+              { nation: Nation.AH, cost: 6 },
             ]);
           });
         });
@@ -2902,19 +2903,19 @@ describe("Schnelleinsteig", () => {
             ...thirdRoundLog,
             {
               type: "rondel",
-              payload: { nation: "AH", cost: 0, slot: "taxation" },
+              payload: { nation: Nation.AH, cost: 0, slot: "taxation" },
             },
             {
               type: "rondel",
-              payload: { nation: "IT", cost: 0, slot: "production1" },
+              payload: { nation: Nation.IT, cost: 0, slot: "production1" },
             },
             {
               type: "rondel",
-              payload: { nation: "FR", cost: 0, slot: "production2" },
+              payload: { nation: Nation.FR, cost: 0, slot: "production2" },
             },
             {
               type: "bondPurchase",
-              payload: { nation: "AH", player: "Claudia", cost: 6 },
+              payload: { nation: Nation.AH, player: "Claudia", cost: 6 },
             },
           ];
           const investorCardHolder = Imperial.fromLog(log).state
@@ -2930,23 +2931,23 @@ describe("Schnelleinsteig", () => {
           ...thirdRoundLog,
           {
             type: "rondel",
-            payload: { nation: "AH", cost: 0, slot: "taxation" },
+            payload: { nation: Nation.AH, cost: 0, slot: "taxation" },
           },
           {
             type: "rondel",
-            payload: { nation: "IT", cost: 0, slot: "production1" },
+            payload: { nation: Nation.IT, cost: 0, slot: "production1" },
           },
           {
             type: "rondel",
-            payload: { nation: "FR", cost: 0, slot: "production2" },
+            payload: { nation: Nation.FR, cost: 0, slot: "production2" },
           },
           {
             type: "bondPurchase",
-            payload: { nation: "AH", player: "Claudia", cost: 6 },
+            payload: { nation: Nation.AH, player: "Claudia", cost: 6 },
           },
           {
             type: "rondel",
-            payload: { nation: "GB", cost: 0, slot: "production2" },
+            payload: { nation: Nation.GB, cost: 0, slot: "production2" },
           },
         ];
         const londonUnitCount = Imperial.fromLog(log).state.provinces["london"]
@@ -2965,27 +2966,27 @@ describe("Schnelleinsteig", () => {
           ...thirdRoundLog,
           {
             type: "rondel",
-            payload: { nation: "AH", cost: 0, slot: "taxation" },
+            payload: { nation: Nation.AH, cost: 0, slot: "taxation" },
           },
           {
             type: "rondel",
-            payload: { nation: "IT", cost: 0, slot: "production1" },
+            payload: { nation: Nation.IT, cost: 0, slot: "production1" },
           },
           {
             type: "rondel",
-            payload: { nation: "FR", cost: 0, slot: "production2" },
+            payload: { nation: Nation.FR, cost: 0, slot: "production2" },
           },
           {
             type: "bondPurchase",
-            payload: { nation: "AH", player: "Claudia", cost: 6 },
+            payload: { nation: Nation.AH, player: "Claudia", cost: 6 },
           },
           {
             type: "rondel",
-            payload: { nation: "GB", cost: 0, slot: "production2" },
+            payload: { nation: Nation.GB, cost: 0, slot: "production2" },
           },
           {
             type: "rondel",
-            payload: { nation: "GE", cost: 0, slot: "factory" },
+            payload: { nation: Nation.GE, cost: 0, slot: "factory" },
           },
         ];
         const expected = new Set(
@@ -3002,27 +3003,27 @@ describe("Schnelleinsteig", () => {
             ...thirdRoundLog,
             {
               type: "rondel",
-              payload: { nation: "AH", cost: 0, slot: "taxation" },
+              payload: { nation: Nation.AH, cost: 0, slot: "taxation" },
             },
             {
               type: "rondel",
-              payload: { nation: "IT", cost: 0, slot: "production1" },
+              payload: { nation: Nation.IT, cost: 0, slot: "production1" },
             },
             {
               type: "rondel",
-              payload: { nation: "FR", cost: 0, slot: "production2" },
+              payload: { nation: Nation.FR, cost: 0, slot: "production2" },
             },
             {
               type: "bondPurchase",
-              payload: { nation: "AH", player: "Claudia", cost: 6 },
+              payload: { nation: Nation.AH, player: "Claudia", cost: 6 },
             },
             {
               type: "rondel",
-              payload: { nation: "GB", cost: 0, slot: "production2" },
+              payload: { nation: Nation.GB, cost: 0, slot: "production2" },
             },
             {
               type: "rondel",
-              payload: { nation: "GE", cost: 0, slot: "factory" },
+              payload: { nation: Nation.GE, cost: 0, slot: "factory" },
             },
             {
               type: "buildFactory",
@@ -3038,34 +3039,34 @@ describe("Schnelleinsteig", () => {
             ...thirdRoundLog,
             {
               type: "rondel",
-              payload: { nation: "AH", cost: 0, slot: "taxation" },
+              payload: { nation: Nation.AH, cost: 0, slot: "taxation" },
             },
             {
               type: "rondel",
-              payload: { nation: "IT", cost: 0, slot: "production1" },
+              payload: { nation: Nation.IT, cost: 0, slot: "production1" },
             },
             {
               type: "rondel",
-              payload: { nation: "FR", cost: 0, slot: "production2" },
+              payload: { nation: Nation.FR, cost: 0, slot: "production2" },
             },
             {
               type: "bondPurchase",
-              payload: { nation: "AH", player: "Claudia", cost: 6 },
+              payload: { nation: Nation.AH, player: "Claudia", cost: 6 },
             },
             {
               type: "rondel",
-              payload: { nation: "GB", cost: 0, slot: "production2" },
+              payload: { nation: Nation.GB, cost: 0, slot: "production2" },
             },
             {
               type: "rondel",
-              payload: { nation: "GE", cost: 0, slot: "factory" },
+              payload: { nation: Nation.GE, cost: 0, slot: "factory" },
             },
             {
               type: "buildFactory",
               payload: { province: "cologne" },
             },
           ];
-          const treasury = Imperial.fromLog(log).state.nations["GE"].treasury;
+          const treasury = Imperial.fromLog(log).state.nations.get(Nation.GE).treasury;
           expect(treasury).toEqual(9);
         });
       });
@@ -3077,27 +3078,27 @@ describe("Schnelleinsteig", () => {
           ...thirdRoundLog,
           {
             type: "rondel",
-            payload: { nation: "AH", cost: 0, slot: "taxation" },
+            payload: { nation: Nation.AH, cost: 0, slot: "taxation" },
           },
           {
             type: "rondel",
-            payload: { nation: "IT", cost: 0, slot: "production1" },
+            payload: { nation: Nation.IT, cost: 0, slot: "production1" },
           },
           {
             type: "rondel",
-            payload: { nation: "FR", cost: 0, slot: "production2" },
+            payload: { nation: Nation.FR, cost: 0, slot: "production2" },
           },
           {
             type: "bondPurchase",
-            payload: { nation: "AH", player: "Claudia", cost: 6 },
+            payload: { nation: Nation.AH, player: "Claudia", cost: 6 },
           },
           {
             type: "rondel",
-            payload: { nation: "GB", cost: 0, slot: "production2" },
+            payload: { nation: Nation.GB, cost: 0, slot: "production2" },
           },
           {
             type: "rondel",
-            payload: { nation: "GE", cost: 0, slot: "factory" },
+            payload: { nation: Nation.GE, cost: 0, slot: "factory" },
           },
           {
             type: "buildFactory",
@@ -3105,7 +3106,7 @@ describe("Schnelleinsteig", () => {
           },
           {
             type: "rondel",
-            paylaod: { nation: "RU", cost: 0, slot: "maneuver2" },
+            paylaod: { nation: Nation.RU, cost: 0, slot: "maneuver2" },
           },
         ];
         const landDestinations = [];

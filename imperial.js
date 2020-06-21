@@ -1,3 +1,5 @@
+const { Nation } = require("./constants")
+
 class Imperial {
   static fromLog(log) {
     return new Imperial(log);
@@ -29,54 +31,54 @@ class Imperial {
       return [
         {
           type: "bondPurchase",
-          payload: { nation: "AH", player: "Claudia", cost: 4 },
+          payload: { nation: Nation.AH, player: "Claudia", cost: 4 },
         },
         {
           type: "bondPurchase",
-          payload: { nation: "AH", player: "Claudia", cost: 6 },
+          payload: { nation: Nation.AH, player: "Claudia", cost: 6 },
         },
         {
           type: "bondPurchase",
-          payload: { nation: "IT", player: "Claudia", cost: 2 },
+          payload: { nation: Nation.IT, player: "Claudia", cost: 2 },
         },
         {
           type: "bondPurchase",
-          payload: { nation: "IT", player: "Claudia", cost: 4 },
+          payload: { nation: Nation.IT, player: "Claudia", cost: 4 },
         },
         {
           type: "bondPurchase",
-          payload: { nation: "IT", player: "Claudia", cost: 6 },
+          payload: { nation: Nation.IT, player: "Claudia", cost: 6 },
         },
         {
           type: "bondPurchase",
-          payload: { nation: "FR", player: "Claudia", cost: 4 },
+          payload: { nation: Nation.FR, player: "Claudia", cost: 4 },
         },
         {
           type: "bondPurchase",
-          payload: { nation: "FR", player: "Claudia", cost: 6 },
+          payload: { nation: Nation.FR, player: "Claudia", cost: 6 },
         },
         {
           type: "bondPurchase",
-          payload: { nation: "GB", player: "Claudia", cost: 4 },
+          payload: { nation: Nation.GB, player: "Claudia", cost: 4 },
         },
         {
           type: "bondPurchase",
-          payload: { nation: "GB", player: "Claudia", cost: 6 },
+          payload: { nation: Nation.GB, player: "Claudia", cost: 6 },
         },
         {
           type: "bondPurchase",
-          payload: { nation: "GE", player: "Claudia", cost: 2 },
+          payload: { nation: Nation.GE, player: "Claudia", cost: 2 },
         },
         {
           type: "bondPurchase",
-          payload: { nation: "RU", player: "Claudia", cost: 4 },
+          payload: { nation: Nation.RU, player: "Claudia", cost: 4 },
         },
       ];
     } else if (this.shouldReturnRondelActions(lastMove)) {
       return this.rondelActions(this.getNation(this.log));
     } else if (this.lastMoveWasRondelManeuver(lastMove)) {
       switch (lastMove.payload.nation) {
-        case "FR":
+        case Nation.FR:
           const FRLandDestinations = [
             "brest",
             "dijon",
@@ -111,7 +113,7 @@ class Imperial {
             },
             ...parisActions,
           ];
-        case "GB":
+        case Nation.GB:
           return [
             {
               type: "maneuver",
@@ -122,7 +124,7 @@ class Imperial {
               payload: { origin: "london", destination: "english channel" },
             },
           ];
-        case "GE":
+        case Nation.GE:
           return [
             {
               type: "maneuver",
@@ -181,7 +183,7 @@ class Imperial {
               payload: { origin: "berlin", destination: "norway" },
             },
           ];
-        case "AH":
+        case Nation.AH:
           const AHLandDestinations = [
             "warsaw",
             "kiev",
@@ -227,7 +229,7 @@ class Imperial {
             ...budapestActions,
             ...viennaActions,
           ];
-        case "IT":
+        case Nation.IT:
           const ITLandDestinations = [
             "naples",
             "tunis",
@@ -271,16 +273,16 @@ class Imperial {
             type: "coexist",
             payload: {
               province: "western mediterranean sea",
-              incumbent: "IT",
-              challenger: "FR",
+              incumbent: Nation.IT,
+              challenger: Nation.FR,
             },
           },
           {
             type: "fight",
             payload: {
               province: "western mediterranean sea",
-              incumbent: "IT",
-              challenger: "FR",
+              incumbent: Nation.IT,
+              challenger: Nation.FR,
             },
           },
           ,
@@ -296,15 +298,15 @@ class Imperial {
   }
 
   nations() {
-    let nations = {};
-    ["AH", "IT", "FR", "GB", "GE", "RU"].map((nation) => {
-      nations[nation] = {
+    const nations = new Map()
+    for (const nation of Nation) {
+      nations.set(nation, {
         controller: this.getController(nation, this.log),
         treasury: this.getTreasury(nation, this.log),
         taxChartPosition: this.getTaxChartPosition(nation),
         powerPoints: this.getPowerPoints(nation),
-      };
-    });
+      });
+    };
     return nations;
   }
 
@@ -481,7 +483,7 @@ class Imperial {
         rondelActions[rondelActions.length - 1].payload.nation;
       return this.nextNation(lastTurnNation);
     } else {
-      return "AH";
+      return Nation.AH;
     }
   }
 
@@ -522,12 +524,14 @@ class Imperial {
   }
 
   nextNation(lastTurnNation) {
-    const nations = ["AH", "IT", "FR", "GB", "GE", "RU"];
-    if (lastTurnNation === "RU") {
-      return "AH";
-    } else {
-      return nations[nations.indexOf(lastTurnNation) + 1];
-    }
+    return lastTurnNation.when({
+      AH: () => Nation.IT,
+      IT: () => Nation.FR,
+      FR: () => Nation.GB,
+      GB: () => Nation.GE,
+      GE: () => Nation.RU,
+      RU: () => Nation.AH,
+    })
   }
 
   importAction(nation) {
@@ -540,36 +544,33 @@ class Imperial {
   }
 
   importLocations(nation) {
-    if (nation === "AH") {
+    if (nation === Nation.AH) {
       return ["vienna", "budapest", "prague", "lemberg", "trieste"];
-    } else if (nation === "IT") {
+    } else if (nation === Nation.IT) {
       return ["rome", "naples"];
-    } else if (nation === "FR") {
+    } else if (nation === Nation.FR) {
       return ["paris", "bordeaux"];
-    } else if (nation === "GB") {
+    } else if (nation === Nation.GB) {
       return ["london", "liverpool"];
-    } else if (nation === "GE") {
+    } else if (nation === Nation.GE) {
       return ["berlin", "hamburg"];
-    } else if (nation === "RU") {
+    } else if (nation === Nation.RU) {
       return ["moscow", "st. petersburg", "odessa", "kiev", "warsaw"];
     }
   }
 
   buildFactoryAction(nation) {
-    const factoryLocations = {
-      AH: ["trieste", "prague", "lemburg"],
-      IT: ["genoa", "venice", "florence"],
-      FR: ["brest", "dijon", "marseille"],
-      GB: ["dublin", "sheffield", "edinburgh"],
-      GE: ["danzig", "munich", "cologne"],
-      RU: ["kiev", "st. petersburg", "warsaw"],
-    };
-    return new Set(
-      factoryLocations[nation].map((province) => ({
-        type: "buildFactory",
-        payload: { province },
-      }))
-    );
+    return new Set(nation.when({
+      AH: () => ["trieste", "prague", "lemburg"],
+      IT: () => ["genoa", "venice", "florence"],
+      FR: () => ["brest", "dijon", "marseille"],
+      GB: () => ["dublin", "sheffield", "edinburgh"],
+      GE: () => ["danzig", "munich", "cologne"],
+      RU: () => ["kiev", "st. petersburg", "warsaw"],
+    }).map((province) => ({
+      type: "buildFactory",
+      payload: { province },
+    })));
   }
 
   getTreasury(nation, log) {
@@ -616,19 +617,17 @@ class Imperial {
     treasuryAmount += this.flagCount(nation) * taxationRondelActionsCount;
     treasuryAmount -= this.unitCount(nation) * taxationRondelActionsCount;
 
-    const factoryLocations = {
-      AH: ["trieste", "prague", "lemburg"],
-      IT: ["genoa", "venice", "florence"],
-      FR: ["brest", "dijon", "marseille"],
-      GB: ["dublin", "sheffield", "edinburgh"],
-      GE: ["danzig", "munich", "cologne"],
-      RU: ["kiev", "st. petersburg", "warsaw"],
-    };
-
     const buildFactoryActions = log.filter((action) => {
       return (
         action.type === "buildFactory" &&
-        factoryLocations[nation].includes(action.payload.province)
+        nation.when({
+          AH: () => ["trieste", "prague", "lemburg"],
+          IT: () => ["genoa", "venice", "florence"],
+          FR: () => ["brest", "dijon", "marseille"],
+          GB: () => ["dublin", "sheffield", "edinburgh"],
+          GE: () => ["danzig", "munich", "cologne"],
+          RU: () => ["kiev", "st. petersburg", "warsaw"],
+        }).includes(action.payload.province)
       );
     });
     treasuryAmount -= 5 * buildFactoryActions.length;
@@ -736,9 +735,9 @@ class Imperial {
 
   getBonds(player) {
     return [
-      { nation: "AH", cost: 2 },
-      { nation: "FR", cost: 9 },
-      { nation: "AH", cost: 6 },
+      { nation: Nation.AH, cost: 2 },
+      { nation: Nation.FR, cost: 9 },
+      { nation: Nation.AH, cost: 6 },
     ];
   }
 
@@ -791,7 +790,7 @@ class Imperial {
   }
 
   getInvestorCardHolder(log, fullLog) {
-    const AHController = this.getController("AH", fullLog);
+    const AHController = this.getController(Nation.AH, fullLog);
     const order = fullLog.find((action) => {
       return action.type === "playerSeating";
     }).payload.order;
@@ -837,17 +836,17 @@ class Imperial {
   }
 
   homeProvinces(nation) {
-    if (nation === "AH") {
+    if (nation === Nation.AH) {
       return ["vienna", "budapest", "prague", "lemberg", "trieste"];
-    } else if (nation === "IT") {
+    } else if (nation === Nation.IT) {
       return ["rome", "naples"];
-    } else if (nation === "FR") {
+    } else if (nation === Nation.FR) {
       return ["paris", "bordeaux", "marseille"];
-    } else if (nation === "GB") {
+    } else if (nation === Nation.GB) {
       return ["london", "liverpool"];
-    } else if (nation === "GE") {
+    } else if (nation === Nation.GE) {
       return ["berlin", "hamburg"];
-    } else if (nation === "RU") {
+    } else if (nation === Nation.RU) {
       return ["moscow", "st. petersburg", "odessa", "kiev", "warsaw"];
     }
   }
