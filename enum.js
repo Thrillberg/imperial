@@ -1,7 +1,16 @@
 const cleanroom = Object.freeze(Object.create(null))
 
-const prototype = {
-  unwrap () { return this.value },
+class Enum {
+  constructor (value, members, label) {
+    Object.defineProperties(this, {
+      value: { value: value, enumerable: true },
+      members: { value: members, enumerable: false },
+      label: { value: label, enumerable: true },
+    })
+
+    Object.freeze(this)
+  }
+
   when (cases) {
     for (const member of this.members) {
       if (!cases.hasOwnProperty(member)) {
@@ -13,50 +22,43 @@ const prototype = {
         return cases[c]()
       }
     }
-  },
+    throw new Error("unreachable")
+  }
+
   get [Symbol.toStringTag] () {
-    return `${this.label}.${this.unwrap()}`
-  },
-}
+    return `${this.label}.${this.value}`
+  }
 
-const Enum = function (value, members, label) {
-  me = Object.create(prototype)
+  static fromArray (ary, label) {
+    const store = new Map()
+    const members = new Set(ary)
 
-  Object.defineProperties(me, {
-    value: { value: value, enumerable: false },
-    members: { value: members, enumerable: false },
-    label: { value: label, enumerable: false },
-  })
+    if (label === undefined) { label = "<anonymous>" }
 
-  return Object.freeze(me)
-}
+    ary.forEach((element) => { store.set(element, new Enum(element, members, label)) })
 
+    return new Proxy(cleanroom, {
+      get (_target, property, _receiver) {
+        if (store.has(property)) { return store.get(property) }
 
-Enum.fromArray = (ary, label) => {
-  const store = new Map()
-  const members = new Set(ary)
+        if (property === Symbol.iterator) {
+          return store.values.bind(store)
+        }
 
-  if (label === undefined) { label = "<anonymous>" }
+        if (property === 'toString') {
+          return () => `${label}(${Array.from(members).join('|')})`
+        }
 
-  ary.forEach((element) => { store.set(element, new Enum(element, members, label)) })
+        /* escape hatch for properties like Symbol(nodejs.util.inspect.custom) */
+        if (typeof property === 'symbol') {
+          return Reflect.get(Object, property, _receiver)
+        }
 
-  return new Proxy(cleanroom, {
-    get (_target, property, _receiver) {
-      if (store.has(property)) { return store.get(property) }
-
-      if (property === Symbol.iterator) {
-        return store.values.bind(store)
-      }
-
-      /* escape hatch for properties like Symbol(nodejs.util.inspect.custom) */
-      if (typeof property === 'symbol') {
-        return Reflect.get(Object, property, _receiver)
-      }
-
-      throw new Error(`"${String(property)}" not found in ${label}`)
-    },
-    set () { throw new Error(`Enum ${label} cannot be mutated`) },
-  })
+        throw new Error(`"${String(property)}" not found in ${label}`)
+      },
+      set () { throw new Error(`Enum ${label} cannot be mutated`) },
+    })
+  }
 }
 
 module.exports = { Enum }

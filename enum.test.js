@@ -20,11 +20,11 @@ describe('Enum', () => {
     })
 
     test('of instances', () => {
-      const currentValue = MyEnum.HUHU.unwrap()
+      const currentValue = MyEnum.HUHU.value
 
       MyEnum.HUHU.value = 42
 
-      expect(MyEnum.HUHU.unwrap()).toBe(currentValue)
+      expect(MyEnum.HUHU.value).toBe(currentValue)
     })
   })
 
@@ -43,8 +43,8 @@ describe('Enum', () => {
     expect(s.size).toBe(2)
   })
 
-  test('#unwrap', () => {
-    expect(MyEnum.HUHU.unwrap()).toBe("HUHU")
+  test('#value', () => {
+    expect(MyEnum.HUHU.value).toBe("HUHU")
   })
 
   test('iterability', () => {
@@ -57,6 +57,7 @@ describe('Enum', () => {
   })
 
   test('stringification', () => {
+    expect(String(MyEnum)).toBe("MyEnum(HUHU|BEBE)")
     expect(String(MyEnum.HUHU)).toBe("[object MyEnum.HUHU]")
   })
 
