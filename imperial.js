@@ -282,6 +282,47 @@ class Imperial {
             },
             ...romeActions,
           ];
+        case Nation.RU:
+          const RULandDestinations = [
+            "warsaw",
+            "odessa",
+            "kiev",
+            "st. petersburg",
+            "danzig",
+            "prague",
+            "lemberg",
+            "romania",
+            "bulgaria",
+            "turkey",
+            "sweden",
+            "berlin",
+            "hamburg",
+            "denmark",
+          ];
+          let moscowActions = [];
+          RULandDestinations.map((province) => {
+            moscowActions.push({
+              type: "maneuver",
+              payload: { origin: "moscow", destination: province },
+            });
+          });
+          return [
+            {
+              type: "maneuver",
+              payload: {
+                origin: "st. petersburg",
+                destination: "baltic sea",
+              },
+            },
+            {
+              type: "maneuver",
+              payload: {
+                origin: "odessa",
+                destination: "black sea",
+              },
+            },
+            ...moscowActions,
+          ];
       }
     } else if (lastMove.type === "rondel") {
       if (lastMove.payload.slot === "factory") {
@@ -366,8 +407,10 @@ class Imperial {
   provinces() {
     let provinces = {};
     [
+      "baltic sea",
       "bay of biscay",
       "berlin",
+      "black sea",
       "bordeaux",
       "budapest",
       "cologne",
@@ -390,8 +433,10 @@ class Imperial {
       "rome",
       "spain",
       "st. petersburg",
+      "sweden",
       "trieste",
       "tunis",
+      "turkey",
       "vienna",
       "west balkan",
       "western mediterranean sea",
@@ -616,35 +661,34 @@ class Imperial {
     );
   }
 
-  getTreasury(nation, log) {
+  getTreasury(nation) {
     let treasuryAmount = 0;
-    const importActions = log.filter(
+    const importActions = this.log.filter(
       (action) =>
         action.type === "import" &&
         this.importLocations(nation).includes(action.payload.province)
     );
     treasuryAmount -= importActions.length;
 
-    const investorRondelActions = log.filter(
+    const investorRondelActions = this.log.filter(
       (action) =>
         action.type === "rondel" &&
         action.payload.slot === "investor" &&
         action.payload.nation === nation
     );
 
-    if (this.investmentHasBeenSold(nation, 4, log)) {
+    if (this.investmentHasBeenSold(nation, 4, this.log)) {
       treasuryAmount += 9;
       treasuryAmount -= 4 * investorRondelActions.length;
     }
-    if (this.investmentHasBeenSold(nation, 3, log)) {
+    if (this.investmentHasBeenSold(nation, 3, this.log)) {
       treasuryAmount += 6;
-      treasuryAmount -= 3 * investorRondelActions.length;
     }
-    if (this.investmentHasBeenSold(nation, 2, log)) {
+    if (this.investmentHasBeenSold(nation, 2, this.log)) {
       treasuryAmount += 4;
       treasuryAmount -= 2 * investorRondelActions.length;
     }
-    if (this.investmentHasBeenSold(nation, 1, log)) {
+    if (this.investmentHasBeenSold(nation, 1, this.log)) {
       treasuryAmount += 2;
       treasuryAmount -= 1 * investorRondelActions.length;
     }
@@ -660,7 +704,7 @@ class Imperial {
     treasuryAmount += this.flagCount(nation) * taxationRondelActionsCount;
     treasuryAmount -= this.unitCount(nation) * taxationRondelActionsCount;
 
-    const buildFactoryActions = log.filter((action) => {
+    const buildFactoryActions = this.log.filter((action) => {
       return (
         action.type === "buildFactory" &&
         nation
