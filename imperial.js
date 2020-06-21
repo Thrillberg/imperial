@@ -1,4 +1,4 @@
-const { Nation } = require("./constants")
+const { Nation } = require("./constants");
 
 class Imperial {
   static fromLog(log) {
@@ -74,6 +74,29 @@ class Imperial {
           payload: { nation: Nation.RU, player: "Claudia", cost: 4 },
         },
       ];
+    } else if (this.lastMoveWasInvestor(lastMove)) {
+      const purchasedBonds = new Set(
+        this.toBonds(
+          this.log.filter((action) => action.type === "bondPurchase")
+        ).map(({ nation, cost }) => `${nation}|${cost}`)
+      );
+
+      const allRemainingBonds = this.allBonds().filter(({ nation, cost }) => {
+        return !purchasedBonds.has(`${nation}|${cost}`);
+      });
+
+      return allRemainingBonds
+        .filter((bond) => bond.cost <= this.getCash(this.investorCardHolder()))
+        .map((bond) => {
+          return {
+            type: "bondPurchase",
+            payload: {
+              nation: bond.nation,
+              player: this.investorCardHolder(),
+              cost: bond.cost,
+            },
+          };
+        });
     } else if (this.shouldReturnRondelActions(lastMove)) {
       return this.rondelActions(this.getNation(this.log));
     } else if (this.lastMoveWasRondelManeuver(lastMove)) {
@@ -293,12 +316,28 @@ class Imperial {
     }
   }
 
+  allBonds() {
+    return [...Nation]
+      .map((nation) => {
+        return [2, 4, 6, 9, 12, 16, 20, 25, 30].map((cost) => {
+          return { nation: nation, cost: cost };
+        });
+      })
+      .reduce((acc, val) => acc.concat(val), []);
+  }
+
+  toBonds(bondActions) {
+    return bondActions.map((action) => {
+      return { nation: action.payload.nation, cost: action.payload.cost };
+    });
+  }
+
   investorCardHolder() {
     return this.getInvestorCardHolder(this.log, this.log);
   }
 
   nations() {
-    const nations = new Map()
+    const nations = new Map();
     for (const nation of Nation) {
       nations.set(nation, {
         controller: this.getController(nation, this.log),
@@ -306,7 +345,7 @@ class Imperial {
         taxChartPosition: this.getTaxChartPosition(nation),
         powerPoints: this.getPowerPoints(nation),
       });
-    };
+    }
     return nations;
   }
 
@@ -531,7 +570,7 @@ class Imperial {
       GB: () => Nation.GE,
       GE: () => Nation.RU,
       RU: () => Nation.AH,
-    })
+    });
   }
 
   importAction(nation) {
@@ -560,17 +599,21 @@ class Imperial {
   }
 
   buildFactoryAction(nation) {
-    return new Set(nation.when({
-      AH: () => ["trieste", "prague", "lemburg"],
-      IT: () => ["genoa", "venice", "florence"],
-      FR: () => ["brest", "dijon", "marseille"],
-      GB: () => ["dublin", "sheffield", "edinburgh"],
-      GE: () => ["danzig", "munich", "cologne"],
-      RU: () => ["kiev", "st. petersburg", "warsaw"],
-    }).map((province) => ({
-      type: "buildFactory",
-      payload: { province },
-    })));
+    return new Set(
+      nation
+        .when({
+          AH: () => ["trieste", "prague", "lemburg"],
+          IT: () => ["genoa", "venice", "florence"],
+          FR: () => ["brest", "dijon", "marseille"],
+          GB: () => ["dublin", "sheffield", "edinburgh"],
+          GE: () => ["danzig", "munich", "cologne"],
+          RU: () => ["kiev", "st. petersburg", "warsaw"],
+        })
+        .map((province) => ({
+          type: "buildFactory",
+          payload: { province },
+        }))
+    );
   }
 
   getTreasury(nation, log) {
@@ -620,14 +663,16 @@ class Imperial {
     const buildFactoryActions = log.filter((action) => {
       return (
         action.type === "buildFactory" &&
-        nation.when({
-          AH: () => ["trieste", "prague", "lemburg"],
-          IT: () => ["genoa", "venice", "florence"],
-          FR: () => ["brest", "dijon", "marseille"],
-          GB: () => ["dublin", "sheffield", "edinburgh"],
-          GE: () => ["danzig", "munich", "cologne"],
-          RU: () => ["kiev", "st. petersburg", "warsaw"],
-        }).includes(action.payload.province)
+        nation
+          .when({
+            AH: () => ["trieste", "prague", "lemburg"],
+            IT: () => ["genoa", "venice", "florence"],
+            FR: () => ["brest", "dijon", "marseille"],
+            GB: () => ["dublin", "sheffield", "edinburgh"],
+            GE: () => ["danzig", "munich", "cologne"],
+            RU: () => ["kiev", "st. petersburg", "warsaw"],
+          })
+          .includes(action.payload.province)
       );
     });
     treasuryAmount -= 5 * buildFactoryActions.length;
@@ -656,9 +701,9 @@ class Imperial {
     return false;
   }
 
-  getCash(player, log) {
+  getCash(player) {
     let cash = 13;
-    log
+    this.log
       .filter((action) => {
         return (
           action.type === "bondPurchase" && action.payload.player === player
@@ -668,7 +713,7 @@ class Imperial {
         cash -= bondPurchase.payload.cost;
       });
 
-    const allInvestorActions = log
+    const allInvestorActions = this.log
       .map((action, index) => {
         if (action.type === "rondel" && action.payload.slot === "investor") {
           return { logIndex: index, action };
@@ -680,15 +725,15 @@ class Imperial {
       if (!!investorAction) {
         if (
           this.getInvestorCardHolder(
-            log.slice(0, investorAction.logIndex + 1),
-            log
+            this.log.slice(0, investorAction.logIndex + 1),
+            this.log
           ) === player
         ) {
           cash += 2;
         }
 
         if (
-          this.getController(investorAction.action.payload.nation, log) ===
+          this.getController(investorAction.action.payload.nation, this.log) ===
           player
         ) {
           cash += 4;
@@ -698,7 +743,7 @@ class Imperial {
           this.hasSmallInvestment(
             investorAction.action.payload.nation,
             player,
-            log
+            this.log
           )
         ) {
           cash += 1;
