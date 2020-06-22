@@ -3545,7 +3545,44 @@ describe("Schnelleinsteig", () => {
         );
       });
 
-      test("Algeria, Bulgaria, Wesatern Mediterranean, and Eastern Mediterranean have AH flags", () => {});
+      test("Algeria, Bulgaria, Western Mediterranean, and Eastern Mediterranean have AH flags", () => {
+        const log = [
+          ...fourthRoundLog,
+          {
+            type: "rondel",
+            payload: { nation: Nation.AH, cost: 0, slot: "maneuver1" },
+          },
+          {
+            type: "maneuver",
+            payload: {
+              origin: "ionian sea",
+              destination: "western mediterranean sea",
+            },
+          },
+          {
+            type: "maneuver",
+            payload: { origin: "tunis", destination: "algeria" },
+          },
+          {
+            type: "maneuver",
+            payload: { origin: "west balkan", destination: "bulgaria" },
+          },
+          {
+            type: "maneuver",
+            payload: { origin: "romania", destination: "odessa" },
+          },
+        ];
+        const algeriaFlag = Imperial.fromLog(log).state.provinces["algeria"]
+          .flag;
+        const bulgariaFlag = Imperial.fromLog(log).state.provinces["bulgaria"]
+          .flag;
+        const westernMediterraneanSeaFlag = Imperial.fromLog(log).state
+          .provinces["western mediterranean sea"].flag;
+
+        expect(algeriaFlag).toEqual(Nation.AH);
+        expect(bulgariaFlag).toEqual(Nation.AH);
+        expect(westernMediterraneanSeaFlag).toEqual(Nation.AH);
+      });
     });
   });
 });

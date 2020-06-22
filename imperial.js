@@ -471,12 +471,14 @@ class Imperial {
   provinces() {
     let provinces = {};
     [
+      "algeria",
       "baltic sea",
       "bay of biscay",
       "berlin",
       "black sea",
       "bordeaux",
       "budapest",
+      "bulgaria",
       "cologne",
       "english channel",
       "hamburg",
@@ -518,12 +520,24 @@ class Imperial {
       index,
     }));
     const maneuverActions = actionsWithIndex.filter(
-      (action, index) =>
+      (action) =>
         action.type === "maneuver" && action.payload.destination === province
     );
-    if (maneuverActions.length > 0) {
+    const fightActionsIndices = actionsWithIndex
+      .filter(
+        (action) =>
+          action.type === "fight" && action.payload.province === province
+      )
+      .map((action) => action.index);
+    let realManeuvers = [];
+    for (var i = 0; i < maneuverActions.length; i++) {
+      if (!fightActionsIndices.includes(maneuverActions[i].index + 1)) {
+        realManeuvers.push(maneuverActions[i]);
+      }
+    }
+    if (realManeuvers.length > 0) {
       return this.log
-        .slice(0, maneuverActions[0].index)
+        .slice(0, realManeuvers[realManeuvers.length - 1].index)
         .reverse()
         .find(
           (action) =>
