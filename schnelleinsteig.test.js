@@ -1492,7 +1492,7 @@ describe("Schnelleinsteig", () => {
         landDestinations.map((province) => {
           lembergActions.push({
             type: "maneuver",
-            payload: { origin: "trieste", destination: province },
+            payload: { origin: "lemberg", destination: province },
           });
           budapestActions.push({
             type: "maneuver",
@@ -1505,13 +1505,13 @@ describe("Schnelleinsteig", () => {
         });
 
         const availableActions = [
+          ...lembergActions,
           {
             type: "maneuver",
             payload: { origin: "trieste", destination: "ionian sea" },
           },
-          ...lembergActions,
-          ...budapestActions,
           ...viennaActions,
+          ...budapestActions,
         ];
         expect(Imperial.fromLog(log).state.availableActions).toEqual(
           availableActions
@@ -3461,8 +3461,91 @@ describe("Schnelleinsteig", () => {
   describe("fifth round", () => {
     describe("1. AH does maneuver1", () => {
       test("AH's available actions are to move Tunis, Ionian Sea, West Balkan, and Romania", () => {
-        const log = fourthRoundLog;
+        const log = [
+          ...fourthRoundLog,
+          {
+            type: "rondel",
+            payload: { nation: Nation.AH, cost: 0, slot: "maneuver1" },
+          },
+        ];
+        const sharedLandDestinations = [
+          "trieste",
+          "vienna",
+          "budapest",
+          "lemberg",
+          "prague",
+        ];
+        const romaniaDestinations = [
+          ...sharedLandDestinations,
+          "odessa",
+          "bulgaria",
+          "west balkan",
+        ];
+        const romaniaActions = [];
+        romaniaDestinations.map((province) => {
+          romaniaActions.push({
+            type: "maneuver",
+            payload: { origin: "romania", destination: province },
+          });
+        });
+        const westBalkanDestinations = [
+          ...sharedLandDestinations,
+          "greece",
+          "bulgaria",
+          "romania",
+          "tunis",
+          "naples",
+          "rome",
+          "venice",
+        ];
+        const westBalkanActions = [];
+        westBalkanDestinations.map((province) => {
+          westBalkanActions.push({
+            type: "maneuver",
+            payload: { origin: "west balkan", destination: province },
+          });
+        });
+        const tunisDestinations = [
+          ...sharedLandDestinations,
+          "algeria",
+          "greece",
+          "west balkan",
+          "venice",
+          "rome",
+          "naples",
+        ];
+        const tunisActions = [];
+        tunisDestinations.map((province) => {
+          tunisActions.push({
+            type: "maneuver",
+            payload: { origin: "tunis", destination: province },
+          });
+        });
+        const availableActions = [
+          {
+            type: "maneuver",
+            payload: {
+              origin: "ionian sea",
+              destination: "western mediterranean sea",
+            },
+          },
+          {
+            type: "maneuver",
+            payload: {
+              origin: "ionian sea",
+              destination: "eastern mediterranean sea",
+            },
+          },
+          ...romaniaActions,
+          ...westBalkanActions,
+          ...tunisActions,
+        ];
+        expect(Imperial.fromLog(log).state.availableActions).toEqual(
+          availableActions
+        );
       });
+
+      test("Algeria, Bulgaria, Wesatern Mediterranean, and Eastern Mediterranean have AH flags", () => {});
     });
   });
 });

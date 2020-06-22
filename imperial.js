@@ -207,51 +207,13 @@ class Imperial {
             },
           ];
         case Nation.AH:
-          const AHLandDestinations = [
-            "warsaw",
-            "kiev",
-            "budapest",
-            "prague",
-            "romania",
-            "danzig",
-            "munich",
-            "genoa",
-            "venice",
-            "berlin",
-            "vienna",
-            "trieste",
-            "west balkan",
-            "rome",
-            "naples",
-            "greece",
-            "tunis",
-          ];
-          let lembergActions = [];
-          let budapestActions = [];
-          let viennaActions = [];
-          AHLandDestinations.map((province) => {
-            lembergActions.push({
-              type: "maneuver",
-              payload: { origin: "trieste", destination: province },
-            });
-            budapestActions.push({
-              type: "maneuver",
-              payload: { origin: "budapest", destination: province },
-            });
-            viennaActions.push({
-              type: "maneuver",
-              payload: { origin: "vienna", destination: province },
-            });
-          });
-          return [
-            {
-              type: "maneuver",
-              payload: { origin: "trieste", destination: "ionian sea" },
-            },
-            ...lembergActions,
-            ...budapestActions,
-            ...viennaActions,
-          ];
+          return this.unitLocations(Nation.AH)
+            .map((origin) => {
+              return this.possibleDestinations(origin).map((destination) => {
+                return { type: "maneuver", payload: { origin, destination } };
+              });
+            })
+            .reduce((acc, val) => acc.concat(val), []);
         case Nation.IT:
           const ITLandDestinations = [
             "naples",
@@ -354,6 +316,108 @@ class Imperial {
       } else {
         return this.rondelActions(this.getNation(this.log));
       }
+    }
+  }
+
+  unitLocations(nation) {
+    const maneuverActions = this.log
+      .map((action, index) => {
+        if (
+          action.type === "rondel" &&
+          action.payload.nation === nation &&
+          (action.payload.slot === "maneuver1" ||
+            action.payload.slot === "maneuver2")
+        ) {
+          return { action, index };
+        } else {
+          return null;
+        }
+      })
+      .filter(Boolean);
+
+    const penultimateManeuverAction =
+      maneuverActions[maneuverActions.length - 2];
+    if (!!penultimateManeuverAction) {
+      const slice = this.log.slice(
+        penultimateManeuverAction.index + 1,
+        this.log.length - 1
+      );
+      let maneuvers = [];
+      for (var i = 0; i < slice.length; i++) {
+        if (slice[i].type === "maneuver") {
+          maneuvers.push(slice[i]);
+        } else {
+          break;
+        }
+      }
+
+      return maneuvers.map((maneuver) => maneuver.payload.destination);
+    } else {
+      return ["lemberg", "trieste", "vienna", "budapest"];
+    }
+  }
+
+  possibleDestinations(origin) {
+    const sharedLandDestinations = [
+      "trieste",
+      "vienna",
+      "budapest",
+      "lemberg",
+      "prague",
+    ];
+    const landDestinations = [
+      "warsaw",
+      "kiev",
+      "budapest",
+      "prague",
+      "romania",
+      "danzig",
+      "munich",
+      "genoa",
+      "venice",
+      "berlin",
+      "vienna",
+      "trieste",
+      "west balkan",
+      "rome",
+      "naples",
+      "greece",
+      "tunis",
+    ];
+    switch (origin) {
+      case "trieste":
+        return ["ionian sea"];
+      case "budapest":
+        return landDestinations;
+      case "vienna":
+        return landDestinations;
+      case "lemberg":
+        return landDestinations;
+      case "ionian sea":
+        return ["western mediterranean sea", "eastern mediterranean sea"];
+      case "romania":
+        return [...sharedLandDestinations, "odessa", "bulgaria", "west balkan"];
+      case "west balkan":
+        return [
+          ...sharedLandDestinations,
+          "greece",
+          "bulgaria",
+          "romania",
+          "tunis",
+          "naples",
+          "rome",
+          "venice",
+        ];
+      case "tunis":
+        return [
+          ...sharedLandDestinations,
+          "algeria",
+          "greece",
+          "west balkan",
+          "venice",
+          "rome",
+          "naples",
+        ];
     }
   }
 
