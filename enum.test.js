@@ -1,78 +1,82 @@
-const { Enum } = require('./enum')
+const { Enum } = require("./enum");
 
-describe('Enum', () => {
-  const MyEnum = Enum.fromArray(["HUHU", "BEBE"], "MyEnum")
+describe("Enum", () => {
+  const MyEnum = Enum.fromArray(["HUHU", "BEBE"], "MyEnum");
 
-  test('strict property access', () => {
-    MyEnum.HUHU
+  test("strict property access", () => {
+    MyEnum.HUHU;
 
-    expect(() => MyEnum.BLORP).toThrowError(/BLORP/)
-  })
+    expect(() => MyEnum.BLORP).toThrowError(/BLORP/);
+  });
 
-  test('equality', () => {
-    expect(MyEnum.HUHU).toBe(MyEnum.HUHU)
-    expect(MyEnum.BEBE).not.toBe(MyEnum.HUHU)
-  })
+  test("equality", () => {
+    expect(MyEnum.HUHU).toBe(MyEnum.HUHU);
+    expect(MyEnum.BEBE).not.toBe(MyEnum.HUHU);
+  });
 
-  describe('immutability', () => {
-    test('of the collection', () => {
-      expect(() => MyEnum.HUHU = 42).toThrowError()
-    })
+  describe("immutability", () => {
+    test("of the collection", () => {
+      expect(() => (MyEnum.HUHU = 42)).toThrowError();
+    });
 
-    test('of instances', () => {
-      const currentValue = MyEnum.HUHU.value
+    test("of instances", () => {
+      const currentValue = MyEnum.HUHU.value;
 
-      MyEnum.HUHU.value = 42
+      MyEnum.HUHU.value = 42;
 
-      expect(MyEnum.HUHU.value).toBe(currentValue)
-    })
-  })
+      expect(MyEnum.HUHU.value).toBe(currentValue);
+    });
+  });
 
-  test('set membership', () => {
-    const s = new Set()
-    s.add(MyEnum.HUHU)
+  test("set membership", () => {
+    const s = new Set();
+    s.add(MyEnum.HUHU);
 
-    expect(s.has(MyEnum.HUHU))
+    expect(s.has(MyEnum.HUHU));
 
-    s.add(MyEnum.HUHU)
+    s.add(MyEnum.HUHU);
 
-    expect(s.size).toBe(1)
+    expect(s.size).toBe(1);
 
-    s.add(MyEnum.BEBE)
+    s.add(MyEnum.BEBE);
 
-    expect(s.size).toBe(2)
-  })
+    expect(s.size).toBe(2);
+  });
 
-  test('#value', () => {
-    expect(MyEnum.HUHU.value).toBe("HUHU")
-  })
+  test("#value", () => {
+    expect(MyEnum.HUHU.value).toBe("HUHU");
+  });
 
-  test('iterability', () => {
-    const actual = new Set()
+  test("iterability", () => {
+    const actual = new Set();
     for (const value of MyEnum) {
-      actual.add(value)
+      actual.add(value);
     }
 
-    expect(actual).toEqual(new Set([MyEnum.HUHU, MyEnum.BEBE]))
-  })
+    expect(actual).toEqual(new Set([MyEnum.HUHU, MyEnum.BEBE]));
+  });
 
-  test('stringification', () => {
-    expect(String(MyEnum)).toBe("MyEnum(HUHU|BEBE)")
-    expect(String(MyEnum.HUHU)).toBe("[object MyEnum.HUHU]")
-  })
+  test("stringification", () => {
+    expect(String(MyEnum)).toBe("MyEnum(HUHU|BEBE)");
+    expect(String(MyEnum.HUHU)).toBe("[object MyEnum.HUHU]");
+  });
 
-  describe('#when', () => {
-    test('exhaustiveness', () => {
-      expect(() => MyEnum.HUHU.when({
-        HUHU: () => {},
-      })).toThrowError(/BEBE/)
-    })
+  describe("#when", () => {
+    test("exhaustiveness", () => {
+      expect(() =>
+        MyEnum.HUHU.when({
+          HUHU: () => {},
+        })
+      ).toThrowError(/BEBE/);
+    });
 
-    test('return value', () => {
-      expect(MyEnum.HUHU.when({
-        HUHU: () => 1,
-        BEBE: () => 2,
-      })).toBe(1)
-    })
-  })
-})
+    test("return value", () => {
+      expect(
+        MyEnum.HUHU.when({
+          HUHU: () => 1,
+          BEBE: () => 2,
+        })
+      ).toBe(1);
+    });
+  });
+});
