@@ -1,4 +1,5 @@
 const { Nation } = require("./constants");
+const Action = require("./action");
 
 class Imperial {
   static fromLog(log) {
@@ -29,50 +30,17 @@ class Imperial {
 
     if (lastMoveSkippedInvestorSlot) {
       return [
-        {
-          type: "bondPurchase",
-          payload: { nation: Nation.AH, player: "Claudia", cost: 4 },
-        },
-        {
-          type: "bondPurchase",
-          payload: { nation: Nation.AH, player: "Claudia", cost: 6 },
-        },
-        {
-          type: "bondPurchase",
-          payload: { nation: Nation.IT, player: "Claudia", cost: 2 },
-        },
-        {
-          type: "bondPurchase",
-          payload: { nation: Nation.IT, player: "Claudia", cost: 4 },
-        },
-        {
-          type: "bondPurchase",
-          payload: { nation: Nation.IT, player: "Claudia", cost: 6 },
-        },
-        {
-          type: "bondPurchase",
-          payload: { nation: Nation.FR, player: "Claudia", cost: 4 },
-        },
-        {
-          type: "bondPurchase",
-          payload: { nation: Nation.FR, player: "Claudia", cost: 6 },
-        },
-        {
-          type: "bondPurchase",
-          payload: { nation: Nation.GB, player: "Claudia", cost: 4 },
-        },
-        {
-          type: "bondPurchase",
-          payload: { nation: Nation.GB, player: "Claudia", cost: 6 },
-        },
-        {
-          type: "bondPurchase",
-          payload: { nation: Nation.GE, player: "Claudia", cost: 2 },
-        },
-        {
-          type: "bondPurchase",
-          payload: { nation: Nation.RU, player: "Claudia", cost: 4 },
-        },
+        Action.bondPurchase({ nation: Nation.AH, player: "Claudia", cost: 4 }),
+        Action.bondPurchase({ nation: Nation.AH, player: "Claudia", cost: 6 }),
+        Action.bondPurchase({ nation: Nation.IT, player: "Claudia", cost: 2 }),
+        Action.bondPurchase({ nation: Nation.IT, player: "Claudia", cost: 4 }),
+        Action.bondPurchase({ nation: Nation.IT, player: "Claudia", cost: 6 }),
+        Action.bondPurchase({ nation: Nation.FR, player: "Claudia", cost: 4 }),
+        Action.bondPurchase({ nation: Nation.FR, player: "Claudia", cost: 6 }),
+        Action.bondPurchase({ nation: Nation.GB, player: "Claudia", cost: 4 }),
+        Action.bondPurchase({ nation: Nation.GB, player: "Claudia", cost: 6 }),
+        Action.bondPurchase({ nation: Nation.GE, player: "Claudia", cost: 2 }),
+        Action.bondPurchase({ nation: Nation.RU, player: "Claudia", cost: 4 }),
       ];
     } else if (this.lastMoveWasInvestor(lastMove)) {
       const purchasedBonds = new Set(
@@ -97,14 +65,11 @@ class Imperial {
           return bond.cost <= this.getCash(player) + topBondCost;
         })
         .map((bond) => {
-          return {
-            type: "bondPurchase",
-            payload: {
-              nation: bond.nation,
-              player: this.investorCardHolder(),
-              cost: bond.cost,
-            },
-          };
+          return Action.bondPurchase({
+            nation: bond.nation,
+            player: this.investorCardHolder(),
+            cost: bond.cost,
+          });
         });
     } else if (this.shouldReturnRondelActions(lastMove)) {
       return this.rondelActions(this.getNation(this.log));
@@ -123,103 +88,54 @@ class Imperial {
           ];
           let parisActions = [];
           FRLandDestinations.map((province) => {
-            parisActions.push({
-              type: "maneuver",
-              payload: { origin: "paris", destination: province },
-            });
+            parisActions.push(
+              Action.maneuver({ origin: "paris", destination: province })
+            );
           });
           return [
-            {
-              type: "maneuver",
-              payload: {
-                origin: "bordeaux",
-                destination: "bay of biscay",
-              },
-            },
-            {
-              type: "maneuver",
-              payload: {
-                origin: "marseille",
-                destination: "western mediterranean sea",
-              },
-            },
+            Action.maneuver({
+              origin: "bordeaux",
+              destination: "bay of biscay",
+            }),
+            Action.maneuver({
+              origin: "marseille",
+              destination: "western mediterranean sea",
+            }),
             ...parisActions,
           ];
         case Nation.GB:
           return [
-            {
-              type: "maneuver",
-              payload: { origin: "liverpool", destination: "north atlantic" },
-            },
-            {
-              type: "maneuver",
-              payload: { origin: "london", destination: "english channel" },
-            },
+            Action.maneuver({
+              origin: "liverpool",
+              destination: "north atlantic",
+            }),
+            Action.maneuver({
+              origin: "london",
+              destination: "english channel",
+            }),
           ];
         case Nation.GE:
           return [
-            {
-              type: "maneuver",
-              payload: { origin: "hamburg", destination: "north sea" },
-            },
-            {
-              type: "maneuver",
-              payload: { origin: "berlin", destination: "danzig" },
-            },
-            {
-              type: "maneuver",
-              payload: { origin: "berlin", destination: "prague" },
-            },
-            {
-              type: "maneuver",
-              payload: { origin: "berlin", destination: "munich" },
-            },
-            {
-              type: "maneuver",
-              payload: { origin: "berlin", destination: "cologne" },
-            },
-            {
-              type: "maneuver",
-              payload: { origin: "berlin", destination: "hamburg" },
-            },
-            {
-              type: "maneuver",
-              payload: { origin: "berlin", destination: "dijon" },
-            },
-            {
-              type: "maneuver",
-              payload: { origin: "berlin", destination: "belgium" },
-            },
-            {
-              type: "maneuver",
-              payload: { origin: "berlin", destination: "holland" },
-            },
-            {
-              type: "maneuver",
-              payload: { origin: "berlin", destination: "denmark" },
-            },
-            {
-              type: "maneuver",
-              payload: { origin: "berlin", destination: "london" },
-            },
-            {
-              type: "maneuver",
-              payload: { origin: "berlin", destination: "sheffield" },
-            },
-            {
-              type: "maneuver",
-              payload: { origin: "berlin", destination: "edinburgh" },
-            },
-            {
-              type: "maneuver",
-              payload: { origin: "berlin", destination: "norway" },
-            },
+            Action.maneuver({ origin: "hamburg", destination: "north sea" }),
+            Action.maneuver({ origin: "berlin", destination: "danzig" }),
+            Action.maneuver({ origin: "berlin", destination: "prague" }),
+            Action.maneuver({ origin: "berlin", destination: "munich" }),
+            Action.maneuver({ origin: "berlin", destination: "cologne" }),
+            Action.maneuver({ origin: "berlin", destination: "hamburg" }),
+            Action.maneuver({ origin: "berlin", destination: "dijon" }),
+            Action.maneuver({ origin: "berlin", destination: "belgium" }),
+            Action.maneuver({ origin: "berlin", destination: "holland" }),
+            Action.maneuver({ origin: "berlin", destination: "denmark" }),
+            Action.maneuver({ origin: "berlin", destination: "london" }),
+            Action.maneuver({ origin: "berlin", destination: "sheffield" }),
+            Action.maneuver({ origin: "berlin", destination: "edinburgh" }),
+            Action.maneuver({ origin: "berlin", destination: "norway" }),
           ];
         case Nation.AH:
           return this.unitLocations(Nation.AH)
             .map((origin) => {
               return this.possibleDestinations(origin).map((destination) => {
-                return { type: "maneuver", payload: { origin, destination } };
+                return Action.maneuver({ origin, destination });
               });
             })
             .reduce((acc, val) => acc.concat(val), []);
@@ -238,19 +154,15 @@ class Imperial {
           ];
           let romeActions = [];
           ITLandDestinations.map((province) => {
-            romeActions.push({
-              type: "maneuver",
-              payload: { origin: "rome", destination: province },
-            });
+            romeActions.push(
+              Action.maneuver({ origin: "rome", destination: province })
+            );
           });
           return [
-            {
-              type: "maneuver",
-              payload: {
-                origin: "naples",
-                destination: "western mediterranean sea",
-              },
-            },
+            Action.maneuver({
+              origin: "naples",
+              destination: "western mediterranean sea",
+            }),
             ...romeActions,
           ];
         case Nation.RU:
@@ -272,26 +184,19 @@ class Imperial {
           ];
           let moscowActions = [];
           RULandDestinations.map((province) => {
-            moscowActions.push({
-              type: "maneuver",
-              payload: { origin: "moscow", destination: province },
-            });
+            moscowActions.push(
+              Action.maneuver({ origin: "moscow", destination: province })
+            );
           });
           return [
-            {
-              type: "maneuver",
-              payload: {
-                origin: "st. petersburg",
-                destination: "baltic sea",
-              },
-            },
-            {
-              type: "maneuver",
-              payload: {
-                origin: "odessa",
-                destination: "black sea",
-              },
-            },
+            Action.maneuver({
+              origin: "st. petersburg",
+              destination: "baltic sea",
+            }),
+            Action.maneuver({
+              origin: "odessa",
+              destination: "black sea",
+            }),
             ...moscowActions,
           ];
       }
@@ -304,22 +209,16 @@ class Imperial {
     } else if (lastMove.type === "maneuver") {
       if (this.startedConflict(lastMove)) {
         return [
-          {
-            type: "coexist",
-            payload: {
-              province: "western mediterranean sea",
-              incumbent: Nation.IT,
-              challenger: Nation.FR,
-            },
-          },
-          {
-            type: "fight",
-            payload: {
-              province: "western mediterranean sea",
-              incumbent: Nation.IT,
-              challenger: Nation.FR,
-            },
-          },
+          Action.coexist({
+            province: "western mediterranean sea",
+            incumbent: Nation.IT,
+            challenger: Nation.FR,
+          }),
+          Action.fight({
+            province: "western mediterranean sea",
+            incumbent: Nation.IT,
+            challenger: Nation.FR,
+          }),
           ,
         ];
       } else {
@@ -640,10 +539,7 @@ class Imperial {
         "production2",
         "maneuver2",
         "taxation",
-      ].map((slot) => ({
-        type: "rondel",
-        payload: { nation, cost: 0, slot },
-      }))
+      ].map((slot) => Action.rondel({ nation, cost: 0, slot }))
     );
   }
 
@@ -707,10 +603,9 @@ class Imperial {
 
   importAction(nation) {
     return new Set(
-      this.importLocations(nation).map((province) => ({
-        type: "import",
-        payload: { province },
-      }))
+      this.importLocations(nation).map((province) =>
+        Action.import({ province })
+      )
     );
   }
 
@@ -741,10 +636,7 @@ class Imperial {
           GE: () => ["danzig", "munich", "cologne"],
           RU: () => ["kiev", "st. petersburg", "warsaw"],
         })
-        .map((province) => ({
-          type: "buildFactory",
-          payload: { province },
-        }))
+        .map((province) => Action.buildFactory({ province }))
     );
   }
 
