@@ -34,7 +34,10 @@ describe("available actions", () => {
           type: "playerSeating",
           payload: { order: ["Daniel", "Claudia", "Bert", "Anton"] },
         },
-        { type: "rondel", payload: { nation: Nation.AH, cost: 0, slot: "factory" } },
+        {
+          type: "rondel",
+          payload: { nation: Nation.AH, cost: 0, slot: "factory" },
+        },
       ];
       const actions = Imperial.fromLog(log).state.availableActions;
       const expected = new Set(
@@ -52,7 +55,10 @@ describe("available actions", () => {
           type: "playerSeating",
           payload: { order: ["Daniel", "Claudia", "Bert", "Anton"] },
         },
-        { type: "rondel", payload: { nation: Nation.IT, cost: 0, slot: "factory" } },
+        {
+          type: "rondel",
+          payload: { nation: Nation.IT, cost: 0, slot: "factory" },
+        },
       ];
       const actions = Imperial.fromLog(log).state.availableActions;
       const expected = new Set(
@@ -70,7 +76,10 @@ describe("available actions", () => {
           type: "playerSeating",
           payload: { order: ["Daniel", "Claudia", "Bert", "Anton"] },
         },
-        { type: "rondel", payload: { nation: Nation.FR, cost: 0, slot: "factory" } },
+        {
+          type: "rondel",
+          payload: { nation: Nation.FR, cost: 0, slot: "factory" },
+        },
       ];
       const actions = Imperial.fromLog(log).state.availableActions;
       const expected = new Set(
@@ -88,7 +97,10 @@ describe("available actions", () => {
           type: "playerSeating",
           payload: { order: ["Daniel", "Claudia", "Bert", "Anton"] },
         },
-        { type: "rondel", payload: { nation: Nation.GB, cost: 0, slot: "factory" } },
+        {
+          type: "rondel",
+          payload: { nation: Nation.GB, cost: 0, slot: "factory" },
+        },
       ];
       const actions = Imperial.fromLog(log).state.availableActions;
       const expected = new Set(
@@ -106,7 +118,10 @@ describe("available actions", () => {
           type: "playerSeating",
           payload: { order: ["Daniel", "Claudia", "Bert", "Anton"] },
         },
-        { type: "rondel", payload: { nation: Nation.GE, cost: 0, slot: "factory" } },
+        {
+          type: "rondel",
+          payload: { nation: Nation.GE, cost: 0, slot: "factory" },
+        },
       ];
       const actions = Imperial.fromLog(log).state.availableActions;
       const expected = new Set(
@@ -124,7 +139,10 @@ describe("available actions", () => {
           type: "playerSeating",
           payload: { order: ["Daniel", "Claudia", "Bert", "Anton"] },
         },
-        { type: "rondel", payload: { nation: Nation.RU, cost: 0, slot: "factory" } },
+        {
+          type: "rondel",
+          payload: { nation: Nation.RU, cost: 0, slot: "factory" },
+        },
       ];
       const actions = Imperial.fromLog(log).state.availableActions;
       const expected = new Set(
@@ -143,7 +161,10 @@ describe("available actions", () => {
         type: "playerSeating",
         payload: { order: ["Daniel", "Claudia", "Bert", "Anton"] },
       },
-      { type: "rondel", payload: { nation: Nation.AH, cost: 0, slot: "factory" } },
+      {
+        type: "rondel",
+        payload: { nation: Nation.AH, cost: 0, slot: "factory" },
+      },
       { type: "buildFactory", payload: { province: "trieste" } },
     ];
     const actions = Imperial.fromLog(log).state.availableActions;
@@ -169,25 +190,6 @@ describe("available actions", () => {
     const expected = rondelSlots.map((slot) => ({
       type: "rondel",
       payload: { nation: Nation.FR, cost: 0, slot },
-    }));
-    expect(actions).toEqual(new Set(expected));
-  });
-
-  test("GB moved to the investor slot", () => {
-    const log = [
-      {
-        type: "playerSeating",
-        payload: { order: ["Daniel", "Claudia", "Bert", "Anton"] },
-      },
-      {
-        type: "rondel",
-        payload: { nation: Nation.GB, cost: 0, slot: "investor" },
-      },
-    ];
-    const actions = Imperial.fromLog(log).state.availableActions;
-    const expected = rondelSlots.map((slot) => ({
-      type: "rondel",
-      payload: { nation: Nation.GE, cost: 0, slot },
     }));
     expect(actions).toEqual(new Set(expected));
   });
