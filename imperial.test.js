@@ -1,4 +1,5 @@
 const { Nation } = require("./constants");
+const Action = require("./action");
 const Imperial = require("./imperial");
 const rondelSlots = [
   "factory",
@@ -14,142 +15,96 @@ const rondelSlots = [
 describe("available actions", () => {
   test("empty state", () => {
     const log = [
-      {
-        type: "playerSeating",
-        payload: { order: ["Daniel", "Claudia", "Bert", "Anton"] },
-      },
+      Action.playerSeating({ order: ["Daniel", "Claudia", "Bert", "Anton"] }),
     ];
     const actions = Imperial.fromLog(log).state.availableActions;
-    const expected = rondelSlots.map((slot) => ({
-      type: "rondel",
-      payload: { nation: Nation.AH, cost: 0, slot },
-    }));
+    const expected = rondelSlots.map((slot) =>
+      Action.rondel({ nation: Nation.AH, cost: 0, slot })
+    );
     expect(actions).toEqual(new Set(expected));
   });
 
   describe("moving to the factory slot", () => {
     test("AH", () => {
       const log = [
-        {
-          type: "playerSeating",
-          payload: { order: ["Daniel", "Claudia", "Bert", "Anton"] },
-        },
-        {
-          type: "rondel",
-          payload: { nation: Nation.AH, cost: 0, slot: "factory" },
-        },
+        Action.playerSeating({ order: ["Daniel", "Claudia", "Bert", "Anton"] }),
+        Action.rondel({ nation: Nation.AH, cost: 0, slot: "factory" }),
       ];
       const actions = Imperial.fromLog(log).state.availableActions;
       const expected = new Set(
-        ["trieste", "prague", "lemburg"].map((province) => ({
-          type: "buildFactory",
-          payload: { province },
-        }))
+        ["trieste", "prague", "lemburg"].map((province) =>
+          Action.buildFactory({ province })
+        )
       );
       expect(actions).toEqual(expected);
     });
 
     test("IT", () => {
       const log = [
-        {
-          type: "playerSeating",
-          payload: { order: ["Daniel", "Claudia", "Bert", "Anton"] },
-        },
-        {
-          type: "rondel",
-          payload: { nation: Nation.IT, cost: 0, slot: "factory" },
-        },
+        Action.playerSeating({ order: ["Daniel", "Claudia", "Bert", "Anton"] }),
+        Action.rondel({ nation: Nation.IT, cost: 0, slot: "factory" }),
       ];
       const actions = Imperial.fromLog(log).state.availableActions;
       const expected = new Set(
-        ["genoa", "venice", "florence"].map((province) => ({
-          type: "buildFactory",
-          payload: { province },
-        }))
+        ["genoa", "venice", "florence"].map((province) =>
+          Action.buildFactory({ province })
+        )
       );
       expect(actions).toEqual(expected);
     });
 
     test("FR", () => {
       const log = [
-        {
-          type: "playerSeating",
-          payload: { order: ["Daniel", "Claudia", "Bert", "Anton"] },
-        },
-        {
-          type: "rondel",
-          payload: { nation: Nation.FR, cost: 0, slot: "factory" },
-        },
+        Action.playerSeating({ order: ["Daniel", "Claudia", "Bert", "Anton"] }),
+        Action.rondel({ nation: Nation.FR, cost: 0, slot: "factory" }),
       ];
       const actions = Imperial.fromLog(log).state.availableActions;
       const expected = new Set(
-        ["brest", "dijon", "marseille"].map((province) => ({
-          type: "buildFactory",
-          payload: { province },
-        }))
+        ["brest", "dijon", "marseille"].map((province) =>
+          Action.buildFactory({ province })
+        )
       );
       expect(actions).toEqual(expected);
     });
 
     test("GB", () => {
       const log = [
-        {
-          type: "playerSeating",
-          payload: { order: ["Daniel", "Claudia", "Bert", "Anton"] },
-        },
-        {
-          type: "rondel",
-          payload: { nation: Nation.GB, cost: 0, slot: "factory" },
-        },
+        Action.playerSeating({ order: ["Daniel", "Claudia", "Bert", "Anton"] }),
+        Action.rondel({ nation: Nation.GB, cost: 0, slot: "factory" }),
       ];
       const actions = Imperial.fromLog(log).state.availableActions;
       const expected = new Set(
-        ["dublin", "sheffield", "edinburgh"].map((province) => ({
-          type: "buildFactory",
-          payload: { province },
-        }))
+        ["dublin", "sheffield", "edinburgh"].map((province) =>
+          Action.buildFactory({ province })
+        )
       );
       expect(actions).toEqual(expected);
     });
 
     test("GE", () => {
       const log = [
-        {
-          type: "playerSeating",
-          payload: { order: ["Daniel", "Claudia", "Bert", "Anton"] },
-        },
-        {
-          type: "rondel",
-          payload: { nation: Nation.GE, cost: 0, slot: "factory" },
-        },
+        Action.playerSeating({ order: ["Daniel", "Claudia", "Bert", "Anton"] }),
+        Action.rondel({ nation: Nation.GE, cost: 0, slot: "factory" }),
       ];
       const actions = Imperial.fromLog(log).state.availableActions;
       const expected = new Set(
-        ["danzig", "munich", "cologne"].map((province) => ({
-          type: "buildFactory",
-          payload: { province },
-        }))
+        ["danzig", "munich", "cologne"].map((province) =>
+          Action.buildFactory({ province })
+        )
       );
       expect(actions).toEqual(expected);
     });
 
     test("RU", () => {
       const log = [
-        {
-          type: "playerSeating",
-          payload: { order: ["Daniel", "Claudia", "Bert", "Anton"] },
-        },
-        {
-          type: "rondel",
-          payload: { nation: Nation.RU, cost: 0, slot: "factory" },
-        },
+        Action.playerSeating({ order: ["Daniel", "Claudia", "Bert", "Anton"] }),
+        Action.rondel({ nation: Nation.RU, cost: 0, slot: "factory" }),
       ];
       const actions = Imperial.fromLog(log).state.availableActions;
       const expected = new Set(
-        ["kiev", "st. petersburg", "warsaw"].map((province) => ({
-          type: "buildFactory",
-          payload: { province },
-        }))
+        ["kiev", "st. petersburg", "warsaw"].map((province) =>
+          Action.buildFactory({ province })
+        )
       );
       expect(actions).toEqual(expected);
     });
@@ -157,54 +112,34 @@ describe("available actions", () => {
 
   test("AH built a factory in Trieste", () => {
     const log = [
-      {
-        type: "playerSeating",
-        payload: { order: ["Daniel", "Claudia", "Bert", "Anton"] },
-      },
-      {
-        type: "rondel",
-        payload: { nation: Nation.AH, cost: 0, slot: "factory" },
-      },
-      { type: "buildFactory", payload: { province: "trieste" } },
+      Action.playerSeating({ order: ["Daniel", "Claudia", "Bert", "Anton"] }),
+      Action.rondel({ nation: Nation.AH, cost: 0, slot: "factory" }),
+      Action.buildFactory({ province: "trieste" }),
     ];
     const actions = Imperial.fromLog(log).state.availableActions;
-    const expected = rondelSlots.map((slot) => ({
-      type: "rondel",
-      payload: { nation: Nation.IT, cost: 0, slot },
-    }));
+    const expected = rondelSlots.map((slot) =>
+      Action.rondel({ nation: Nation.IT, cost: 0, slot })
+    );
     expect(actions).toEqual(new Set(expected));
   });
 
   test("IT moved to the production1 slot", () => {
     const log = [
-      {
-        type: "playerSeating",
-        payload: { order: ["Daniel", "Claudia", "Bert", "Anton"] },
-      },
-      {
-        type: "rondel",
-        payload: { nation: Nation.IT, cost: 0, slot: "production1" },
-      },
+      Action.playerSeating({ order: ["Daniel", "Claudia", "Bert", "Anton"] }),
+      Action.rondel({ nation: Nation.IT, cost: 0, slot: "production1" }),
     ];
     const actions = Imperial.fromLog(log).state.availableActions;
-    const expected = rondelSlots.map((slot) => ({
-      type: "rondel",
-      payload: { nation: Nation.FR, cost: 0, slot },
-    }));
+    const expected = rondelSlots.map((slot) =>
+      Action.rondel({ nation: Nation.FR, cost: 0, slot })
+    );
     expect(actions).toEqual(new Set(expected));
   });
 
   describe("moving to the import slot", () => {
     test("AH moved to the import slot", () => {
       const log = [
-        {
-          type: "playerSeating",
-          payload: { order: ["Daniel", "Claudia", "Bert", "Anton"] },
-        },
-        {
-          type: "rondel",
-          payload: { nation: Nation.AH, cost: 0, slot: "import" },
-        },
+        Action.playerSeating({ order: ["Daniel", "Claudia", "Bert", "Anton"] }),
+        Action.rondel({ nation: Nation.AH, cost: 0, slot: "import" }),
       ];
       const actions = Imperial.fromLog(log).state.availableActions;
       const expected = [
@@ -213,99 +148,62 @@ describe("available actions", () => {
         "prague",
         "lemberg",
         "trieste",
-      ].map((province) => ({
-        type: "import",
-        payload: { province },
-      }));
+      ].map((province) => Action.import({ province }));
       expect(actions).toEqual(new Set(expected));
     });
 
     test("IT moved to the import slot", () => {
       const log = [
-        {
-          type: "playerSeating",
-          payload: { order: ["Daniel", "Claudia", "Bert", "Anton"] },
-        },
-        {
-          type: "rondel",
-          payload: { nation: Nation.IT, cost: 0, slot: "import" },
-        },
+        Action.playerSeating({ order: ["Daniel", "Claudia", "Bert", "Anton"] }),
+        Action.rondel({ nation: Nation.IT, cost: 0, slot: "import" }),
       ];
       const actions = Imperial.fromLog(log).state.availableActions;
-      const expected = ["rome", "naples"].map((province) => ({
-        type: "import",
-        payload: { province },
-      }));
+      const expected = ["rome", "naples"].map((province) =>
+        Action.import({ province })
+      );
       expect(actions).toEqual(new Set(expected));
     });
 
     test("FR moved to the import slot", () => {
       const log = [
-        {
-          type: "playerSeating",
-          payload: { order: ["Daniel", "Claudia", "Bert", "Anton"] },
-        },
-        {
-          type: "rondel",
-          payload: { nation: Nation.FR, cost: 0, slot: "import" },
-        },
+        Action.playerSeating({ order: ["Daniel", "Claudia", "Bert", "Anton"] }),
+        Action.rondel({ nation: Nation.FR, cost: 0, slot: "import" }),
       ];
       const actions = Imperial.fromLog(log).state.availableActions;
-      const expected = ["paris", "bordeaux"].map((province) => ({
-        type: "import",
-        payload: { province },
-      }));
+      const expected = ["paris", "bordeaux"].map((province) =>
+        Action.import({ province })
+      );
       expect(actions).toEqual(new Set(expected));
     });
 
     test("GB moved to the import slot", () => {
       const log = [
-        {
-          type: "playerSeating",
-          payload: { order: ["Daniel", "Claudia", "Bert", "Anton"] },
-        },
-        {
-          type: "rondel",
-          payload: { nation: Nation.GB, cost: 0, slot: "import" },
-        },
+        Action.playerSeating({ order: ["Daniel", "Claudia", "Bert", "Anton"] }),
+        Action.rondel({ nation: Nation.GB, cost: 0, slot: "import" }),
       ];
       const actions = Imperial.fromLog(log).state.availableActions;
-      const expected = ["london", "liverpool"].map((province) => ({
-        type: "import",
-        payload: { province },
-      }));
+      const expected = ["london", "liverpool"].map((province) =>
+        Action.import({ province })
+      );
       expect(actions).toEqual(new Set(expected));
     });
 
     test("GE moved to the import slot", () => {
       const log = [
-        {
-          type: "playerSeating",
-          payload: { order: ["Daniel", "Claudia", "Bert", "Anton"] },
-        },
-        {
-          type: "rondel",
-          payload: { nation: Nation.GE, cost: 0, slot: "import" },
-        },
+        Action.playerSeating({ order: ["Daniel", "Claudia", "Bert", "Anton"] }),
+        Action.rondel({ nation: Nation.GE, cost: 0, slot: "import" }),
       ];
       const actions = Imperial.fromLog(log).state.availableActions;
-      const expected = ["berlin", "hamburg"].map((province) => ({
-        type: "import",
-        payload: { province },
-      }));
+      const expected = ["berlin", "hamburg"].map((province) =>
+        Action.import({ province })
+      );
       expect(actions).toEqual(new Set(expected));
     });
 
     test("RU moved to the import slot", () => {
       const log = [
-        {
-          type: "playerSeating",
-          payload: { order: ["Daniel", "Claudia", "Bert", "Anton"] },
-        },
-        {
-          type: "rondel",
-          payload: { nation: Nation.RU, cost: 0, slot: "import" },
-        },
+        Action.playerSeating({ order: ["Daniel", "Claudia", "Bert", "Anton"] }),
+        Action.rondel({ nation: Nation.RU, cost: 0, slot: "import" }),
       ];
       const actions = Imperial.fromLog(log).state.availableActions;
       const expected = [
@@ -314,69 +212,45 @@ describe("available actions", () => {
         "odessa",
         "kiev",
         "warsaw",
-      ].map((province) => ({
-        type: "import",
-        payload: { province },
-      }));
+      ].map((province) => Action.import({ province }));
       expect(actions).toEqual(new Set(expected));
     });
   });
 
   test("GE imported an army in Berlin", () => {
     const log = [
-      {
-        type: "playerSeating",
-        payload: { order: ["Daniel", "Claudia", "Bert", "Anton"] },
-      },
-      {
-        type: "rondel",
-        payload: { nation: Nation.GE, cost: 0, slot: "import" },
-      },
-      { type: "import", payload: { province: "berlin" } },
+      Action.playerSeating({ order: ["Daniel", "Claudia", "Bert", "Anton"] }),
+      Action.rondel({ nation: Nation.GE, cost: 0, slot: "import" }),
+      Action.import({ province: "berlin" }),
     ];
     const actions = Imperial.fromLog(log).state.availableActions;
-    const expected = rondelSlots.map((slot) => ({
-      type: "rondel",
-      payload: { nation: Nation.RU, cost: 0, slot },
-    }));
+    const expected = rondelSlots.map((slot) =>
+      Action.rondel({ nation: Nation.RU, cost: 0, slot })
+    );
     expect(actions).toEqual(new Set(expected));
   });
 
   test("RU moved to the production2 slot", () => {
     const log = [
-      {
-        type: "playerSeating",
-        payload: { order: ["Daniel", "Claudia", "Bert", "Anton"] },
-      },
-      {
-        type: "rondel",
-        payload: { nation: Nation.RU, cost: 0, slot: "production2" },
-      },
+      Action.playerSeating({ order: ["Daniel", "Claudia", "Bert", "Anton"] }),
+      Action.rondel({ nation: Nation.RU, cost: 0, slot: "production2" }),
     ];
     const actions = Imperial.fromLog(log).state.availableActions;
-    const expected = rondelSlots.map((slot) => ({
-      type: "rondel",
-      payload: { nation: Nation.AH, cost: 0, slot },
-    }));
+    const expected = rondelSlots.map((slot) =>
+      Action.rondel({ nation: Nation.AH, cost: 0, slot })
+    );
     expect(actions).toEqual(new Set(expected));
   });
 
   test("IT moved to the taxation slot", () => {
     const log = [
-      {
-        type: "playerSeating",
-        payload: { order: ["Daniel", "Claudia", "Bert", "Anton"] },
-      },
-      {
-        type: "rondel",
-        payload: { nation: Nation.IT, cost: 0, slot: "taxation" },
-      },
+      Action.playerSeating({ order: ["Daniel", "Claudia", "Bert", "Anton"] }),
+      Action.rondel({ nation: Nation.IT, cost: 0, slot: "taxation" }),
     ];
     const actions = Imperial.fromLog(log).state.availableActions;
-    const expected = rondelSlots.map((slot) => ({
-      type: "rondel",
-      payload: { nation: Nation.FR, cost: 0, slot },
-    }));
+    const expected = rondelSlots.map((slot) =>
+      Action.rondel({ nation: Nation.FR, cost: 0, slot })
+    );
     expect(actions).toEqual(new Set(expected));
   });
 });
