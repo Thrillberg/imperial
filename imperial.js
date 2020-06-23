@@ -86,7 +86,16 @@ class Imperial {
       });
 
       return allRemainingBonds
-        .filter((bond) => bond.cost <= this.getCash(this.investorCardHolder()))
+        .filter((bond) => {
+          const player = this.investorCardHolder();
+          const exchangeableBondCosts = this.getBonds(player)
+            .filter((exchangeableBond) => {
+              return exchangeableBond.nation === bond.nation;
+            })
+            .map((x) => x.cost);
+          const topBondCost = Math.max(exchangeableBondCosts);
+          return bond.cost <= this.getCash(player) + topBondCost;
+        })
         .map((bond) => {
           return {
             type: "bondPurchase",
@@ -823,19 +832,14 @@ class Imperial {
     return false;
   }
 
-  getCash(player) {
+  getCash(player, log = this.log) {
     let cash = 13;
-    this.log
-      .filter((action) => {
-        return (
-          action.type === "bondPurchase" && action.payload.player === player
-        );
-      })
-      .map((bondPurchase) => {
-        cash -= bondPurchase.payload.cost;
-      });
+    const bondPurchases = this.getBonds(player)
+      .map((bond) => bond.cost)
+      .reduce((a, b) => a + b, 0);
+    cash -= bondPurchases;
 
-    const allInvestorActions = this.log
+    const allInvestorActions = log
       .map((action, index) => {
         if (action.type === "rondel" && action.payload.slot === "investor") {
           return { logIndex: index, action };
@@ -847,25 +851,31 @@ class Imperial {
       if (!!investorAction) {
         if (
           this.getInvestorCardHolder(
-            this.log.slice(0, investorAction.logIndex + 1),
-            this.log
+            log.slice(0, investorAction.logIndex + 1),
+            log
           ) === player
         ) {
           cash += 2;
         }
 
         if (
-          this.getController(investorAction.action.payload.nation, this.log) ===
+          this.getController(investorAction.action.payload.nation, log) ===
           player
         ) {
           cash += 4;
         }
 
+        // if (
+        //   this.hasMediumInvestment(investorAction.action.payload.nation, player)
+        // ) {
+        //   cash += 2;
+        // }
+
         if (
           this.hasSmallInvestment(
             investorAction.action.payload.nation,
             player,
-            this.log
+            log
           )
         ) {
           cash += 1;
@@ -873,7 +883,7 @@ class Imperial {
       }
     });
 
-    const taxationActions = this.log.filter(
+    const taxationActions = log.filter(
       (action) =>
         action.type === "rondel" &&
         action.payload.slot === "taxation" &&
@@ -887,11 +897,90 @@ class Imperial {
     }
 
     const postInvestorSlots = ["import", "production2"];
-    const investorSlotSkippedCount = this.log.filter(
+    const investorSlotSkippedCount = log.filter(
       (action) =>
         action.type === "rondel" &&
         postInvestorSlots.includes(action.payload.slot) &&
-        this.previousRondelPosition(action.payload.nation) === "maneuver1"
+        this.previousRondelPosition(action.payload.nation) === "maneuver1" &&
+        this.getController(action.payload.nation) === player
+    ).length;
+    if (investorSlotSkippedCount === 1) {
+      cash += 2;
+    }
+
+    return cash;
+  }
+
+  getNaiveCash(player, log = this.log) {
+    let cash = 13;
+    log
+      .filter((action) => {
+        return (
+          action.type === "bondPurchase" && action.payload.player === player
+        );
+      })
+      .map((bondPurchase) => {
+        cash -= bondPurchase.payload.cost;
+      });
+
+    const allInvestorActions = log
+      .map((action, index) => {
+        if (action.type === "rondel" && action.payload.slot === "investor") {
+          return { logIndex: index, action };
+        }
+      })
+      .filter(Boolean);
+
+    allInvestorActions.map((investorAction) => {
+      if (!!investorAction) {
+        if (
+          this.getInvestorCardHolder(
+            log.slice(0, investorAction.logIndex + 1),
+            log
+          ) === player
+        ) {
+          cash += 2;
+        }
+
+        if (
+          this.getController(investorAction.action.payload.nation, log) ===
+          player
+        ) {
+          cash += 4;
+        }
+
+        if (
+          this.hasSmallInvestment(
+            investorAction.action.payload.nation,
+            player,
+            log
+          )
+        ) {
+          cash += 1;
+        }
+      }
+    });
+
+    const taxationActions = log.filter(
+      (action) =>
+        action.type === "rondel" &&
+        action.payload.slot === "taxation" &&
+        player === this.getController(action.payload.nation)
+    );
+    if (taxationActions.length > 0) {
+      const powerPointsCash = this.getPowerPoints(
+        taxationActions[0].payload.nation
+      );
+      cash += powerPointsCash;
+    }
+
+    const postInvestorSlots = ["import", "production2"];
+    const investorSlotSkippedCount = log.filter(
+      (action) =>
+        action.type === "rondel" &&
+        postInvestorSlots.includes(action.payload.slot) &&
+        this.previousRondelPosition(action.payload.nation) === "maneuver1" &&
+        this.getController(action.payload.nation) === player
     ).length;
     if (investorSlotSkippedCount === 1) {
       cash += 2;
@@ -901,11 +990,43 @@ class Imperial {
   }
 
   getBonds(player) {
-    return [
-      { nation: Nation.AH, cost: 2 },
-      { nation: Nation.FR, cost: 9 },
-      { nation: Nation.AH, cost: 6 },
-    ];
+    const bondPurchases = this.log
+      .map((action, index) => {
+        if (
+          action.type === "bondPurchase" &&
+          action.payload.player === player
+        ) {
+          return { action, index };
+        } else {
+          return null;
+        }
+      })
+      .filter(Boolean);
+
+    let bondsToBeRemoved = [];
+    let bonds = [];
+    bondPurchases.map((purchase, index) => {
+      const cashAtTimeOfPurchase = this.getNaiveCash(
+        player,
+        this.log.slice(0, purchase.index)
+      );
+
+      if (cashAtTimeOfPurchase >= purchase.action.payload.cost) {
+        bonds.push(purchase);
+      } else {
+        bonds.push(purchase);
+        bondsToBeRemoved.push(index - 1);
+      }
+    });
+    bondsToBeRemoved.forEach((index) => {
+      bonds.splice(index, 1);
+    });
+    return bonds.map((bond) => {
+      return {
+        nation: bond.action.payload.nation,
+        cost: bond.action.payload.cost,
+      };
+    });
   }
 
   previousRondelPosition(nation) {
@@ -956,6 +1077,22 @@ class Imperial {
     }
   }
 
+  hasMediumInvestment(nation, player) {
+    const bondPurchases = this.log.filter((action) => {
+      return (
+        action.type === "bondPurchase" &&
+        action.payload.nation === nation &&
+        action.payload.player === player &&
+        action.payload.cost === 4
+      );
+    });
+    if (bondPurchases.length > 0) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   getInvestorCardHolder(log, fullLog) {
     const AHController = this.getController(Nation.AH, fullLog);
     const order = fullLog.find((action) => {
@@ -978,7 +1115,7 @@ class Imperial {
     let index = indexOfInvestorCardHolder - investorActionsCount;
     if (index === -1) {
       return order[order.length - 1];
-    } else if (index === -3) {
+    } else if (index <= -3) {
       return order[order.length - 4];
     }
     index = Math.abs(index);

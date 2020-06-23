@@ -621,6 +621,10 @@ describe("Schnelleinsteig", () => {
           },
           {
             type: "bondPurchase",
+            payload: { nation: Nation.FR, player: "Daniel", cost: 6 },
+          },
+          {
+            type: "bondPurchase",
             payload: { nation: Nation.GB, player: "Daniel", cost: 4 },
           },
           {
@@ -634,6 +638,14 @@ describe("Schnelleinsteig", () => {
           {
             type: "bondPurchase",
             payload: { nation: Nation.RU, player: "Daniel", cost: 4 },
+          },
+          {
+            type: "bondPurchase",
+            payload: { nation: Nation.RU, player: "Daniel", cost: 6 },
+          },
+          {
+            type: "bondPurchase",
+            payload: { nation: Nation.RU, player: "Daniel", cost: 12 },
           },
         ];
         expect(Imperial.fromLog(log).availableActions()).toEqual(
@@ -907,6 +919,14 @@ describe("Schnelleinsteig", () => {
           {
             type: "bondPurchase",
             payload: { nation: Nation.IT, player: "Anton", cost: 6 },
+          },
+          {
+            type: "bondPurchase",
+            payload: { nation: Nation.IT, player: "Anton", cost: 12 },
+          },
+          {
+            type: "bondPurchase",
+            payload: { nation: Nation.IT, player: "Anton", cost: 16 },
           },
           {
             type: "bondPurchase",
@@ -2219,6 +2239,14 @@ describe("Schnelleinsteig", () => {
           },
           {
             type: "bondPurchase",
+            payload: { nation: Nation.GB, player: "Bert", cost: 12 },
+          },
+          {
+            type: "bondPurchase",
+            payload: { nation: Nation.GB, player: "Bert", cost: 16 },
+          },
+          {
+            type: "bondPurchase",
             payload: { nation: Nation.GE, player: "Bert", cost: 2 },
           },
           {
@@ -3458,7 +3486,7 @@ describe("Schnelleinsteig", () => {
     });
   });
 
-  describe("fifth round", () => {
+  xdescribe("fifth round", () => {
     describe("1. AH does maneuver1", () => {
       test("AH's available actions are to move Tunis, Ionian Sea, West Balkan, and Romania", () => {
         const log = [
@@ -3582,6 +3610,292 @@ describe("Schnelleinsteig", () => {
         expect(algeriaFlag).toEqual(Nation.AH);
         expect(bulgariaFlag).toEqual(Nation.AH);
         expect(westernMediterraneanSeaFlag).toEqual(Nation.AH);
+      });
+    });
+
+    describe("2. IT invests", () => {
+      test("IT has 1 left in the treasury", () => {
+        const log = [
+          ...fourthRoundLog,
+          {
+            type: "rondel",
+            payload: { nation: Nation.AH, cost: 0, slot: "maneuver1" },
+          },
+          {
+            type: "maneuver",
+            payload: {
+              origin: "ionian sea",
+              destination: "western mediterranean sea",
+            },
+          },
+          {
+            type: "maneuver",
+            payload: { origin: "tunis", destination: "algeria" },
+          },
+          {
+            type: "maneuver",
+            payload: { origin: "west balkan", destination: "bulgaria" },
+          },
+          {
+            type: "maneuver",
+            payload: { origin: "romania", destination: "odessa" },
+          },
+          {
+            type: "rondel",
+            payload: { nation: Nation.IT, cost: 0, slot: "investor" },
+          },
+        ];
+        const treasury = Imperial.fromLog(log).state.nations.get(Nation.IT)
+          .treasury;
+        expect(treasury).toEqual(1);
+      });
+
+      test("Anton (IT's controller) has 8 million in cash", () => {
+        const log = [
+          ...fourthRoundLog,
+          {
+            type: "rondel",
+            payload: { nation: Nation.AH, cost: 0, slot: "maneuver1" },
+          },
+          {
+            type: "maneuver",
+            payload: {
+              origin: "ionian sea",
+              destination: "western mediterranean sea",
+            },
+          },
+          {
+            type: "maneuver",
+            payload: { origin: "tunis", destination: "algeria" },
+          },
+          {
+            type: "maneuver",
+            payload: { origin: "west balkan", destination: "bulgaria" },
+          },
+          {
+            type: "maneuver",
+            payload: { origin: "romania", destination: "odessa" },
+          },
+          {
+            type: "rondel",
+            payload: { nation: Nation.IT, cost: 0, slot: "investor" },
+          },
+        ];
+        const controller = Imperial.fromLog(log).state.nations.get(Nation.IT)
+          .controller;
+        const cash = Imperial.fromLog(log).state.players[controller].cash;
+        expect(cash).toEqual(8);
+      });
+
+      describe("investor card is activated", () => {
+        test("Daniel (investor card holder) has 6 million in cash", () => {
+          const log = [
+            ...fourthRoundLog,
+            {
+              type: "rondel",
+              payload: { nation: Nation.AH, cost: 0, slot: "maneuver1" },
+            },
+            {
+              type: "maneuver",
+              payload: {
+                origin: "ionian sea",
+                destination: "western mediterranean sea",
+              },
+            },
+            {
+              type: "maneuver",
+              payload: { origin: "tunis", destination: "algeria" },
+            },
+            {
+              type: "maneuver",
+              payload: { origin: "west balkan", destination: "bulgaria" },
+            },
+            {
+              type: "maneuver",
+              payload: { origin: "romania", destination: "odessa" },
+            },
+            {
+              type: "rondel",
+              payload: { nation: Nation.IT, cost: 0, slot: "investor" },
+            },
+          ];
+          const investorCardHolder = Imperial.fromLog(log).state
+            .investorCardHolder;
+          const cash = Imperial.fromLog(log).state.players[investorCardHolder]
+            .cash;
+          expect(cash).toEqual(6);
+        });
+
+        test("Daniel can buy a bond", () => {
+          const log = [
+            ...fourthRoundLog,
+            {
+              type: "rondel",
+              payload: { nation: Nation.AH, cost: 0, slot: "maneuver1" },
+            },
+            {
+              type: "maneuver",
+              payload: {
+                origin: "ionian sea",
+                destination: "western mediterranean sea",
+              },
+            },
+            {
+              type: "maneuver",
+              payload: { origin: "tunis", destination: "algeria" },
+            },
+            {
+              type: "maneuver",
+              payload: { origin: "west balkan", destination: "bulgaria" },
+            },
+            {
+              type: "maneuver",
+              payload: { origin: "romania", destination: "odessa" },
+            },
+            {
+              type: "rondel",
+              payload: { nation: Nation.IT, cost: 0, slot: "investor" },
+            },
+          ];
+          const expectedActions = [
+            {
+              type: "bondPurchase",
+              payload: { nation: Nation.AH, player: "Daniel", cost: 4 },
+            },
+            {
+              type: "bondPurchase",
+              payload: { nation: Nation.IT, player: "Daniel", cost: 2 },
+            },
+            {
+              type: "bondPurchase",
+              payload: { nation: Nation.IT, player: "Daniel", cost: 4 },
+            },
+            {
+              type: "bondPurchase",
+              payload: { nation: Nation.IT, player: "Daniel", cost: 6 },
+            },
+            {
+              type: "bondPurchase",
+              payload: { nation: Nation.FR, player: "Daniel", cost: 4 },
+            },
+            {
+              type: "bondPurchase",
+              payload: { nation: Nation.FR, player: "Daniel", cost: 6 },
+            },
+            {
+              type: "bondPurchase",
+              payload: { nation: Nation.GB, player: "Daniel", cost: 4 },
+            },
+            {
+              type: "bondPurchase",
+              payload: { nation: Nation.GB, player: "Daniel", cost: 6 },
+            },
+            {
+              type: "bondPurchase",
+              payload: { nation: Nation.GE, player: "Daniel", cost: 2 },
+            },
+            {
+              type: "bondPurchase",
+              payload: { nation: Nation.GE, player: "Daniel", cost: 9 },
+            },
+            {
+              type: "bondPurchase",
+              payload: { nation: Nation.RU, player: "Daniel", cost: 4 },
+            },
+            {
+              type: "bondPurchase",
+              payload: { nation: Nation.RU, player: "Daniel", cost: 12 },
+            },
+          ];
+          expect(Imperial.fromLog(log).availableActions()).toEqual(
+            expectedActions
+          );
+        });
+        test("Daniel has a 9 million GE bond and does not have a 4 million GE bond", () => {
+          const log = [
+            ...fourthRoundLog,
+            {
+              type: "rondel",
+              payload: { nation: Nation.AH, cost: 0, slot: "maneuver1" },
+            },
+            {
+              type: "maneuver",
+              payload: {
+                origin: "ionian sea",
+                destination: "western mediterranean sea",
+              },
+            },
+            {
+              type: "maneuver",
+              payload: { origin: "tunis", destination: "algeria" },
+            },
+            {
+              type: "maneuver",
+              payload: { origin: "west balkan", destination: "bulgaria" },
+            },
+            {
+              type: "maneuver",
+              payload: { origin: "romania", destination: "odessa" },
+            },
+            {
+              type: "rondel",
+              payload: { nation: Nation.IT, cost: 0, slot: "investor" },
+            },
+            {
+              type: "bondPurchase",
+              payload: { nation: Nation.GE, player: "Daniel", cost: 9 },
+            },
+          ];
+          const expectedBonds = [
+            { nation: Nation.FR, cost: 2 },
+            { nation: Nation.RU, cost: 9 },
+            { nation: Nation.GE, cost: 9 },
+          ];
+          expect(Imperial.fromLog(log).state.players["Daniel"].bonds).toEqual(
+            expectedBonds
+          );
+        });
+        test("Daniel has 3 million in cash", () => {
+          const log = [
+            ...fourthRoundLog,
+            {
+              type: "rondel",
+              payload: { nation: Nation.AH, cost: 0, slot: "maneuver1" },
+            },
+            {
+              type: "maneuver",
+              payload: {
+                origin: "ionian sea",
+                destination: "western mediterranean sea",
+              },
+            },
+            {
+              type: "maneuver",
+              payload: { origin: "tunis", destination: "algeria" },
+            },
+            {
+              type: "maneuver",
+              payload: { origin: "west balkan", destination: "bulgaria" },
+            },
+            {
+              type: "maneuver",
+              payload: { origin: "romania", destination: "odessa" },
+            },
+            {
+              type: "rondel",
+              payload: { nation: Nation.IT, cost: 0, slot: "investor" },
+            },
+            {
+              type: "bondPurchase",
+              payload: { nation: Nation.GE, player: "Daniel", cost: 9 },
+            },
+          ];
+          const cash = Imperial.fromLog(log).state.players["Daniel"].cash;
+          expect(cash).toEqual(3);
+        });
+        test("GE has 14 million in treasury", () => {});
+        test("Daniel controls GE", () => {});
+        test("Anton holds the investor card", () => {});
       });
     });
   });
