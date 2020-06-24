@@ -3,21 +3,48 @@ const Action = require("./action");
 
 class Imperial {
   static fromLog(log) {
-    return new Imperial(log);
+    let game = new Imperial();
+    log.forEach((entry) => game.tick(entry));
+    return game;
   }
 
-  constructor(log) {
-    this.log = log;
+  constructor() {
+    this.log = [];
+    this.nations = this.setupNations();
+    this.players = {};
   }
 
   get state() {
     return {
       availableActions: this.availableActions(),
       investorCardHolder: this.investorCardHolder(),
-      nations: this.nations(),
-      players: this.players(),
+      nations: this.nationsState(),
+      players: this.playersState(),
       provinces: this.provinces(),
     };
+  }
+
+  setupNations() {
+    let nations = {};
+    [Nation.AH, Nation.IT, Nation.FR, Nation.GB, Nation.GE, Nation.RU].forEach(
+      (nation) => (nations[nation] = { controller: "", treasury: 0 })
+    );
+    return nations;
+  }
+
+  tick(action) {
+    if (action.type === "playerSeating") {
+      this.order = action.payload.order;
+      action.payload.order.forEach(
+        (player) => (this.players[player] = { cash: 13 })
+      );
+    } else if (action.type === "assignStartingNation") {
+      this.nations[action.payload.nation].controller = action.payload.player;
+    } else if (action.type === "bondPurchase") {
+      this.nations[action.payload.nation].treasury += action.payload.cost;
+      this.players[action.payload.player].cash -= action.payload.cost;
+    }
+    this.log.push(action);
   }
 
   availableActions() {
@@ -349,7 +376,7 @@ class Imperial {
     return this.getInvestorCardHolder(this.log, this.log);
   }
 
-  nations() {
+  nationsState() {
     const nations = new Map();
     for (const nation of Nation) {
       nations.set(nation, {
@@ -362,12 +389,9 @@ class Imperial {
     return nations;
   }
 
-  players() {
+  playersState() {
     let players = {};
-    const seatingAction = this.log.find((action) => {
-      return action.type === "playerSeating";
-    });
-    seatingAction.payload.order.map((player) => {
+    this.order.map((player) => {
       players[player] = {
         cash: this.getCash(player, this.log),
         bonds: this.getBonds(player),
@@ -757,12 +781,6 @@ class Imperial {
           cash += 4;
         }
 
-        // if (
-        //   this.hasMediumInvestment(investorAction.action.payload.nation, player)
-        // ) {
-        //   cash += 2;
-        // }
-
         if (
           this.hasSmallInvestment(
             investorAction.action.payload.nation,
@@ -969,22 +987,6 @@ class Imperial {
     }
   }
 
-  hasMediumInvestment(nation, player) {
-    const bondPurchases = this.log.filter((action) => {
-      return (
-        action.type === "bondPurchase" &&
-        action.payload.nation === nation &&
-        action.payload.player === player &&
-        action.payload.cost === 4
-      );
-    });
-    if (bondPurchases.length > 0) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
   getInvestorCardHolder(log, fullLog) {
     const AHController = this.getController(Nation.AH, fullLog);
     const order = fullLog.find((action) => {
@@ -1032,19 +1034,14 @@ class Imperial {
   }
 
   homeProvinces(nation) {
-    if (nation === Nation.AH) {
-      return ["vienna", "budapest", "prague", "lemberg", "trieste"];
-    } else if (nation === Nation.IT) {
-      return ["rome", "naples"];
-    } else if (nation === Nation.FR) {
-      return ["paris", "bordeaux", "marseille"];
-    } else if (nation === Nation.GB) {
-      return ["london", "liverpool"];
-    } else if (nation === Nation.GE) {
-      return ["berlin", "hamburg"];
-    } else if (nation === Nation.RU) {
-      return ["moscow", "st. petersburg", "odessa", "kiev", "warsaw"];
-    }
+    return nation.when({
+      AH: () => ["vienna", "budapest", "prague", "lemberg", "trieste"],
+      IT: () => ["rome", "naples"],
+      FR: () => ["paris", "bordeaux", "marseille"],
+      GB: () => ["london", "liverpool"],
+      GE: () => ["berlin", "hamburg"],
+      RU: () => ["moscow", "st. petersburg", "odessa", "kiev", "warsaw"],
+    });
   }
 }
 

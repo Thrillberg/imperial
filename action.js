@@ -35,6 +35,7 @@ const makeAction = (type, payloadKeys) => {
 };
 
 const specs = {
+  assignStartingNation: ["nation", "player"],
   bondPurchase: ["nation", "player", "cost"],
   buildFactory: ["province"],
   coexist: ["province", "incumbent", "challenger"],
