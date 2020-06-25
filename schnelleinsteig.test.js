@@ -14,6 +14,10 @@ const rondelSlots = [
 
 const setupLog = [
   Action.playerSeating({ order: ["Daniel", "Claudia", "Bert", "Anton"] }),
+  Action.assignStartingNation({ nation: Nation.RU, player: "Daniel" }),
+  Action.assignStartingNation({ nation: Nation.FR, player: "Claudia" }),
+  Action.assignStartingNation({ nation: Nation.GB, player: "Bert" }),
+  Action.assignStartingNation({ nation: Nation.IT, player: "Anton" }),
   Action.bondPurchase({ nation: Nation.AH, player: "Claudia", cost: 2 }),
   Action.bondPurchase({ nation: Nation.IT, player: "Anton", cost: 9 }),
   Action.bondPurchase({ nation: Nation.FR, player: "Claudia", cost: 9 }),
@@ -135,114 +139,127 @@ describe("Schnelleinsteig", () => {
         expect(cash).toEqual(13);
       });
     });
+
+    test("players are assigned their starting nations", () => {
+      const log = setupLog.slice(0, 1);
+      log.push(
+        Action.assignStartingNation({ nation: Nation.RU, player: "Daniel" }),
+        Action.assignStartingNation({ nation: Nation.FR, player: "Claudia" }),
+        Action.assignStartingNation({ nation: Nation.GB, player: "Bert" }),
+        Action.assignStartingNation({ nation: Nation.IT, player: "Anton" })
+      );
+      const game = Imperial.fromLog(log);
+      const russiaController = game.nations.get(Nation.RU).controller;
+      const franceController = game.nations.get(Nation.FR).controller;
+      const englandController = game.nations.get(Nation.GB).controller;
+      const italyController = game.nations.get(Nation.IT).controller;
+
+      expect(russiaController).toEqual("Daniel");
+      expect(franceController).toEqual("Claudia");
+      expect(englandController).toEqual("Bert");
+      expect(italyController).toEqual("Anton");
+    });
+
     test("Claudia buys a 2 million AH bond", () => {
-      const log = [
-        Action.playerSeating({ order: ["Daniel", "Claudia", "Bert", "Anton"] }),
-        Action.bondPurchase({ nation: Nation.AH, player: "Claudia", cost: 2 }),
-      ];
-      const cash = Imperial.fromLog(log).state.players["Claudia"].cash;
-      const treasury = Imperial.fromLog(log).state.nations.get(Nation.AH)
-        .treasury;
+      const log = setupLog.slice(0, 5);
+      log.push(
+        Action.bondPurchase({ nation: Nation.AH, player: "Claudia", cost: 2 })
+      );
+      const game = Imperial.fromLog(log);
+      const cash = game.players["Claudia"].cash;
+      const treasury = game.nations.get(Nation.AH).treasury;
+
       expect(cash).toEqual(11);
       expect(treasury).toEqual(2);
     });
 
     test("Anton buys a 9 million IT bond", () => {
-      const log = [
-        Action.playerSeating({ order: ["Daniel", "Claudia", "Bert", "Anton"] }),
-        Action.bondPurchase({ nation: Nation.IT, player: "Anton", cost: 9 }),
-      ];
-      const cash = Imperial.fromLog(log).state.players["Anton"].cash;
-      const treasury = Imperial.fromLog(log).state.nations.get(Nation.IT)
-        .treasury;
+      const log = setupLog.slice(0, 6);
+      log.push(
+        Action.bondPurchase({ nation: Nation.IT, player: "Anton", cost: 9 })
+      );
+      const game = Imperial.fromLog(log);
+      const cash = game.players["Anton"].cash;
+      const treasury = game.nations.get(Nation.IT).treasury;
+
       expect(cash).toEqual(4);
       expect(treasury).toEqual(9);
     });
 
     test("Claudia buys a 9 million FR bond", () => {
-      const log = [
-        Action.playerSeating({ order: ["Daniel", "Claudia", "Bert", "Anton"] }),
-        Action.bondPurchase({ nation: Nation.AH, player: "Claudia", cost: 2 }),
-        Action.bondPurchase({ nation: Nation.FR, player: "Claudia", cost: 9 }),
-      ];
-      const cash = Imperial.fromLog(log).state.players["Claudia"].cash;
-      const treasury = Imperial.fromLog(log).state.nations.get(Nation.FR)
-        .treasury;
+      const log = setupLog.slice(0, 7);
+      log.push(
+        Action.bondPurchase({ nation: Nation.FR, player: "Claudia", cost: 9 })
+      );
+      const game = Imperial.fromLog(log);
+      const cash = game.players["Claudia"].cash;
+      const treasury = game.nations.get(Nation.FR).treasury;
+
       expect(cash).toEqual(2);
       expect(treasury).toEqual(9);
     });
 
     test("Daniel buys a 2 million FR bond", () => {
-      const log = [
-        Action.playerSeating({ order: ["Daniel", "Claudia", "Bert", "Anton"] }),
-        Action.bondPurchase({ nation: Nation.FR, player: "Claudia", cost: 9 }),
-        Action.bondPurchase({ nation: Nation.FR, player: "Daniel", cost: 2 }),
-      ];
-      const cash = Imperial.fromLog(log).state.players["Daniel"].cash;
-      const treasury = Imperial.fromLog(log).state.nations.get(Nation.FR)
-        .treasury;
+      const log = setupLog.slice(0, 8);
+      log.push(
+        Action.bondPurchase({ nation: Nation.FR, player: "Daniel", cost: 2 })
+      );
+      const game = Imperial.fromLog(log);
+      const cash = game.players["Daniel"].cash;
+      const treasury = game.nations.get(Nation.FR).treasury;
+
       expect(cash).toEqual(11);
       expect(treasury).toEqual(11);
     });
 
     test("Anton buys a 2 million GB bond", () => {
-      const log = [
-        Action.playerSeating({ order: ["Daniel", "Claudia", "Bert", "Anton"] }),
-        Action.bondPurchase({ nation: Nation.IT, player: "Anton", cost: 9 }),
-        Action.bondPurchase({ nation: Nation.GB, player: "Anton", cost: 2 }),
-      ];
-      const cash = Imperial.fromLog(log).state.players["Anton"].cash;
-      const treasury = Imperial.fromLog(log).state.nations.get(Nation.GB)
-        .treasury;
+      const log = setupLog.slice(0, 9);
+      log.push(
+        Action.bondPurchase({ nation: Nation.GB, player: "Anton", cost: 2 })
+      );
+      const game = Imperial.fromLog(log);
+      const cash = game.players["Anton"].cash;
+      const treasury = game.nations.get(Nation.GB).treasury;
+
       expect(cash).toEqual(2);
       expect(treasury).toEqual(2);
     });
 
     test("Bert buys a 9 million GB bond", () => {
-      const log = [
-        Action.playerSeating({ order: ["Daniel", "Claudia", "Bert", "Anton"] }),
-        Action.bondPurchase({ nation: Nation.GB, player: "Anton", cost: 2 }),
-        Action.bondPurchase({ nation: Nation.GB, player: "Bert", cost: 9 }),
-      ];
-      const cash = Imperial.fromLog(log).state.players["Bert"].cash;
-      const treasury = Imperial.fromLog(log).state.nations.get(Nation.GB)
-        .treasury;
+      const log = setupLog.slice(0, 10);
+      log.push(
+        Action.bondPurchase({ nation: Nation.GB, player: "Bert", cost: 9 })
+      );
+      const game = Imperial.fromLog(log);
+      const cash = game.players["Bert"].cash;
+      const treasury = game.nations.get(Nation.GB).treasury;
+
       expect(cash).toEqual(4);
       expect(treasury).toEqual(11);
     });
 
-    test("GE receives 0", () => {
-      const log = [
-        Action.playerSeating({ order: ["Daniel", "Claudia", "Bert", "Anton"] }),
-      ];
-      const treasury = Imperial.fromLog(log).state.nations.get(Nation.GE)
-        .treasury;
-      expect(treasury).toEqual(0);
-    });
-
     test("Bert buys a 2 million RU bond", () => {
-      const log = [
-        Action.playerSeating({ order: ["Daniel", "Claudia", "Bert", "Anton"] }),
-        Action.bondPurchase({ nation: Nation.GB, player: "Bert", cost: 9 }),
-        Action.bondPurchase({ nation: Nation.RU, player: "Bert", cost: 2 }),
-      ];
-      const cash = Imperial.fromLog(log).state.players["Bert"].cash;
-      const treasury = Imperial.fromLog(log).state.nations.get(Nation.RU)
-        .treasury;
+      const log = setupLog.slice(0, 11);
+      log.push(
+        Action.bondPurchase({ nation: Nation.RU, player: "Bert", cost: 2 })
+      );
+      const game = Imperial.fromLog(log);
+      const cash = game.players["Bert"].cash;
+      const treasury = game.nations.get(Nation.RU).treasury;
+
       expect(cash).toEqual(2);
       expect(treasury).toEqual(2);
     });
 
     test("Daniel buys a 9 million RU bond", () => {
-      const log = [
-        Action.playerSeating({ order: ["Daniel", "Claudia", "Bert", "Anton"] }),
-        Action.bondPurchase({ nation: Nation.FR, player: "Daniel", cost: 2 }),
-        Action.bondPurchase({ nation: Nation.RU, player: "Bert", cost: 2 }),
-        Action.bondPurchase({ nation: Nation.RU, player: "Daniel", cost: 9 }),
-      ];
-      const cash = Imperial.fromLog(log).state.players["Daniel"].cash;
-      const treasury = Imperial.fromLog(log).state.nations.get(Nation.RU)
-        .treasury;
+      const log = setupLog.slice(0, 12);
+      log.push(
+        Action.bondPurchase({ nation: Nation.RU, player: "Daniel", cost: 9 })
+      );
+      const game = Imperial.fromLog(log);
+      const cash = game.players["Daniel"].cash;
+      const treasury = game.nations.get(Nation.RU).treasury;
+
       expect(cash).toEqual(2);
       expect(treasury).toEqual(11);
     });
@@ -1980,11 +1997,11 @@ describe("Schnelleinsteig", () => {
     });
   });
 
-  xdescribe("fifth round", () => {
+  describe("fifth round", () => {
     describe("1. AH does maneuver1", () => {
       test("AH's available actions are to move Tunis, Ionian Sea, West Balkan, and Romania", () => {
-        const log = [
-          ...fourthRoundLog,
+        const newEntries = [
+          ,
           Action.rondel({ nation: Nation.AH, cost: 0, slot: "maneuver1" }),
         ];
         const sharedLandDestinations = [
@@ -2050,9 +2067,9 @@ describe("Schnelleinsteig", () => {
           ...westBalkanActions,
           ...tunisActions,
         ];
-        expect(Imperial.fromLog(log).state.availableActions).toEqual(
-          availableActions
-        );
+        const game = Imperial.fromLog(fourthRoundLog);
+        newEntries.forEach((entry) => game.tick(entry));
+        expect(game.state.availableActions).toEqual(availableActions);
       });
 
       test("Algeria, Bulgaria, Western Mediterranean, and Eastern Mediterranean have AH flags", () => {
@@ -2245,7 +2262,7 @@ describe("Schnelleinsteig", () => {
             expectedBonds
           );
         });
-        test("Daniel has 3 million in cash", () => {
+        xtest("Daniel has 3 million in cash", () => {
           const log = [
             ...fourthRoundLog,
             Action.rondel({ nation: Nation.AH, cost: 0, slot: "maneuver1" }),
@@ -2263,9 +2280,13 @@ describe("Schnelleinsteig", () => {
               cost: 9,
             }),
           ];
-          const cash = Imperial.fromLog(log).state.players["Daniel"].cash;
+          const game = Imperial.fromLog(fourthRoundLog);
+          newEntries.forEach(game.tick);
+
+          const cash = game.state.players["Daniel"].cash;
           expect(cash).toEqual(3);
         });
+
         test("GE has 14 million in treasury", () => {});
         test("Daniel controls GE", () => {});
         test("Anton holds the investor card", () => {});
