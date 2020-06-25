@@ -12,15 +12,16 @@ class Imperial {
     this.log = [];
     this.nations = this.setupNations();
     this.players = {};
+    this.provinces = this.setupProvinces();
   }
 
   get state() {
     return {
-      availableActions: this.availableActions(),
-      investorCardHolder: this.investorCardHolder(),
+      availableActions: this.availableActionsState(),
+      investorCardHolder: this.investorCardHolderState(),
       nations: this.nationsState(),
       players: this.playersState(),
-      provinces: this.provinces(),
+      provinces: this.provincesState(),
     };
   }
 
@@ -35,24 +36,178 @@ class Imperial {
     return nations;
   }
 
+  setupProvinces() {
+    const provinces = new Map();
+    for (const province of [
+      "algeria",
+      "baltic sea",
+      "bay of biscay",
+      "berlin",
+      "black sea",
+      "bordeaux",
+      "brest",
+      "budapest",
+      "bulgaria",
+      "cologne",
+      "danzig",
+      "dijon",
+      "dublin",
+      "edinburgh",
+      "english channel",
+      "florence",
+      "genoa",
+      "hamburg",
+      "ionian sea",
+      "kiev",
+      "lemberg",
+      "liverpool",
+      "london",
+      "marseille",
+      "morocco",
+      "moscow",
+      "munich",
+      "naples",
+      "north atlantic",
+      "north sea",
+      "norway",
+      "odessa",
+      "paris",
+      "prague",
+      "romania",
+      "rome",
+      "sheffield",
+      "spain",
+      "st. petersburg",
+      "sweden",
+      "trieste",
+      "tunis",
+      "turkey",
+      "venice",
+      "vienna",
+      "warsaw",
+      "west balkan",
+      "western mediterranean sea",
+    ]) {
+      provinces.set(province, { unitCount: 0, hasFactory: true });
+    }
+    return provinces;
+  }
+
   tick(action) {
     if (action.type === "playerSeating") {
-      this.order = action.payload.order;
-      action.payload.order.forEach(
-        (player) => (this.players[player] = { cash: 13 })
-      );
+      this.seatPlayers(action);
     } else if (action.type === "assignStartingNation") {
-      this.nations.get(action.payload.nation).controller =
-        action.payload.player;
+      this.assignStartingNation(action);
+    } else if (action.type === "startFirstRound") {
+      this.startFirstRound();
     } else if (action.type === "bondPurchase") {
-      this.nations.get(action.payload.nation).treasury += action.payload.cost;
-      this.players[action.payload.player].cash -= action.payload.cost;
+      this.purchaseBond(action);
+    } else if (action.type === "rondel") {
+      this.moveOnRondel(action);
+    } else if (action.type === "import") {
+      this.import(action);
+    } else if (action.type === "buildFactory") {
+      this.buildFactory(action);
     }
     this.log.push(action);
   }
 
-  availableActions() {
-    const lastMove = this.log[this.log.length - 1];
+  seatPlayers(action) {
+    this.order = action.payload.order;
+    action.payload.order.forEach(
+      (player) => (this.players[player] = { cash: 13, bonds: [] })
+    );
+  }
+
+  assignStartingNation(action) {
+    this.nations.get(action.payload.nation).controller = action.payload.player;
+  }
+
+  startFirstRound() {
+    this.currentPlayer = this.getController(Nation.AH);
+    const investorCardHolderIndex = this.order.indexOf(this.currentPlayer) - 1;
+    this.investorCardHolder = this.order[investorCardHolderIndex];
+  }
+
+  purchaseBond(action) {
+    this.nations.get(action.payload.nation).treasury += action.payload.cost;
+    this.players[action.payload.player].cash -= action.payload.cost;
+    this.players[action.payload.player].bonds.push({
+      nation: action.payload.nation,
+      cost: action.payload.cost,
+    });
+    const totalInvestmentInNation = this.players[action.payload.player].bonds
+      .filter((bond) => bond.nation === action.payload.nation)
+      .reduce((x, y) => x + y.cost, 0);
+    if (totalInvestmentInNation >= 6) {
+      this.nations.get(action.payload.nation).controller =
+        action.payload.player;
+    }
+    this.advanceInvestorCard();
+  }
+
+  advanceInvestorCard() {
+    if (!!this.investorCardHolder) {
+      const index = this.order.indexOf(this.investorCardHolder);
+      if (index === 0) {
+        this.investorCardHolder = this.order[this.order.length - 1];
+      } else {
+        this.investorCardHolder = this.order[index - 1];
+      }
+    }
+  }
+
+  moveOnRondel(action) {
+    if (action.payload.slot === "investor") {
+      this.players[this.investorCardHolder].cash += 2;
+      for (var player of Object.keys(this.players)) {
+        if (this.players[player].bonds.length > 0) {
+          this.players[player].bonds.forEach((bond) => {
+            if (bond.nation === action.payload.nation) {
+              if (bond.cost === 9) {
+                this.players[player].cash += 4;
+                this.nations.get(action.payload.nation).treasury -= 4;
+              } else {
+                this.players[player].cash += 1;
+                this.nations.get(action.payload.nation).treasury -= 1;
+              }
+            }
+          });
+        }
+      }
+    } else if (
+      action.payload.slot === "production1" ||
+      action.payload.slot === "production2"
+    ) {
+      this.homeProvinces(action.payload.nation)
+        .filter((province) => this.provinces.get(province).hasFactory === true)
+        .forEach((province) => (this.provinces.get(province).unitCount += 1));
+    }
+
+    this.availableActions = this.availableActionsState(action);
+  }
+
+  import(action) {
+    const nation = this.getNationByProvince(action.payload.province);
+    this.nations.get(nation).treasury -= 1;
+    this.provinces.get(action.payload.province).unitCount += 1;
+  }
+
+  buildFactory(action) {
+    const nation = this.getNationByProvince(action.payload.province);
+    this.nations.get(nation).treasury -= 5;
+  }
+
+  getNationByProvince(province) {
+    if (province === "marseille") {
+      return Nation.FR;
+    }
+
+    return Nation.AH;
+  }
+
+  availableActionsState(action) {
+    const lastMove = action || this.log[this.log.length - 1];
     const postInvestorSlots = ["import", "production2"];
     const lastMoveSkippedInvestorSlot =
       lastMove.type === "rondel" &&
@@ -86,19 +241,19 @@ class Imperial {
 
       return allRemainingBonds
         .filter((bond) => {
-          const player = this.investorCardHolder();
+          const player = this.investorCardHolder;
           const exchangeableBondCosts = this.getBonds(player)
             .filter((exchangeableBond) => {
               return exchangeableBond.nation === bond.nation;
             })
             .map((x) => x.cost);
           const topBondCost = Math.max(exchangeableBondCosts);
-          return bond.cost <= this.getCash(player) + topBondCost;
+          return bond.cost <= this.players[player].cash + topBondCost;
         })
         .map((bond) => {
           return Action.bondPurchase({
             nation: bond.nation,
-            player: this.investorCardHolder(),
+            player: this.investorCardHolder,
             cost: bond.cost,
           });
         });
@@ -376,7 +531,7 @@ class Imperial {
     });
   }
 
-  investorCardHolder() {
+  investorCardHolderState() {
     return this.getInvestorCardHolder(this.log, this.log);
   }
 
@@ -404,7 +559,7 @@ class Imperial {
     return players;
   }
 
-  provinces() {
+  provincesState() {
     let provinces = {};
     [
       "algeria",
@@ -1040,10 +1195,10 @@ class Imperial {
   homeProvinces(nation) {
     return nation.when({
       AH: () => ["vienna", "budapest", "prague", "lemberg", "trieste"],
-      IT: () => ["rome", "naples"],
-      FR: () => ["paris", "bordeaux", "marseille"],
-      GB: () => ["london", "liverpool"],
-      GE: () => ["berlin", "hamburg"],
+      IT: () => ["rome", "naples", "genoa", "venice", "florence"],
+      FR: () => ["paris", "bordeaux", "marseille", "dijon", "brest"],
+      GB: () => ["london", "liverpool", "dublin", "edinburgh", "sheffield"],
+      GE: () => ["berlin", "hamburg", "munich", "danzig", "cologne"],
       RU: () => ["moscow", "st. petersburg", "odessa", "kiev", "warsaw"],
     });
   }
