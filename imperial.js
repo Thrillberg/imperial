@@ -25,10 +25,13 @@ class Imperial {
   }
 
   setupNations() {
-    let nations = {};
-    [Nation.AH, Nation.IT, Nation.FR, Nation.GB, Nation.GE, Nation.RU].forEach(
-      (nation) => (nations[nation] = { controller: "", treasury: 0 })
-    );
+    const nations = new Map();
+    for (const nation of Nation) {
+      nations.set(nation, {
+        controller: "",
+        treasury: 0,
+      });
+    }
     return nations;
   }
 
@@ -39,9 +42,10 @@ class Imperial {
         (player) => (this.players[player] = { cash: 13 })
       );
     } else if (action.type === "assignStartingNation") {
-      this.nations[action.payload.nation].controller = action.payload.player;
+      this.nations.get(action.payload.nation).controller =
+        action.payload.player;
     } else if (action.type === "bondPurchase") {
-      this.nations[action.payload.nation].treasury += action.payload.cost;
+      this.nations.get(action.payload.nation).treasury += action.payload.cost;
       this.players[action.payload.player].cash -= action.payload.cost;
     }
     this.log.push(action);
