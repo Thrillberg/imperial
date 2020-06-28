@@ -608,63 +608,55 @@ describe("Schnelleinsteig", () => {
 
   describe("second round", () => {
     describe("1. AH does production2", () => {
+      const log = secondRoundLog.slice(0, 25);
+      const game = Imperial.fromLog(log);
+      game.tick(
+        Action.rondel({ nation: Nation.AH, cost: 0, slot: "production2" })
+      );
+
       test("vienna and budapest have 1 unit each", () => {
-        const log = [
-          ...firstRoundLog,
-          Action.rondel({ nation: Nation.AH, cost: 0, slot: "production2" }),
-        ];
-        const viennaUnitCount = Imperial.fromLog(log).state.provinces["vienna"]
-          .unitCount;
-        const budapestUnitCount = Imperial.fromLog(log).state.provinces[
-          "budapest"
-        ].unitCount;
+        const viennaUnitCount = game.provinces.get("vienna").unitCount;
+        const budapestUnitCount = game.provinces.get("budapest").unitCount;
+
         expect(viennaUnitCount).toEqual(1);
         expect(budapestUnitCount).toEqual(1);
       });
 
       test("AH treasury remains empty", () => {
-        const log = [
-          ...firstRoundLog,
-          Action.rondel({ nation: Nation.AH, cost: 0, slot: "production2" }),
-        ];
-        const AHTreasury = Imperial.fromLog(log).state.nations.get(Nation.AH)
-          .treasury;
+        const AHTreasury = game.nations.get(Nation.AH).treasury;
+
         expect(AHTreasury).toEqual(0);
       });
     });
 
     describe("2. IT does production2", () => {
+      const log = secondRoundLog.slice(0, 26);
+      const game = Imperial.fromLog(log);
+      game.tick(
+        Action.rondel({ nation: Nation.IT, cost: 0, slot: "production2" })
+      );
+
       test("rome and naples have 1 unit each", () => {
-        const log = [
-          ...firstRoundLog,
-          Action.rondel({ nation: Nation.AH, cost: 0, slot: "production2" }),
-          Action.rondel({ nation: Nation.IT, cost: 0, slot: "production2" }),
-        ];
-        const romeUnitCount = Imperial.fromLog(log).state.provinces["rome"]
-          .unitCount;
-        const naplesUnitCount = Imperial.fromLog(log).state.provinces["naples"]
-          .unitCount;
+        const romeUnitCount = game.provinces.get("rome").unitCount;
+        const naplesUnitCount = game.provinces.get("naples").unitCount;
+
         expect(romeUnitCount).toEqual(1);
         expect(naplesUnitCount).toEqual(1);
       });
     });
 
     describe("3. FR does production1", () => {
+      const log = secondRoundLog.slice(0, 27);
+      const game = Imperial.fromLog(log);
+      game.tick(
+        Action.rondel({ nation: Nation.FR, cost: 0, slot: "production1" })
+      );
+
       test("bordeaux, marseille, and paris have 1 unit each", () => {
-        const log = [
-          ...firstRoundLog,
-          Action.rondel({ nation: Nation.AH, cost: 0, slot: "production2" }),
-          Action.rondel({ nation: Nation.IT, cost: 0, slot: "production2" }),
-          Action.rondel({ nation: Nation.FR, cost: 0, slot: "production1" }),
-        ];
-        const bordeauxUnitCount = Imperial.fromLog(log).state.provinces[
-          "bordeaux"
-        ].unitCount;
-        const marseilleUnitCount = Imperial.fromLog(log).state.provinces[
-          "marseille"
-        ].unitCount;
-        const parisUnitCount = Imperial.fromLog(log).state.provinces["paris"]
-          .unitCount;
+        const bordeauxUnitCount = game.provinces.get("bordeaux").unitCount;
+        const marseilleUnitCount = game.provinces.get("marseille").unitCount;
+        const parisUnitCount = game.provinces.get("paris").unitCount;
+
         expect(bordeauxUnitCount).toEqual(1);
         expect(marseilleUnitCount).toEqual(1);
         expect(parisUnitCount).toEqual(1);
@@ -672,14 +664,13 @@ describe("Schnelleinsteig", () => {
     });
 
     describe("4. GB does maneuver1", () => {
+      const log = secondRoundLog.slice(0, 28);
+      const game = Imperial.fromLog(log);
+      game.tick(
+        Action.rondel({ nation: Nation.GB, cost: 0, slot: "maneuver1" })
+      );
+
       test("GB's available actions are to move liverpool and london units", () => {
-        const log = [
-          ...firstRoundLog,
-          Action.rondel({ nation: Nation.AH, cost: 0, slot: "production2" }),
-          Action.rondel({ nation: Nation.IT, cost: 0, slot: "production2" }),
-          Action.rondel({ nation: Nation.FR, cost: 0, slot: "production1" }),
-          Action.rondel({ nation: Nation.GB, cost: 0, slot: "maneuver1" }),
-        ];
         const availableActions = [
           Action.maneuver({
             origin: "liverpool",
@@ -687,50 +678,36 @@ describe("Schnelleinsteig", () => {
           }),
           Action.maneuver({ origin: "london", destination: "english channel" }),
         ];
-        expect(Imperial.fromLog(log).state.availableActions).toEqual(
-          availableActions
-        );
+
+        expect(game.availableActions).toEqual(availableActions);
       });
 
       test("north atlantic and english channel have GB flags", () => {
-        const log = [
-          ...firstRoundLog,
-          Action.rondel({ nation: Nation.AH, cost: 0, slot: "production2" }),
-          Action.rondel({ nation: Nation.IT, cost: 0, slot: "production2" }),
-          Action.rondel({ nation: Nation.FR, cost: 0, slot: "production1" }),
-          Action.rondel({ nation: Nation.GB, cost: 0, slot: "maneuver1" }),
+        game.tick(
           Action.maneuver({
             origin: "liverpool",
             destination: "north atlantic",
-          }),
-          Action.maneuver({ origin: "london", destination: "english channel" }),
-        ];
-        const northAtlanticFlag = Imperial.fromLog(log).state.provinces[
-          "north atlantic"
-        ].flag;
-        const englishChannelFlag = Imperial.fromLog(log).state.provinces[
-          "english channel"
-        ].flag;
+          })
+        );
+        game.tick(
+          Action.maneuver({ origin: "london", destination: "english channel" })
+        );
+        const northAtlanticFlag = game.provinces.get("north atlantic").flag;
+        const englishChannelFlag = game.provinces.get("english channel").flag;
+
         expect(northAtlanticFlag).toEqual(Nation.GB);
         expect(englishChannelFlag).toEqual(Nation.GB);
       });
     });
 
     describe("5. GE does maneuver2", () => {
+      const log = secondRoundLog.slice(0, 31);
+      const game = Imperial.fromLog(log);
+      game.tick(
+        Action.rondel({ nation: Nation.GE, cost: 0, slot: "maneuver2" })
+      );
+
       test("GE's available actions are to move hamburg and berlin units", () => {
-        const log = [
-          ...firstRoundLog,
-          Action.rondel({ nation: Nation.AH, cost: 0, slot: "production2" }),
-          Action.rondel({ nation: Nation.IT, cost: 0, slot: "production2" }),
-          Action.rondel({ nation: Nation.FR, cost: 0, slot: "production1" }),
-          Action.rondel({ nation: Nation.GB, cost: 0, slot: "maneuver1" }),
-          Action.maneuver({
-            origin: "liverpool",
-            destination: "north atlantic",
-          }),
-          Action.maneuver({ origin: "london", destination: "english channel" }),
-          Action.rondel({ nation: Nation.GE, cost: 0, slot: "maneuver2" }),
-        ];
         const availableActions = [
           Action.maneuver({ origin: "hamburg", destination: "north sea" }),
           Action.maneuver({ origin: "berlin", destination: "danzig" }),
@@ -747,54 +724,30 @@ describe("Schnelleinsteig", () => {
           Action.maneuver({ origin: "berlin", destination: "edinburgh" }),
           Action.maneuver({ origin: "berlin", destination: "norway" }),
         ];
-        expect(Imperial.fromLog(log).state.availableActions).toEqual(
-          availableActions
-        );
+
+        expect(game.availableActions).toEqual(availableActions);
       });
 
       test("north sea and norway have GE flags", () => {
-        const log = [
-          ...firstRoundLog,
-          Action.rondel({ nation: Nation.AH, cost: 0, slot: "production2" }),
-          Action.rondel({ nation: Nation.IT, cost: 0, slot: "production2" }),
-          Action.rondel({ nation: Nation.FR, cost: 0, slot: "production1" }),
-          Action.rondel({ nation: Nation.GB, cost: 0, slot: "maneuver1" }),
-          Action.maneuver({
-            origin: "liverpool",
-            destination: "north atlantic",
-          }),
-          Action.maneuver({ origin: "london", destination: "english channel" }),
-          Action.rondel({ nation: Nation.GE, cost: 0, slot: "maneuver2" }),
-          Action.maneuver({ origin: "hamburg", destination: "north sea" }),
-          Action.maneuver({ origin: "berlin", destination: "norway" }),
-        ];
-        const northSeaFlag = Imperial.fromLog(log).state.provinces["north sea"]
-          .flag;
-        const norwayFlag = Imperial.fromLog(log).state.provinces["norway"].flag;
+        game.tick(
+          Action.maneuver({ origin: "hamburg", destination: "north sea" })
+        );
+        game.tick(Action.maneuver({ origin: "berlin", destination: "norway" }));
+        const northSeaFlag = game.provinces.get("north sea").flag;
+        const norwayFlag = game.provinces.get("norway").flag;
+
         expect(northSeaFlag).toEqual(Nation.GE);
         expect(norwayFlag).toEqual(Nation.GE);
       });
     });
 
     describe("6. Russia imports", () => {
+      const log = secondRoundLog.slice(0, 34);
+      const game = Imperial.fromLog(log);
+      game.tick(Action.rondel({ nation: Nation.RU, cost: 0, slot: "import" }));
+
       test("RU can choose where to import", () => {
-        const log = [
-          ...firstRoundLog,
-          Action.rondel({ nation: Nation.AH, cost: 0, slot: "production2" }),
-          Action.rondel({ nation: Nation.IT, cost: 0, slot: "production2" }),
-          Action.rondel({ nation: Nation.FR, cost: 0, slot: "production1" }),
-          Action.rondel({ nation: Nation.GB, cost: 0, slot: "maneuver1" }),
-          Action.maneuver({
-            origin: "liverpool",
-            destination: "north atlantic",
-          }),
-          Action.maneuver({ origin: "london", destination: "english channel" }),
-          Action.rondel({ nation: Nation.GE, cost: 0, slot: "maneuver2" }),
-          Action.maneuver({ origin: "hamburg", destination: "north sea" }),
-          Action.maneuver({ origin: "berlin", destination: "norway" }),
-          Action.rondel({ nation: Nation.RU, cost: 0, slot: "import" }),
-        ];
-        const actions = Imperial.fromLog(log).state.availableActions;
+        const actions = game.availableActions;
         const expected = [
           "moscow",
           "st. petersburg",
@@ -802,49 +755,29 @@ describe("Schnelleinsteig", () => {
           "kiev",
           "warsaw",
         ].map((province) => Action.import({ province }));
+
         expect(actions).toEqual(new Set(expected));
       });
 
-      test("RU has 1 unit in st. petersburg and 2 units in moscow", () => {
-        const log = [
-          ...firstRoundLog,
-          Action.rondel({ nation: Nation.AH, cost: 0, slot: "production2" }),
-          Action.rondel({ nation: Nation.IT, cost: 0, slot: "production2" }),
-          Action.rondel({ nation: Nation.FR, cost: 0, slot: "production1" }),
-          Action.rondel({ nation: Nation.GB, cost: 0, slot: "maneuver1" }),
-          Action.maneuver({
-            origin: "liverpool",
-            destination: "north atlantic",
-          }),
-          Action.maneuver({ origin: "london", destination: "english channel" }),
-          Action.rondel({ nation: Nation.GE, cost: 0, slot: "maneuver2" }),
-          Action.maneuver({ origin: "hamburg", destination: "north sea" }),
-          Action.maneuver({ origin: "berlin", destination: "norway" }),
-          Action.rondel({ nation: Nation.RU, cost: 0, slot: "import" }),
-          Action.import({ province: "st. petersburg" }),
-          Action.import({ province: "moscow" }),
-          Action.import({ province: "moscow" }),
-        ];
-        const stPetersburgUnits = Imperial.fromLog(log).state.provinces[
-          "st. petersburg"
-        ].unitCount;
-        const moscowUnits = Imperial.fromLog(log).state.provinces["moscow"]
-          .unitCount;
-        expect(stPetersburgUnits).toEqual(1);
-        expect(moscowUnits).toEqual(2);
-      });
+      describe("Russia imports 1 in St. Petersburg and 2 in Moscow", () => {
+        game.tick(Action.import({ province: "st. petersburg" }));
+        game.tick(Action.import({ province: "moscow" }));
+        game.tick(Action.import({ province: "moscow" }));
 
-      test("RU has 3 million in treasury", () => {
-        const log = [
-          ...firstRoundLog,
-          Action.rondel({ nation: Nation.RU, cost: 0, slot: "import" }),
-          Action.import({ province: "st. petersburg" }),
-          Action.import({ province: "moscow" }),
-          Action.import({ province: "moscow" }),
-        ];
-        const treasury = Imperial.fromLog(log).state.nations.get(Nation.RU)
-          .treasury;
-        expect(treasury).toEqual(3);
+        test("RU has 1 unit in st. petersburg and 2 units in moscow", () => {
+          const stPetersburgUnits = game.provinces.get("st. petersburg")
+            .unitCount;
+          const moscowUnits = game.provinces.get("moscow").unitCount;
+
+          expect(stPetersburgUnits).toEqual(1);
+          expect(moscowUnits).toEqual(2);
+        });
+
+        test("RU has 3 million in treasury", () => {
+          const treasury = game.nations.get(Nation.RU).treasury;
+
+          expect(treasury).toEqual(3);
+        });
       });
     });
   });

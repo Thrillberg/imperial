@@ -88,7 +88,10 @@ class Imperial {
       "west balkan",
       "western mediterranean sea",
     ]) {
-      provinces.set(province, { unitCount: 0, hasFactory: true });
+      provinces.set(province, {
+        unitCount: 0,
+        hasFactory: true,
+      });
     }
     return provinces;
   }
@@ -108,6 +111,16 @@ class Imperial {
       this.import(action);
     } else if (action.type === "buildFactory") {
       this.buildFactory(action);
+    } else if (action.type === "maneuver") {
+      const maneuverActions = this.log.filter(
+        (action) =>
+          action.type === "rondel" &&
+          (action.payload.slot === "maneuver1" ||
+            action.payload.slot === "maneuver2")
+      );
+      const lastManeuver = maneuverActions[maneuverActions.length - 1];
+      this.provinces.get(action.payload.destination).flag =
+        lastManeuver.payload.nation;
     }
     this.log.push(action);
   }
@@ -183,7 +196,6 @@ class Imperial {
         .filter((province) => this.provinces.get(province).hasFactory === true)
         .forEach((province) => (this.provinces.get(province).unitCount += 1));
     }
-
     this.availableActions = this.availableActionsState(action);
   }
 
@@ -199,7 +211,9 @@ class Imperial {
   }
 
   getNationByProvince(province) {
-    if (province === "marseille") {
+    if (province === "st. petersburg" || province === "moscow") {
+      return Nation.RU;
+    } else if (province === "marseille") {
       return Nation.FR;
     }
 
