@@ -45,6 +45,7 @@ const specs = {
   playerSeating: ["order"],
   production: ["province"],
   rondel: ["nation", "cost", "slot"],
+  startFirstRound: [],
 };
 
 module.exports = {};
