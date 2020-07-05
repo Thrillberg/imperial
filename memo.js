@@ -1,4 +1,4 @@
-NO_VALUE = Symbol("NO_VALUE");
+const NO_VALUE = Symbol("NO_VALUE");
 
 class Trie {
   constructor(value) {
@@ -27,4 +27,4 @@ const memoize = (fn) => {
   return (...args) => memory.getOrInsert(args, fn, args);
 };
 
-module.exports = { memoize };
+export { memoize };

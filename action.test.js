@@ -1,5 +1,5 @@
-const Action = require("./action");
-const { Nation } = require("./constants");
+import Action from "./action";
+import { Nation } from "./constants";
 
 describe("Action.rondel", () => {
   test("memoization works", () => {

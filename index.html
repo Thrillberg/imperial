@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Imperial</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <ul>
+        <li v-for="player in players">
+          {{ player }}
+        </li>
+      </ul>
+      <button v-on:click="tick">{{ tickText }}</button>
+    </div>
+    <script src="./main.js" type="module"></script>
+  </body>
+</html>
