@@ -1,4 +1,4 @@
-const { memoize } = require("./memo");
+import { memoize } from "./memo";
 
 describe("memoize()", () => {
   test("one simple argument", () => {

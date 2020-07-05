@@ -1,4 +1,4 @@
-const { memoize } = require("./memo");
+import { memoize } from "./memo.js";
 
 /* This deserves some explanation.
  *
@@ -34,21 +34,19 @@ const makeAction = (type, payloadKeys) => {
   return (obj) => memoized(...payloadKeys.map((k) => obj[k]));
 };
 
-const specs = {
-  assignStartingNation: ["nation", "player"],
-  bondPurchase: ["nation", "player", "cost"],
-  buildFactory: ["province"],
-  coexist: ["province", "incumbent", "challenger"],
-  fight: ["province", "incumbent", "challenger"],
-  import: ["province"],
-  maneuver: ["origin", "destination"],
-  playerSeating: ["order"],
-  production: ["province"],
-  rondel: ["nation", "cost", "slot"],
-  startFirstRound: [],
+export default {
+  assignStartingNation: makeAction("assignStartingNation", [
+    "nation",
+    "player",
+  ]),
+  bondPurchase: makeAction("bondPurchase", ["nation", "player", "cost"]),
+  buildFactory: makeAction("buildFactory", ["province"]),
+  coexist: makeAction("coexist", ["province", "incumbent", "challenger"]),
+  fight: makeAction("fight", ["province", "incumbent", "challenger"]),
+  import: makeAction("import", ["province"]),
+  maneuver: makeAction("maneuver", ["origin", "destination"]),
+  playerSeating: makeAction("playerSeating", ["order"]),
+  production: makeAction("production", ["province"]),
+  rondel: makeAction("rondel", ["nation", "cost", "slot"]),
+  startFirstRound: makeAction("startFirstRound", []),
 };
-
-module.exports = {};
-for (const type of Object.getOwnPropertyNames(specs)) {
-  module.exports[type] = makeAction(type, specs[type]);
-}

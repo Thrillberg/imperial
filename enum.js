@@ -69,4 +69,4 @@ class Enum {
   }
 }
 
-module.exports = { Enum };
+export { Enum };

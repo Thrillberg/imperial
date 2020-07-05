@@ -1,6 +1,7 @@
-const { Nation } = require("./constants");
-const Action = require("./action");
-const Imperial = require("./imperial");
+import { Nation } from "./constants";
+import Action from "./action";
+import Imperial from "./imperial";
+
 const rondelSlots = [
   "factory",
   "production1",

@@ -1,4 +1,4 @@
-const { Enum } = require("./enum");
+import { Enum } from "./enum";
 
 describe("Enum", () => {
   const MyEnum = Enum.fromArray(["HUHU", "BEBE"], "MyEnum");
@@ -16,15 +16,17 @@ describe("Enum", () => {
 
   describe("immutability", () => {
     test("of the collection", () => {
-      expect(() => (MyEnum.HUHU = 42)).toThrowError();
+      expect(() => {
+        MyEnum.HUHU = 42;
+      }).toThrowError();
     });
 
     test("of instances", () => {
       const currentValue = MyEnum.HUHU.value;
 
-      MyEnum.HUHU.value = 42;
-
-      expect(MyEnum.HUHU.value).toBe(currentValue);
+      expect(() => {
+        MyEnum.HUHU.value = 42;
+      }).toThrowError();
     });
   });
 

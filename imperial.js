@@ -1,7 +1,7 @@
-const { Nation } = require("./constants");
-const Action = require("./action");
+import { Nation } from "./constants.js";
+import Action from "./action.js";
 
-class Imperial {
+export default class Imperial {
   static fromLog(log) {
     let game = new Imperial();
     log.forEach((entry) => game.tick(entry));
@@ -1217,5 +1217,3 @@ class Imperial {
     });
   }
 }
-
-module.exports = Imperial;

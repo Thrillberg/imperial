@@ -1,5 +1,5 @@
-const { Enum } = require("./enum");
+import { Enum } from "./enum.js";
 
 const Nation = Enum.fromArray(["AH", "IT", "FR", "GB", "GE", "RU"], "Nation");
 
-module.exports = { Nation };
+export { Nation };
