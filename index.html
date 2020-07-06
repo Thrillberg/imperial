@@ -7,12 +7,25 @@
   </head>
   <body>
     <div id="app">
-      <ul>
-        <li v-for="player in players">
-          {{ player }}
-        </li>
-      </ul>
-      <button v-on:click="tick">{{ tickText }}</button>
+      <div v-if="gameStarted">
+        <ul>
+          <li v-for="player in players">
+            {{ player }}
+          </li>
+        </ul>
+      </div>
+      <div>
+        <div v-if="gameStarted">
+          <button v-on:click="tick">
+            Tick
+          </button>
+        </div>
+        <div v-else>
+          <button v-on:click="startGame">
+            Start Game
+          </button>
+        </div>
+      </div>
     </div>
     <script src="./main.js" type="module"></script>
   </body>

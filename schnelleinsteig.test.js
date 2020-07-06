@@ -1,6 +1,7 @@
 import { Nation } from "./constants";
 import Action from "./action";
 import Imperial from "./imperial";
+import mainLog from "./schnelleinsteigLog";
 
 const rondelSlots = [
   "factory",
@@ -11,119 +12,6 @@ const rondelSlots = [
   "production2",
   "maneuver2",
   "taxation",
-];
-
-const setupLog = [
-  Action.playerSeating({ order: ["Daniel", "Claudia", "Bert", "Anton"] }),
-  Action.assignStartingNation({ nation: Nation.RU, player: "Daniel" }),
-  Action.assignStartingNation({ nation: Nation.FR, player: "Claudia" }),
-  Action.assignStartingNation({ nation: Nation.GB, player: "Bert" }),
-  Action.assignStartingNation({ nation: Nation.IT, player: "Anton" }),
-  Action.bondPurchase({ nation: Nation.AH, player: "Claudia", cost: 2 }),
-  Action.bondPurchase({ nation: Nation.IT, player: "Anton", cost: 9 }),
-  Action.bondPurchase({ nation: Nation.FR, player: "Claudia", cost: 9 }),
-  Action.bondPurchase({ nation: Nation.FR, player: "Daniel", cost: 2 }),
-  Action.bondPurchase({ nation: Nation.GB, player: "Anton", cost: 2 }),
-  Action.bondPurchase({ nation: Nation.GB, player: "Bert", cost: 9 }),
-  Action.bondPurchase({ nation: Nation.RU, player: "Bert", cost: 2 }),
-  Action.bondPurchase({ nation: Nation.RU, player: "Daniel", cost: 9 }),
-  Action.startFirstRound(),
-];
-
-const firstRoundLog = [
-  ...setupLog,
-  Action.rondel({ nation: Nation.AH, cost: 0, slot: "import" }),
-  Action.import({ province: "trieste" }),
-  Action.import({ province: "lemberg" }),
-  Action.rondel({ nation: Nation.IT, cost: 0, slot: "investor" }),
-  Action.bondPurchase({ nation: Nation.GE, player: "Daniel", cost: 4 }),
-  Action.rondel({ nation: Nation.FR, cost: 0, slot: "factory" }),
-  Action.buildFactory({ province: "marseille" }),
-  Action.rondel({ nation: Nation.GB, cost: 0, slot: "production1" }),
-  Action.rondel({ nation: Nation.GE, cost: 0, slot: "production2" }),
-  Action.rondel({ nation: Nation.RU, cost: 0, slot: "investor" }),
-  Action.bondPurchase({ nation: Nation.GE, player: "Anton", cost: 6 }),
-];
-
-const secondRoundLog = [
-  ...firstRoundLog,
-  Action.rondel({ nation: Nation.AH, cost: 0, slot: "production2" }),
-  Action.rondel({ nation: Nation.IT, cost: 0, slot: "production2" }),
-  Action.rondel({ nation: Nation.FR, cost: 0, slot: "production1" }),
-  Action.rondel({ nation: Nation.GB, cost: 0, slot: "maneuver1" }),
-  Action.maneuver({ origin: "liverpool", destination: "north atlantic" }),
-  Action.maneuver({ origin: "london", destination: "english channel" }),
-  Action.rondel({ nation: Nation.GE, cost: 0, slot: "maneuver2" }),
-  Action.maneuver({ origin: "hamburg", destination: "north sea" }),
-  Action.maneuver({ origin: "berlin", destination: "norway" }),
-  Action.rondel({ nation: Nation.RU, cost: 0, slot: "import" }),
-  Action.import({ province: "st. petersburg" }),
-  Action.import({ province: "moscow" }),
-  Action.import({ province: "moscow" }),
-];
-
-const thirdRoundLog = [
-  ...secondRoundLog,
-  Action.rondel({ nation: Nation.AH, cost: 0, slot: "maneuver2" }),
-  Action.maneuver({ origin: "trieste", destination: "ionian sea" }),
-  Action.maneuver({ origin: "lemberg", destination: "romania" }),
-  Action.maneuver({ origin: "budapest", destination: "west balkan" }),
-  Action.maneuver({ origin: "vienna", destination: "tunis" }),
-  Action.rondel({ nation: Nation.IT, cost: 0, slot: "maneuver2" }),
-  Action.maneuver({
-    origin: "naples",
-    destination: "western mediterranean sea",
-  }),
-  Action.maneuver({ origin: "rome", destination: "spain" }),
-  Action.rondel({ nation: Nation.FR, cost: 0, slot: "maneuver1" }),
-  Action.maneuver({
-    origin: "marseille",
-    destination: "western mediterranean sea",
-  }),
-  Action.maneuver({
-    origin: "bordeaux",
-    destination: "bay of biscay",
-  }),
-  Action.maneuver({
-    origin: "paris",
-    destination: "morocco",
-  }),
-  Action.rondel({ nation: Nation.GB, cost: 0, slot: "investor" }),
-  Action.bondPurchase({ nation: Nation.RU, player: "Bert", cost: 6 }),
-  Action.rondel({ nation: Nation.GE, cost: 0, slot: "taxation" }),
-  Action.rondel({ nation: Nation.RU, cost: 0, slot: "production2" }),
-];
-
-const fourthRoundLog = [
-  ...thirdRoundLog,
-  Action.rondel({ nation: Nation.AH, cost: 0, slot: "taxation" }),
-  Action.rondel({ nation: Nation.IT, cost: 0, slot: "production1" }),
-  Action.rondel({ nation: Nation.FR, cost: 0, slot: "production2" }),
-  Action.bondPurchase({ nation: Nation.AH, player: "Claudia", cost: 6 }),
-  Action.rondel({ nation: Nation.GB, cost: 0, slot: "production2" }),
-  Action.rondel({ nation: Nation.GE, cost: 0, slot: "factory" }),
-  Action.buildFactory({ province: "cologne" }),
-  Action.rondel({ nation: Nation.RU, cost: 0, slot: "maneuver2" }),
-  Action.maneuver({
-    origin: "st. petersburg",
-    destination: "baltic sea",
-  }),
-  Action.maneuver({
-    origin: "odessa",
-    destination: "black sea",
-  }),
-  Action.maneuver({
-    origin: "moscow",
-    destination: "sweden",
-  }),
-  Action.maneuver({
-    origin: "moscow",
-    destination: "turkey",
-  }),
-  Action.maneuver({
-    origin: "moscow",
-    destination: "lemberg",
-  }),
 ];
 
 describe("Schnelleinsteig", () => {
@@ -139,7 +27,7 @@ describe("Schnelleinsteig", () => {
     });
 
     test("players are assigned their starting nations", () => {
-      const log = setupLog.slice(0, 1);
+      const log = mainLog.slice(0, 1);
       log.push(
         Action.assignStartingNation({ nation: Nation.RU, player: "Daniel" }),
         Action.assignStartingNation({ nation: Nation.FR, player: "Claudia" }),
@@ -159,7 +47,7 @@ describe("Schnelleinsteig", () => {
     });
 
     test("Claudia buys a 2 million AH bond", () => {
-      const log = setupLog.slice(0, 5);
+      const log = mainLog.slice(0, 5);
       log.push(
         Action.bondPurchase({ nation: Nation.AH, player: "Claudia", cost: 2 })
       );
@@ -172,7 +60,7 @@ describe("Schnelleinsteig", () => {
     });
 
     test("Anton buys a 9 million IT bond", () => {
-      const log = setupLog.slice(0, 6);
+      const log = mainLog.slice(0, 6);
       log.push(
         Action.bondPurchase({ nation: Nation.IT, player: "Anton", cost: 9 })
       );
@@ -185,7 +73,7 @@ describe("Schnelleinsteig", () => {
     });
 
     test("Claudia buys a 9 million FR bond", () => {
-      const log = setupLog.slice(0, 7);
+      const log = mainLog.slice(0, 7);
       log.push(
         Action.bondPurchase({ nation: Nation.FR, player: "Claudia", cost: 9 })
       );
@@ -198,7 +86,7 @@ describe("Schnelleinsteig", () => {
     });
 
     test("Daniel buys a 2 million FR bond", () => {
-      const log = setupLog.slice(0, 8);
+      const log = mainLog.slice(0, 8);
       log.push(
         Action.bondPurchase({ nation: Nation.FR, player: "Daniel", cost: 2 })
       );
@@ -211,7 +99,7 @@ describe("Schnelleinsteig", () => {
     });
 
     test("Anton buys a 2 million GB bond", () => {
-      const log = setupLog.slice(0, 9);
+      const log = mainLog.slice(0, 9);
       log.push(
         Action.bondPurchase({ nation: Nation.GB, player: "Anton", cost: 2 })
       );
@@ -224,7 +112,7 @@ describe("Schnelleinsteig", () => {
     });
 
     test("Bert buys a 9 million GB bond", () => {
-      const log = setupLog.slice(0, 10);
+      const log = mainLog.slice(0, 10);
       log.push(
         Action.bondPurchase({ nation: Nation.GB, player: "Bert", cost: 9 })
       );
@@ -237,7 +125,7 @@ describe("Schnelleinsteig", () => {
     });
 
     test("Bert buys a 2 million RU bond", () => {
-      const log = setupLog.slice(0, 11);
+      const log = mainLog.slice(0, 11);
       log.push(
         Action.bondPurchase({ nation: Nation.RU, player: "Bert", cost: 2 })
       );
@@ -250,7 +138,7 @@ describe("Schnelleinsteig", () => {
     });
 
     test("Daniel buys a 9 million RU bond", () => {
-      const log = setupLog.slice(0, 12);
+      const log = mainLog.slice(0, 12);
       log.push(
         Action.bondPurchase({ nation: Nation.RU, player: "Daniel", cost: 9 })
       );
@@ -263,7 +151,7 @@ describe("Schnelleinsteig", () => {
     });
 
     test("Claudia is the first player to take a turn", () => {
-      const log = setupLog.slice(0, 13);
+      const log = mainLog.slice(0, 13);
       log.push(Action.startFirstRound());
       const game = Imperial.fromLog(log);
       const currentPlayer = game.currentPlayer;
@@ -275,7 +163,7 @@ describe("Schnelleinsteig", () => {
   describe("first round", () => {
     describe("1. AH imports", () => {
       test("AH moved to the import slot", () => {
-        const log = firstRoundLog.slice(0, 14);
+        const log = mainLog.slice(0, 14);
         log.push(Action.rondel({ nation: Nation.AH, cost: 0, slot: "import" }));
         const game = Imperial.fromLog(log);
         const expectedActions = [
@@ -290,7 +178,7 @@ describe("Schnelleinsteig", () => {
       });
 
       test("AH's treasury is empty and Trieste & Lemberg have units", () => {
-        const log = firstRoundLog.slice(0, 15);
+        const log = mainLog.slice(0, 15);
         log.push(
           Action.import({ province: "trieste" }),
           Action.import({ province: "lemberg" })
@@ -308,7 +196,7 @@ describe("Schnelleinsteig", () => {
 
     describe("2. IT invests", () => {
       test("IT has 5 million left in the treasury", () => {
-        const log = firstRoundLog.slice(0, 17);
+        const log = mainLog.slice(0, 17);
         log.push(
           Action.rondel({ nation: Nation.IT, cost: 0, slot: "investor" })
         );
@@ -319,7 +207,7 @@ describe("Schnelleinsteig", () => {
       });
 
       test("IT's controller (Anton) has 6 million in cash", () => {
-        const log = firstRoundLog.slice(0, 17);
+        const log = mainLog.slice(0, 17);
         log.push(
           Action.rondel({ nation: Nation.IT, cost: 0, slot: "investor" })
         );
@@ -331,7 +219,7 @@ describe("Schnelleinsteig", () => {
       });
 
       test("Investor-card holder (Daniel) has 4 million in cash", () => {
-        const log = firstRoundLog.slice(0, 17);
+        const log = mainLog.slice(0, 17);
         log.push(
           Action.rondel({ nation: Nation.IT, cost: 0, slot: "investor" })
         );
@@ -343,7 +231,7 @@ describe("Schnelleinsteig", () => {
       });
 
       test("Daniel can buy a bond", () => {
-        const log = firstRoundLog.slice(0, 17);
+        const log = mainLog.slice(0, 17);
         log.push(
           Action.rondel({ nation: Nation.IT, cost: 0, slot: "investor" })
         );
@@ -371,7 +259,7 @@ describe("Schnelleinsteig", () => {
 
       describe("Investor-card holder (Daniel) buys the 4 million bond of GE", () => {
         test("Investor-card holder has no cash", () => {
-          const log = firstRoundLog.slice(0, 18);
+          const log = mainLog.slice(0, 18);
           log.push(
             Action.bondPurchase({
               nation: Nation.GE,
@@ -386,7 +274,7 @@ describe("Schnelleinsteig", () => {
         });
 
         test("GE treasury has 4 million", () => {
-          const log = firstRoundLog.slice(0, 18);
+          const log = mainLog.slice(0, 18);
           log.push(
             Action.bondPurchase({
               nation: Nation.GE,
@@ -404,7 +292,7 @@ describe("Schnelleinsteig", () => {
 
     describe("3. FR builds a factory", () => {
       test("Claudia can choose where to put the factory", () => {
-        const log = firstRoundLog.slice(0, 19);
+        const log = mainLog.slice(0, 19);
         log.push(
           Action.rondel({ nation: Nation.FR, cost: 0, slot: "factory" })
         );
@@ -419,7 +307,7 @@ describe("Schnelleinsteig", () => {
       });
 
       test("Marseille has a factory", () => {
-        const log = firstRoundLog.slice(0, 20);
+        const log = mainLog.slice(0, 20);
         log.push(Action.buildFactory({ province: "marseille" }));
         const game = Imperial.fromLog(log);
         const hasFactory = game.provinces.get("marseille").hasFactory;
@@ -428,7 +316,7 @@ describe("Schnelleinsteig", () => {
       });
 
       test("FR has 6 million in its treasury", () => {
-        const log = firstRoundLog.slice(0, 20);
+        const log = mainLog.slice(0, 20);
         log.push(Action.buildFactory({ province: "marseille" }));
         const game = Imperial.fromLog(log);
         const treasury = game.nations.get(Nation.FR).treasury;
@@ -437,7 +325,7 @@ describe("Schnelleinsteig", () => {
       });
 
       test("Paris and Bordeaux have factories", () => {
-        const log = firstRoundLog.slice(0, 20);
+        const log = mainLog.slice(0, 20);
         log.push(Action.buildFactory({ province: "marseille" }));
         const game = Imperial.fromLog(log);
         const parisFactory = game.provinces.get("paris").hasFactory;
@@ -450,7 +338,7 @@ describe("Schnelleinsteig", () => {
 
     describe("4. GB does production1", () => {
       test("London and Liverpool have units", () => {
-        const log = firstRoundLog.slice(0, 21);
+        const log = mainLog.slice(0, 21);
         log.push(
           Action.rondel({ nation: Nation.GB, cost: 0, slot: "production1" })
         );
@@ -465,7 +353,7 @@ describe("Schnelleinsteig", () => {
 
     describe("5. GE does production2", () => {
       test("Berlin and Hamburg have units", () => {
-        const log = firstRoundLog.slice(0, 22);
+        const log = mainLog.slice(0, 22);
         log.push(
           Action.rondel({ nation: Nation.GE, cost: 0, slot: "production2" })
         );
@@ -480,7 +368,7 @@ describe("Schnelleinsteig", () => {
 
     describe("6. RU invests", () => {
       test("Turn begins with Anton holding the investor card", () => {
-        const log = firstRoundLog.slice(0, 23);
+        const log = mainLog.slice(0, 23);
         const game = Imperial.fromLog(log);
         const investorCardHolder = game.investorCardHolder;
 
@@ -488,7 +376,7 @@ describe("Schnelleinsteig", () => {
       });
 
       test("RU has 6 million left in the treasury", () => {
-        const log = firstRoundLog.slice(0, 23);
+        const log = mainLog.slice(0, 23);
         log.push(
           Action.rondel({ nation: Nation.RU, cost: 0, slot: "investor" })
         );
@@ -499,7 +387,7 @@ describe("Schnelleinsteig", () => {
       });
 
       test("Daniel has 4 million in cash", () => {
-        const log = firstRoundLog.slice(0, 23);
+        const log = mainLog.slice(0, 23);
         log.push(
           Action.rondel({ nation: Nation.RU, cost: 0, slot: "investor" })
         );
@@ -510,7 +398,7 @@ describe("Schnelleinsteig", () => {
       });
 
       test("Bert has 3 million in cash", () => {
-        const log = firstRoundLog.slice(0, 23);
+        const log = mainLog.slice(0, 23);
         log.push(
           Action.rondel({ nation: Nation.RU, cost: 0, slot: "investor" })
         );
@@ -521,7 +409,7 @@ describe("Schnelleinsteig", () => {
       });
 
       test("IT's controller (Anton) has 8 million in cash", () => {
-        const log = firstRoundLog.slice(0, 23);
+        const log = mainLog.slice(0, 23);
         log.push(
           Action.rondel({ nation: Nation.RU, cost: 0, slot: "investor" })
         );
@@ -532,7 +420,7 @@ describe("Schnelleinsteig", () => {
       });
 
       test("Anton can buy a bond", () => {
-        const log = firstRoundLog.slice(0, 23);
+        const log = mainLog.slice(0, 23);
         log.push(
           Action.rondel({ nation: Nation.RU, cost: 0, slot: "investor" })
         );
@@ -560,7 +448,7 @@ describe("Schnelleinsteig", () => {
 
       describe("Investor-card holder (Anton) buys the 6 million bond of GE", () => {
         test("Investor-card holder (Anton) 2 million in cash", () => {
-          const log = firstRoundLog.slice(0, 24);
+          const log = mainLog.slice(0, 24);
           log.push(
             Action.bondPurchase({
               nation: Nation.GE,
@@ -575,7 +463,7 @@ describe("Schnelleinsteig", () => {
         });
 
         test("GE treasury has 10 million", () => {
-          const log = firstRoundLog.slice(0, 24);
+          const log = mainLog.slice(0, 24);
           log.push(
             Action.bondPurchase({
               nation: Nation.GE,
@@ -590,7 +478,7 @@ describe("Schnelleinsteig", () => {
         });
 
         test("Anton controls GE", () => {
-          const log = firstRoundLog.slice(0, 24);
+          const log = mainLog.slice(0, 24);
           log.push(
             Action.bondPurchase({
               nation: Nation.GE,
@@ -609,7 +497,7 @@ describe("Schnelleinsteig", () => {
 
   describe("second round", () => {
     describe("1. AH does production2", () => {
-      const log = secondRoundLog.slice(0, 25);
+      const log = mainLog.slice(0, 25);
       const game = Imperial.fromLog(log);
       game.tick(
         Action.rondel({ nation: Nation.AH, cost: 0, slot: "production2" })
@@ -631,7 +519,7 @@ describe("Schnelleinsteig", () => {
     });
 
     describe("2. IT does production2", () => {
-      const log = secondRoundLog.slice(0, 26);
+      const log = mainLog.slice(0, 26);
       const game = Imperial.fromLog(log);
       game.tick(
         Action.rondel({ nation: Nation.IT, cost: 0, slot: "production2" })
@@ -647,7 +535,7 @@ describe("Schnelleinsteig", () => {
     });
 
     describe("3. FR does production1", () => {
-      const log = secondRoundLog.slice(0, 27);
+      const log = mainLog.slice(0, 27);
       const game = Imperial.fromLog(log);
       game.tick(
         Action.rondel({ nation: Nation.FR, cost: 0, slot: "production1" })
@@ -665,7 +553,7 @@ describe("Schnelleinsteig", () => {
     });
 
     describe("4. GB does maneuver1", () => {
-      const log = secondRoundLog.slice(0, 28);
+      const log = mainLog.slice(0, 28);
       const game = Imperial.fromLog(log);
       game.tick(
         Action.rondel({ nation: Nation.GB, cost: 0, slot: "maneuver1" })
@@ -702,7 +590,7 @@ describe("Schnelleinsteig", () => {
     });
 
     describe("5. GE does maneuver2", () => {
-      const log = secondRoundLog.slice(0, 31);
+      const log = mainLog.slice(0, 31);
       const game = Imperial.fromLog(log);
       game.tick(
         Action.rondel({ nation: Nation.GE, cost: 0, slot: "maneuver2" })
@@ -743,7 +631,7 @@ describe("Schnelleinsteig", () => {
     });
 
     describe("6. Russia imports", () => {
-      const log = secondRoundLog.slice(0, 34);
+      const log = mainLog.slice(0, 34);
       const game = Imperial.fromLog(log);
       game.tick(Action.rondel({ nation: Nation.RU, cost: 0, slot: "import" }));
 
@@ -784,6 +672,48 @@ describe("Schnelleinsteig", () => {
   });
 
   describe("third round", () => {
+    const secondRoundLog = [
+      Action.playerSeating({ order: ["Daniel", "Claudia", "Bert", "Anton"] }),
+      Action.assignStartingNation({ nation: Nation.RU, player: "Daniel" }),
+      Action.assignStartingNation({ nation: Nation.FR, player: "Claudia" }),
+      Action.assignStartingNation({ nation: Nation.GB, player: "Bert" }),
+      Action.assignStartingNation({ nation: Nation.IT, player: "Anton" }),
+      Action.bondPurchase({ nation: Nation.AH, player: "Claudia", cost: 2 }),
+      Action.bondPurchase({ nation: Nation.IT, player: "Anton", cost: 9 }),
+      Action.bondPurchase({ nation: Nation.FR, player: "Claudia", cost: 9 }),
+      Action.bondPurchase({ nation: Nation.FR, player: "Daniel", cost: 2 }),
+      Action.bondPurchase({ nation: Nation.GB, player: "Anton", cost: 2 }),
+      Action.bondPurchase({ nation: Nation.GB, player: "Bert", cost: 9 }),
+      Action.bondPurchase({ nation: Nation.RU, player: "Bert", cost: 2 }),
+      Action.bondPurchase({ nation: Nation.RU, player: "Daniel", cost: 9 }),
+      Action.startFirstRound(),
+      // first round
+      Action.rondel({ nation: Nation.AH, cost: 0, slot: "import" }),
+      Action.import({ province: "trieste" }),
+      Action.import({ province: "lemberg" }),
+      Action.rondel({ nation: Nation.IT, cost: 0, slot: "investor" }),
+      Action.bondPurchase({ nation: Nation.GE, player: "Daniel", cost: 4 }),
+      Action.rondel({ nation: Nation.FR, cost: 0, slot: "factory" }),
+      Action.buildFactory({ province: "marseille" }),
+      Action.rondel({ nation: Nation.GB, cost: 0, slot: "production1" }),
+      Action.rondel({ nation: Nation.GE, cost: 0, slot: "production2" }),
+      Action.rondel({ nation: Nation.RU, cost: 0, slot: "investor" }),
+      Action.bondPurchase({ nation: Nation.GE, player: "Anton", cost: 6 }),
+      // second round
+      Action.rondel({ nation: Nation.AH, cost: 0, slot: "production2" }),
+      Action.rondel({ nation: Nation.IT, cost: 0, slot: "production2" }),
+      Action.rondel({ nation: Nation.FR, cost: 0, slot: "production1" }),
+      Action.rondel({ nation: Nation.GB, cost: 0, slot: "maneuver1" }),
+      Action.maneuver({ origin: "liverpool", destination: "north atlantic" }),
+      Action.maneuver({ origin: "london", destination: "english channel" }),
+      Action.rondel({ nation: Nation.GE, cost: 0, slot: "maneuver2" }),
+      Action.maneuver({ origin: "hamburg", destination: "north sea" }),
+      Action.maneuver({ origin: "berlin", destination: "norway" }),
+      Action.rondel({ nation: Nation.RU, cost: 0, slot: "import" }),
+      Action.import({ province: "st. petersburg" }),
+      Action.import({ province: "moscow" }),
+      Action.import({ province: "moscow" }),
+    ];
     describe("1. AH does maneuver2", () => {
       test("AH's available actions are to move trieste, lemberg, budapest, and vienna", () => {
         const log = [
@@ -1475,6 +1405,77 @@ describe("Schnelleinsteig", () => {
   });
 
   describe("fourth round", () => {
+    const thirdRoundLog = [
+      Action.playerSeating({ order: ["Daniel", "Claudia", "Bert", "Anton"] }),
+      Action.assignStartingNation({ nation: Nation.RU, player: "Daniel" }),
+      Action.assignStartingNation({ nation: Nation.FR, player: "Claudia" }),
+      Action.assignStartingNation({ nation: Nation.GB, player: "Bert" }),
+      Action.assignStartingNation({ nation: Nation.IT, player: "Anton" }),
+      Action.bondPurchase({ nation: Nation.AH, player: "Claudia", cost: 2 }),
+      Action.bondPurchase({ nation: Nation.IT, player: "Anton", cost: 9 }),
+      Action.bondPurchase({ nation: Nation.FR, player: "Claudia", cost: 9 }),
+      Action.bondPurchase({ nation: Nation.FR, player: "Daniel", cost: 2 }),
+      Action.bondPurchase({ nation: Nation.GB, player: "Anton", cost: 2 }),
+      Action.bondPurchase({ nation: Nation.GB, player: "Bert", cost: 9 }),
+      Action.bondPurchase({ nation: Nation.RU, player: "Bert", cost: 2 }),
+      Action.bondPurchase({ nation: Nation.RU, player: "Daniel", cost: 9 }),
+      Action.startFirstRound(),
+      // first round
+      Action.rondel({ nation: Nation.AH, cost: 0, slot: "import" }),
+      Action.import({ province: "trieste" }),
+      Action.import({ province: "lemberg" }),
+      Action.rondel({ nation: Nation.IT, cost: 0, slot: "investor" }),
+      Action.bondPurchase({ nation: Nation.GE, player: "Daniel", cost: 4 }),
+      Action.rondel({ nation: Nation.FR, cost: 0, slot: "factory" }),
+      Action.buildFactory({ province: "marseille" }),
+      Action.rondel({ nation: Nation.GB, cost: 0, slot: "production1" }),
+      Action.rondel({ nation: Nation.GE, cost: 0, slot: "production2" }),
+      Action.rondel({ nation: Nation.RU, cost: 0, slot: "investor" }),
+      Action.bondPurchase({ nation: Nation.GE, player: "Anton", cost: 6 }),
+      // second round
+      Action.rondel({ nation: Nation.AH, cost: 0, slot: "production2" }),
+      Action.rondel({ nation: Nation.IT, cost: 0, slot: "production2" }),
+      Action.rondel({ nation: Nation.FR, cost: 0, slot: "production1" }),
+      Action.rondel({ nation: Nation.GB, cost: 0, slot: "maneuver1" }),
+      Action.maneuver({ origin: "liverpool", destination: "north atlantic" }),
+      Action.maneuver({ origin: "london", destination: "english channel" }),
+      Action.rondel({ nation: Nation.GE, cost: 0, slot: "maneuver2" }),
+      Action.maneuver({ origin: "hamburg", destination: "north sea" }),
+      Action.maneuver({ origin: "berlin", destination: "norway" }),
+      Action.rondel({ nation: Nation.RU, cost: 0, slot: "import" }),
+      Action.import({ province: "st. petersburg" }),
+      Action.import({ province: "moscow" }),
+      Action.import({ province: "moscow" }),
+      // third round
+      Action.rondel({ nation: Nation.AH, cost: 0, slot: "maneuver2" }),
+      Action.maneuver({ origin: "trieste", destination: "ionian sea" }),
+      Action.maneuver({ origin: "lemberg", destination: "romania" }),
+      Action.maneuver({ origin: "budapest", destination: "west balkan" }),
+      Action.maneuver({ origin: "vienna", destination: "tunis" }),
+      Action.rondel({ nation: Nation.IT, cost: 0, slot: "maneuver2" }),
+      Action.maneuver({
+        origin: "naples",
+        destination: "western mediterranean sea",
+      }),
+      Action.maneuver({ origin: "rome", destination: "spain" }),
+      Action.rondel({ nation: Nation.FR, cost: 0, slot: "maneuver1" }),
+      Action.maneuver({
+        origin: "marseille",
+        destination: "western mediterranean sea",
+      }),
+      Action.maneuver({
+        origin: "bordeaux",
+        destination: "bay of biscay",
+      }),
+      Action.maneuver({
+        origin: "paris",
+        destination: "morocco",
+      }),
+      Action.rondel({ nation: Nation.GB, cost: 0, slot: "investor" }),
+      Action.bondPurchase({ nation: Nation.RU, player: "Bert", cost: 6 }),
+      Action.rondel({ nation: Nation.GE, cost: 0, slot: "taxation" }),
+      Action.rondel({ nation: Nation.RU, cost: 0, slot: "production2" }),
+    ];
     describe("1. AH does taxation", () => {
       test("AH moves to the taxation slot", () => {
         const log = [
@@ -1923,6 +1924,106 @@ describe("Schnelleinsteig", () => {
   });
 
   describe("fifth round", () => {
+    const fourthRoundLog = [
+      Action.playerSeating({ order: ["Daniel", "Claudia", "Bert", "Anton"] }),
+      Action.assignStartingNation({ nation: Nation.RU, player: "Daniel" }),
+      Action.assignStartingNation({ nation: Nation.FR, player: "Claudia" }),
+      Action.assignStartingNation({ nation: Nation.GB, player: "Bert" }),
+      Action.assignStartingNation({ nation: Nation.IT, player: "Anton" }),
+      Action.bondPurchase({ nation: Nation.AH, player: "Claudia", cost: 2 }),
+      Action.bondPurchase({ nation: Nation.IT, player: "Anton", cost: 9 }),
+      Action.bondPurchase({ nation: Nation.FR, player: "Claudia", cost: 9 }),
+      Action.bondPurchase({ nation: Nation.FR, player: "Daniel", cost: 2 }),
+      Action.bondPurchase({ nation: Nation.GB, player: "Anton", cost: 2 }),
+      Action.bondPurchase({ nation: Nation.GB, player: "Bert", cost: 9 }),
+      Action.bondPurchase({ nation: Nation.RU, player: "Bert", cost: 2 }),
+      Action.bondPurchase({ nation: Nation.RU, player: "Daniel", cost: 9 }),
+      Action.startFirstRound(),
+      // first round
+      Action.rondel({ nation: Nation.AH, cost: 0, slot: "import" }),
+      Action.import({ province: "trieste" }),
+      Action.import({ province: "lemberg" }),
+      Action.rondel({ nation: Nation.IT, cost: 0, slot: "investor" }),
+      Action.bondPurchase({ nation: Nation.GE, player: "Daniel", cost: 4 }),
+      Action.rondel({ nation: Nation.FR, cost: 0, slot: "factory" }),
+      Action.buildFactory({ province: "marseille" }),
+      Action.rondel({ nation: Nation.GB, cost: 0, slot: "production1" }),
+      Action.rondel({ nation: Nation.GE, cost: 0, slot: "production2" }),
+      Action.rondel({ nation: Nation.RU, cost: 0, slot: "investor" }),
+      Action.bondPurchase({ nation: Nation.GE, player: "Anton", cost: 6 }),
+      // second round
+      Action.rondel({ nation: Nation.AH, cost: 0, slot: "production2" }),
+      Action.rondel({ nation: Nation.IT, cost: 0, slot: "production2" }),
+      Action.rondel({ nation: Nation.FR, cost: 0, slot: "production1" }),
+      Action.rondel({ nation: Nation.GB, cost: 0, slot: "maneuver1" }),
+      Action.maneuver({ origin: "liverpool", destination: "north atlantic" }),
+      Action.maneuver({ origin: "london", destination: "english channel" }),
+      Action.rondel({ nation: Nation.GE, cost: 0, slot: "maneuver2" }),
+      Action.maneuver({ origin: "hamburg", destination: "north sea" }),
+      Action.maneuver({ origin: "berlin", destination: "norway" }),
+      Action.rondel({ nation: Nation.RU, cost: 0, slot: "import" }),
+      Action.import({ province: "st. petersburg" }),
+      Action.import({ province: "moscow" }),
+      Action.import({ province: "moscow" }),
+      // third round
+      Action.rondel({ nation: Nation.AH, cost: 0, slot: "maneuver2" }),
+      Action.maneuver({ origin: "trieste", destination: "ionian sea" }),
+      Action.maneuver({ origin: "lemberg", destination: "romania" }),
+      Action.maneuver({ origin: "budapest", destination: "west balkan" }),
+      Action.maneuver({ origin: "vienna", destination: "tunis" }),
+      Action.rondel({ nation: Nation.IT, cost: 0, slot: "maneuver2" }),
+      Action.maneuver({
+        origin: "naples",
+        destination: "western mediterranean sea",
+      }),
+      Action.maneuver({ origin: "rome", destination: "spain" }),
+      Action.rondel({ nation: Nation.FR, cost: 0, slot: "maneuver1" }),
+      Action.maneuver({
+        origin: "marseille",
+        destination: "western mediterranean sea",
+      }),
+      Action.maneuver({
+        origin: "bordeaux",
+        destination: "bay of biscay",
+      }),
+      Action.maneuver({
+        origin: "paris",
+        destination: "morocco",
+      }),
+      Action.rondel({ nation: Nation.GB, cost: 0, slot: "investor" }),
+      Action.bondPurchase({ nation: Nation.RU, player: "Bert", cost: 6 }),
+      Action.rondel({ nation: Nation.GE, cost: 0, slot: "taxation" }),
+      Action.rondel({ nation: Nation.RU, cost: 0, slot: "production2" }),
+      // fourth round
+      Action.rondel({ nation: Nation.AH, cost: 0, slot: "taxation" }),
+      Action.rondel({ nation: Nation.IT, cost: 0, slot: "production1" }),
+      Action.rondel({ nation: Nation.FR, cost: 0, slot: "production2" }),
+      Action.bondPurchase({ nation: Nation.AH, player: "Claudia", cost: 6 }),
+      Action.rondel({ nation: Nation.GB, cost: 0, slot: "production2" }),
+      Action.rondel({ nation: Nation.GE, cost: 0, slot: "factory" }),
+      Action.buildFactory({ province: "cologne" }),
+      Action.rondel({ nation: Nation.RU, cost: 0, slot: "maneuver2" }),
+      Action.maneuver({
+        origin: "st. petersburg",
+        destination: "baltic sea",
+      }),
+      Action.maneuver({
+        origin: "odessa",
+        destination: "black sea",
+      }),
+      Action.maneuver({
+        origin: "moscow",
+        destination: "sweden",
+      }),
+      Action.maneuver({
+        origin: "moscow",
+        destination: "turkey",
+      }),
+      Action.maneuver({
+        origin: "moscow",
+        destination: "lemberg",
+      }),
+    ];
     describe("1. AH does maneuver1", () => {
       test("AH's available actions are to move Tunis, Ionian Sea, West Balkan, and Romania", () => {
         const newEntries = [
