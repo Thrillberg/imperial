@@ -128,7 +128,7 @@ export default class Imperial {
   seatPlayers(action) {
     this.order = action.payload.order;
     action.payload.order.forEach(
-      (player) => (this.players[player] = { cash: 13, bonds: [] })
+      (player) => (this.players[player] = { name: player, cash: 13, bonds: [] })
     );
   }
 
