@@ -9,22 +9,21 @@
     <div id="app">
       <div v-if="gameStarted">
         <ul>
-          <li v-for="player in players">
-            {{ player }}
-          </li>
+          <player
+            v-for="player in game.players"
+            v-bind:name="player.name"
+            v-bind:cash="player.cash"
+            v-bind:key="player.name"
+          ></player>
         </ul>
+        <button v-on:click="tick">
+          Tick
+        </button>
       </div>
-      <div>
-        <div v-if="gameStarted">
-          <button v-on:click="tick">
-            Tick
-          </button>
-        </div>
-        <div v-else>
-          <button v-on:click="startGame">
-            Start Game
-          </button>
-        </div>
+      <div v-else>
+        <button v-on:click="startGame">
+          Start Game
+        </button>
       </div>
     </div>
     <script src="./main.js" type="module"></script>
