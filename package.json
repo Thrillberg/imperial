@@ -1,11 +1,13 @@
 {
   "devDependencies": {
     "jest": "^26.0.1",
-    "prettier": "^2.0.5"
+    "prettier": "^2.0.5",
+    "static-server": "^2.2.1"
   },
   "scripts": {
     "lint": "prettier -c *.js",
     "lint:fix": "prettier --write *.js",
+    "start": "static-server",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
   "type": "module"
