@@ -1,0 +1,16 @@
+.bonds {
+  list-style: none;
+  padding-left: 0;
+}
+
+.players {
+  display: flex;
+  justify-content: space-around;
+  list-style: none;
+  padding-left: 0;
+}
+
+.player {
+  background: #9dd7d0;
+  padding: 3rem;
+}
