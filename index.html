@@ -26,11 +26,17 @@
             v-bind:nations="slot.nations"
           ></rondel-slot>
         </ul>
-        <button v-on:click="tick">
-          Tick
-        </button>
+        <current-turn
+          v-bind:type="gameLog[gameLog.length - 1].type"
+          v-bind:payload="gameLog[gameLog.length - 1].payload"
+        ></current-turn>
+        <div class="buttons">
+          <button v-on:click="tick">
+            Tick
+          </button>
+        </div>
       </div>
-      <div v-else>
+      <div v-else class="buttons">
         <button v-on:click="startGame">
           Start Game
         </button>

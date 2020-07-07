@@ -150,7 +150,9 @@ export default class Imperial {
       action.type === "buildFactory" ||
       action.payload.slot === "production1" ||
       action.payload.slot === "production2" ||
-      this.log[this.log.length - 1].type === "import"
+      (!!this.log[this.log.length - 2] &&
+        this.log[this.log.length - 2].type === "import" &&
+        action.type !== "rondel")
     ) {
       this.currentPlayerName = this.getController(this.getNation(this.log));
     }

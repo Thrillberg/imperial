@@ -23,6 +23,7 @@ Vue.component("player", {
         </ul>
       </div>
     </div>
+    </div>
   </li>
   `,
 });
@@ -65,6 +66,11 @@ Vue.component("nation", {
   },
 });
 
+Vue.component("current-turn", {
+  props: ["type", "payload"],
+  template: `<div>{{ type }}{{ payload }}</div>`,
+});
+
 var app = new Vue({
   el: "#app",
   data: {
@@ -75,9 +81,9 @@ var app = new Vue({
   },
   methods: {
     startGame: function () {
-      this.gameLog.push(log[this.logIndex]);
+      this.gameLog.push(...log.slice(0, 14));
       this.game = Imperial.fromLog(this.gameLog);
-      this.logIndex += 1;
+      this.logIndex = 13;
       this.gameStarted = true;
     },
     tick: function () {

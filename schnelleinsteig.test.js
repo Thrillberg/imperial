@@ -193,6 +193,15 @@ describe("Schnelleinsteig", () => {
         expect(lembergUnitCount).toEqual(1);
       });
 
+      test("it is still AH's turn between imports", () => {
+        const log = mainLog.slice(0, 15);
+        log.push(Action.import({ province: "trieste" }));
+        const game = Imperial.fromLog(log);
+        const currentPlayerName = game.getController(Nation.AH);
+
+        expect(game.currentPlayerName).toEqual(currentPlayerName);
+      });
+
       test("it is now IT's turn", () => {
         const log = mainLog.slice(0, 15);
         log.push(
