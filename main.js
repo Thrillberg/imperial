@@ -15,7 +15,7 @@ Vue.component("player", {
             v-for="bond in bonds"
             v-bind:nation="bond.nation.value"
             v-bind:cost="bond.cost"
-            v-bind:key="bond.nation"
+            v-bind:key="bond.nation.value"
           ></bond>
         </ul>
       </div>
