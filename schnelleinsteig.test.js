@@ -192,6 +192,18 @@ describe("Schnelleinsteig", () => {
         expect(triesteUnitCount).toEqual(1);
         expect(lembergUnitCount).toEqual(1);
       });
+
+      test("it is now IT's turn", () => {
+        const log = mainLog.slice(0, 15);
+        log.push(
+          Action.import({ province: "trieste" }),
+          Action.import({ province: "lemberg" })
+        );
+        const game = Imperial.fromLog(log);
+        const currentPlayerName = game.getController(Nation.IT);
+
+        expect(game.currentPlayerName).toEqual(currentPlayerName);
+      });
     });
 
     describe("2. IT invests", () => {
@@ -257,6 +269,17 @@ describe("Schnelleinsteig", () => {
         expect(game.availableActions).toEqual(expectedActions);
       });
 
+      test("it is still IT's turn", () => {
+        const log = mainLog.slice(0, 17);
+        log.push(
+          Action.rondel({ nation: Nation.IT, cost: 0, slot: "investor" })
+        );
+        const game = Imperial.fromLog(log);
+        const currentPlayerName = game.getController(Nation.IT);
+
+        expect(game.currentPlayerName).toEqual(currentPlayerName);
+      });
+
       describe("Investor-card holder (Daniel) buys the 4 million bond of GE", () => {
         test("Investor-card holder has no cash", () => {
           const log = mainLog.slice(0, 18);
@@ -287,6 +310,21 @@ describe("Schnelleinsteig", () => {
 
           expect(treasury).toEqual(4);
         });
+      });
+
+      test("it is now FR's turn", () => {
+        const log = mainLog.slice(0, 18);
+        log.push(
+          Action.bondPurchase({
+            nation: Nation.GE,
+            player: "Daniel",
+            cost: 4,
+          })
+        );
+        const game = Imperial.fromLog(log);
+        const currentPlayerName = game.getController(Nation.FR);
+
+        expect(game.currentPlayerName).toEqual(currentPlayerName);
       });
     });
 
@@ -334,6 +372,15 @@ describe("Schnelleinsteig", () => {
         expect(parisFactory).toEqual(true);
         expect(bordeauxFactory).toEqual(true);
       });
+
+      test("it is now GB's turn", () => {
+        const log = mainLog.slice(0, 20);
+        log.push(Action.buildFactory({ province: "marseille" }));
+        const game = Imperial.fromLog(log);
+        const currentPlayerName = game.getController(Nation.GB);
+
+        expect(game.currentPlayerName).toEqual(currentPlayerName);
+      });
     });
 
     describe("4. GB does production1", () => {
@@ -349,6 +396,17 @@ describe("Schnelleinsteig", () => {
         expect(londonUnitCount).toEqual(1);
         expect(liverpoolUnitCount).toEqual(1);
       });
+
+      test("it is now GE's turn", () => {
+        const log = mainLog.slice(0, 21);
+        log.push(
+          Action.rondel({ nation: Nation.GB, cost: 0, slot: "production1" })
+        );
+        const game = Imperial.fromLog(log);
+        const currentPlayerName = game.getController(Nation.GE);
+
+        expect(game.currentPlayerName).toEqual(currentPlayerName);
+      });
     });
 
     describe("5. GE does production2", () => {
@@ -363,6 +421,17 @@ describe("Schnelleinsteig", () => {
 
         expect(berlinUnitCount).toEqual(1);
         expect(hamburgUnitCount).toEqual(1);
+      });
+
+      test("it is now RU's turn", () => {
+        const log = mainLog.slice(0, 22);
+        log.push(
+          Action.rondel({ nation: Nation.GE, cost: 0, slot: "production2" })
+        );
+        const game = Imperial.fromLog(log);
+        const currentPlayerName = game.getController(Nation.RU);
+
+        expect(game.currentPlayerName).toEqual(currentPlayerName);
       });
     });
 
@@ -492,6 +561,21 @@ describe("Schnelleinsteig", () => {
           expect(controller).toEqual("Anton");
         });
       });
+    });
+
+    test("it is now AH's turn", () => {
+      const log = mainLog.slice(0, 24);
+      log.push(
+        Action.bondPurchase({
+          nation: Nation.GE,
+          player: "Anton",
+          cost: 6,
+        })
+      );
+      const game = Imperial.fromLog(log);
+      const currentPlayerName = game.getController(Nation.AH);
+
+      expect(game.currentPlayerName).toEqual(currentPlayerName);
     });
   });
 

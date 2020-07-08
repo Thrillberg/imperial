@@ -123,6 +123,19 @@ export default class Imperial {
         lastManeuver.payload.nation;
     }
     this.log.push(action);
+    this.handleAdvancePlayer(action);
+  }
+
+  handleAdvancePlayer(action) {
+    if (
+      action.type === "bondPurchase" ||
+      action.type === "buildFactory" ||
+      action.payload.slot === "production1" ||
+      action.payload.slot === "production2" ||
+      this.log[this.log.length - 1].type === "import"
+    ) {
+      this.currentPlayerName = this.getController(this.getNation(this.log));
+    }
   }
 
   seatPlayers(action) {
