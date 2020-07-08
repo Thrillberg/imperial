@@ -154,9 +154,9 @@ describe("Schnelleinsteig", () => {
       const log = mainLog.slice(0, 13);
       log.push(Action.startFirstRound());
       const game = Imperial.fromLog(log);
-      const currentPlayer = game.currentPlayer;
+      const currentPlayerName = game.currentPlayerName;
 
-      expect(currentPlayer).toEqual("Claudia");
+      expect(currentPlayerName).toEqual("Claudia");
     });
   });
 
