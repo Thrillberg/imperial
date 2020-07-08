@@ -137,8 +137,9 @@ export default class Imperial {
   }
 
   startFirstRound() {
-    this.currentPlayer = this.getController(Nation.AH);
-    const investorCardHolderIndex = this.order.indexOf(this.currentPlayer) - 1;
+    this.currentPlayerName = this.getController(Nation.AH);
+    const investorCardHolderIndex =
+      this.order.indexOf(this.currentPlayerName) - 1;
     this.investorCardHolder = this.order[investorCardHolderIndex];
   }
 
