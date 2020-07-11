@@ -34,6 +34,12 @@
           <button v-on:click="tick">
             Tick
           </button>
+          <action
+            v-for="action in game.availableActions"
+            v-bind:key="JSON.stringify(action)"
+            v-bind:action="action"
+            v-bind:dispatch="tickWithAction"
+          ></action>
         </div>
       </div>
       <div v-else class="buttons">

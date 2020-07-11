@@ -71,6 +71,11 @@ Vue.component("current-turn", {
   template: `<div>{{ type }}{{ payload }}</div>`,
 });
 
+Vue.component("action", {
+  props: ["action", "dispatch"],
+  template: `<button v-on:click="dispatch(action)">{{ action }}</button>`,
+});
+
 var app = new Vue({
   el: "#app",
   data: {
@@ -90,6 +95,10 @@ var app = new Vue({
       this.logIndex += 1;
       this.gameLog.push(log[this.logIndex]);
       this.game = Imperial.fromLog(this.gameLog);
+    },
+    tickWithAction: function (action) {
+      console.log("TICK", action);
+      this.game.tick(action);
     },
   },
 });
