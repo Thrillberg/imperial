@@ -118,7 +118,7 @@ export default class Imperial {
     } else if (action.type === "assignStartingNation") {
       this.assignStartingNation(action);
     } else if (action.type === "startFirstRound") {
-      this.startFirstRound(action);
+      this.startFirstRound();
     } else if (action.type === "bondPurchase") {
       this.purchaseBond(action);
     } else if (action.type === "rondel") {
@@ -143,6 +143,7 @@ export default class Imperial {
     }
     this.log.push(action);
     this.handleAdvancePlayer(action);
+    this.availableActions = this.availableActionsState(action);
   }
 
   handleAdvancePlayer(action) {
@@ -170,12 +171,11 @@ export default class Imperial {
     this.nations.get(action.payload.nation).controller = action.payload.player;
   }
 
-  startFirstRound(action) {
+  startFirstRound() {
     this.currentPlayerName = this.getController(Nation.AH);
     const investorCardHolderIndex =
       this.order.indexOf(this.currentPlayerName) - 1;
     this.investorCardHolder = this.order[investorCardHolderIndex];
-    this.availableActions = this.availableActionsState(action);
   }
 
   purchaseBond(action) {

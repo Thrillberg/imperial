@@ -31,9 +31,6 @@
           v-bind:payload="game.log[game.log.length - 1].payload"
         ></current-turn>
         <div class="buttons">
-          <button v-on:click="tick">
-            Tick
-          </button>
           <action
             v-for="action in game.availableActions"
             v-bind:key="JSON.stringify(action)"

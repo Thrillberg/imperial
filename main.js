@@ -89,10 +89,6 @@ var app = new Vue({
       this.logIndex = 13;
       this.gameStarted = true;
     },
-    tick: function () {
-      this.logIndex += 1;
-      this.game = Imperial.fromLog([...this.game.log, log[this.logIndex]]);
-    },
     tickWithAction: function (action) {
       console.log("TICK", action);
       this.game.tick(action);
