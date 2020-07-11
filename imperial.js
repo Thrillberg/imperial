@@ -321,7 +321,14 @@ export default class Imperial {
             cost: bond.cost,
           });
         });
-    } else if (this.shouldReturnRondelActions(lastMove)) {
+    } else if (
+      this.logIsEmpty(lastMove) ||
+      this.lastMoveWasBuildFactory(lastMove) ||
+      this.lastMoveWasProduction(lastMove) ||
+      this.lastMoveWasInvestor(lastMove) ||
+      this.lastMoveWasImport(lastMove) ||
+      this.lastMoveWasTaxation(lastMove)
+    ) {
       return this.rondelActions(this.getNation(this.log));
     } else if (this.lastMoveWasRondelManeuver(lastMove)) {
       switch (lastMove.payload.nation) {
@@ -764,17 +771,6 @@ export default class Imperial {
 
   getPowerPoints(nation) {
     return parseInt(this.getTaxChartPosition(nation)) - 5;
-  }
-
-  shouldReturnRondelActions(lastMove) {
-    return (
-      this.logIsEmpty(lastMove) ||
-      this.lastMoveWasBuildFactory(lastMove) ||
-      this.lastMoveWasProduction(lastMove) ||
-      this.lastMoveWasInvestor(lastMove) ||
-      this.lastMoveWasImport(lastMove) ||
-      this.lastMoveWasTaxation(lastMove)
-    );
   }
 
   rondelActions(nation) {

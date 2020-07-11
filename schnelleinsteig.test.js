@@ -726,9 +726,12 @@ describe("Schnelleinsteig", () => {
     describe("6. Russia imports", () => {
       const log = mainLog.slice(0, 34);
       const game = Imperial.fromLog(log);
-      game.tick(Action.rondel({ nation: Nation.RU, cost: 0, slot: "import" }));
 
       test("RU can choose where to import", () => {
+        game.tick(
+          Action.rondel({ nation: Nation.RU, cost: 0, slot: "import" })
+        );
+
         const actions = game.availableActions;
         const expected = [
           "moscow",
