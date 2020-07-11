@@ -72,8 +72,8 @@ Vue.component("current-turn", {
 });
 
 Vue.component("action", {
-  props: ["action", "dispatch"],
-  template: `<button v-on:click="dispatch(action)">{{ action }}</button>`,
+  props: ["action", "dispatch", "text"],
+  template: `<button v-on:click="dispatch(action)">{{ text }}</button>`,
 });
 
 var app = new Vue({
@@ -81,17 +81,23 @@ var app = new Vue({
   data: {
     game: {},
     gameStarted: false,
-    logIndex: 0,
   },
   methods: {
     startGame: function () {
       this.game = Imperial.fromLog(log.slice(0, 14));
-      this.logIndex = 13;
       this.gameStarted = true;
     },
     tickWithAction: function (action) {
-      console.log("TICK", action);
       this.game.tick(action);
+    },
+    actionToText: function (action) {
+      if (action.type === "rondel") {
+        return action.payload.slot;
+      } else if (action.type === "import") {
+        return `Import in ${action.payload.province}`;
+      } else if (action.type === "buildFactory") {
+        return `Build factory in ${action.payload.province}`;
+      }
     },
   },
 });

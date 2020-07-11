@@ -30,11 +30,15 @@
           v-bind:type="game.log[game.log.length - 1].type"
           v-bind:payload="game.log[game.log.length - 1].payload"
         ></current-turn>
+        <div>
+          It is {{ game.getNation(game.log).value }}'s turn
+        </div>
         <div class="buttons">
           <action
             v-for="action in game.availableActions"
             v-bind:key="JSON.stringify(action)"
             v-bind:action="action"
+            v-bind:text="actionToText(action)"
             v-bind:dispatch="tickWithAction"
           ></action>
         </div>
