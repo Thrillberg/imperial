@@ -81,20 +81,17 @@ var app = new Vue({
   data: {
     game: {},
     gameStarted: false,
-    gameLog: [],
     logIndex: 0,
   },
   methods: {
     startGame: function () {
-      this.gameLog.push(...log.slice(0, 14));
-      this.game = Imperial.fromLog(this.gameLog);
+      this.game = Imperial.fromLog(log.slice(0, 14));
       this.logIndex = 13;
       this.gameStarted = true;
     },
     tick: function () {
       this.logIndex += 1;
-      this.gameLog.push(log[this.logIndex]);
-      this.game = Imperial.fromLog(this.gameLog);
+      this.game = Imperial.fromLog([...this.game.log, log[this.logIndex]]);
     },
     tickWithAction: function (action) {
       console.log("TICK", action);

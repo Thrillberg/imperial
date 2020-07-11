@@ -27,8 +27,8 @@
           ></rondel-slot>
         </ul>
         <current-turn
-          v-bind:type="gameLog[gameLog.length - 1].type"
-          v-bind:payload="gameLog[gameLog.length - 1].payload"
+          v-bind:type="game.log[game.log.length - 1].type"
+          v-bind:payload="game.log[game.log.length - 1].payload"
         ></current-turn>
         <div class="buttons">
           <button v-on:click="tick">

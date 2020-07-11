@@ -9,6 +9,7 @@ export default class Imperial {
   }
 
   constructor() {
+    this.availableActions = new Set();
     this.log = [];
     this.nations = this.setupNations();
     this.players = {};
@@ -117,7 +118,7 @@ export default class Imperial {
     } else if (action.type === "assignStartingNation") {
       this.assignStartingNation(action);
     } else if (action.type === "startFirstRound") {
-      this.startFirstRound();
+      this.startFirstRound(action);
     } else if (action.type === "bondPurchase") {
       this.purchaseBond(action);
     } else if (action.type === "rondel") {
@@ -169,11 +170,12 @@ export default class Imperial {
     this.nations.get(action.payload.nation).controller = action.payload.player;
   }
 
-  startFirstRound() {
+  startFirstRound(action) {
     this.currentPlayerName = this.getController(Nation.AH);
     const investorCardHolderIndex =
       this.order.indexOf(this.currentPlayerName) - 1;
     this.investorCardHolder = this.order[investorCardHolderIndex];
+    this.availableActions = this.availableActionsState(action);
   }
 
   purchaseBond(action) {
@@ -472,6 +474,8 @@ export default class Imperial {
       } else {
         return this.rondelActions(this.getNation(this.log));
       }
+    } else if (lastMove.type === "startFirstRound") {
+      return this.rondelActions(Nation.AH);
     }
   }
 
