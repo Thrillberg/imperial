@@ -2,9 +2,12 @@ import Imperial from "./imperial.js";
 import log from "./schnelleinsteigLog.js";
 
 Vue.component("player", {
-  props: ["name", "cash", "bonds"],
+  props: ["name", "cash", "bonds", "current_player"],
   template: `
   <li class="player">
+    <div v-if="name === current_player" class="current_player">
+      🤩
+    </div>
     <div class="contents">
       <h3>{{ name }}</h3>
       <div>Cash: {{ cash }} million</div>

@@ -36,3 +36,11 @@ ul {
 .flag {
   font-size: 3rem;
 }
+
+.current_player {
+  font-size: 3rem;
+  margin-top: 0.5rem;
+  padding: 1rem 0;
+  position: absolute;
+  top: -0.2rem;
+}
