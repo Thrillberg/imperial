@@ -42,6 +42,7 @@ export default {
   bondPurchase: makeAction("bondPurchase", ["nation", "player", "cost"]),
   buildFactory: makeAction("buildFactory", ["province"]),
   coexist: makeAction("coexist", ["province", "incumbent", "challenger"]),
+  endTurn: makeAction("endTurn", []),
   fight: makeAction("fight", ["province", "incumbent", "challenger"]),
   import: makeAction("import", ["province"]),
   maneuver: makeAction("maneuver", ["origin", "destination"]),

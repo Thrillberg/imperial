@@ -326,10 +326,12 @@ export default class Imperial {
       this.lastMoveWasBuildFactory(lastMove) ||
       this.lastMoveWasProduction(lastMove) ||
       this.lastMoveWasInvestor(lastMove) ||
-      this.lastMoveWasImport(lastMove) ||
       this.lastMoveWasTaxation(lastMove)
     ) {
       return this.rondelActions(this.getNation(this.log));
+    } else if (this.lastMoveWasImport(lastMove)) {
+      let importActions = this.importAction(this.getCurrentNation(this.log));
+      return importActions.add(Action.endTurn());
     } else if (this.lastMoveWasRondelManeuver(lastMove)) {
       switch (lastMove.payload.nation) {
         case Nation.FR:
@@ -461,7 +463,8 @@ export default class Imperial {
       if (lastMove.payload.slot === "factory") {
         return this.buildFactoryAction(lastMove.payload.nation);
       } else if (lastMove.payload.slot === "import") {
-        return this.importAction(lastMove.payload.nation);
+        let importActions = this.importAction(lastMove.payload.nation);
+        return importActions.add(Action.endTurn());
       }
     } else if (lastMove.type === "maneuver") {
       if (this.startedConflict(lastMove)) {
@@ -794,6 +797,15 @@ export default class Imperial {
       const lastTurnNation =
         rondelActions[rondelActions.length - 1].payload.nation;
       return this.nextNation(lastTurnNation);
+    } else {
+      return Nation.AH;
+    }
+  }
+
+  getCurrentNation(log) {
+    const rondelActions = log.filter((action) => action.type === "rondel");
+    if (rondelActions.length > 0) {
+      return rondelActions[rondelActions.length - 1].payload.nation;
     } else {
       return Nation.AH;
     }

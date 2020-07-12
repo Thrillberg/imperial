@@ -166,7 +166,7 @@ describe("Schnelleinsteig", () => {
         const log = mainLog.slice(0, 14);
         log.push(Action.rondel({ nation: Nation.AH, cost: 0, slot: "import" }));
         const game = Imperial.fromLog(log);
-        const expectedActions = [
+        const expectedActionsArray = [
           "vienna",
           "budapest",
           "prague",
@@ -174,7 +174,11 @@ describe("Schnelleinsteig", () => {
           "trieste",
         ].map((province) => Action.import({ province }));
 
-        expect(game.availableActions).toEqual(new Set(expectedActions));
+        let expectedActions = new Set(expectedActionsArray).add(
+          Action.endTurn()
+        );
+
+        expect(game.availableActions).toEqual(expectedActions);
       });
 
       test("AH's treasury is empty and Trieste & Lemberg have units", () => {
@@ -200,6 +204,22 @@ describe("Schnelleinsteig", () => {
         const currentPlayerName = game.getController(Nation.AH);
 
         expect(game.currentPlayerName).toEqual(currentPlayerName);
+      });
+
+      test("AH can import again", () => {
+        const log = mainLog.slice(0, 15);
+        log.push(Action.import({ province: "trieste" }));
+        const game = Imperial.fromLog(log);
+        const expectedActions = [
+          "vienna",
+          "budapest",
+          "prague",
+          "lemberg",
+          "trieste",
+        ].map((province) => Action.import({ province }));
+        expectedActions.push(Action.endTurn());
+
+        expect(game.availableActions).toEqual(new Set(expectedActions));
       });
 
       test("it is now IT's turn", () => {
@@ -740,6 +760,7 @@ describe("Schnelleinsteig", () => {
           "kiev",
           "warsaw",
         ].map((province) => Action.import({ province }));
+        expected.push(Action.endTurn());
 
         expect(actions).toEqual(new Set(expected));
       });
