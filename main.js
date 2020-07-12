@@ -29,6 +29,39 @@ Vue.component("bond", {
   template: `<li class="bond">{{ nation }}{{ cost }}</li>`,
 });
 
+Vue.component("rondel-slot", {
+  props: ["name", "nations"],
+  template: `
+    <li>
+      <div class="rondel-slot">{{ name }}</div>
+      <nation v-for="nation in nations" v-bind:nation="nation"></nation>
+    </li>
+  `,
+});
+
+Vue.component("nation", {
+  props: ["nation"],
+  template: `<li class="flag">{{ flag() }}</li>`,
+  methods: {
+    flag: function () {
+      switch (this.nation) {
+        case "AH":
+          return "🇦🇹";
+        case "IT":
+          return "🇮🇹";
+        case "FR":
+          return "🇫🇷";
+        case "GB":
+          return "🇬🇧";
+        case "GE":
+          return "🇩🇪";
+        case "RU":
+          return "🇷🇺";
+      }
+    },
+  },
+});
+
 var app = new Vue({
   el: "#app",
   data: {
