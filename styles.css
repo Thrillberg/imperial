@@ -1,9 +1,23 @@
+button {
+  background: #224f4a;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.buttons {
+  display: flex;
+  justify-content: space-around;
+}
+
 .bonds {
   list-style: none;
   padding-left: 0;
 }
 
-.players {
+ul {
   display: flex;
   justify-content: space-around;
   list-style: none;
@@ -13,4 +27,12 @@
 .player {
   background: #9dd7d0;
   padding: 3rem;
+}
+
+.rondel-slot {
+  text-decoration: underline;
+}
+
+.flag {
+  font-size: 3rem;
 }
