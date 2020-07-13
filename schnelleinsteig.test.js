@@ -756,54 +756,14 @@ describe("Schnelleinsteig", () => {
   });
 
   describe("third round", () => {
-    const secondRoundLog = [
-      Action.playerSeating({ order: ["Daniel", "Claudia", "Bert", "Anton"] }),
-      Action.assignStartingNation({ nation: Nation.RU, player: "Daniel" }),
-      Action.assignStartingNation({ nation: Nation.FR, player: "Claudia" }),
-      Action.assignStartingNation({ nation: Nation.GB, player: "Bert" }),
-      Action.assignStartingNation({ nation: Nation.IT, player: "Anton" }),
-      Action.bondPurchase({ nation: Nation.AH, player: "Claudia", cost: 2 }),
-      Action.bondPurchase({ nation: Nation.IT, player: "Anton", cost: 9 }),
-      Action.bondPurchase({ nation: Nation.FR, player: "Claudia", cost: 9 }),
-      Action.bondPurchase({ nation: Nation.FR, player: "Daniel", cost: 2 }),
-      Action.bondPurchase({ nation: Nation.GB, player: "Anton", cost: 2 }),
-      Action.bondPurchase({ nation: Nation.GB, player: "Bert", cost: 9 }),
-      Action.bondPurchase({ nation: Nation.RU, player: "Bert", cost: 2 }),
-      Action.bondPurchase({ nation: Nation.RU, player: "Daniel", cost: 9 }),
-      Action.startFirstRound(),
-      // first round
-      Action.rondel({ nation: Nation.AH, cost: 0, slot: "import" }),
-      Action.import({ province: "trieste" }),
-      Action.import({ province: "lemberg" }),
-      Action.rondel({ nation: Nation.IT, cost: 0, slot: "investor" }),
-      Action.bondPurchase({ nation: Nation.GE, player: "Daniel", cost: 4 }),
-      Action.rondel({ nation: Nation.FR, cost: 0, slot: "factory" }),
-      Action.buildFactory({ province: "marseille" }),
-      Action.rondel({ nation: Nation.GB, cost: 0, slot: "production1" }),
-      Action.rondel({ nation: Nation.GE, cost: 0, slot: "production2" }),
-      Action.rondel({ nation: Nation.RU, cost: 0, slot: "investor" }),
-      Action.bondPurchase({ nation: Nation.GE, player: "Anton", cost: 6 }),
-      // second round
-      Action.rondel({ nation: Nation.AH, cost: 0, slot: "production2" }),
-      Action.rondel({ nation: Nation.IT, cost: 0, slot: "production2" }),
-      Action.rondel({ nation: Nation.FR, cost: 0, slot: "production1" }),
-      Action.rondel({ nation: Nation.GB, cost: 0, slot: "maneuver1" }),
-      Action.maneuver({ origin: "liverpool", destination: "north atlantic" }),
-      Action.maneuver({ origin: "london", destination: "english channel" }),
-      Action.rondel({ nation: Nation.GE, cost: 0, slot: "maneuver2" }),
-      Action.maneuver({ origin: "hamburg", destination: "north sea" }),
-      Action.maneuver({ origin: "berlin", destination: "norway" }),
-      Action.rondel({ nation: Nation.RU, cost: 0, slot: "import" }),
-      Action.import({ province: "st. petersburg" }),
-      Action.import({ province: "moscow" }),
-      Action.import({ province: "moscow" }),
-    ];
     describe("1. AH does maneuver2", () => {
+      const log = mainLog.slice(0, 37);
+      const game = Imperial.fromLog(log);
+      game.tick(
+        Action.rondel({ nation: Nation.AH, cost: 0, slot: "maneuver2" })
+      );
+
       test("AH's available actions are to move trieste, lemberg, budapest, and vienna", () => {
-        const log = [
-          ...secondRoundLog,
-          Action.rondel({ nation: Nation.AH, cost: 0, slot: "maneuver2" }),
-        ];
         const landDestinations = [
           "warsaw",
           "kiev",
@@ -844,29 +804,25 @@ describe("Schnelleinsteig", () => {
           ...viennaActions,
           ...budapestActions,
         ];
-        expect(Imperial.fromLog(log).state.availableActions).toEqual(
-          availableActions
-        );
+        expect(game.availableActions).toEqual(availableActions);
       });
 
       test("ionian sea, romania, west balkan, and tunis have AH flags", () => {
-        const log = [
-          ...secondRoundLog,
-          Action.rondel({ nation: Nation.AH, cost: 0, slot: "maneuver2" }),
-          Action.maneuver({ origin: "trieste", destination: "ionian sea" }),
-          Action.maneuver({ origin: "lemberg", destination: "romania" }),
-          Action.maneuver({ origin: "budapest", destination: "west balkan" }),
-          Action.maneuver({ origin: "vienna", destination: "tunis" }),
-        ];
-        const ionianSeaFlag = Imperial.fromLog(log).state.provinces[
-          "ionian sea"
-        ].flag;
-        const romaniaFlag = Imperial.fromLog(log).state.provinces["romania"]
-          .flag;
-        const westBalkanFlag = Imperial.fromLog(log).state.provinces[
-          "west balkan"
-        ].flag;
-        const tunisFlag = Imperial.fromLog(log).state.provinces["tunis"].flag;
+        game.tick(
+          Action.maneuver({ origin: "trieste", destination: "ionian sea" })
+        );
+        game.tick(
+          Action.maneuver({ origin: "lemberg", destination: "romania" })
+        );
+        game.tick(
+          Action.maneuver({ origin: "budapest", destination: "west balkan" })
+        );
+        game.tick(Action.maneuver({ origin: "vienna", destination: "tunis" }));
+
+        const ionianSeaFlag = game.provinces.get("ionian sea").flag;
+        const romaniaFlag = game.provinces.get("romania").flag;
+        const westBalkanFlag = game.provinces.get("west balkan").flag;
+        const tunisFlag = game.provinces.get("tunis").flag;
 
         expect(ionianSeaFlag).toEqual(Nation.AH);
         expect(romaniaFlag).toEqual(Nation.AH);
@@ -876,16 +832,13 @@ describe("Schnelleinsteig", () => {
     });
 
     describe("2. IT does maneuver2", () => {
+      const log = mainLog.slice(0, 42);
+      const game = Imperial.fromLog(log);
+      game.tick(
+        Action.rondel({ nation: Nation.IT, cost: 0, slot: "maneuver2" })
+      );
+
       test("IT's available actions are to move naples and rome", () => {
-        const log = [
-          ...secondRoundLog,
-          Action.rondel({ nation: Nation.AH, cost: 0, slot: "maneuver2" }),
-          Action.maneuver({ origin: "trieste", destination: "ionian sea" }),
-          Action.maneuver({ origin: "lemberg", destination: "romania" }),
-          Action.maneuver({ origin: "budapest", destination: "west balkan" }),
-          Action.maneuver({ origin: "vienna", destination: "tunis" }),
-          Action.rondel({ nation: Nation.IT, cost: 0, slot: "maneuver2" }),
-        ];
         const landDestinations = [
           "naples",
           "tunis",
@@ -912,29 +865,21 @@ describe("Schnelleinsteig", () => {
           }),
           ...romeActions,
         ];
-        expect(Imperial.fromLog(log).state.availableActions).toEqual(
-          availableActions
-        );
+        expect(game.availableActions).toEqual(availableActions);
       });
 
       test("spain and western mediterranean sea have IT flags", () => {
-        const log = [
-          ...secondRoundLog,
-          Action.rondel({ nation: Nation.AH, cost: 0, slot: "maneuver2" }),
-          Action.maneuver({ origin: "trieste", destination: "ionian sea" }),
-          Action.maneuver({ origin: "lemberg", destination: "romania" }),
-          Action.maneuver({ origin: "budapest", destination: "west balkan" }),
-          Action.maneuver({ origin: "vienna", destination: "tunis" }),
-          Action.rondel({ nation: Nation.IT, cost: 0, slot: "maneuver2" }),
+        game.tick(
           Action.maneuver({
             origin: "naples",
             destination: "western mediterranean sea",
-          }),
-          Action.maneuver({ origin: "rome", destination: "spain" }),
-        ];
-        const westernMediterraneanSeaFlag = Imperial.fromLog(log).state
-          .provinces["western mediterranean sea"].flag;
-        const spainFlag = Imperial.fromLog(log).state.provinces["spain"].flag;
+          })
+        );
+        game.tick(Action.maneuver({ origin: "rome", destination: "spain" }));
+        const westernMediterraneanSeaFlag = game.provinces.get(
+          "western mediterranean sea"
+        ).flag;
+        const spainFlag = game.provinces.get("spain").flag;
 
         expect(westernMediterraneanSeaFlag).toEqual(Nation.IT);
         expect(spainFlag).toEqual(Nation.IT);
@@ -942,22 +887,13 @@ describe("Schnelleinsteig", () => {
     });
 
     describe("3. FR does maneuver1", () => {
+      const log = mainLog.slice(0, 45);
+      const game = Imperial.fromLog(log);
+      game.tick(
+        Action.rondel({ nation: Nation.FR, cost: 0, slot: "maneuver1" })
+      );
+
       test("FR's available actions are to move bordeaux, marseille, and paris", () => {
-        const log = [
-          ...secondRoundLog,
-          Action.rondel({ nation: Nation.AH, cost: 0, slot: "maneuver2" }),
-          Action.maneuver({ origin: "trieste", destination: "ionian sea" }),
-          Action.maneuver({ origin: "lemberg", destination: "romania" }),
-          Action.maneuver({ origin: "budapest", destination: "west balkan" }),
-          Action.maneuver({ origin: "vienna", destination: "tunis" }),
-          Action.rondel({ nation: Nation.IT, cost: 0, slot: "maneuver2" }),
-          Action.maneuver({
-            origin: "naples",
-            destination: "western mediterranean sea",
-          }),
-          Action.maneuver({ origin: "rome", destination: "spain" }),
-          Action.rondel({ nation: Nation.FR, cost: 0, slot: "maneuver1" }),
-        ];
         const landDestinations = [
           "brest",
           "dijon",
@@ -974,7 +910,6 @@ describe("Schnelleinsteig", () => {
             Action.maneuver({ origin: "paris", destination: province })
           );
         });
-
         const availableActions = [
           Action.maneuver({
             origin: "bordeaux",
@@ -986,36 +921,17 @@ describe("Schnelleinsteig", () => {
           }),
           ...parisActions,
         ];
-        expect(Imperial.fromLog(log).state.availableActions).toEqual(
-          availableActions
-        );
+
+        expect(game.availableActions).toEqual(availableActions);
       });
 
       test("IT controller (Anton) can choose whether to fight or allow FR fleet to coexist in western mediterranean sea", () => {
-        const log = [
-          ...secondRoundLog,
-          Action.rondel({ nation: Nation.AH, cost: 0, slot: "maneuver2" }),
-          Action.maneuver({ origin: "trieste", destination: "ionian sea" }),
-          Action.maneuver({ origin: "lemberg", destination: "romania" }),
-          Action.maneuver({ origin: "budapest", destination: "west balkan" }),
-          Action.maneuver({ origin: "vienna", destination: "tunis" }),
-          Action.rondel({ nation: Nation.IT, cost: 0, slot: "maneuver2" }),
-          Action.maneuver({
-            origin: "naples",
-            destination: "western mediterranean sea",
-          }),
-          Action.maneuver({ origin: "rome", destination: "spain" }),
-          Action.rondel({ nation: Nation.IT, cost: 0, slot: "maneuver2" }),
-          Action.maneuver({
-            origin: "naples",
-            destination: "western mediterranean sea",
-          }),
-          Action.rondel({ nation: Nation.FR, cost: 0, slot: "maneuver1" }),
+        game.tick(
           Action.maneuver({
             origin: "marseille",
             destination: "western mediterranean sea",
-          }),
-        ];
+          })
+        );
         const expectedActions = [
           Action.coexist({
             province: "western mediterranean sea",
@@ -1029,173 +945,79 @@ describe("Schnelleinsteig", () => {
           }),
           ,
         ];
-        expect(Imperial.fromLog(log).state.availableActions).toEqual(
-          expectedActions
-        );
+
+        expect(game.availableActions).toEqual(expectedActions);
       });
 
       test("IT chooses to fight so both fleets get removed", () => {
-        const log = [
-          ...secondRoundLog,
-          Action.rondel({ nation: Nation.AH, cost: 0, slot: "maneuver2" }),
-          Action.maneuver({ origin: "trieste", destination: "ionian sea" }),
-          Action.maneuver({ origin: "lemberg", destination: "romania" }),
-          Action.maneuver({ origin: "budapest", destination: "west balkan" }),
-          Action.maneuver({ origin: "vienna", destination: "tunis" }),
-          Action.rondel({ nation: Nation.IT, cost: 0, slot: "maneuver2" }),
-          Action.maneuver({
-            origin: "naples",
-            destination: "western mediterranean sea",
-          }),
-          Action.maneuver({ origin: "rome", destination: "spain" }),
-          Action.rondel({ nation: Nation.FR, cost: 0, slot: "maneuver1" }),
-          Action.maneuver({
-            origin: "marseille",
-            destination: "western mediterranean sea",
-          }),
+        game.tick(
           Action.fight({
             province: "western mediterranean sea",
             incumbent: Nation.IT,
             challenger: Nation.FR,
-          }),
-        ];
+          })
+        );
+        const westernMed = game.provinces.get("western mediterranean sea");
 
-        expect(
-          Imperial.fromLog(log).state.provinces["western mediterranean sea"]
-            .unitCount
-        ).toEqual(0);
-        expect(
-          Imperial.fromLog(log).state.provinces["western mediterranean sea"]
-            .flag
-        ).toEqual(Nation.IT);
+        expect(westernMed.unitCount).toEqual(0);
+        expect(westernMed.flag).toEqual(Nation.IT);
       });
 
       test("Morocco and bay of biscay have FR flags", () => {
-        const log = [
-          ...secondRoundLog,
-          Action.rondel({ nation: Nation.AH, cost: 0, slot: "maneuver2" }),
-          Action.maneuver({ origin: "trieste", destination: "ionian sea" }),
-          Action.maneuver({ origin: "lemberg", destination: "romania" }),
-          Action.maneuver({ origin: "budapest", destination: "west balkan" }),
-          Action.maneuver({ origin: "vienna", destination: "tunis" }),
-          Action.rondel({ nation: Nation.IT, cost: 0, slot: "maneuver2" }),
+        game.tick(
           Action.maneuver({
-            origin: "naples",
+            origin: "marseille",
             destination: "western mediterranean sea",
-          }),
-          Action.maneuver({ origin: "rome", destination: "spain" }),
-          Action.rondel({ nation: Nation.FR, cost: 0, slot: "maneuver1" }),
+          })
+        );
+        game.tick(
+          Action.fight({
+            province: "western mediterranean sea",
+            incumbent: Nation.IT,
+            challenger: Nation.FR,
+          })
+        );
+        game.tick(
           Action.maneuver({
             origin: "bordeaux",
             destination: "bay of biscay",
-          }),
+          })
+        );
+        game.tick(
           Action.maneuver({
             origin: "paris",
             destination: "morocco",
-          }),
-        ];
-        expect(
-          Imperial.fromLog(log).state.provinces["bay of biscay"].unitCount
-        ).toEqual(1);
-        expect(
-          Imperial.fromLog(log).state.provinces["bay of biscay"].flag
-        ).toEqual(Nation.FR);
-        expect(
-          Imperial.fromLog(log).state.provinces["morocco"].unitCount
-        ).toEqual(1);
-        expect(Imperial.fromLog(log).state.provinces["morocco"].flag).toEqual(
-          Nation.FR
+          })
         );
+
+        expect(game.provinces.get("bay of biscay").unitCount).toEqual(1);
+        expect(game.provinces.get("bay of biscay").flag).toEqual(Nation.FR);
+        expect(game.provinces.get("morocco").unitCount).toEqual(1);
+        expect(game.provinces.get("morocco").flag).toEqual(Nation.FR);
       });
     });
 
     describe("4. GB invests", () => {
+      const log = mainLog.slice(0, 50);
+      const game = Imperial.fromLog(log);
+      game.tick(
+        Action.rondel({ nation: Nation.GB, cost: 0, slot: "investor" })
+      );
+
       test("GB has 6 million left in the treasury", () => {
-        const log = [
-          ...secondRoundLog,
-          Action.rondel({ nation: Nation.AH, cost: 0, slot: "maneuver2" }),
-          Action.maneuver({ origin: "trieste", destination: "ionian sea" }),
-          Action.maneuver({ origin: "lemberg", destination: "romania" }),
-          Action.maneuver({ origin: "budapest", destination: "west balkan" }),
-          Action.maneuver({ origin: "vienna", destination: "tunis" }),
-          Action.rondel({ nation: Nation.IT, cost: 0, slot: "maneuver2" }),
-          Action.maneuver({
-            origin: "naples",
-            destination: "western mediterranean sea",
-          }),
-          Action.maneuver({ origin: "rome", destination: "spain" }),
-          Action.rondel({ nation: Nation.FR, cost: 0, slot: "maneuver1" }),
-          Action.maneuver({
-            origin: "bordeaux",
-            destination: "bay of biscay",
-          }),
-          Action.maneuver({
-            origin: "paris",
-            destination: "morocco",
-          }),
-          Action.rondel({ nation: Nation.GB, cost: 0, slot: "investor" }),
-        ];
-        const treasury = Imperial.fromLog(log).state.nations.get(Nation.GB)
-          .treasury;
+        const treasury = game.nations.get(Nation.GB).treasury;
+
         expect(treasury).toEqual(6);
       });
 
       test("Bert (GB's controller and investor-card holder) has 9 million in cash", () => {
-        const log = [
-          ...secondRoundLog,
-          Action.rondel({ nation: Nation.AH, cost: 0, slot: "maneuver2" }),
-          Action.maneuver({ origin: "trieste", destination: "ionian sea" }),
-          Action.maneuver({ origin: "lemberg", destination: "romania" }),
-          Action.maneuver({ origin: "budapest", destination: "west balkan" }),
-          Action.maneuver({ origin: "vienna", destination: "tunis" }),
-          Action.rondel({ nation: Nation.IT, cost: 0, slot: "maneuver2" }),
-          Action.maneuver({
-            origin: "naples",
-            destination: "western mediterranean sea",
-          }),
-          Action.maneuver({ origin: "rome", destination: "spain" }),
-          Action.rondel({ nation: Nation.FR, cost: 0, slot: "maneuver1" }),
-          Action.maneuver({
-            origin: "bordeaux",
-            destination: "bay of biscay",
-          }),
-          Action.maneuver({
-            origin: "paris",
-            destination: "morocco",
-          }),
-          Action.rondel({ nation: Nation.GB, cost: 0, slot: "investor" }),
-        ];
-        const controller = Imperial.fromLog(log).state.nations.get(Nation.GB)
-          .controller;
-        const cash = Imperial.fromLog(log).state.players[controller].cash;
+        const controller = game.nations.get(Nation.GB).controller;
+        const cash = game.players[controller].cash;
+
         expect(cash).toEqual(9);
       });
 
       test("Bert can buy a bond", () => {
-        const log = [
-          ...secondRoundLog,
-          Action.rondel({ nation: Nation.AH, cost: 0, slot: "maneuver2" }),
-          Action.maneuver({ origin: "trieste", destination: "ionian sea" }),
-          Action.maneuver({ origin: "lemberg", destination: "romania" }),
-          Action.maneuver({ origin: "budapest", destination: "west balkan" }),
-          Action.maneuver({ origin: "vienna", destination: "tunis" }),
-          Action.rondel({ nation: Nation.IT, cost: 0, slot: "maneuver2" }),
-          Action.maneuver({
-            origin: "naples",
-            destination: "western mediterranean sea",
-          }),
-          Action.maneuver({ origin: "rome", destination: "spain" }),
-          Action.rondel({ nation: Nation.FR, cost: 0, slot: "maneuver1" }),
-          Action.maneuver({
-            origin: "bordeaux",
-            destination: "bay of biscay",
-          }),
-          Action.maneuver({
-            origin: "paris",
-            destination: "morocco",
-          }),
-          Action.rondel({ nation: Nation.GB, cost: 0, slot: "investor" }),
-        ];
         const expectedActions = [
           Action.bondPurchase({ nation: Nation.AH, player: "Bert", cost: 4 }),
           Action.bondPurchase({ nation: Nation.AH, player: "Bert", cost: 6 }),
@@ -1214,274 +1036,81 @@ describe("Schnelleinsteig", () => {
           Action.bondPurchase({ nation: Nation.RU, player: "Bert", cost: 4 }),
           Action.bondPurchase({ nation: Nation.RU, player: "Bert", cost: 6 }),
         ];
-        expect(Imperial.fromLog(log).availableActionsState()).toEqual(
-          expectedActions
-        );
+
+        expect(game.availableActions).toEqual(expectedActions);
       });
 
       describe("Investor-card holder (Bert) buys the 6 million bond of RU", () => {
         test("Bert has 3 million", () => {
-          const log = [
-            ...secondRoundLog,
-            Action.rondel({ nation: Nation.AH, cost: 0, slot: "maneuver2" }),
-            Action.maneuver({ origin: "trieste", destination: "ionian sea" }),
-            Action.maneuver({ origin: "lemberg", destination: "romania" }),
-            Action.maneuver({ origin: "budapest", destination: "west balkan" }),
-            Action.maneuver({ origin: "vienna", destination: "tunis" }),
-            Action.rondel({ nation: Nation.IT, cost: 0, slot: "maneuver2" }),
-            Action.maneuver({
-              origin: "naples",
-              destination: "western mediterranean sea",
-            }),
-            Action.maneuver({ origin: "rome", destination: "spain" }),
-            Action.rondel({ nation: Nation.FR, cost: 0, slot: "maneuver1" }),
-            Action.maneuver({
-              origin: "bordeaux",
-              destination: "bay of biscay",
-            }),
-            Action.maneuver({
-              origin: "paris",
-              destination: "morocco",
-            }),
-            Action.rondel({ nation: Nation.GB, cost: 0, slot: "investor" }),
-            Action.bondPurchase({ nation: Nation.RU, player: "Bert", cost: 6 }),
-          ];
-          const cash = Imperial.fromLog(log).state.players["Bert"].cash;
+          game.tick(
+            Action.bondPurchase({ nation: Nation.RU, player: "Bert", cost: 6 })
+          );
+          const cash = game.players["Bert"].cash;
+
           expect(cash).toEqual(3);
         });
 
         test("RU treasury has 9 million", () => {
-          const log = [
-            ...secondRoundLog,
-            Action.rondel({ nation: Nation.AH, cost: 0, slot: "maneuver2" }),
-            Action.maneuver({ origin: "trieste", destination: "ionian sea" }),
-            Action.maneuver({ origin: "lemberg", destination: "romania" }),
-            Action.maneuver({ origin: "budapest", destination: "west balkan" }),
-            Action.maneuver({ origin: "vienna", destination: "tunis" }),
-            Action.rondel({ nation: Nation.IT, cost: 0, slot: "maneuver2" }),
-            Action.maneuver({
-              origin: "naples",
-              destination: "western mediterranean sea",
-            }),
-            Action.maneuver({ origin: "rome", destination: "spain" }),
-            Action.rondel({ nation: Nation.FR, cost: 0, slot: "maneuver1" }),
-            Action.maneuver({
-              origin: "bordeaux",
-              destination: "bay of biscay",
-            }),
-            Action.maneuver({
-              origin: "paris",
-              destination: "morocco",
-            }),
-            Action.rondel({ nation: Nation.GB, cost: 0, slot: "investor" }),
-            Action.bondPurchase({ nation: Nation.RU, player: "Bert", cost: 6 }),
-          ];
-          const treasury = Imperial.fromLog(log).state.nations.get(Nation.RU)
-            .treasury;
+          const treasury = game.nations.get(Nation.RU).treasury;
+
           expect(treasury).toEqual(9);
         });
       });
     });
 
     describe("5. GE does taxation", () => {
+      const log = mainLog.slice(0, 52);
+      const game = Imperial.fromLog(log);
+      game.tick(
+        Action.rondel({ nation: Nation.GE, cost: 0, slot: "taxation" })
+      );
+
       test("GE moves to the taxation slot", () => {
-        const log = [
-          ...secondRoundLog,
-          Action.rondel({ nation: Nation.AH, cost: 0, slot: "maneuver2" }),
-          Action.maneuver({ origin: "trieste", destination: "ionian sea" }),
-          Action.maneuver({ origin: "lemberg", destination: "romania" }),
-          Action.maneuver({ origin: "budapest", destination: "west balkan" }),
-          Action.maneuver({ origin: "vienna", destination: "tunis" }),
-          Action.rondel({ nation: Nation.IT, cost: 0, slot: "maneuver2" }),
-          Action.maneuver({
-            origin: "naples",
-            destination: "western mediterranean sea",
-          }),
-          Action.maneuver({ origin: "rome", destination: "spain" }),
-          Action.rondel({ nation: Nation.FR, cost: 0, slot: "maneuver1" }),
-          Action.maneuver({
-            origin: "bordeaux",
-            destination: "bay of biscay",
-          }),
-          Action.maneuver({
-            origin: "paris",
-            destination: "morocco",
-          }),
-          Action.rondel({ nation: Nation.GB, cost: 0, slot: "investor" }),
-          Action.bondPurchase({ nation: Nation.RU, player: "Bert", cost: 6 }),
-          Action.rondel({ nation: Nation.GE, cost: 0, slot: "taxation" }),
-        ];
-        const actions = Imperial.fromLog(log).state.availableActions;
         const expected = rondelSlots.map((slot) =>
           Action.rondel({ nation: Nation.RU, cost: 0, slot })
         );
-        expect(actions).toEqual(new Set(expected));
+
+        expect(game.availableActions).toEqual(new Set(expected));
       });
 
       describe("consequences", () => {
         test("GE has 14 million in its treasury", () => {
-          const log = [
-            ...secondRoundLog,
-            Action.rondel({ nation: Nation.AH, cost: 0, slot: "maneuver2" }),
-            Action.maneuver({ origin: "trieste", destination: "ionian sea" }),
-            Action.maneuver({ origin: "lemberg", destination: "romania" }),
-            Action.maneuver({ origin: "budapest", destination: "west balkan" }),
-            Action.maneuver({ origin: "vienna", destination: "tunis" }),
-            Action.rondel({ nation: Nation.IT, cost: 0, slot: "maneuver2" }),
-            Action.maneuver({
-              origin: "naples",
-              destination: "western mediterranean sea",
-            }),
-            Action.maneuver({ origin: "rome", destination: "spain" }),
-            Action.rondel({ nation: Nation.FR, cost: 0, slot: "maneuver1" }),
-            Action.maneuver({
-              origin: "bordeaux",
-              destination: "bay of biscay",
-            }),
-            Action.maneuver({
-              origin: "paris",
-              destination: "morocco",
-            }),
-            Action.rondel({ nation: Nation.GB, cost: 0, slot: "investor" }),
-            Action.bondPurchase({ nation: Nation.RU, player: "Bert", cost: 6 }),
-            Action.rondel({ nation: Nation.GE, cost: 0, slot: "taxation" }),
-          ];
-          const treasury = Imperial.fromLog(log).state.nations.get(Nation.GE)
-            .treasury;
+          const treasury = game.nations.get(Nation.GE).treasury;
+
           expect(treasury).toEqual(14);
         });
 
         test("GE moves up one field on tax chart", () => {
-          const log = [
-            ...secondRoundLog,
-            Action.rondel({ nation: Nation.AH, cost: 0, slot: "maneuver2" }),
-            Action.maneuver({ origin: "trieste", destination: "ionian sea" }),
-            Action.maneuver({ origin: "lemberg", destination: "romania" }),
-            Action.maneuver({ origin: "budapest", destination: "west balkan" }),
-            Action.maneuver({ origin: "vienna", destination: "tunis" }),
-            Action.rondel({ nation: Nation.IT, cost: 0, slot: "maneuver2" }),
-            Action.maneuver({
-              origin: "naples",
-              destination: "western mediterranean sea",
-            }),
-            Action.maneuver({ origin: "rome", destination: "spain" }),
-            Action.rondel({ nation: Nation.FR, cost: 0, slot: "maneuver1" }),
-            Action.maneuver({
-              origin: "bordeaux",
-              destination: "bay of biscay",
-            }),
-            Action.maneuver({
-              origin: "paris",
-              destination: "morocco",
-            }),
-            Action.rondel({ nation: Nation.GB, cost: 0, slot: "investor" }),
-            Action.bondPurchase({ nation: Nation.RU, player: "Bert", cost: 6 }),
-            Action.rondel({ nation: Nation.GE, cost: 0, slot: "taxation" }),
-          ];
-          const taxChartPosition = Imperial.fromLog(log).state.nations.get(
-            Nation.GE
-          ).taxChartPosition;
+          const taxChartPosition = game.nations.get(Nation.GE).taxChartPosition;
+
           expect(taxChartPosition).toEqual("6");
         });
 
         test("GE receives 1 power point", () => {
-          const log = [
-            ...secondRoundLog,
-            Action.rondel({ nation: Nation.AH, cost: 0, slot: "maneuver2" }),
-            Action.maneuver({ origin: "trieste", destination: "ionian sea" }),
-            Action.maneuver({ origin: "lemberg", destination: "romania" }),
-            Action.maneuver({ origin: "budapest", destination: "west balkan" }),
-            Action.maneuver({ origin: "vienna", destination: "tunis" }),
-            Action.rondel({ nation: Nation.IT, cost: 0, slot: "maneuver2" }),
-            Action.maneuver({
-              origin: "naples",
-              destination: "western mediterranean sea",
-            }),
-            Action.maneuver({ origin: "rome", destination: "spain" }),
-            Action.rondel({ nation: Nation.FR, cost: 0, slot: "maneuver1" }),
-            Action.maneuver({
-              origin: "bordeaux",
-              destination: "bay of biscay",
-            }),
-            Action.maneuver({
-              origin: "paris",
-              destination: "morocco",
-            }),
-            Action.rondel({ nation: Nation.GB, cost: 0, slot: "investor" }),
-            Action.bondPurchase({ nation: Nation.RU, player: "Bert", cost: 6 }),
-            Action.rondel({ nation: Nation.GE, cost: 0, slot: "taxation" }),
-          ];
-          const powerPoints = Imperial.fromLog(log).state.nations.get(Nation.GE)
-            .powerPoints;
+          const powerPoints = game.nations.get(Nation.GE).powerPoints;
+
           expect(powerPoints).toEqual(1);
         });
 
         test("Anton has 4 million cash", () => {
-          const log = [
-            ...secondRoundLog,
-            Action.rondel({ nation: Nation.AH, cost: 0, slot: "maneuver2" }),
-            Action.maneuver({ origin: "trieste", destination: "ionian sea" }),
-            Action.maneuver({ origin: "lemberg", destination: "romania" }),
-            Action.maneuver({ origin: "budapest", destination: "west balkan" }),
-            Action.maneuver({ origin: "vienna", destination: "tunis" }),
-            Action.rondel({ nation: Nation.IT, cost: 0, slot: "maneuver2" }),
-            Action.maneuver({
-              origin: "naples",
-              destination: "western mediterranean sea",
-            }),
-            Action.maneuver({ origin: "rome", destination: "spain" }),
-            Action.rondel({ nation: Nation.FR, cost: 0, slot: "maneuver1" }),
-            Action.maneuver({
-              origin: "bordeaux",
-              destination: "bay of biscay",
-            }),
-            Action.maneuver({
-              origin: "paris",
-              destination: "morocco",
-            }),
-            Action.rondel({ nation: Nation.GB, cost: 0, slot: "investor" }),
-            Action.bondPurchase({ nation: Nation.RU, player: "Bert", cost: 6 }),
-            Action.rondel({ nation: Nation.GE, cost: 0, slot: "taxation" }),
-          ];
-          const cash = Imperial.fromLog(log).state.players["Anton"].cash;
+          const cash = game.players["Anton"].cash;
+
           expect(cash).toEqual(4);
         });
       });
     });
 
     describe("6. RU does production2", () => {
+      const log = mainLog.slice(0, 52);
+      const game = Imperial.fromLog(log);
+      game.tick(
+        Action.rondel({ nation: Nation.RU, cost: 0, slot: "production2" })
+      );
+
       test("Odessa and Moscow have units", () => {
-        const log = [
-          ...secondRoundLog,
-          Action.rondel({ nation: Nation.AH, cost: 0, slot: "maneuver2" }),
-          Action.maneuver({ origin: "trieste", destination: "ionian sea" }),
-          Action.maneuver({ origin: "lemberg", destination: "romania" }),
-          Action.maneuver({ origin: "budapest", destination: "west balkan" }),
-          Action.maneuver({ origin: "vienna", destination: "tunis" }),
-          Action.rondel({ nation: Nation.IT, cost: 0, slot: "maneuver2" }),
-          Action.maneuver({
-            origin: "naples",
-            destination: "western mediterranean sea",
-          }),
-          Action.maneuver({ origin: "rome", destination: "spain" }),
-          Action.rondel({ nation: Nation.FR, cost: 0, slot: "maneuver1" }),
-          Action.maneuver({
-            origin: "bordeaux",
-            destination: "bay of biscay",
-          }),
-          Action.maneuver({
-            origin: "paris",
-            destination: "morocco",
-          }),
-          Action.rondel({ nation: Nation.GB, cost: 0, slot: "investor" }),
-          Action.bondPurchase({ nation: Nation.RU, player: "Bert", cost: 6 }),
-          Action.rondel({ nation: Nation.GE, cost: 0, slot: "taxation" }),
-          Action.rondel({ nation: Nation.RU, cost: 0, slot: "production2" }),
-        ];
-        const odessaUnitCount = Imperial.fromLog(log).state.provinces["odessa"]
-          .unitCount;
-        const moscowUnitCount = Imperial.fromLog(log).state.provinces["moscow"]
-          .unitCount;
+        const odessaUnitCount = game.provinces.get("odessa").unitCount;
+        const moscowUnitCount = game.provinces.get("moscow").unitCount;
+
         expect(odessaUnitCount).toEqual(1);
         expect(moscowUnitCount).toEqual(3);
       });
