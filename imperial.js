@@ -9,18 +9,13 @@ export default class Imperial {
     return game;
   }
 
-  constructor(initialState) {
+  constructor() {
     this.log = [];
+    this.nations = this.setupNations();
+    this.players = {};
+    this.order = null;
     this.provinces = this.setupProvinces();
     this.rondelSlots = this.setupRondelSlots();
-
-    if (initialState === undefined) {
-      this.players = {};
-      this.nations = this.setupNations();
-      this.order = null;
-    } else {
-      Object.assign(this, setup(initialState));
-    }
   }
 
   get state() {
@@ -119,7 +114,13 @@ export default class Imperial {
   }
 
   tick(action) {
-    if (action.type === "playerSeating") {
+    if (action.type === "init") {
+      const { players, order, nations } = setup(action.payload);
+      this.players = players;
+      this.order = order;
+      this.nations = nations;
+      return;
+    } else if (action.type === "playerSeating") {
       this.seatPlayers(action);
     } else if (action.type === "assignStartingNation") {
       this.assignStartingNation(action);

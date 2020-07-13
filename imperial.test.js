@@ -1,5 +1,6 @@
 import Imperial from "./imperial";
 import { Nation } from "./constants.js";
+import Action from "./action";
 
 describe("Imperial", () => {
   describe("constructor", () => {
@@ -14,7 +15,7 @@ describe("Imperial", () => {
           { id: "f", nation: Nation.GE },
         ],
       };
-      const game = new Imperial(state);
+      const game = Imperial.fromLog([Action.init(state)]);
 
       test("seating order mirrors players array", () => {
         expect(game.order).toEqual(["a", "b", "c", "d", "e", "f"]);
@@ -101,7 +102,7 @@ describe("Imperial", () => {
           { id: "e", nation: Nation.IT },
         ],
       };
-      const game = new Imperial(state);
+      const game = Imperial.fromLog([Action.init(state)]);
 
       test("seating order", () => {
         expect(game.order).toEqual(["a", "b", "c", "d", "e"]);
@@ -179,7 +180,7 @@ describe("Imperial", () => {
           { id: "d", nation: Nation.GE },
         ],
       };
-      const game = new Imperial(state);
+      const game = Imperial.fromLog([Action.init(state)]);
 
       test("seating order", () => {
         expect(game.order).toEqual(["a", "b", "c", "d"]);
@@ -248,7 +249,7 @@ describe("Imperial", () => {
           { id: "c", nation: Nation.AH },
         ],
       };
-      const game = new Imperial(state);
+      const game = Imperial.fromLog([Action.init(state)]);
 
       test("seating order", () => {
         expect(game.order).toEqual(["a", "b", "c"]);
@@ -317,7 +318,7 @@ describe("Imperial", () => {
           { id: "b", nation: Nation.AH },
         ],
       };
-      const game = new Imperial(state);
+      const game = Imperial.fromLog([Action.init(state)]);
 
       test("seating order", () => {
         expect(game.order).toEqual(["a", "b"]);
