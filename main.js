@@ -33,23 +33,29 @@ Vue.component("bond", {
 });
 
 Vue.component("rondel-slot", {
-  props: ["name", "nations"],
+  props: ["current_nation", "name", "nations"],
   template: `
     <li>
       <div class="rondel-slot">{{ name }}</div>
       <nation
         v-for="nation in nations"
-        v-bind:nation="nation"
+        v-bind:current_nation="current_nation"
         v-bind:key="nation"
+        v-bind:nation="nation"
       ></nation>
     </li>
   `,
 });
 
 Vue.component("nation", {
-  props: ["nation"],
-  template: `<li class="flag">{{ flag() }}</li>`,
+  props: ["current_nation", "nation"],
+  template: `<li :class="flagClass()">{{ flag() }}</li>`,
   methods: {
+    flagClass: function () {
+      return this.current_nation === this.nation
+        ? "flag current_nation"
+        : "flag";
+    },
     flag: function () {
       switch (this.nation) {
         case "AH":
