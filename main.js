@@ -37,7 +37,11 @@ Vue.component("rondel-slot", {
   template: `
     <li>
       <div class="rondel-slot">{{ name }}</div>
-      <nation v-for="nation in nations" v-bind:nation="nation"></nation>
+      <nation
+        v-for="nation in nations"
+        v-bind:nation="nation"
+        v-bind:key="nation"
+      ></nation>
     </li>
   `,
 });
