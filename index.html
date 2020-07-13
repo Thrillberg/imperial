@@ -22,9 +22,10 @@
         <ul class="rondel">
           <rondel-slot
             v-for="slot in game.rondelSlots"
+            v-bind:current_nation="game.currentNationName"
+            v-bind:key="slot.name"
             v-bind:name="slot.name"
             v-bind:nations="slot.nations"
-            v-bind:key="slot.name"
           ></rondel-slot>
         </ul>
         <button v-on:click="tick">

@@ -152,6 +152,7 @@ export default class Imperial {
       action.payload.slot === "production2" ||
       this.log[this.log.length - 1].type === "import"
     ) {
+      this.currentNationName = this.getNation(this.log).value;
       this.currentPlayerName = this.getController(this.getNation(this.log));
     }
   }
