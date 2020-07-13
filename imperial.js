@@ -124,6 +124,7 @@ export default class Imperial {
       this.removeNationFromOldSlot(action);
       this.addNationToNewSlot(action);
       this.handleInvestorAndProduction(action);
+      this.handleTaxation(action);
       this.availableActions = this.availableActionsState(action);
     } else if (action.type === "import") {
       this.import(action);
@@ -139,6 +140,12 @@ export default class Imperial {
       const lastManeuver = maneuverActions[maneuverActions.length - 1];
       this.provinces.get(action.payload.destination).flag =
         lastManeuver.payload.nation;
+      this.provinces.get(action.payload.destination).unitCount += 1;
+      this.availableActions = this.availableActionsState(action);
+    } else if (action.type === "fight") {
+      this.provinces.get(action.payload.province).unitCount -= 2;
+      this.provinces.get(action.payload.province).flag =
+        action.payload.incumbent;
     }
     this.log.push(action);
     this.handleAdvancePlayer(action);
@@ -154,6 +161,8 @@ export default class Imperial {
     ) {
       this.currentNationName = this.getNation(this.log).value;
       this.currentPlayerName = this.getController(this.getNation(this.log));
+    } else {
+      this.availableActions = this.availableActionsState(action);
     }
   }
 
@@ -243,6 +252,21 @@ export default class Imperial {
       this.homeProvinces(action.payload.nation)
         .filter((province) => this.provinces.get(province).hasFactory === true)
         .forEach((province) => (this.provinces.get(province).unitCount += 1));
+    }
+  }
+
+  handleTaxation(action) {
+    if (action.payload.slot === "taxation") {
+      const nationName = action.payload.nation;
+      const nation = this.nations.get(nationName);
+      const taxes =
+        this.factoryCount(nationName) * 2 +
+        this.flagCount(nationName) -
+        this.unitCount(nationName);
+      nation.treasury += taxes;
+      nation.taxChartPosition = "6";
+      nation.powerPoints = 1;
+      this.players[this.getController(nationName)].cash += 1;
     }
   }
 
