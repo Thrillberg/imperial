@@ -19,7 +19,7 @@ class Enum {
     }
     for (const c of Object.getOwnPropertyNames(cases)) {
       if (Object.is(this.value, c)) {
-        return cases[c]();
+        return cases[c](this);
       }
     }
     throw new Error("unreachable");

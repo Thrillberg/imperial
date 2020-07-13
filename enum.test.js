@@ -73,12 +73,13 @@ describe("Enum", () => {
     });
 
     test("return value", () => {
+      const fn = (e) => `value:${e.value}`;
       expect(
         MyEnum.HUHU.when({
-          HUHU: () => 1,
-          BEBE: () => 2,
+          HUHU: fn,
+          BEBE: fn,
         })
-      ).toBe(1);
+      ).toBe("value:HUHU");
     });
   });
 });
