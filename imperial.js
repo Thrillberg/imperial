@@ -1,5 +1,6 @@
 import { Nation } from "./constants.js";
 import Action from "./action.js";
+import setup from "./setup";
 
 export default class Imperial {
   static fromLog(log) {
@@ -10,141 +11,15 @@ export default class Imperial {
 
   constructor(initialState) {
     this.log = [];
-    this.players = {};
     this.provinces = this.setupProvinces();
     this.rondelSlots = this.setupRondelSlots();
 
     if (initialState === undefined) {
-      this.nations = this.setupNations();
-    } else {
-      const players = initialState.players.map((p) => ({ ...p })); // shallow copy
-
-      if (players.length === 3) {
-        for (const { id, nation } of initialState.players) {
-          const error = () => {
-            throw new Error(
-              `three-player games must start with AH, IT, FR (got ${id}: ${nation.value})`
-            );
-          };
-          nation.when({
-            AH: () => {
-              players.push({ id, nation: Nation.GB });
-            },
-            IT: () => {
-              players.push({ id, nation: Nation.RU });
-            },
-            FR: () => {
-              players.push({ id, nation: Nation.GE });
-            },
-            GB: error,
-            RU: error,
-            GE: error,
-          });
-        }
-      } else if (players.length === 2) {
-        for (const { id, nation } of initialState.players) {
-          const error = () => {
-            throw new Error(
-              `two-player games must start with AH and IT (got ${id}: ${nation.value})`
-            );
-          };
-          nation.when({
-            AH: () => {
-              players.push({ id, nation: Nation.FR });
-              players.push({ id, nation: Nation.GE });
-            },
-            IT: () => {
-              players.push({ id, nation: Nation.RU });
-              players.push({ id, nation: Nation.GB });
-            },
-            FR: error,
-            GB: error,
-            RU: error,
-            GE: error,
-          });
-        }
-      }
-
-      // This is the mapping on each nation card that tells starting
-      // players which 2M bond they must purchase.
-      //
-      // TODO: extract this into a more self-documenting structure
-      const nationCard = new Map([
-        [Nation.GE, Nation.IT],
-        [Nation.RU, Nation.FR],
-        [Nation.AH, Nation.GE],
-        [Nation.IT, Nation.GB],
-        [Nation.FR, Nation.AH],
-        [Nation.GB, Nation.RU],
-      ]);
-
-      this.order = initialState.players.map((p) => p.id);
-
-      this.nations = new Map(
-        Array.from(Nation).map((n) => [
-          n,
-          { treasury: 0, controller: null, rondelPosition: null },
-        ])
-      );
-
       this.players = {};
-      for (const p of players) {
-        let cash;
-        switch (initialState.players.length) {
-          case 2:
-            cash = 35;
-            break;
-          case 3:
-            cash = 24;
-            break;
-          case 4:
-          case 5:
-          case 6:
-            cash = 13;
-            break;
-          default:
-            throw new Error(
-              `Unhandled player count: ${initialState.players.length}`
-            );
-        }
-        if (this.players[p.id] === undefined) {
-          this.players[p.id] = {
-            name: p.id,
-            cash,
-            bonds: [],
-          };
-        }
-      }
-
-      const bondsByNation = new Map(Array.from(Nation).map((n) => [n, []]));
-      for (const p of players) {
-        const purchaseBond = (nation, cost) => {
-          this.players[p.id].bonds.push({ nation, cost });
-          this.players[p.id].cash -= cost;
-          this.nations.get(nation).treasury += cost;
-          bondsByNation.get(nation).push({ player: p.id, cost });
-        };
-        purchaseBond(p.nation, 9);
-        purchaseBond(nationCard.get(p.nation), 2);
-      }
-      // TODO: ahhhhhhhhhhh
-      for (const [n, bs] of bondsByNation) {
-        const byPlayer = bs.reduce((acc, b) => {
-          if (!acc.has(b.player)) {
-            acc.set(b.player, b.cost);
-          } else {
-            acc.set(b.player, acc.get(b.player) + b.cost);
-          }
-          return acc;
-        }, new Map());
-        let max = null;
-        for (const [k, v] of byPlayer) {
-          if (max === null || max[1] < v) {
-            max = [k, v];
-          }
-        }
-        this.nations.get(n).controller = max ? max[0] : null;
-      }
+      this.nations = this.setupNations();
+      this.order = null;
+    } else {
+      Object.assign(this, setup(initialState));
     }
   }
 
