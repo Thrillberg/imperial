@@ -22,9 +22,7 @@ export default class Imperial {
     return {
       availableActions: this.availableActionsState(),
       investorCardHolder: this.investorCardHolderState(),
-      nations: this.nationsState(),
       players: this.playersState(),
-      provinces: this.provincesState(),
     };
   }
 
@@ -33,8 +31,12 @@ export default class Imperial {
     for (const nation of Nation) {
       nations.set(nation, {
         controller: "",
-        treasury: 0,
+        flagCount: 0,
+        powerPoints: 0,
         rondelPosition: "",
+        taxChartPosition: 5,
+        treasury: 0,
+        unitCount: 0,
       });
     }
     return nations;
@@ -94,9 +96,22 @@ export default class Imperial {
     ]) {
       provinces.set(province, {
         unitCount: 0,
-        hasFactory: true,
+        hasFactory: false,
       });
     }
+    provinces.get("vienna").hasFactory = true;
+    provinces.get("budapest").hasFactory = true;
+    provinces.get("paris").hasFactory = true;
+    provinces.get("bordeaux").hasFactory = true;
+    provinces.get("london").hasFactory = true;
+    provinces.get("liverpool").hasFactory = true;
+    provinces.get("berlin").hasFactory = true;
+    provinces.get("hamburg").hasFactory = true;
+    provinces.get("rome").hasFactory = true;
+    provinces.get("naples").hasFactory = true;
+    provinces.get("odessa").hasFactory = true;
+    provinces.get("moscow").hasFactory = true;
+
     return provinces;
   }
 
@@ -133,6 +148,7 @@ export default class Imperial {
       this.addNationToNewSlot(action);
       this.handleInvestorAndProduction(action);
       this.handleTaxation(action);
+      this.handleSkippingInvestorSlot(action);
       this.availableActions = this.availableActionsState(action);
     } else if (action.type === "import") {
       this.import(action);
@@ -148,6 +164,8 @@ export default class Imperial {
       const lastManeuver = maneuverActions[maneuverActions.length - 1];
       this.provinces.get(action.payload.destination).flag =
         lastManeuver.payload.nation;
+      this.nations.get(lastManeuver.payload.nation).flagCount += 1;
+      this.provinces.get(action.payload.origin).unitCount -= 1;
       this.provinces.get(action.payload.destination).unitCount += 1;
       this.availableActions = this.availableActionsState(action);
     } else if (action.type === "fight") {
@@ -193,12 +211,26 @@ export default class Imperial {
   }
 
   purchaseBond(action) {
-    this.nations.get(action.payload.nation).treasury += action.payload.cost;
-    this.players[action.payload.player].cash -= action.payload.cost;
+    if (action.payload.cost > this.players[action.payload.player].cash) {
+      const bondToTrade = this.players[action.payload.player].bonds.filter(
+        (bond) => bond.nation === action.payload.nation
+      )[0];
+      const bondIndex = this.players[action.payload.player].bonds.indexOf(
+        bondToTrade
+      );
+      const netCost = action.payload.cost - bondToTrade.cost;
+      this.nations.get(action.payload.nation).treasury += netCost;
+      this.players[action.payload.player].cash -= netCost;
+      this.players[action.payload.player].bonds.splice(bondIndex, 1);
+    } else {
+      this.nations.get(action.payload.nation).treasury += action.payload.cost;
+      this.players[action.payload.player].cash -= action.payload.cost;
+    }
     this.players[action.payload.player].bonds.push({
       nation: action.payload.nation,
       cost: action.payload.cost,
     });
+
     const totalInvestmentInNation = this.players[action.payload.player].bonds
       .filter((bond) => bond.nation === action.payload.nation)
       .reduce((x, y) => x + y.cost, 0);
@@ -259,7 +291,10 @@ export default class Imperial {
     ) {
       this.homeProvinces(action.payload.nation)
         .filter((province) => this.provinces.get(province).hasFactory === true)
-        .forEach((province) => (this.provinces.get(province).unitCount += 1));
+        .forEach((province) => {
+          this.provinces.get(province).unitCount += 1;
+          this.nations.get(action.payload.nation).unitCount += 1;
+        });
     }
   }
 
@@ -267,14 +302,27 @@ export default class Imperial {
     if (action.payload.slot === "taxation") {
       const nationName = action.payload.nation;
       const nation = this.nations.get(nationName);
-      const taxes =
-        this.factoryCount(nationName) * 2 +
-        this.flagCount(nationName) -
-        this.unitCount(nationName);
-      nation.treasury += taxes;
-      nation.taxChartPosition = "6";
-      nation.powerPoints = 1;
-      this.players[this.getController(nationName)].cash += 1;
+      const taxes = this.factoryCount(nationName) * 2 + nation.flagCount;
+      nation.treasury += taxes - nation.unitCount;
+
+      this.players[this.getController(nationName)].cash +=
+        taxes - nation.taxChartPosition;
+      nation.taxChartPosition = taxes;
+      if (taxes === 6) {
+        nation.powerPoints += 1;
+      } else {
+        nation.powerPoints += 3;
+      }
+    }
+  }
+
+  handleSkippingInvestorSlot(action) {
+    const postInvestorSlots = ["import", "production2"];
+    if (
+      postInvestorSlots.includes(action.payload.slot) &&
+      this.previousRondelPosition(action.payload.nation) === "maneuver1"
+    ) {
+      this.players[this.currentPlayerName].cash += 2;
     }
   }
 
@@ -282,10 +330,12 @@ export default class Imperial {
     const nation = this.getNationByProvince(action.payload.province);
     this.nations.get(nation).treasury -= 1;
     this.provinces.get(action.payload.province).unitCount += 1;
+    this.nations.get(nation).unitCount += 1;
   }
 
   buildFactory(action) {
     const nation = this.getNationByProvince(action.payload.province);
+    this.provinces.get(action.payload.province).hasFactory = true;
     this.nations.get(nation).treasury -= 5;
   }
 
@@ -294,6 +344,8 @@ export default class Imperial {
       return Nation.RU;
     } else if (province === "marseille") {
       return Nation.FR;
+    } else if (province === "cologne") {
+      return Nation.GE;
     }
 
     return Nation.AH;
@@ -350,7 +402,7 @@ export default class Imperial {
             cost: bond.cost,
           });
         });
-    } else if (this.shouldReturnRondelActions(lastMove)) {
+    } else if (this.lastMoveWasTaxation(lastMove)) {
       return this.rondelActions(this.getNation(this.log));
     } else if (this.lastMoveWasRondelManeuver(lastMove)) {
       switch (lastMove.payload.nation) {
@@ -628,19 +680,6 @@ export default class Imperial {
     return this.getInvestorCardHolder(this.log, this.log);
   }
 
-  nationsState() {
-    const nations = new Map();
-    for (const nation of Nation) {
-      nations.set(nation, {
-        controller: this.getController(nation, this.log),
-        treasury: this.getTreasury(nation, this.log),
-        taxChartPosition: this.getTaxChartPosition(nation),
-        powerPoints: this.getPowerPoints(nation),
-      });
-    }
-    return nations;
-  }
-
   playersState() {
     let players = {};
     this.order.map((player) => {
@@ -650,52 +689,6 @@ export default class Imperial {
       };
     });
     return players;
-  }
-
-  provincesState() {
-    let provinces = {};
-    [
-      "algeria",
-      "baltic sea",
-      "bay of biscay",
-      "berlin",
-      "black sea",
-      "bordeaux",
-      "budapest",
-      "bulgaria",
-      "cologne",
-      "english channel",
-      "hamburg",
-      "ionian sea",
-      "lemberg",
-      "liverpool",
-      "london",
-      "marseille",
-      "morocco",
-      "moscow",
-      "naples",
-      "north atlantic",
-      "north sea",
-      "norway",
-      "odessa",
-      "paris",
-      "romania",
-      "rome",
-      "spain",
-      "st. petersburg",
-      "sweden",
-      "trieste",
-      "tunis",
-      "turkey",
-      "vienna",
-      "west balkan",
-      "western mediterranean sea",
-    ].forEach((province) => {
-      const flag = this.getFlag(province);
-      const unitCount = this.getUnitCount(province);
-      provinces[province] = { hasFactory: true, unitCount, flag };
-    });
-    return provinces;
   }
 
   getFlag(province) {
@@ -732,78 +725,6 @@ export default class Imperial {
     }
   }
 
-  getUnitCount(province) {
-    let unitCount = 0;
-
-    const importsCount = this.log.filter((action) => {
-      return action.type === "import" && action.payload.province === province;
-    }).length;
-    unitCount += importsCount;
-
-    const maneuverCount = this.log.filter(
-      (action) =>
-        action.type === "maneuver" && action.payload.destination === province
-    ).length;
-    unitCount += maneuverCount;
-
-    const evacuationCount = this.log.filter(
-      (action) =>
-        action.type === "maneuver" && action.payload.origin === province
-    ).length;
-    unitCount -= evacuationCount;
-
-    const fightCount = this.log.filter(
-      (action) =>
-        action.type === "fight" && action.payload.province === province
-    ).length;
-    unitCount -= fightCount * 2;
-
-    const productionCount = this.log.filter((action) => {
-      return (
-        action.type === "rondel" &&
-        (action.payload.slot === "production1" ||
-          action.payload.slot === "production2") &&
-        this.homeProvinces(action.payload.nation).includes(province)
-      );
-    }).length;
-    unitCount += productionCount;
-
-    return unitCount;
-  }
-
-  getTaxChartPosition(nation) {
-    const factoryCount =
-      this.log.filter(
-        (action) =>
-          action.type === "buildFactory" &&
-          this.homeProvinces(nation).includes(action.payload.province)
-      ).length + 2;
-    const flagCount = [
-      "romania",
-      "west balkan",
-      "ionian sea",
-      "tunis",
-      "norway",
-      "north sea",
-    ].filter((province) => this.getFlag(province) === nation).length;
-    return (factoryCount * 2 + flagCount).toString();
-  }
-
-  getPowerPoints(nation) {
-    return parseInt(this.getTaxChartPosition(nation)) - 5;
-  }
-
-  shouldReturnRondelActions(lastMove) {
-    return (
-      this.logIsEmpty(lastMove) ||
-      this.lastMoveWasBuildFactory(lastMove) ||
-      this.lastMoveWasProduction(lastMove) ||
-      this.lastMoveWasInvestor(lastMove) ||
-      this.lastMoveWasImport(lastMove) ||
-      this.lastMoveWasTaxation(lastMove)
-    );
-  }
-
   rondelActions(nation) {
     return new Set(
       [
@@ -830,22 +751,6 @@ export default class Imperial {
     }
   }
 
-  logIsEmpty(lastMove) {
-    return lastMove.type === "playerSeating";
-  }
-
-  lastMoveWasBuildFactory(lastMove) {
-    return lastMove.type === "buildFactory";
-  }
-
-  lastMoveWasProduction(lastMove) {
-    return (
-      lastMove.type === "rondel" &&
-      (lastMove.payload.slot === "production1" ||
-        lastMove.payload.slot === "production2")
-    );
-  }
-
   lastMoveWasRondelManeuver(lastMove) {
     return (
       lastMove.type === "rondel" &&
@@ -856,10 +761,6 @@ export default class Imperial {
 
   lastMoveWasInvestor(lastMove) {
     return lastMove.type === "rondel" && lastMove.payload.slot === "investor";
-  }
-
-  lastMoveWasImport(lastMove) {
-    return lastMove.type === "import";
   }
 
   lastMoveWasTaxation(lastMove) {
@@ -956,8 +857,8 @@ export default class Imperial {
     ).length;
     treasuryAmount +=
       this.factoryCount(nation) * 2 * taxationRondelActionsCount;
-    treasuryAmount += this.flagCount(nation) * taxationRondelActionsCount;
-    treasuryAmount -= this.unitCount(nation) * taxationRondelActionsCount;
+    treasuryAmount +=
+      this.nations.get(nation).flagCount * taxationRondelActionsCount;
 
     const buildFactoryActions = this.log.filter((action) => {
       return (
@@ -1051,12 +952,6 @@ export default class Imperial {
         action.payload.slot === "taxation" &&
         player === this.getController(action.payload.nation)
     );
-    if (taxationActions.length > 0) {
-      const powerPointsCash = this.getPowerPoints(
-        taxationActions[0].payload.nation
-      );
-      cash += powerPointsCash;
-    }
 
     const postInvestorSlots = ["import", "production2"];
     const investorSlotSkippedCount = log.filter(
@@ -1110,16 +1005,6 @@ export default class Imperial {
         ) {
           cash += 4;
         }
-
-        if (
-          this.hasSmallInvestment(
-            investorAction.action.payload.nation,
-            player,
-            log
-          )
-        ) {
-          cash += 1;
-        }
       }
     });
 
@@ -1129,12 +1014,6 @@ export default class Imperial {
         action.payload.slot === "taxation" &&
         player === this.getController(action.payload.nation)
     );
-    if (taxationActions.length > 0) {
-      const powerPointsCash = this.getPowerPoints(
-        taxationActions[0].payload.nation
-      );
-      cash += powerPointsCash;
-    }
 
     const postInvestorSlots = ["import", "production2"];
     const investorSlotSkippedCount = log.filter(
@@ -1196,7 +1075,7 @@ export default class Imperial {
       (action) => action.type === "rondel" && action.payload.nation === nation
     );
     if (rondelActions.length > 2) {
-      return rondelActions[rondelActions.length - 2].payload.slot;
+      return rondelActions[rondelActions.length - 1].payload.slot;
     }
   }
 
@@ -1220,22 +1099,6 @@ export default class Imperial {
       return out[0].payload.player;
     } else {
       return null;
-    }
-  }
-
-  hasSmallInvestment(nation, player, log) {
-    const bondPurchases = log.filter((action) => {
-      return (
-        action.type === "bondPurchase" &&
-        action.payload.nation === nation &&
-        action.payload.player === player &&
-        action.payload.cost === 2
-      );
-    });
-    if (bondPurchases.length > 0) {
-      return true;
-    } else {
-      return false;
     }
   }
 
@@ -1274,14 +1137,6 @@ export default class Imperial {
   }
 
   factoryCount(nation) {
-    return 2;
-  }
-
-  flagCount(nation) {
-    return 2;
-  }
-
-  unitCount(nation) {
     return 2;
   }
 
