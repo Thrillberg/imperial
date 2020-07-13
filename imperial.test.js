@@ -159,7 +159,7 @@ describe("Imperial", () => {
             [Nation.RU, "a", 11],
             [Nation.FR, "b", 11],
             [Nation.GB, "c", 11],
-            [Nation.GE, "d", 9], // AH controller would have bought GE 2
+            [Nation.GE, "d", 9], // Nobody bought GE 2
             [Nation.IT, "e", 11],
             [Nation.AH, "b", 2], // FR controller bought AH 2
           ].map(([nation, controller, treasury]) => [
@@ -227,11 +227,11 @@ describe("Imperial", () => {
         const expected = new Map(
           [
             [Nation.IT, "a", 11],
-            [Nation.FR, "b", 9], // RU controller would have bought FR 2
+            [Nation.FR, "b", 9], // Nobody bought FR 2
             [Nation.AH, "c", 11],
             [Nation.GE, "d", 11],
             [Nation.GB, "a", 2], // IT controller bought GB 2
-            [Nation.RU, null, 0], // nobody has RU bond
+            [Nation.RU, null, 0], // Nobody bought RU 2 or RU 9
           ].map(([nation, controller, treasury]) => [
             nation,
             { controller, treasury, rondelPosition: null },
