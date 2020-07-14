@@ -114,7 +114,7 @@ export default class Imperial {
   }
 
   tick(action) {
-    if (action.type === "init") {
+    if (action.type === "initialize") {
       const { players, order, nations } = setup(action.payload);
       this.players = players;
       this.order = order;

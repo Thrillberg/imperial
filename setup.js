@@ -6,6 +6,23 @@ const error = (want) => (x) => {
 
 export default ({ players }) => {
   const nationAssignments = {
+    2: ({ id, nation }) =>
+      nation.when({
+        AH: () => [
+          { id, nation: Nation.AH },
+          { id, nation: Nation.FR },
+          { id, nation: Nation.GE },
+        ],
+        IT: () => [
+          { id, nation: Nation.IT },
+          { id, nation: Nation.RU },
+          { id, nation: Nation.GB },
+        ],
+        FR: error("AH|IT"),
+        GB: error("AH|IT"),
+        RU: error("AH|IT"),
+        GE: error("AH|IT"),
+      }),
     3: ({ id, nation }) =>
       nation.when({
         AH: () => [
@@ -24,46 +41,25 @@ export default ({ players }) => {
         RU: error("AH|IT|FR"),
         GE: error("AH|IT|FR"),
       }),
-    2: ({ id, nation }) =>
-      nation.when({
-        AH: () => [
-          { id, nation: Nation.AH },
-          { id, nation: Nation.FR },
-          { id, nation: Nation.GE },
-        ],
-        IT: () => [
-          { id, nation: Nation.IT },
-          { id, nation: Nation.RU },
-          { id, nation: Nation.GB },
-        ],
-        FR: error("AH|IT"),
-        GB: error("AH|IT"),
-        RU: error("AH|IT"),
-        GE: error("AH|IT"),
-      }),
     4: (x) => [x],
     5: (x) => [x],
     6: (x) => [x],
   };
 
-  const that = {
+  const out = {
     players: {},
-    nations: new Map(
-      Array.from(Nation).map((n) => [
-        n,
-        { treasury: 0, controller: null, rondelPosition: null },
-      ])
-    ),
+    nations: new Map(),
     order: players.map((p) => p.id),
   };
 
+  /* From the initial nation assignments, distribute bonds to the players. */
   players
     .map(nationAssignments[players.length])
     .flat()
     .forEach(({ id, nation }) => {
-      that.players[id] = {
+      out.players[id] = {
         name: id,
-        bonds: (that.players[id] || { bonds: [] }).bonds.concat([
+        bonds: (out.players[id] || { bonds: [] }).bonds.concat([
           { nation: nation, cost: 9 },
           {
             nation: nation.when({
@@ -81,9 +77,17 @@ export default ({ players }) => {
       };
     });
 
-  const bonds = Object.getOwnPropertyNames(that.players)
+  /* Gather bonds as a list of
+   *
+   *   { nation : Nation , cost : number , owner : Player }
+   *
+   * so we can filter by nation, use the cost in our
+   * calculation of each nation's treasury, and set the
+   * controlling player.
+   */
+  const bonds = Object.getOwnPropertyNames(out.players)
     .map((id) =>
-      that.players[id].bonds.map(({ nation, cost }) => ({
+      out.players[id].bonds.map(({ nation, cost }) => ({
         nation,
         cost,
         owner: id,
@@ -91,18 +95,37 @@ export default ({ players }) => {
     )
     .flat();
 
+  /* Calculate treasury and controller for each nation */
   for (const n of Nation) {
-    const byNation = bonds
+    /* Find bonds for the given nation, sorted by descending cost */
+    const forNation = bonds
       .filter((b) => b.nation === n)
       .sort(({ cost: aCost }, { cost: bCost }) =>
         aCost < bCost ? 1 : aCost > bCost ? -1 : 0
       );
 
-    that.nations.get(n).controller = (byNation[0] || { owner: null }).owner;
-    that.nations.get(n).treasury = byNation.reduce(
-      (sum, { cost }) => sum + cost,
-      0
-    );
+    /* The rules describe in prose this decision table
+     *
+     *   bonds purchased | controller
+     *   ----------------|-----------
+     *   none            | none
+     *   2               | owner of 2
+     *   9               | owner of 9
+     *   9, 2            | owner of 9
+     *
+     * So, we'll set the controller to be the owner of
+     * the highest cost bond, or null if there are no
+     * bonds.
+     */
+    const highestBond = forNation[0] || { owner: null };
+
+    const totalCost = forNation.reduce((sum, { cost }) => sum + cost, 0);
+
+    out.nations.set(n, {
+      controller: highestBond.owner,
+      treasury: totalCost,
+      rondelPosition: null,
+    });
   }
-  return that;
+  return out;
 };

@@ -1,11 +1,11 @@
-import Imperial from "./imperial";
+import setup from "./setup";
 import { Nation } from "./constants.js";
 import Action from "./action";
 
 describe("Imperial", () => {
   describe("constructor", () => {
     describe("six players", () => {
-      const state = {
+      const payload = {
         players: [
           { id: "a", nation: Nation.RU },
           { id: "b", nation: Nation.FR },
@@ -15,14 +15,14 @@ describe("Imperial", () => {
           { id: "f", nation: Nation.GE },
         ],
       };
-      const game = Imperial.fromLog([Action.init(state)]);
+      const actual = setup(payload);
 
       test("seating order mirrors players array", () => {
-        expect(game.order).toEqual(["a", "b", "c", "d", "e", "f"]);
+        expect(actual.order).toEqual(["a", "b", "c", "d", "e", "f"]);
       });
 
       test("bond assignments", () => {
-        expect(game.players).toEqual({
+        expect(actual.players).toEqual({
           a: {
             name: "a",
             cash: 2,
@@ -88,12 +88,12 @@ describe("Imperial", () => {
             { controller: v, treasury: 11, rondelPosition: null },
           ])
         );
-        expect(game.nations).toEqual(expected);
+        expect(actual.nations).toEqual(expected);
       });
     });
 
     describe("five players", () => {
-      const state = {
+      const payload = {
         players: [
           { id: "a", nation: Nation.RU },
           { id: "b", nation: Nation.FR },
@@ -102,14 +102,14 @@ describe("Imperial", () => {
           { id: "e", nation: Nation.IT },
         ],
       };
-      const game = Imperial.fromLog([Action.init(state)]);
+      const actual = setup(payload);
 
       test("seating order", () => {
-        expect(game.order).toEqual(["a", "b", "c", "d", "e"]);
+        expect(actual.order).toEqual(["a", "b", "c", "d", "e"]);
       });
 
       test("bond assignments", () => {
-        expect(game.players).toEqual({
+        expect(actual.players).toEqual({
           a: {
             name: "a",
             cash: 2,
@@ -167,12 +167,12 @@ describe("Imperial", () => {
             { controller, treasury, rondelPosition: null },
           ])
         );
-        expect(game.nations).toEqual(expected);
+        expect(actual.nations).toEqual(expected);
       });
     });
 
     describe("four players", () => {
-      const state = {
+      const payload = {
         players: [
           { id: "a", nation: Nation.IT },
           { id: "b", nation: Nation.FR },
@@ -180,14 +180,14 @@ describe("Imperial", () => {
           { id: "d", nation: Nation.GE },
         ],
       };
-      const game = Imperial.fromLog([Action.init(state)]);
+      const actual = setup(payload);
 
       test("seating order", () => {
-        expect(game.order).toEqual(["a", "b", "c", "d"]);
+        expect(actual.order).toEqual(["a", "b", "c", "d"]);
       });
 
       test("bond assignments", () => {
-        expect(game.players).toEqual({
+        expect(actual.players).toEqual({
           a: {
             name: "a",
             cash: 2,
@@ -237,26 +237,26 @@ describe("Imperial", () => {
             { controller, treasury, rondelPosition: null },
           ])
         );
-        expect(game.nations).toEqual(expected);
+        expect(actual.nations).toEqual(expected);
       });
     });
 
     describe("three players", () => {
-      const state = {
+      const payload = {
         players: [
           { id: "a", nation: Nation.IT },
           { id: "b", nation: Nation.FR },
           { id: "c", nation: Nation.AH },
         ],
       };
-      const game = Imperial.fromLog([Action.init(state)]);
+      const actual = setup(payload);
 
       test("seating order", () => {
-        expect(game.order).toEqual(["a", "b", "c"]);
+        expect(actual.order).toEqual(["a", "b", "c"]);
       });
 
       test("bond assignments", () => {
-        expect(game.players).toEqual({
+        expect(actual.players).toEqual({
           a: {
             name: "a",
             cash: 2,
@@ -307,25 +307,25 @@ describe("Imperial", () => {
             { controller, treasury, rondelPosition: null },
           ])
         );
-        expect(game.nations).toEqual(expected);
+        expect(actual.nations).toEqual(expected);
       });
     });
 
     describe("two players", () => {
-      const state = {
+      const payload = {
         players: [
           { id: "a", nation: Nation.IT },
           { id: "b", nation: Nation.AH },
         ],
       };
-      const game = Imperial.fromLog([Action.init(state)]);
+      const actual = setup(payload);
 
       test("seating order", () => {
-        expect(game.order).toEqual(["a", "b"]);
+        expect(actual.order).toEqual(["a", "b"]);
       });
 
       test("bond assignments", () => {
-        expect(game.players).toEqual({
+        expect(actual.players).toEqual({
           a: {
             name: "a",
             cash: 2,
@@ -369,7 +369,7 @@ describe("Imperial", () => {
             { controller, treasury, rondelPosition: null },
           ])
         );
-        expect(game.nations).toEqual(expected);
+        expect(actual.nations).toEqual(expected);
       });
     });
   });
