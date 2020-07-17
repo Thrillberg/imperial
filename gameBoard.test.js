@@ -52,5 +52,8 @@ describe("GameBoard", () => {
     expect(gameBoard.neighborsFor({ province: "1", nation: "b" })).toEqual(
       new Set(["2"])
     );
+    expect(gameBoard.neighborsFor({ province: "3", nation: "a" })).toEqual(
+      new Set(["2"])
+    );
   });
 });
