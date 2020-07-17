@@ -35,6 +35,7 @@ const makeAction = (type, payloadKeys) => {
 };
 
 export default {
+  initialize: makeAction("initialize", ["players"]),
   assignStartingNation: makeAction("assignStartingNation", [
     "nation",
     "player",
