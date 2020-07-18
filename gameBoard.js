@@ -1,5 +1,5 @@
 export default class GameBoard {
-  constructor(nodes, edges) {
+  constructor({ nodes, edges }) {
     this.graph = new Map();
     this.byNation = new Map();
 
@@ -22,17 +22,32 @@ export default class GameBoard {
   neighborsFor({ province, nation }) {
     if (!this.graph.has(province))
       throw new Error(`province ${province} not found`);
-    if (!this.byNation.has(nation))
-      throw new Error(`nation ${nation} not found`);
 
-    const out = new Set();
-    for (const p of this.byNation.get(nation)) {
-      for (const n of this.graph.get(p).neighbors) {
-        out.add(n);
+    let out = new Set();
+    for (const neighbor of this.graph.get(province).neighbors) {
+      out.add(neighbor);
+
+      for (const neighborOfNeighbor of this.graph.get(neighbor).neighbors) {
+        if (this.byNation.get(nation).has(neighbor)) {
+          out.add(neighborOfNeighbor);
+
+          out = this.addNeighbor(nation, neighborOfNeighbor, out);
+        }
       }
     }
+
     out.delete(province);
 
     return out;
+  }
+
+  addNeighbor(nation, neighbor, out) {
+    for (const neighborOfNeighbor of this.graph.get(neighbor).neighbors) {
+      if (this.byNation.get(nation).has(neighbor)) {
+        out.add(neighborOfNeighbor);
+      }
+    }
+    return out;
+    // this.addNeighbor(nation);
   }
 }
