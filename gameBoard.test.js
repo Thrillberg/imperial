@@ -28,32 +28,45 @@ describe("GameBoard", () => {
     );
   });
 
-  test("railroad rule", () => {
+  describe("railroad rule", () => {
     const gameBoard = new GameBoard({
       nodes: new Map([
         ["1", "a"],
         ["2", "a"],
         ["3", "a"],
         ["4", "b"],
+        ["5", "b"],
       ]),
       edges: [
         ["1", "2"],
         ["2", "3"],
         ["3", "4"],
+        ["4", "5"],
       ],
     });
 
-    expect(gameBoard.neighborsFor({ province: "1", nation: "a" })).toEqual(
-      new Set(["2", "3", "4"])
-    );
-    expect(gameBoard.neighborsFor({ province: "1", nation: "b" })).toEqual(
-      new Set(["2"])
-    );
-    expect(gameBoard.neighborsFor({ province: "3", nation: "a" })).toEqual(
-      new Set(["1", "2", "4"])
-    );
-    expect(gameBoard.neighborsFor({ province: "3", nation: "b" })).toEqual(
-      new Set(["2", "4"])
-    );
+    test("home unit can use railroads", () => {
+      expect(gameBoard.neighborsFor({ province: "1", nation: "a" })).toEqual(
+        new Set(["2", "3", "4"])
+      );
+    });
+
+    test("foreign unit cannot use railroads", () => {
+      expect(gameBoard.neighborsFor({ province: "1", nation: "b" })).toEqual(
+        new Set(["2"])
+      );
+    });
+
+    test("home unit in the middle can go places", () => {
+      expect(gameBoard.neighborsFor({ province: "3", nation: "a" })).toEqual(
+        new Set(["1", "2", "4"])
+      );
+    });
+
+    test("foreign unit in the middle can go fewer places", () => {
+      expect(gameBoard.neighborsFor({ province: "3", nation: "b" })).toEqual(
+        new Set(["2", "4"])
+      );
+    });
   });
 });
