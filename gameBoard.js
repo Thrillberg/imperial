@@ -3,10 +3,11 @@ export default class GameBoard {
     this.graph = new Map();
     this.byNation = new Map();
 
-    for (const [province, nation] of nodes) {
+    for (const { name: province, nation, isOcean } of nodes) {
       this.graph.set(province, {
         nation,
         neighbors: new Set(),
+        isOcean,
       });
       if (!this.byNation.has(nation)) {
         this.byNation.set(nation, new Set());
@@ -19,15 +20,15 @@ export default class GameBoard {
     });
   }
 
-  neighborsFor({ province, nation }) {
+  neighborsFor({ province, nation, isFleet }) {
     if (!this.graph.has(province))
       throw new Error(`province ${province} not found`);
 
     const currentProvince = this.graph.get(province);
+    let out = new Set();
     if (currentProvince.nation !== nation) {
-      return currentProvince.neighbors;
+      out = currentProvince.neighbors;
     } else {
-      const out = new Set();
       const nationProvinces = this.byNation.get(nation);
       for (const nationProvince of nationProvinces) {
         const nationNeighbors = this.graph.get(nationProvince).neighbors;
@@ -36,7 +37,22 @@ export default class GameBoard {
         }
       }
       out.delete(province);
-      return out;
     }
+
+    if (!isFleet) {
+      for (const province of out) {
+        if (this.graph.get(province).isOcean) {
+          out.delete(province);
+        }
+      }
+    } else {
+      for (const province of out) {
+        if (!this.graph.get(province).isOcean) {
+          out.delete(province);
+        }
+      }
+    }
+
+    return out;
   }
 }
