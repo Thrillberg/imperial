@@ -1,5 +1,5 @@
 export default class GameBoard {
-  constructor({ nodes, edges }) {
+  constructor({ nodes, edges, units }) {
     this.graph = new Map();
     this.byNation = new Map();
 
@@ -8,6 +8,7 @@ export default class GameBoard {
         nation,
         neighbors: new Set(),
         isOcean,
+        units,
       });
       if (!this.byNation.has(nation)) {
         this.byNation.set(nation, new Set());
@@ -36,7 +37,16 @@ export default class GameBoard {
           out.add(neighbor);
         }
       }
-      out.delete(province);
+    }
+
+    if (!isFleet) {
+      for (const province of out) {
+        if (this.graph.get(province).isOcean) {
+          for (const neighbor of this.graph.get(province).neighbors) {
+            out.add(neighbor);
+          }
+        }
+      }
     }
 
     for (const province of out) {
@@ -45,6 +55,7 @@ export default class GameBoard {
       }
     }
 
+    out.delete(province);
     return out;
   }
 }

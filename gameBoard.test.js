@@ -97,4 +97,40 @@ describe("GameBoard", () => {
       ).toEqual(new Set());
     });
   });
+
+  describe("convoy", () => {
+    const gameBoard = new GameBoard({
+      nodes: [
+        {
+          name: "1",
+          nation: "a",
+          isOcean: false,
+        },
+        {
+          name: "2",
+          nation: null,
+          isOcean: true,
+          units: { isFleet: true, nation: "a" },
+        },
+        {
+          name: "3",
+          nation: null,
+          isOcean: true,
+          units: { isFleet: true, nation: "a" },
+        },
+        { name: "4", nation: "b", isOcean: false },
+      ],
+      edges: [
+        ["1", "2"],
+        ["2", "3"],
+        ["3", "4"],
+      ],
+    });
+
+    test("army can move across multiple ocean provinces if friendly fleets are there", () => {
+      expect(
+        gameBoard.neighborsFor({ province: "1", nation: "a", isFleet: false })
+      ).toEqual(new Set(["4"]));
+    });
+  });
 });
