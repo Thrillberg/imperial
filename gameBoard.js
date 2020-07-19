@@ -39,17 +39,9 @@ export default class GameBoard {
       out.delete(province);
     }
 
-    if (!isFleet) {
-      for (const province of out) {
-        if (this.graph.get(province).isOcean) {
-          out.delete(province);
-        }
-      }
-    } else {
-      for (const province of out) {
-        if (!this.graph.get(province).isOcean) {
-          out.delete(province);
-        }
+    for (const province of out) {
+      if (isFleet ^ this.graph.get(province).isOcean) {
+        out.delete(province);
       }
     }
 
