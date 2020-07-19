@@ -24,30 +24,23 @@ export default class GameBoard {
       throw new Error(`province ${province} not found`);
 
     let out = new Set();
-    for (const neighbor of this.graph.get(province).neighbors) {
-      out.add(neighbor);
-
-      for (const neighborOfNeighbor of this.graph.get(neighbor).neighbors) {
-        if (this.byNation.get(nation).has(neighbor)) {
-          out.add(neighborOfNeighbor);
-
-          out = this.addNeighbor(nation, neighborOfNeighbor, out);
-        }
-      }
-    }
+    this.addNeighbor(nation, province, out, true);
 
     out.delete(province);
 
     return out;
   }
 
-  addNeighbor(nation, neighbor, out) {
+  addNeighbor(nation, neighbor, out, firstTime) {
     for (const neighborOfNeighbor of this.graph.get(neighbor).neighbors) {
-      if (this.byNation.get(nation).has(neighbor)) {
+      if (
+        (this.byNation.get(nation).has(neighbor) &&
+          !out.has(neighborOfNeighbor)) ||
+        firstTime
+      ) {
         out.add(neighborOfNeighbor);
+        this.addNeighbor(nation, neighborOfNeighbor, out, false);
       }
     }
-    return out;
-    // this.addNeighbor(nation);
   }
 }

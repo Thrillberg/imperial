@@ -28,7 +28,7 @@ describe("GameBoard", () => {
     );
   });
 
-  test.only("railroad rule", () => {
+  test("railroad rule", () => {
     const gameBoard = new GameBoard({
       nodes: new Map([
         ["1", "a"],
