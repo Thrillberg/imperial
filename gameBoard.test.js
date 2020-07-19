@@ -73,8 +73,8 @@ describe("GameBoard", () => {
   describe("fleets", () => {
     const gameBoard = new GameBoard({
       nodes: [
-        { name: "1", nation: "a", isOcean: false },
-        { name: "2", nation: null, isOcean: true },
+        { name: "1", nation: "a", isOcean: false, units: [] },
+        { name: "2", nation: null, isOcean: true, units: [] },
       ],
       edges: [["1", "2"]],
     });
@@ -101,22 +101,18 @@ describe("GameBoard", () => {
   describe("convoy", () => {
     const gameBoard = new GameBoard({
       nodes: [
-        {
-          name: "1",
-          nation: "a",
-          isOcean: false,
-        },
+        { name: "1", nation: "a", isOcean: false },
         {
           name: "2",
           nation: null,
           isOcean: true,
-          units: { isFleet: true, nation: "a" },
+          units: [{ isFleet: true, nation: "a" }],
         },
         {
           name: "3",
           nation: null,
           isOcean: true,
-          units: { isFleet: true, nation: "a" },
+          units: [{ isFleet: true, nation: "a" }],
         },
         { name: "4", nation: "b", isOcean: false },
       ],
@@ -131,6 +127,12 @@ describe("GameBoard", () => {
       expect(
         gameBoard.neighborsFor({ province: "1", nation: "a", isFleet: false })
       ).toEqual(new Set(["4"]));
+    });
+
+    test("army cannot move across ocean in the absence of a friendly fleet", () => {
+      expect(
+        gameBoard.neighborsFor({ province: "1", nation: "b", isFleet: false })
+      ).toEqual(new Set());
     });
   });
 });

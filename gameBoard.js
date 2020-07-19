@@ -1,9 +1,9 @@
 export default class GameBoard {
-  constructor({ nodes, edges, units }) {
+  constructor({ nodes, edges }) {
     this.graph = new Map();
     this.byNation = new Map();
 
-    for (const { name: province, nation, isOcean } of nodes) {
+    for (const { name: province, nation, isOcean, units } of nodes) {
       this.graph.set(province, {
         nation,
         neighbors: new Set(),
@@ -41,7 +41,10 @@ export default class GameBoard {
 
     if (!isFleet) {
       for (const province of out) {
-        if (this.graph.get(province).isOcean) {
+        if (
+          this.graph.get(province).isOcean &&
+          this.graph.get(province).units.find((unit) => unit.nation === nation)
+        ) {
           for (const neighbor of this.graph.get(province).neighbors) {
             out.add(neighbor);
           }
