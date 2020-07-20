@@ -1,4 +1,4 @@
-import { Nation } from "./constants";
+import { Nation } from "./constants.js";
 
 const error = (want) => (x) => {
   throw new Error(`got=${x.value}, want=${want}`);
