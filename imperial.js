@@ -1,6 +1,6 @@
 import { Nation } from "./constants.js";
 import Action from "./action.js";
-import setup from "./setup";
+import setup from "./setup.js";
 
 export default class Imperial {
   static fromLog(log) {
