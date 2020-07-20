@@ -126,6 +126,10 @@ export default ({ players }) => {
       treasury: totalCost,
       rondelPosition: null,
     });
+
+    const AHPlayer = out.nations.get(Nation.AH).controller;
+    const AHPlayerIndex = out.order.indexOf(AHPlayer);
+    out.investorCardHolder = out.order[AHPlayerIndex - 1];
   }
   return out;
 };
