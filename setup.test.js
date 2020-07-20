@@ -1,6 +1,5 @@
 import setup from "./setup";
 import { Nation } from "./constants.js";
-import Action from "./action";
 
 describe("Imperial", () => {
   describe("constructor", () => {
@@ -90,6 +89,10 @@ describe("Imperial", () => {
         );
         expect(actual.nations).toEqual(expected);
       });
+
+      test("investor card holder", () => {
+        expect(actual.investorCardHolder).toEqual("c");
+      });
     });
 
     describe("five players", () => {
@@ -169,6 +172,10 @@ describe("Imperial", () => {
         );
         expect(actual.nations).toEqual(expected);
       });
+
+      test("investor card holder", () => {
+        expect(actual.investorCardHolder).toEqual("a");
+      });
     });
 
     describe("four players", () => {
@@ -238,6 +245,10 @@ describe("Imperial", () => {
           ])
         );
         expect(actual.nations).toEqual(expected);
+      });
+
+      test("investor card holder", () => {
+        expect(actual.investorCardHolder).toEqual("b");
       });
     });
 
@@ -309,6 +320,10 @@ describe("Imperial", () => {
         );
         expect(actual.nations).toEqual(expected);
       });
+
+      test("investor card holder", () => {
+        expect(actual.investorCardHolder).toEqual("b");
+      });
     });
 
     describe("two players", () => {
@@ -370,6 +385,10 @@ describe("Imperial", () => {
           ])
         );
         expect(actual.nations).toEqual(expected);
+      });
+
+      test("investor card holder", () => {
+        expect(actual.investorCardHolder).toEqual("a");
       });
     });
   });
