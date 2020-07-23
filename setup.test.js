@@ -1,5 +1,5 @@
 import setup from "./setup";
-import { Nation } from "./constants.js";
+import { Bond, Nation } from "./constants.js";
 
 describe("Imperial", () => {
   describe("constructor", () => {
@@ -25,50 +25,32 @@ describe("Imperial", () => {
           a: {
             name: "a",
             cash: 2,
-            bonds: [
-              { nation: Nation.RU, cost: 9 },
-              { nation: Nation.FR, cost: 2 },
-            ],
+            bonds: [Bond.get(Nation.RU).get(4), Bond.get(Nation.FR).get(1)],
           },
           b: {
             name: "b",
             cash: 2,
-            bonds: [
-              { nation: Nation.FR, cost: 9 },
-              { nation: Nation.AH, cost: 2 },
-            ],
+            bonds: [Bond.get(Nation.FR).get(4), Bond.get(Nation.AH).get(1)],
           },
           c: {
             name: "c",
             cash: 2,
-            bonds: [
-              { nation: Nation.GB, cost: 9 },
-              { nation: Nation.RU, cost: 2 },
-            ],
+            bonds: [Bond.get(Nation.GB).get(4), Bond.get(Nation.RU).get(1)],
           },
           d: {
             name: "d",
             cash: 2,
-            bonds: [
-              { nation: Nation.AH, cost: 9 },
-              { nation: Nation.GE, cost: 2 },
-            ],
+            bonds: [Bond.get(Nation.AH).get(4), Bond.get(Nation.GE).get(1)],
           },
           e: {
             name: "e",
             cash: 2,
-            bonds: [
-              { nation: Nation.IT, cost: 9 },
-              { nation: Nation.GB, cost: 2 },
-            ],
+            bonds: [Bond.get(Nation.IT).get(4), Bond.get(Nation.GB).get(1)],
           },
           f: {
             name: "f",
             cash: 2,
-            bonds: [
-              { nation: Nation.GE, cost: 9 },
-              { nation: Nation.IT, cost: 2 },
-            ],
+            bonds: [Bond.get(Nation.GE).get(4), Bond.get(Nation.IT).get(1)],
           },
         });
       });
@@ -116,42 +98,27 @@ describe("Imperial", () => {
           a: {
             name: "a",
             cash: 2,
-            bonds: [
-              { nation: Nation.RU, cost: 9 },
-              { nation: Nation.FR, cost: 2 },
-            ],
+            bonds: [Bond.get(Nation.RU).get(4), Bond.get(Nation.FR).get(1)],
           },
           b: {
             name: "b",
             cash: 2,
-            bonds: [
-              { nation: Nation.FR, cost: 9 },
-              { nation: Nation.AH, cost: 2 },
-            ],
+            bonds: [Bond.get(Nation.FR).get(4), Bond.get(Nation.AH).get(1)],
           },
           c: {
             name: "c",
             cash: 2,
-            bonds: [
-              { nation: Nation.GB, cost: 9 },
-              { nation: Nation.RU, cost: 2 },
-            ],
+            bonds: [Bond.get(Nation.GB).get(4), Bond.get(Nation.RU).get(1)],
           },
           d: {
             name: "d",
             cash: 2,
-            bonds: [
-              { nation: Nation.GE, cost: 9 },
-              { nation: Nation.IT, cost: 2 },
-            ],
+            bonds: [Bond.get(Nation.GE).get(4), Bond.get(Nation.IT).get(1)],
           },
           e: {
             name: "e",
             cash: 2,
-            bonds: [
-              { nation: Nation.IT, cost: 9 },
-              { nation: Nation.GB, cost: 2 },
-            ],
+            bonds: [Bond.get(Nation.IT).get(4), Bond.get(Nation.GB).get(1)],
           },
         });
       });
@@ -198,34 +165,22 @@ describe("Imperial", () => {
           a: {
             name: "a",
             cash: 2,
-            bonds: [
-              { nation: Nation.IT, cost: 9 },
-              { nation: Nation.GB, cost: 2 },
-            ],
+            bonds: [Bond.get(Nation.IT).get(4), Bond.get(Nation.GB).get(1)],
           },
           b: {
             name: "b",
             cash: 2,
-            bonds: [
-              { nation: Nation.FR, cost: 9 },
-              { nation: Nation.AH, cost: 2 },
-            ],
+            bonds: [Bond.get(Nation.FR).get(4), Bond.get(Nation.AH).get(1)],
           },
           c: {
             name: "c",
             cash: 2,
-            bonds: [
-              { nation: Nation.AH, cost: 9 },
-              { nation: Nation.GE, cost: 2 },
-            ],
+            bonds: [Bond.get(Nation.AH).get(4), Bond.get(Nation.GE).get(1)],
           },
           d: {
             name: "d",
             cash: 2,
-            bonds: [
-              { nation: Nation.GE, cost: 9 },
-              { nation: Nation.IT, cost: 2 },
-            ],
+            bonds: [Bond.get(Nation.GE).get(4), Bond.get(Nation.IT).get(1)],
           },
         });
       });
@@ -272,30 +227,30 @@ describe("Imperial", () => {
             name: "a",
             cash: 2,
             bonds: [
-              { nation: Nation.IT, cost: 9 },
-              { nation: Nation.GB, cost: 2 },
-              { nation: Nation.RU, cost: 9 },
-              { nation: Nation.FR, cost: 2 },
+              Bond.get(Nation.IT).get(4),
+              Bond.get(Nation.GB).get(1),
+              Bond.get(Nation.RU).get(4),
+              Bond.get(Nation.FR).get(1),
             ],
           },
           b: {
             name: "b",
             cash: 2,
             bonds: [
-              { nation: Nation.FR, cost: 9 },
-              { nation: Nation.AH, cost: 2 },
-              { nation: Nation.GE, cost: 9 },
-              { nation: Nation.IT, cost: 2 },
+              Bond.get(Nation.FR).get(4),
+              Bond.get(Nation.AH).get(1),
+              Bond.get(Nation.GE).get(4),
+              Bond.get(Nation.IT).get(1),
             ],
           },
           c: {
             name: "c",
             cash: 2,
             bonds: [
-              { nation: Nation.AH, cost: 9 },
-              { nation: Nation.GE, cost: 2 },
-              { nation: Nation.GB, cost: 9 },
-              { nation: Nation.RU, cost: 2 },
+              Bond.get(Nation.AH).get(4),
+              Bond.get(Nation.GE).get(1),
+              Bond.get(Nation.GB).get(4),
+              Bond.get(Nation.RU).get(1),
             ],
           },
         });
@@ -345,24 +300,24 @@ describe("Imperial", () => {
             name: "a",
             cash: 2,
             bonds: [
-              { nation: Nation.IT, cost: 9 },
-              { nation: Nation.GB, cost: 2 },
-              { nation: Nation.RU, cost: 9 },
-              { nation: Nation.FR, cost: 2 },
-              { nation: Nation.GB, cost: 9 },
-              { nation: Nation.RU, cost: 2 },
+              Bond.get(Nation.IT).get(4),
+              Bond.get(Nation.GB).get(1),
+              Bond.get(Nation.RU).get(4),
+              Bond.get(Nation.FR).get(1),
+              Bond.get(Nation.GB).get(4),
+              Bond.get(Nation.RU).get(1),
             ],
           },
           b: {
             name: "b",
             cash: 2,
             bonds: [
-              { nation: Nation.AH, cost: 9 },
-              { nation: Nation.GE, cost: 2 },
-              { nation: Nation.FR, cost: 9 },
-              { nation: Nation.AH, cost: 2 },
-              { nation: Nation.GE, cost: 9 },
-              { nation: Nation.IT, cost: 2 },
+              Bond.get(Nation.AH).get(4),
+              Bond.get(Nation.GE).get(1),
+              Bond.get(Nation.FR).get(4),
+              Bond.get(Nation.AH).get(1),
+              Bond.get(Nation.GE).get(4),
+              Bond.get(Nation.IT).get(1),
             ],
           },
         });

@@ -1,4 +1,4 @@
-import { Nation } from "./constants.js";
+import { Bond, Nation } from "./constants.js";
 
 const error = (want) => (x) => {
   throw new Error(`got=${x.value}, want=${want}`);
@@ -57,21 +57,19 @@ export default ({ players }) => {
     .map(nationAssignments[players.length])
     .flat()
     .forEach(({ id, nation }) => {
+      const smallerBondNation = nation.when({
+        GE: () => Nation.IT,
+        RU: () => Nation.FR,
+        AH: () => Nation.GE,
+        IT: () => Nation.GB,
+        FR: () => Nation.AH,
+        GB: () => Nation.RU,
+      });
       out.players[id] = {
         name: id,
         bonds: (out.players[id] || { bonds: [] }).bonds.concat([
-          { nation: nation, cost: 9 },
-          {
-            nation: nation.when({
-              GE: () => Nation.IT,
-              RU: () => Nation.FR,
-              AH: () => Nation.GE,
-              IT: () => Nation.GB,
-              FR: () => Nation.AH,
-              GB: () => Nation.RU,
-            }),
-            cost: 2,
-          },
+          Bond.get(nation).get(4),
+          Bond.get(smallerBondNation).get(1),
         ]),
         cash: 2,
       };
@@ -79,20 +77,14 @@ export default ({ players }) => {
 
   /* Gather bonds as a list of
    *
-   *   { nation : Nation , cost : number , owner : Player }
+   *   { nation : Nation , cost : number , number : number }
    *
    * so we can filter by nation, use the cost in our
-   * calculation of each nation's treasury, and set the
+   * calculation of each nation's treasury, and calculate the
    * controlling player.
    */
   const bonds = Object.getOwnPropertyNames(out.players)
-    .map((id) =>
-      out.players[id].bonds.map(({ nation, cost }) => ({
-        nation,
-        cost,
-        owner: id,
-      }))
-    )
+    .map((id) => out.players[id].bonds)
     .flat();
 
   /* Calculate treasury and controller for each nation */
@@ -117,12 +109,16 @@ export default ({ players }) => {
      * the highest cost bond, or null if there are no
      * bonds.
      */
-    const highestBond = forNation[0] || { owner: null };
+    const highestBond = forNation[0];
+    const maybeController = Object.entries(out.players).find(([id, player]) =>
+      player.bonds.includes(highestBond)
+    );
+    const controller = maybeController ? maybeController[0] : null;
 
     const totalCost = forNation.reduce((sum, { cost }) => sum + cost, 0);
 
     out.nations.set(n, {
-      controller: highestBond.owner,
+      controller,
       treasury: totalCost,
       rondelPosition: null,
     });
