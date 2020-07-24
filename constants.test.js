@@ -2,8 +2,8 @@ import { Bond, Nation } from "./constants";
 
 describe("Bond", () => {
   test("strict equality", () => {
-    const a = Bond({ nation: Nation.AH, number: 2 });
-    const b = Bond({ nation: Nation.AH, number: 2 });
+    const a = Bond(Nation.AH, 2);
+    const b = Bond(Nation.AH, 2);
 
     expect(a).toBe(b);
   });
@@ -21,7 +21,7 @@ describe("Bond", () => {
       { number: 9, cost: 30 },
     ].forEach(({ number, cost }) => {
       test(`#${number} bond`, () => {
-        expect(Bond({ nation: Nation.FR, number })).toStrictEqual({
+        expect(Bond(Nation.FR, number)).toStrictEqual({
           nation: Nation.FR,
           number,
           cost,
