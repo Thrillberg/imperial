@@ -19,5 +19,15 @@ export const Bond = memoize((nation, number) => ({
   number,
   cost: cost[number],
 }));
+export const AllBonds = () =>
+  new Set(
+    ["AH", "IT", "FR", "GB", "GE", "RU"]
+      .map((nation) =>
+        Object.keys(cost).map((number) =>
+          Bond(Nation[nation], parseInt(number))
+        )
+      )
+      .flat()
+  );
 
 export { Nation };
