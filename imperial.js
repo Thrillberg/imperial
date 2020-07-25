@@ -1,4 +1,4 @@
-import { Nation } from "./constants.js";
+import { Nation, Bond } from "./constants.js";
 import Action from "./action.js";
 import setup from "./setup.js";
 
@@ -195,7 +195,8 @@ export default class Imperial {
   seatPlayers(action) {
     this.order = action.payload.order;
     action.payload.order.forEach(
-      (player) => (this.players[player] = { name: player, cash: 13, bonds: [] })
+      (player) =>
+        (this.players[player] = { name: player, cash: 13, bonds: new Set() })
     );
   }
 
@@ -211,27 +212,41 @@ export default class Imperial {
   }
 
   purchaseBond(action) {
+    const uncost = {
+      2: 1,
+      4: 2,
+      6: 3,
+      9: 4,
+      12: 5,
+      16: 6,
+      20: 7,
+      25: 8,
+      30: 9,
+    };
+    const bonds = this.players[action.payload.player].bonds;
     if (action.payload.cost > this.players[action.payload.player].cash) {
-      const bondToTrade = this.players[action.payload.player].bonds.filter(
-        (bond) => bond.nation === action.payload.nation
-      )[0];
-      const bondIndex = this.players[action.payload.player].bonds.indexOf(
-        bondToTrade
-      );
+      const tradeIn = [...bonds]
+        .filter(({ nation }) => nation === action.payload.nation)
+        .map(({ cost }) => cost)[0];
+      if (tradeIn === undefined) {
+        throw new Error(
+          `${action.payload.player} does not have any bonds to trade for ${action.payload.nation}`
+        );
+      }
+      const bondToTrade = Bond(action.payload.nation, uncost[tradeIn]);
       const netCost = action.payload.cost - bondToTrade.cost;
       this.nations.get(action.payload.nation).treasury += netCost;
       this.players[action.payload.player].cash -= netCost;
-      this.players[action.payload.player].bonds.splice(bondIndex, 1);
+      this.players[action.payload.player].bonds.delete(bondToTrade);
     } else {
       this.nations.get(action.payload.nation).treasury += action.payload.cost;
       this.players[action.payload.player].cash -= action.payload.cost;
     }
-    this.players[action.payload.player].bonds.push({
-      nation: action.payload.nation,
-      cost: action.payload.cost,
-    });
 
-    const totalInvestmentInNation = this.players[action.payload.player].bonds
+    const newBond = Bond(action.payload.nation, uncost[action.payload.cost]);
+    this.players[action.payload.player].bonds.add(newBond);
+
+    const totalInvestmentInNation = [...bonds]
       .filter((bond) => bond.nation === action.payload.nation)
       .reduce((x, y) => x + y.cost, 0);
     if (totalInvestmentInNation >= 6) {
@@ -271,8 +286,8 @@ export default class Imperial {
     if (action.payload.slot === "investor") {
       this.players[this.investorCardHolder].cash += 2;
       for (var player of Object.keys(this.players)) {
-        if (this.players[player].bonds.length > 0) {
-          this.players[player].bonds.forEach((bond) => {
+        if (this.players[player].bonds.size > 0) {
+          for (const bond of this.players[player].bonds) {
             if (bond.nation === action.payload.nation) {
               if (bond.cost === 9) {
                 this.players[player].cash += 4;
@@ -282,7 +297,7 @@ export default class Imperial {
                 this.nations.get(action.payload.nation).treasury -= 1;
               }
             }
-          });
+          }
         }
       }
     } else if (

@@ -1,4 +1,4 @@
-import { Nation } from "./constants";
+import { Nation, Bond } from "./constants";
 import Action from "./action";
 import Imperial from "./imperial";
 import mainLog from "./schnelleinsteigLog";
@@ -1278,11 +1278,13 @@ describe("Schnelleinsteig", () => {
           test("Claudia has the #3 AH bond", () => {
             const bonds = game.players["Claudia"].bonds;
 
-            expect(bonds).toEqual([
-              { nation: Nation.AH, cost: 2 },
-              { nation: Nation.FR, cost: 9 },
-              { nation: Nation.AH, cost: 6 },
-            ]);
+            expect(bonds).toEqual(
+              new Set([
+                Bond(Nation.AH, 1),
+                Bond(Nation.FR, 4),
+                Bond(Nation.AH, 3),
+              ])
+            );
           });
         });
 
@@ -1632,11 +1634,11 @@ describe("Schnelleinsteig", () => {
               cost: 9,
             })
           );
-          const expectedBonds = [
-            { nation: Nation.FR, cost: 2 },
-            { nation: Nation.RU, cost: 9 },
-            { nation: Nation.GE, cost: 9 },
-          ];
+          const expectedBonds = new Set([
+            Bond(Nation.FR, 1),
+            Bond(Nation.RU, 4),
+            Bond(Nation.GE, 4),
+          ]);
 
           expect(game.players["Daniel"].bonds).toEqual(expectedBonds);
         });
