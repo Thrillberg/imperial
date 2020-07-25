@@ -432,14 +432,14 @@ describe("Imperial", () => {
     describe("two players", () => {
       const payload = {
         players: [
-          { id: "a", nation: Nation.IT },
           { id: "b", nation: Nation.AH },
+          { id: "a", nation: Nation.IT },
         ],
       };
       const actual = setup(payload);
 
       test("seating order", () => {
-        expect(actual.order).toEqual(["a", "b"]);
+        expect(actual.order).toEqual(["b", "a"]);
       });
 
       test("bond assignments", () => {

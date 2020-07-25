@@ -34,7 +34,10 @@ const makeAction = (type, payloadKeys) => {
   return (obj) => memoized(...payloadKeys.map((k) => obj[k]));
 };
 
+const noop = Object.freeze({ type: "noop" });
+
 export default {
+  noop,
   initialize: makeAction("initialize", ["players"]),
   assignStartingNation: makeAction("assignStartingNation", [
     "nation",

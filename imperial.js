@@ -129,11 +129,15 @@ export default class Imperial {
   }
 
   tick(action) {
-    if (action.type === "initialize") {
-      const { players, order, nations } = setup(action.payload);
-      this.players = players;
-      this.order = order;
-      this.nations = nations;
+    if (action.type === "noop") {
+      return;
+    } else if (action.type === "initialize") {
+      const s = setup(action.payload);
+      this.availableBonds = s.availableBonds;
+      this.investorCardHolder = s.investorCardHolder;
+      this.nations = s.nations;
+      this.order = s.order;
+      this.players = s.players;
       return;
     } else if (action.type === "playerSeating") {
       this.seatPlayers(action);
@@ -236,6 +240,7 @@ export default class Imperial {
       const bondToTrade = Bond(action.payload.nation, uncost[tradeIn]);
       const netCost = action.payload.cost - bondToTrade.cost;
       this.nations.get(action.payload.nation).treasury += netCost;
+      this.availableBonds.add(bondToTrade);
       this.players[action.payload.player].cash -= netCost;
       this.players[action.payload.player].bonds.delete(bondToTrade);
     } else {
@@ -244,7 +249,11 @@ export default class Imperial {
     }
 
     const newBond = Bond(action.payload.nation, uncost[action.payload.cost]);
+    if (!this.availableBonds.has(newBond)) {
+      throw new Error(`${bond} not available`);
+    }
     this.players[action.payload.player].bonds.add(newBond);
+    this.availableBonds.delete(newBond);
 
     const totalInvestmentInNation = [...bonds]
       .filter((bond) => bond.nation === action.payload.nation)
@@ -375,7 +384,7 @@ export default class Imperial {
       this.previousRondelPosition(lastMove.payload.nation) === "maneuver1";
 
     if (lastMoveSkippedInvestorSlot) {
-      return [
+      return new Set([
         Action.bondPurchase({ nation: Nation.AH, player: "Claudia", cost: 4 }),
         Action.bondPurchase({ nation: Nation.AH, player: "Claudia", cost: 6 }),
         Action.bondPurchase({ nation: Nation.IT, player: "Claudia", cost: 2 }),
@@ -387,38 +396,30 @@ export default class Imperial {
         Action.bondPurchase({ nation: Nation.GB, player: "Claudia", cost: 6 }),
         Action.bondPurchase({ nation: Nation.GE, player: "Claudia", cost: 2 }),
         Action.bondPurchase({ nation: Nation.RU, player: "Claudia", cost: 4 }),
-      ];
+      ]);
     } else if (this.lastMoveWasInvestor(lastMove)) {
-      const purchasedBonds = new Set(
-        this.toBonds(
-          this.log.filter((action) => action.type === "bondPurchase")
-        ).map(({ nation, cost }) => `${nation}|${cost}`)
+      return new Set(
+        [...this.availableBonds]
+          .filter((bond) => {
+            const player = this.investorCardHolder;
+            const exchangeableBondCosts = this.getBonds(player)
+              .filter((exchangeableBond) => {
+                return exchangeableBond.nation === bond.nation;
+              })
+              .map((x) => x.cost);
+            const topBondCost = Math.max(exchangeableBondCosts);
+            return bond.cost <= this.players[player].cash + topBondCost;
+          })
+          .map((bond) => {
+            return Action.bondPurchase({
+              nation: bond.nation,
+              player: this.investorCardHolder,
+              cost: bond.cost,
+            });
+          })
       );
-
-      const allRemainingBonds = this.allBonds().filter(({ nation, cost }) => {
-        return !purchasedBonds.has(`${nation}|${cost}`);
-      });
-
-      return allRemainingBonds
-        .filter((bond) => {
-          const player = this.investorCardHolder;
-          const exchangeableBondCosts = this.getBonds(player)
-            .filter((exchangeableBond) => {
-              return exchangeableBond.nation === bond.nation;
-            })
-            .map((x) => x.cost);
-          const topBondCost = Math.max(exchangeableBondCosts);
-          return bond.cost <= this.players[player].cash + topBondCost;
-        })
-        .map((bond) => {
-          return Action.bondPurchase({
-            nation: bond.nation,
-            player: this.investorCardHolder,
-            cost: bond.cost,
-          });
-        });
     } else if (this.lastMoveWasTaxation(lastMove)) {
-      return this.rondelActions(this.getNation(this.log));
+      return new Set(this.rondelActions(this.getNation(this.log)));
     } else if (this.lastMoveWasRondelManeuver(lastMove)) {
       switch (lastMove.payload.nation) {
         case Nation.FR:
@@ -438,7 +439,7 @@ export default class Imperial {
               Action.maneuver({ origin: "paris", destination: province })
             );
           });
-          return [
+          return new Set([
             Action.maneuver({
               origin: "bordeaux",
               destination: "bay of biscay",
@@ -448,9 +449,9 @@ export default class Imperial {
               destination: "western mediterranean sea",
             }),
             ...parisActions,
-          ];
+          ]);
         case Nation.GB:
-          return [
+          return new Set([
             Action.maneuver({
               origin: "liverpool",
               destination: "north atlantic",
@@ -459,9 +460,9 @@ export default class Imperial {
               origin: "london",
               destination: "english channel",
             }),
-          ];
+          ]);
         case Nation.GE:
-          return [
+          return new Set([
             Action.maneuver({ origin: "hamburg", destination: "north sea" }),
             Action.maneuver({ origin: "berlin", destination: "danzig" }),
             Action.maneuver({ origin: "berlin", destination: "prague" }),
@@ -476,15 +477,17 @@ export default class Imperial {
             Action.maneuver({ origin: "berlin", destination: "sheffield" }),
             Action.maneuver({ origin: "berlin", destination: "edinburgh" }),
             Action.maneuver({ origin: "berlin", destination: "norway" }),
-          ];
+          ]);
         case Nation.AH:
-          return this.unitLocations(Nation.AH)
-            .map((origin) => {
-              return this.possibleDestinations(origin).map((destination) => {
-                return Action.maneuver({ origin, destination });
-              });
-            })
-            .reduce((acc, val) => acc.concat(val), []);
+          return new Set(
+            this.unitLocations(Nation.AH)
+              .map((origin) => {
+                return this.possibleDestinations(origin).map((destination) => {
+                  return Action.maneuver({ origin, destination });
+                });
+              })
+              .reduce((acc, val) => acc.concat(val), [])
+          );
         case Nation.IT:
           const ITLandDestinations = [
             "naples",
@@ -504,13 +507,13 @@ export default class Imperial {
               Action.maneuver({ origin: "rome", destination: province })
             );
           });
-          return [
+          return new Set([
             Action.maneuver({
               origin: "naples",
               destination: "western mediterranean sea",
             }),
             ...romeActions,
-          ];
+          ]);
         case Nation.RU:
           const RULandDestinations = [
             "warsaw",
@@ -534,7 +537,7 @@ export default class Imperial {
               Action.maneuver({ origin: "moscow", destination: province })
             );
           });
-          return [
+          return new Set([
             Action.maneuver({
               origin: "st. petersburg",
               destination: "baltic sea",
@@ -544,17 +547,17 @@ export default class Imperial {
               destination: "black sea",
             }),
             ...moscowActions,
-          ];
+          ]);
       }
     } else if (lastMove.type === "rondel") {
       if (lastMove.payload.slot === "factory") {
-        return this.buildFactoryAction(lastMove.payload.nation);
+        return new Set(this.buildFactoryAction(lastMove.payload.nation));
       } else if (lastMove.payload.slot === "import") {
-        return this.importAction(lastMove.payload.nation);
+        return new Set(this.importAction(lastMove.payload.nation));
       }
     } else if (lastMove.type === "maneuver") {
       if (this.startedConflict(lastMove)) {
-        return [
+        return new Set([
           Action.coexist({
             province: "western mediterranean sea",
             incumbent: Nation.IT,
@@ -566,9 +569,9 @@ export default class Imperial {
             challenger: Nation.FR,
           }),
           ,
-        ];
+        ]);
       } else {
-        return this.rondelActions(this.getNation(this.log));
+        return new Set(this.rondelActions(this.getNation(this.log)));
       }
     }
   }
@@ -1046,43 +1049,7 @@ export default class Imperial {
   }
 
   getBonds(player) {
-    const bondPurchases = this.log
-      .map((action, index) => {
-        if (
-          action.type === "bondPurchase" &&
-          action.payload.player === player
-        ) {
-          return { action, index };
-        } else {
-          return null;
-        }
-      })
-      .filter(Boolean);
-
-    let bondsToBeRemoved = [];
-    let bonds = [];
-    bondPurchases.map((purchase, index) => {
-      const cashAtTimeOfPurchase = this.getNaiveCash(
-        player,
-        this.log.slice(0, purchase.index)
-      );
-
-      if (cashAtTimeOfPurchase >= purchase.action.payload.cost) {
-        bonds.push(purchase);
-      } else {
-        bonds.push(purchase);
-        bondsToBeRemoved.push(index - 1);
-      }
-    });
-    bondsToBeRemoved.forEach((index) => {
-      bonds.splice(index, 1);
-    });
-    return bonds.map((bond) => {
-      return {
-        nation: bond.action.payload.nation,
-        cost: bond.action.payload.cost,
-      };
-    });
+    return [...this.players[player].bonds];
   }
 
   previousRondelPosition(nation) {

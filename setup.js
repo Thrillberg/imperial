@@ -136,7 +136,11 @@ export default ({ players }) => {
 
     const AHPlayer = out.nations.get(Nation.AH).controller;
     const AHPlayerIndex = out.order.indexOf(AHPlayer);
-    out.investorCardHolder = out.order[AHPlayerIndex - 1];
+    if (AHPlayerIndex === 0) {
+      out.investorCardHolder = out.order[out.order.length - 1];
+    } else {
+      out.investorCardHolder = out.order[AHPlayerIndex - 1];
+    }
   }
   return out;
 };

@@ -16,147 +16,63 @@ const rondelSlots = [
 
 describe("Schnelleinsteig", () => {
   describe("setup for four players", () => {
-    test("All players receive 13 million", () => {
-      const log = [
-        Action.playerSeating({ order: ["Daniel", "Claudia", "Bert", "Anton"] }),
-      ];
-      ["Daniel", "Claudia", "Bert", "Anton"].forEach((player) => {
-        const cash = Imperial.fromLog(log).players[player].cash;
-        expect(cash).toEqual(13);
+    const game = Imperial.fromLog(mainLog.slice(0, 1));
+
+    test("players", () => {
+      expect(game.players).toEqual({
+        Daniel: {
+          name: "Daniel",
+          bonds: new Set([Bond(Nation.RU, 4), Bond(Nation.FR, 1)]),
+          cash: 2,
+        },
+        Claudia: {
+          name: "Claudia",
+          bonds: new Set([Bond(Nation.FR, 4), Bond(Nation.AH, 1)]),
+          cash: 2,
+        },
+        Bert: {
+          name: "Bert",
+          bonds: new Set([Bond(Nation.GB, 4), Bond(Nation.RU, 1)]),
+          cash: 2,
+        },
+        Anton: {
+          name: "Anton",
+          bonds: new Set([Bond(Nation.IT, 4), Bond(Nation.GB, 1)]),
+          cash: 2,
+        },
       });
     });
 
-    test("players are assigned their starting nations", () => {
-      const log = mainLog.slice(0, 1);
-      log.push(
-        Action.assignStartingNation({ nation: Nation.RU, player: "Daniel" }),
-        Action.assignStartingNation({ nation: Nation.FR, player: "Claudia" }),
-        Action.assignStartingNation({ nation: Nation.GB, player: "Bert" }),
-        Action.assignStartingNation({ nation: Nation.IT, player: "Anton" })
-      );
-      const game = Imperial.fromLog(log);
-      const russiaController = game.nations.get(Nation.RU).controller;
-      const franceController = game.nations.get(Nation.FR).controller;
-      const englandController = game.nations.get(Nation.GB).controller;
-      const italyController = game.nations.get(Nation.IT).controller;
-
-      expect(russiaController).toEqual("Daniel");
-      expect(franceController).toEqual("Claudia");
-      expect(englandController).toEqual("Bert");
-      expect(italyController).toEqual("Anton");
+    test("order", () => {
+      expect(game.order).toEqual(["Daniel", "Claudia", "Bert", "Anton"]);
     });
 
-    test("Claudia buys a 2 million AH bond", () => {
-      const log = mainLog.slice(0, 5);
-      log.push(
-        Action.bondPurchase({ nation: Nation.AH, player: "Claudia", cost: 2 })
+    test("nations", () => {
+      expect(game.nations).toEqual(
+        new Map([
+          [
+            Nation.AH,
+            { controller: "Claudia", rondelPosition: null, treasury: 2 },
+          ],
+          [
+            Nation.FR,
+            { controller: "Claudia", rondelPosition: null, treasury: 11 },
+          ],
+          [
+            Nation.GB,
+            { controller: "Bert", rondelPosition: null, treasury: 11 },
+          ],
+          [Nation.GE, { controller: null, rondelPosition: null, treasury: 0 }],
+          [
+            Nation.IT,
+            { controller: "Anton", rondelPosition: null, treasury: 9 },
+          ],
+          [
+            Nation.RU,
+            { controller: "Daniel", rondelPosition: null, treasury: 11 },
+          ],
+        ])
       );
-      const game = Imperial.fromLog(log);
-      const cash = game.players["Claudia"].cash;
-      const treasury = game.nations.get(Nation.AH).treasury;
-
-      expect(cash).toEqual(11);
-      expect(treasury).toEqual(2);
-    });
-
-    test("Anton buys a 9 million IT bond", () => {
-      const log = mainLog.slice(0, 6);
-      log.push(
-        Action.bondPurchase({ nation: Nation.IT, player: "Anton", cost: 9 })
-      );
-      const game = Imperial.fromLog(log);
-      const cash = game.players["Anton"].cash;
-      const treasury = game.nations.get(Nation.IT).treasury;
-
-      expect(cash).toEqual(4);
-      expect(treasury).toEqual(9);
-    });
-
-    test("Claudia buys a 9 million FR bond", () => {
-      const log = mainLog.slice(0, 7);
-      log.push(
-        Action.bondPurchase({ nation: Nation.FR, player: "Claudia", cost: 9 })
-      );
-      const game = Imperial.fromLog(log);
-      const cash = game.players["Claudia"].cash;
-      const treasury = game.nations.get(Nation.FR).treasury;
-
-      expect(cash).toEqual(2);
-      expect(treasury).toEqual(9);
-    });
-
-    test("Daniel buys a 2 million FR bond", () => {
-      const log = mainLog.slice(0, 8);
-      log.push(
-        Action.bondPurchase({ nation: Nation.FR, player: "Daniel", cost: 2 })
-      );
-      const game = Imperial.fromLog(log);
-      const cash = game.players["Daniel"].cash;
-      const treasury = game.nations.get(Nation.FR).treasury;
-
-      expect(cash).toEqual(11);
-      expect(treasury).toEqual(11);
-    });
-
-    test("Anton buys a 2 million GB bond", () => {
-      const log = mainLog.slice(0, 9);
-      log.push(
-        Action.bondPurchase({ nation: Nation.GB, player: "Anton", cost: 2 })
-      );
-      const game = Imperial.fromLog(log);
-      const cash = game.players["Anton"].cash;
-      const treasury = game.nations.get(Nation.GB).treasury;
-
-      expect(cash).toEqual(2);
-      expect(treasury).toEqual(2);
-    });
-
-    test("Bert buys a 9 million GB bond", () => {
-      const log = mainLog.slice(0, 10);
-      log.push(
-        Action.bondPurchase({ nation: Nation.GB, player: "Bert", cost: 9 })
-      );
-      const game = Imperial.fromLog(log);
-      const cash = game.players["Bert"].cash;
-      const treasury = game.nations.get(Nation.GB).treasury;
-
-      expect(cash).toEqual(4);
-      expect(treasury).toEqual(11);
-    });
-
-    test("Bert buys a 2 million RU bond", () => {
-      const log = mainLog.slice(0, 11);
-      log.push(
-        Action.bondPurchase({ nation: Nation.RU, player: "Bert", cost: 2 })
-      );
-      const game = Imperial.fromLog(log);
-      const cash = game.players["Bert"].cash;
-      const treasury = game.nations.get(Nation.RU).treasury;
-
-      expect(cash).toEqual(2);
-      expect(treasury).toEqual(2);
-    });
-
-    test("Daniel buys a 9 million RU bond", () => {
-      const log = mainLog.slice(0, 12);
-      log.push(
-        Action.bondPurchase({ nation: Nation.RU, player: "Daniel", cost: 9 })
-      );
-      const game = Imperial.fromLog(log);
-      const cash = game.players["Daniel"].cash;
-      const treasury = game.nations.get(Nation.RU).treasury;
-
-      expect(cash).toEqual(2);
-      expect(treasury).toEqual(11);
-    });
-
-    test("Claudia is the first player to take a turn", () => {
-      const log = mainLog.slice(0, 13);
-      log.push(Action.startFirstRound());
-      const game = Imperial.fromLog(log);
-      const currentPlayerName = game.currentPlayerName;
-
-      expect(currentPlayerName).toEqual("Claudia");
     });
   });
 
@@ -248,7 +164,7 @@ describe("Schnelleinsteig", () => {
           Action.rondel({ nation: Nation.IT, cost: 0, slot: "investor" })
         );
         const game = Imperial.fromLog(log);
-        const expectedActions = [
+        const expectedActions = new Set([
           Action.bondPurchase({ nation: Nation.AH, player: "Daniel", cost: 4 }),
           Action.bondPurchase({ nation: Nation.IT, player: "Daniel", cost: 2 }),
           Action.bondPurchase({ nation: Nation.IT, player: "Daniel", cost: 4 }),
@@ -264,7 +180,7 @@ describe("Schnelleinsteig", () => {
             player: "Daniel",
             cost: 12,
           }),
-        ];
+        ]);
 
         expect(game.availableActions).toEqual(expectedActions);
       });
@@ -494,7 +410,7 @@ describe("Schnelleinsteig", () => {
           Action.rondel({ nation: Nation.RU, cost: 0, slot: "investor" })
         );
         const game = Imperial.fromLog(log);
-        const expectedActions = [
+        const expectedActions = new Set([
           Action.bondPurchase({ nation: Nation.AH, player: "Anton", cost: 4 }),
           Action.bondPurchase({ nation: Nation.AH, player: "Anton", cost: 6 }),
           Action.bondPurchase({ nation: Nation.IT, player: "Anton", cost: 2 }),
@@ -510,7 +426,7 @@ describe("Schnelleinsteig", () => {
           Action.bondPurchase({ nation: Nation.GE, player: "Anton", cost: 6 }),
           Action.bondPurchase({ nation: Nation.RU, player: "Anton", cost: 4 }),
           Action.bondPurchase({ nation: Nation.RU, player: "Anton", cost: 6 }),
-        ];
+        ]);
 
         expect(game.availableActions).toEqual(expectedActions);
       });
@@ -644,13 +560,13 @@ describe("Schnelleinsteig", () => {
       );
 
       test("GB's available actions are to move liverpool and london units", () => {
-        const availableActions = [
+        const availableActions = new Set([
           Action.maneuver({
             origin: "liverpool",
             destination: "north atlantic",
           }),
           Action.maneuver({ origin: "london", destination: "english channel" }),
-        ];
+        ]);
 
         expect(game.availableActions).toEqual(availableActions);
       });
@@ -681,7 +597,7 @@ describe("Schnelleinsteig", () => {
       );
 
       test("GE's available actions are to move hamburg and berlin units", () => {
-        const availableActions = [
+        const availableActions = new Set([
           Action.maneuver({ origin: "hamburg", destination: "north sea" }),
           Action.maneuver({ origin: "berlin", destination: "danzig" }),
           Action.maneuver({ origin: "berlin", destination: "prague" }),
@@ -696,7 +612,7 @@ describe("Schnelleinsteig", () => {
           Action.maneuver({ origin: "berlin", destination: "sheffield" }),
           Action.maneuver({ origin: "berlin", destination: "edinburgh" }),
           Action.maneuver({ origin: "berlin", destination: "norway" }),
-        ];
+        ]);
 
         expect(game.availableActions).toEqual(availableActions);
       });
@@ -798,12 +714,12 @@ describe("Schnelleinsteig", () => {
           );
         });
 
-        const availableActions = [
+        const availableActions = new Set([
           ...lembergActions,
           Action.maneuver({ origin: "trieste", destination: "ionian sea" }),
           ...viennaActions,
           ...budapestActions,
-        ];
+        ]);
         expect(game.availableActions).toEqual(availableActions);
       });
 
@@ -858,13 +774,13 @@ describe("Schnelleinsteig", () => {
           );
         });
 
-        const availableActions = [
+        const availableActions = new Set([
           Action.maneuver({
             origin: "naples",
             destination: "western mediterranean sea",
           }),
           ...romeActions,
-        ];
+        ]);
         expect(game.availableActions).toEqual(availableActions);
       });
 
@@ -910,7 +826,7 @@ describe("Schnelleinsteig", () => {
             Action.maneuver({ origin: "paris", destination: province })
           );
         });
-        const availableActions = [
+        const availableActions = new Set([
           Action.maneuver({
             origin: "bordeaux",
             destination: "bay of biscay",
@@ -920,7 +836,7 @@ describe("Schnelleinsteig", () => {
             destination: "western mediterranean sea",
           }),
           ...parisActions,
-        ];
+        ]);
 
         expect(game.availableActions).toEqual(availableActions);
       });
@@ -946,7 +862,7 @@ describe("Schnelleinsteig", () => {
           ,
         ];
 
-        expect(game.availableActions).toEqual(expectedActions);
+        expect(game.availableActions).toEqual(new Set(expectedActions));
       });
 
       test("IT chooses to fight so both fleets get removed", () => {
@@ -1037,7 +953,7 @@ describe("Schnelleinsteig", () => {
           Action.bondPurchase({ nation: Nation.RU, player: "Bert", cost: 6 }),
         ];
 
-        expect(game.availableActions).toEqual(expectedActions);
+        expect(game.availableActions).toEqual(new Set(expectedActions));
       });
 
       describe("Investor-card holder (Bert) buys the 6 million bond of RU", () => {
