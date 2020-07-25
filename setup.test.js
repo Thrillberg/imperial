@@ -1,5 +1,5 @@
 import setup from "./setup";
-import { Nation } from "./constants.js";
+import { AllBonds, Bond, Nation } from "./constants.js";
 
 describe("Imperial", () => {
   describe("constructor", () => {
@@ -25,50 +25,32 @@ describe("Imperial", () => {
           a: {
             name: "a",
             cash: 2,
-            bonds: [
-              { nation: Nation.RU, cost: 9 },
-              { nation: Nation.FR, cost: 2 },
-            ],
+            bonds: [Bond(Nation.RU, 4), Bond(Nation.FR, 1)],
           },
           b: {
             name: "b",
             cash: 2,
-            bonds: [
-              { nation: Nation.FR, cost: 9 },
-              { nation: Nation.AH, cost: 2 },
-            ],
+            bonds: [Bond(Nation.FR, 4), Bond(Nation.AH, 1)],
           },
           c: {
             name: "c",
             cash: 2,
-            bonds: [
-              { nation: Nation.GB, cost: 9 },
-              { nation: Nation.RU, cost: 2 },
-            ],
+            bonds: [Bond(Nation.GB, 4), Bond(Nation.RU, 1)],
           },
           d: {
             name: "d",
             cash: 2,
-            bonds: [
-              { nation: Nation.AH, cost: 9 },
-              { nation: Nation.GE, cost: 2 },
-            ],
+            bonds: [Bond(Nation.AH, 4), Bond(Nation.GE, 1)],
           },
           e: {
             name: "e",
             cash: 2,
-            bonds: [
-              { nation: Nation.IT, cost: 9 },
-              { nation: Nation.GB, cost: 2 },
-            ],
+            bonds: [Bond(Nation.IT, 4), Bond(Nation.GB, 1)],
           },
           f: {
             name: "f",
             cash: 2,
-            bonds: [
-              { nation: Nation.GE, cost: 9 },
-              { nation: Nation.IT, cost: 2 },
-            ],
+            bonds: [Bond(Nation.GE, 4), Bond(Nation.IT, 1)],
           },
         });
       });
@@ -84,7 +66,11 @@ describe("Imperial", () => {
             [Nation.GE, "f"],
           ].map(([k, v]) => [
             k,
-            { controller: v, treasury: 11, rondelPosition: null },
+            {
+              controller: v,
+              treasury: 11,
+              rondelPosition: null,
+            },
           ])
         );
         expect(actual.nations).toEqual(expected);
@@ -92,6 +78,39 @@ describe("Imperial", () => {
 
       test("investor card holder", () => {
         expect(actual.investorCardHolder).toEqual("c");
+      });
+
+      test("available bonds", () => {
+        const expected = AllBonds();
+        for (const n of Nation) {
+          n.when({
+            IT: () => {
+              expected.delete(Bond(n, 1));
+              expected.delete(Bond(n, 4));
+            },
+            FR: () => {
+              expected.delete(Bond(n, 1));
+              expected.delete(Bond(n, 4));
+            },
+            AH: () => {
+              expected.delete(Bond(n, 1));
+              expected.delete(Bond(n, 4));
+            },
+            GE: () => {
+              expected.delete(Bond(n, 1));
+              expected.delete(Bond(n, 4));
+            },
+            GB: () => {
+              expected.delete(Bond(n, 1));
+              expected.delete(Bond(n, 4));
+            },
+            RU: () => {
+              expected.delete(Bond(n, 1));
+              expected.delete(Bond(n, 4));
+            },
+          });
+        }
+        expect(actual.availableBonds).toEqual(expected);
       });
     });
 
@@ -116,42 +135,27 @@ describe("Imperial", () => {
           a: {
             name: "a",
             cash: 2,
-            bonds: [
-              { nation: Nation.RU, cost: 9 },
-              { nation: Nation.FR, cost: 2 },
-            ],
+            bonds: [Bond(Nation.RU, 4), Bond(Nation.FR, 1)],
           },
           b: {
             name: "b",
             cash: 2,
-            bonds: [
-              { nation: Nation.FR, cost: 9 },
-              { nation: Nation.AH, cost: 2 },
-            ],
+            bonds: [Bond(Nation.FR, 4), Bond(Nation.AH, 1)],
           },
           c: {
             name: "c",
             cash: 2,
-            bonds: [
-              { nation: Nation.GB, cost: 9 },
-              { nation: Nation.RU, cost: 2 },
-            ],
+            bonds: [Bond(Nation.GB, 4), Bond(Nation.RU, 1)],
           },
           d: {
             name: "d",
             cash: 2,
-            bonds: [
-              { nation: Nation.GE, cost: 9 },
-              { nation: Nation.IT, cost: 2 },
-            ],
+            bonds: [Bond(Nation.GE, 4), Bond(Nation.IT, 1)],
           },
           e: {
             name: "e",
             cash: 2,
-            bonds: [
-              { nation: Nation.IT, cost: 9 },
-              { nation: Nation.GB, cost: 2 },
-            ],
+            bonds: [Bond(Nation.IT, 4), Bond(Nation.GB, 1)],
           },
         });
       });
@@ -167,7 +171,11 @@ describe("Imperial", () => {
             [Nation.AH, "b", 2], // FR controller bought AH 2
           ].map(([nation, controller, treasury]) => [
             nation,
-            { controller, treasury, rondelPosition: null },
+            {
+              controller,
+              treasury,
+              rondelPosition: null,
+            },
           ])
         );
         expect(actual.nations).toEqual(expected);
@@ -175,6 +183,39 @@ describe("Imperial", () => {
 
       test("investor card holder", () => {
         expect(actual.investorCardHolder).toEqual("a");
+      });
+
+      test("available bonds", () => {
+        const expected = AllBonds();
+        for (const n of Nation) {
+          n.when({
+            IT: () => {
+              expected.delete(Bond(n, 1));
+              expected.delete(Bond(n, 4));
+            },
+            FR: () => {
+              expected.delete(Bond(n, 1));
+              expected.delete(Bond(n, 4));
+            },
+            AH: () => {
+              expected.delete(Bond(n, 1));
+              // Nobody bought AH 9
+            },
+            GE: () => {
+              // Nobody bought GE 2
+              expected.delete(Bond(n, 4));
+            },
+            GB: () => {
+              expected.delete(Bond(n, 1));
+              expected.delete(Bond(n, 4));
+            },
+            RU: () => {
+              expected.delete(Bond(n, 1));
+              expected.delete(Bond(n, 4));
+            },
+          });
+        }
+        expect(actual.availableBonds).toEqual(expected);
       });
     });
 
@@ -198,34 +239,22 @@ describe("Imperial", () => {
           a: {
             name: "a",
             cash: 2,
-            bonds: [
-              { nation: Nation.IT, cost: 9 },
-              { nation: Nation.GB, cost: 2 },
-            ],
+            bonds: [Bond(Nation.IT, 4), Bond(Nation.GB, 1)],
           },
           b: {
             name: "b",
             cash: 2,
-            bonds: [
-              { nation: Nation.FR, cost: 9 },
-              { nation: Nation.AH, cost: 2 },
-            ],
+            bonds: [Bond(Nation.FR, 4), Bond(Nation.AH, 1)],
           },
           c: {
             name: "c",
             cash: 2,
-            bonds: [
-              { nation: Nation.AH, cost: 9 },
-              { nation: Nation.GE, cost: 2 },
-            ],
+            bonds: [Bond(Nation.AH, 4), Bond(Nation.GE, 1)],
           },
           d: {
             name: "d",
             cash: 2,
-            bonds: [
-              { nation: Nation.GE, cost: 9 },
-              { nation: Nation.IT, cost: 2 },
-            ],
+            bonds: [Bond(Nation.GE, 4), Bond(Nation.IT, 1)],
           },
         });
       });
@@ -241,7 +270,11 @@ describe("Imperial", () => {
             [Nation.RU, null, 0], // Nobody bought RU 2 or RU 9
           ].map(([nation, controller, treasury]) => [
             nation,
-            { controller, treasury, rondelPosition: null },
+            {
+              controller,
+              treasury,
+              rondelPosition: null,
+            },
           ])
         );
         expect(actual.nations).toEqual(expected);
@@ -249,6 +282,39 @@ describe("Imperial", () => {
 
       test("investor card holder", () => {
         expect(actual.investorCardHolder).toEqual("b");
+      });
+
+      test("available bonds", () => {
+        const expected = AllBonds();
+        for (const n of Nation) {
+          n.when({
+            IT: () => {
+              expected.delete(Bond(n, 1));
+              expected.delete(Bond(n, 4));
+            },
+            FR: () => {
+              // Nobody bought FR 2
+              expected.delete(Bond(n, 4));
+            },
+            AH: () => {
+              expected.delete(Bond(n, 1));
+              expected.delete(Bond(n, 4));
+            },
+            GE: () => {
+              expected.delete(Bond(n, 1));
+              expected.delete(Bond(n, 4));
+            },
+            GB: () => {
+              expected.delete(Bond(n, 1));
+              // Nobody bought GB 9
+            },
+            RU: () => {
+              // Nobody bought RU 2
+              // Nobody bought RU 9
+            },
+          });
+        }
+        expect(actual.availableBonds).toEqual(expected);
       });
     });
 
@@ -272,30 +338,30 @@ describe("Imperial", () => {
             name: "a",
             cash: 2,
             bonds: [
-              { nation: Nation.IT, cost: 9 },
-              { nation: Nation.GB, cost: 2 },
-              { nation: Nation.RU, cost: 9 },
-              { nation: Nation.FR, cost: 2 },
+              Bond(Nation.IT, 4),
+              Bond(Nation.GB, 1),
+              Bond(Nation.RU, 4),
+              Bond(Nation.FR, 1),
             ],
           },
           b: {
             name: "b",
             cash: 2,
             bonds: [
-              { nation: Nation.FR, cost: 9 },
-              { nation: Nation.AH, cost: 2 },
-              { nation: Nation.GE, cost: 9 },
-              { nation: Nation.IT, cost: 2 },
+              Bond(Nation.FR, 4),
+              Bond(Nation.AH, 1),
+              Bond(Nation.GE, 4),
+              Bond(Nation.IT, 1),
             ],
           },
           c: {
             name: "c",
             cash: 2,
             bonds: [
-              { nation: Nation.AH, cost: 9 },
-              { nation: Nation.GE, cost: 2 },
-              { nation: Nation.GB, cost: 9 },
-              { nation: Nation.RU, cost: 2 },
+              Bond(Nation.AH, 4),
+              Bond(Nation.GE, 1),
+              Bond(Nation.GB, 4),
+              Bond(Nation.RU, 1),
             ],
           },
         });
@@ -315,7 +381,11 @@ describe("Imperial", () => {
             [Nation.GB, "c", 11],
           ].map(([nation, controller, treasury]) => [
             nation,
-            { controller, treasury, rondelPosition: null },
+            {
+              controller,
+              treasury,
+              rondelPosition: null,
+            },
           ])
         );
         expect(actual.nations).toEqual(expected);
@@ -323,6 +393,39 @@ describe("Imperial", () => {
 
       test("investor card holder", () => {
         expect(actual.investorCardHolder).toEqual("b");
+      });
+
+      test("available bonds", () => {
+        const expected = AllBonds();
+        for (const n of Nation) {
+          n.when({
+            IT: () => {
+              expected.delete(Bond(n, 1));
+              expected.delete(Bond(n, 4));
+            },
+            FR: () => {
+              expected.delete(Bond(n, 1));
+              expected.delete(Bond(n, 4));
+            },
+            AH: () => {
+              expected.delete(Bond(n, 1));
+              expected.delete(Bond(n, 4));
+            },
+            GE: () => {
+              expected.delete(Bond(n, 1));
+              expected.delete(Bond(n, 4));
+            },
+            GB: () => {
+              expected.delete(Bond(n, 1));
+              expected.delete(Bond(n, 4));
+            },
+            RU: () => {
+              expected.delete(Bond(n, 1));
+              expected.delete(Bond(n, 4));
+            },
+          });
+        }
+        expect(actual.availableBonds).toEqual(expected);
       });
     });
 
@@ -345,24 +448,24 @@ describe("Imperial", () => {
             name: "a",
             cash: 2,
             bonds: [
-              { nation: Nation.IT, cost: 9 },
-              { nation: Nation.GB, cost: 2 },
-              { nation: Nation.RU, cost: 9 },
-              { nation: Nation.FR, cost: 2 },
-              { nation: Nation.GB, cost: 9 },
-              { nation: Nation.RU, cost: 2 },
+              Bond(Nation.IT, 4),
+              Bond(Nation.GB, 1),
+              Bond(Nation.RU, 4),
+              Bond(Nation.FR, 1),
+              Bond(Nation.GB, 4),
+              Bond(Nation.RU, 1),
             ],
           },
           b: {
             name: "b",
             cash: 2,
             bonds: [
-              { nation: Nation.AH, cost: 9 },
-              { nation: Nation.GE, cost: 2 },
-              { nation: Nation.FR, cost: 9 },
-              { nation: Nation.AH, cost: 2 },
-              { nation: Nation.GE, cost: 9 },
-              { nation: Nation.IT, cost: 2 },
+              Bond(Nation.AH, 4),
+              Bond(Nation.GE, 1),
+              Bond(Nation.FR, 4),
+              Bond(Nation.AH, 1),
+              Bond(Nation.GE, 4),
+              Bond(Nation.IT, 1),
             ],
           },
         });
@@ -381,7 +484,11 @@ describe("Imperial", () => {
             [Nation.GE, "b", 11],
           ].map(([nation, controller, treasury]) => [
             nation,
-            { controller, treasury, rondelPosition: null },
+            {
+              controller,
+              treasury,
+              rondelPosition: null,
+            },
           ])
         );
         expect(actual.nations).toEqual(expected);
@@ -389,6 +496,39 @@ describe("Imperial", () => {
 
       test("investor card holder", () => {
         expect(actual.investorCardHolder).toEqual("a");
+      });
+
+      test("available bonds", () => {
+        const expected = AllBonds();
+        for (const n of Nation) {
+          n.when({
+            IT: () => {
+              expected.delete(Bond(n, 1));
+              expected.delete(Bond(n, 4));
+            },
+            FR: () => {
+              expected.delete(Bond(n, 1));
+              expected.delete(Bond(n, 4));
+            },
+            AH: () => {
+              expected.delete(Bond(n, 1));
+              expected.delete(Bond(n, 4));
+            },
+            GE: () => {
+              expected.delete(Bond(n, 1));
+              expected.delete(Bond(n, 4));
+            },
+            GB: () => {
+              expected.delete(Bond(n, 1));
+              expected.delete(Bond(n, 4));
+            },
+            RU: () => {
+              expected.delete(Bond(n, 1));
+              expected.delete(Bond(n, 4));
+            },
+          });
+        }
+        expect(actual.availableBonds).toEqual(expected);
       });
     });
   });
