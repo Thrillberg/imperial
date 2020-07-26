@@ -45,8 +45,6 @@ export default {
   fight: makeAction("fight", ["province", "incumbent", "challenger"]),
   import: makeAction("import", ["province"]),
   maneuver: makeAction("maneuver", ["origin", "destination"]),
-  playerSeating: makeAction("playerSeating", ["order"]),
   production: makeAction("production", ["province"]),
   rondel: makeAction("rondel", ["nation", "cost", "slot"]),
-  startFirstRound: makeAction("startFirstRound", []),
 };
