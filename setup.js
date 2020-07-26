@@ -58,6 +58,14 @@ export default ({ players }) => {
     .map(nationAssignments[players.length])
     .flat()
     .forEach(({ id, nation }) => {
+      if (out.players[id] === undefined) {
+        out.players[id] = {
+          name: id,
+          cash: 2,
+          bonds: new Set(),
+        };
+      }
+
       const smallerBondNation = nation.when({
         GE: () => Nation.IT,
         RU: () => Nation.FR,
@@ -66,16 +74,11 @@ export default ({ players }) => {
         FR: () => Nation.AH,
         GB: () => Nation.RU,
       });
+
       out.availableBonds.delete(Bond(nation, 4));
       out.availableBonds.delete(Bond(smallerBondNation, 1));
-      out.players[id] = {
-        name: id,
-        bonds: (out.players[id] || { bonds: [] }).bonds.concat([
-          Bond(nation, 4),
-          Bond(smallerBondNation, 1),
-        ]),
-        cash: 2,
-      };
+      out.players[id].bonds.add(Bond(nation, 4));
+      out.players[id].bonds.add(Bond(smallerBondNation, 1));
     });
 
   /* Gather bonds as a list of
@@ -89,9 +92,9 @@ export default ({ players }) => {
 
   const purchasedBonds = new Set();
   Object.keys(out.players).forEach((id) => {
-    out.players[id].bonds.forEach((bond) => {
+    for (const bond of out.players[id].bonds) {
       purchasedBonds.add(bond);
-    });
+    }
   });
 
   /* Calculate treasury and controller for each nation */
@@ -120,7 +123,7 @@ export default ({ players }) => {
     const highestBond = forNation[0];
     const highestBondOwner =
       Object.keys(out.players).find((id) =>
-        out.players[id].bonds.includes(highestBond)
+        out.players[id].bonds.has(highestBond)
       ) || null;
 
     const totalCost = forNation.reduce((sum, { cost }) => sum + cost, 0);
@@ -129,11 +132,19 @@ export default ({ players }) => {
       controller: highestBondOwner,
       treasury: totalCost,
       rondelPosition: null,
+      flagCount: 0,
+      unitCount: 0,
+      powerPoints: 0,
+      taxChartPosition: 5,
     });
 
     const AHPlayer = out.nations.get(Nation.AH).controller;
     const AHPlayerIndex = out.order.indexOf(AHPlayer);
-    out.investorCardHolder = out.order[AHPlayerIndex - 1];
+    if (AHPlayerIndex === 0) {
+      out.investorCardHolder = out.order[out.order.length - 1];
+    } else {
+      out.investorCardHolder = out.order[AHPlayerIndex - 1];
+    }
   }
   return out;
 };

@@ -34,20 +34,17 @@ const makeAction = (type, payloadKeys) => {
   return (obj) => memoized(...payloadKeys.map((k) => obj[k]));
 };
 
+const noop = Object.freeze({ type: "noop" });
+
 export default {
+  noop,
   initialize: makeAction("initialize", ["players"]),
-  assignStartingNation: makeAction("assignStartingNation", [
-    "nation",
-    "player",
-  ]),
   bondPurchase: makeAction("bondPurchase", ["nation", "player", "cost"]),
   buildFactory: makeAction("buildFactory", ["province"]),
   coexist: makeAction("coexist", ["province", "incumbent", "challenger"]),
   fight: makeAction("fight", ["province", "incumbent", "challenger"]),
   import: makeAction("import", ["province"]),
   maneuver: makeAction("maneuver", ["origin", "destination"]),
-  playerSeating: makeAction("playerSeating", ["order"]),
   production: makeAction("production", ["province"]),
   rondel: makeAction("rondel", ["nation", "cost", "slot"]),
-  startFirstRound: makeAction("startFirstRound", []),
 };
