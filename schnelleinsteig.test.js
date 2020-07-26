@@ -1616,9 +1616,21 @@ describe("Schnelleinsteig", () => {
           expect(cash).toEqual(1);
         });
 
-        test("GE has 14 million in treasury", () => {});
-        test("Daniel controls GE", () => {});
-        test("Anton holds the investor card", () => {});
+        test("GE has 14 million in treasury", () => {
+          const treasury = game.nations.get(Nation.GE).treasury;
+
+          expect(treasury).toEqual(14);
+        });
+
+        test("Daniel controls GE", () => {
+          const controller = game.nations.get(Nation.GE).controller;
+
+          expect(controller).toEqual("Daniel");
+        });
+
+        test("Anton holds the investor card", () => {
+          expect(game.investorCardHolder).toEqual("Anton");
+        });
       });
     });
   });
