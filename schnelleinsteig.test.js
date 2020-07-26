@@ -1168,7 +1168,7 @@ describe("Schnelleinsteig", () => {
         });
 
         test("Claudia can buy a bond", () => {
-          const expectedActions = [
+          const expectedActions = new Set([
             Action.bondPurchase({
               nation: Nation.AH,
               player: "Claudia",
@@ -1224,7 +1224,7 @@ describe("Schnelleinsteig", () => {
               player: "Claudia",
               cost: 4,
             }),
-          ];
+          ]);
           expect(game.availableActions).toEqual(expectedActions);
         });
 
@@ -1339,7 +1339,7 @@ describe("Schnelleinsteig", () => {
           );
         });
 
-        const availableActions = [
+        const availableActions = new Set([
           Action.maneuver({
             origin: "st. petersburg",
             destination: "baltic sea",
@@ -1349,7 +1349,7 @@ describe("Schnelleinsteig", () => {
             destination: "black sea",
           }),
           ...moscowActions,
-        ];
+        ]);
         expect(game.availableActions).toEqual(availableActions);
       });
 
@@ -1456,7 +1456,7 @@ describe("Schnelleinsteig", () => {
             Action.maneuver({ origin: "tunis", destination: province })
           );
         });
-        const availableActions = [
+        const availableActions = new Set([
           Action.maneuver({
             origin: "ionian sea",
             destination: "western mediterranean sea",
@@ -1468,7 +1468,7 @@ describe("Schnelleinsteig", () => {
           ...romaniaActions,
           ...westBalkanActions,
           ...tunisActions,
-        ];
+        ]);
 
         expect(game.availableActions).toEqual(availableActions);
       });
@@ -1527,7 +1527,7 @@ describe("Schnelleinsteig", () => {
         });
 
         test("Daniel can buy a bond", () => {
-          const expectedActions = [
+          const expectedActions = new Set([
             Action.bondPurchase({
               nation: Nation.AH,
               player: "Daniel",
@@ -1588,7 +1588,7 @@ describe("Schnelleinsteig", () => {
               player: "Daniel",
               cost: 12,
             }),
-          ];
+          ]);
 
           expect(game.availableActions).toEqual(expectedActions);
         });

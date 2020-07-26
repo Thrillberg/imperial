@@ -1055,27 +1055,8 @@ export default class Imperial {
     }
   }
 
-  getController(nation, log) {
-    const bondPurchases = this.log.filter((action) => {
-      return action.type === "bondPurchase" && action.payload.nation === nation;
-    });
-
-    const out = bondPurchases.sort((a, b) => {
-      const costA = a.payload.cost;
-      const costB = b.payload.cost;
-      if (costA < costB) {
-        return 1;
-      } else if (costA == costB) {
-        return 0;
-      } else {
-        return -1;
-      }
-    });
-    if (out.length > 0) {
-      return out[0].payload.player;
-    } else {
-      return null;
-    }
+  getController(nation) {
+    return this.nations.get(nation).controller
   }
 
   getInvestorCardHolder(log, fullLog) {
