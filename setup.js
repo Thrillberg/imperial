@@ -1,4 +1,7 @@
 import { AllBonds, Bond, Nation } from "./constants.js";
+import Provinces from "./provinces";
+import GameBoard from "./gameBoard";
+import standardGameBoard from "./standardGameBoard";
 
 const error = (want) => (x) => {
   throw new Error(`got=${x.value}, want=${want}`);
@@ -47,11 +50,18 @@ export default ({ players }) => {
   };
 
   const out = {
+    allUnits: new Map(),
     availableBonds: AllBonds(),
+    gameBoard: new GameBoard(standardGameBoard),
     nations: new Map(),
     order: players.map((p) => p.id),
     players: {},
+    provinces: Provinces(),
   };
+
+  for (const [name, attrs] of out.provinces) {
+    out.allUnits.set(name, attrs.units);
+  }
 
   /* From the initial nation assignments, distribute bonds to the players. */
   players
