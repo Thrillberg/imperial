@@ -141,8 +141,6 @@ export default class Imperial {
       return;
     } else if (action.type === "playerSeating") {
       this.seatPlayers(action);
-    } else if (action.type === "assignStartingNation") {
-      this.assignStartingNation(action);
     } else if (action.type === "startFirstRound") {
       this.startFirstRound();
     } else if (action.type === "bondPurchase") {
@@ -202,10 +200,6 @@ export default class Imperial {
       (player) =>
         (this.players[player] = { name: player, cash: 13, bonds: new Set() })
     );
-  }
-
-  assignStartingNation(action) {
-    this.nations.get(action.payload.nation).controller = action.payload.player;
   }
 
   startFirstRound() {
