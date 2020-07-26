@@ -52,24 +52,75 @@ describe("Schnelleinsteig", () => {
         new Map([
           [
             Nation.AH,
-            { controller: "Claudia", rondelPosition: null, treasury: 2 },
+            {
+              flagCount: 0,
+              powerPoints: 0,
+              taxChartPosition: 5,
+              unitCount: 0,
+              controller: "Claudia",
+              rondelPosition: null,
+              treasury: 2,
+            },
           ],
           [
             Nation.FR,
-            { controller: "Claudia", rondelPosition: null, treasury: 11 },
+            {
+              flagCount: 0,
+              powerPoints: 0,
+              taxChartPosition: 5,
+              unitCount: 0,
+              controller: "Claudia",
+              rondelPosition: null,
+              treasury: 11,
+            },
           ],
           [
             Nation.GB,
-            { controller: "Bert", rondelPosition: null, treasury: 11 },
+            {
+              flagCount: 0,
+              powerPoints: 0,
+              taxChartPosition: 5,
+              unitCount: 0,
+              controller: "Bert",
+              rondelPosition: null,
+              treasury: 11,
+            },
           ],
-          [Nation.GE, { controller: null, rondelPosition: null, treasury: 0 }],
+          [
+            Nation.GE,
+            {
+              flagCount: 0,
+              powerPoints: 0,
+              taxChartPosition: 5,
+              unitCount: 0,
+              controller: null,
+              rondelPosition: null,
+              treasury: 0,
+            },
+          ],
           [
             Nation.IT,
-            { controller: "Anton", rondelPosition: null, treasury: 9 },
+            {
+              flagCount: 0,
+              powerPoints: 0,
+              taxChartPosition: 5,
+              unitCount: 0,
+              controller: "Anton",
+              rondelPosition: null,
+              treasury: 9,
+            },
           ],
           [
             Nation.RU,
-            { controller: "Daniel", rondelPosition: null, treasury: 11 },
+            {
+              flagCount: 0,
+              powerPoints: 0,
+              taxChartPosition: 5,
+              unitCount: 0,
+              controller: "Daniel",
+              rondelPosition: null,
+              treasury: 11,
+            },
           ],
         ])
       );

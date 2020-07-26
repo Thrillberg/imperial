@@ -132,6 +132,10 @@ export default ({ players }) => {
       controller: highestBondOwner,
       treasury: totalCost,
       rondelPosition: null,
+      flagCount: 0,
+      unitCount: 0,
+      powerPoints: 0,
+      taxChartPosition: 5,
     });
 
     const AHPlayer = out.nations.get(Nation.AH).controller;
