@@ -10,12 +10,12 @@ export default class GameBoard {
   }
 
   setupGraph(nodes) {
-    for (const { name: province, nation, isOcean, units } of nodes) {
+    for (const { name: province, nation, isOcean } of nodes) {
       this.graph.set(province, {
         nation,
         neighbors: new Set(),
         isOcean,
-        units,
+        units: null,
       });
 
       if (!this.byNation.has(nation)) {

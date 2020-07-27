@@ -10,6 +10,11 @@ export default {
     { name: "marseille", nation: Nation.FR, isOcean: false },
     // Germany
     { name: "munich", nation: Nation.GE, isOcean: false },
+    // Great Britain
+    { name: "edinburgh", nation: Nation.GB, isOcean: false },
+    { name: "liverpool", nation: Nation.GB, isOcean: false },
+    { name: "london", nation: Nation.GB, isOcean: false },
+    { name: "sheffield", nation: Nation.GB, isOcean: false },
     // Italy
     { name: "florence", nation: Nation.IT, isOcean: false },
     { name: "genoa", nation: Nation.IT, isOcean: false },
@@ -48,6 +53,11 @@ export default {
     ["marseille", "spain"],
     ["marseille", "western mediterranean sea"],
     ["marseille", "genoa"],
+    // Great Britain
+    ["london", "english channel"],
+    ["london", "sheffield"],
+    ["london", "liverpool"],
+    ["liverpool", "edinburgh"],
     // Neutral
     ["morocco", "algeria"],
     ["morocco", "bay of biscay"],
@@ -55,6 +65,7 @@ export default {
     ["bay of biscay", "english channel"],
     ["bay of biscay", "spain"],
     ["bay of biscay", "portugal"],
+    ["north atlantic", "liverpool"],
     ["western mediterranean sea", "genoa"],
     ["western mediterranean sea", "florence"],
     ["western mediterranean sea", "rome"],

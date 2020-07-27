@@ -610,7 +610,7 @@ describe("Schnelleinsteig", () => {
         Action.rondel({ nation: Nation.GB, cost: 0, slot: "maneuver1" })
       );
 
-      test("GB's available actions are to move liverpool and london units", () => {
+      test.only("GB's available actions are to move liverpool and london units", () => {
         const availableActions = new Set([
           Action.maneuver({
             origin: "liverpool",
@@ -722,7 +722,7 @@ describe("Schnelleinsteig", () => {
     });
   });
 
-  describe("third round", () => {
+  xdescribe("third round", () => {
     describe("1. AH does maneuver2", () => {
       const log = mainLog.slice(0, 37);
       const game = Imperial.fromLog(log);
@@ -1084,7 +1084,7 @@ describe("Schnelleinsteig", () => {
     });
   });
 
-  describe("fourth round", () => {
+  xdescribe("fourth round", () => {
     describe("1. AH does taxation", () => {
       const log = mainLog.slice(0, 53);
       const game = Imperial.fromLog(log);
@@ -1397,7 +1397,7 @@ describe("Schnelleinsteig", () => {
     });
   });
 
-  describe("fifth round", () => {
+  xdescribe("fifth round", () => {
     describe("1. AH does maneuver1", () => {
       const log = mainLog.slice(0, 65);
       const game = Imperial.fromLog(log);

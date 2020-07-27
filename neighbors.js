@@ -25,6 +25,7 @@ export default class Neighbors {
   addConvoyDestinations(graph) {
     if (!this.isFleet) {
       for (const province of this.toSet) {
+        console.log(province, graph.get(province), this.nation);
         if (
           graph.get(province).isOcean &&
           graph.get(province).units.find((unit) => unit.nation === this.nation)

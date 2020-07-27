@@ -1,6 +1,7 @@
 import { Nation, Bond } from "./constants.js";
 import Action from "./action.js";
 import setup from "./setup.js";
+import provinces from "./provinces.js";
 
 export default class Imperial {
   static fromLog(log) {
@@ -11,82 +12,82 @@ export default class Imperial {
 
   constructor() {
     this.log = [];
-    this.provinces = this.setupProvinces();
+    // this.provinces = this.setupProvinces();
     this.rondelSlots = this.setupRondelSlots();
   }
 
-  setupProvinces() {
-    const provinces = new Map();
-    for (const province of [
-      "algeria",
-      "baltic sea",
-      "bay of biscay",
-      "berlin",
-      "black sea",
-      "bordeaux",
-      "brest",
-      "budapest",
-      "bulgaria",
-      "cologne",
-      "danzig",
-      "dijon",
-      "dublin",
-      "edinburgh",
-      "english channel",
-      "florence",
-      "genoa",
-      "hamburg",
-      "ionian sea",
-      "kiev",
-      "lemberg",
-      "liverpool",
-      "london",
-      "marseille",
-      "morocco",
-      "moscow",
-      "munich",
-      "naples",
-      "north atlantic",
-      "north sea",
-      "norway",
-      "odessa",
-      "paris",
-      "prague",
-      "romania",
-      "rome",
-      "sheffield",
-      "spain",
-      "st. petersburg",
-      "sweden",
-      "trieste",
-      "tunis",
-      "turkey",
-      "venice",
-      "vienna",
-      "warsaw",
-      "west balkan",
-      "western mediterranean sea",
-    ]) {
-      provinces.set(province, {
-        unitCount: 0,
-        hasFactory: false,
-      });
-    }
-    provinces.get("vienna").hasFactory = true;
-    provinces.get("budapest").hasFactory = true;
-    provinces.get("paris").hasFactory = true;
-    provinces.get("bordeaux").hasFactory = true;
-    provinces.get("london").hasFactory = true;
-    provinces.get("liverpool").hasFactory = true;
-    provinces.get("berlin").hasFactory = true;
-    provinces.get("hamburg").hasFactory = true;
-    provinces.get("rome").hasFactory = true;
-    provinces.get("naples").hasFactory = true;
-    provinces.get("odessa").hasFactory = true;
-    provinces.get("moscow").hasFactory = true;
+  // setupProvinces() {
+  //   const provinces = new Map();
+  //   for (const province of [
+  //     "algeria",
+  //     "baltic sea",
+  //     "bay of biscay",
+  //     "berlin",
+  //     "black sea",
+  //     "bordeaux",
+  //     "brest",
+  //     "budapest",
+  //     "bulgaria",
+  //     "cologne",
+  //     "danzig",
+  //     "dijon",
+  //     "dublin",
+  //     "edinburgh",
+  //     "english channel",
+  //     "florence",
+  //     "genoa",
+  //     "hamburg",
+  //     "ionian sea",
+  //     "kiev",
+  //     "lemberg",
+  //     "liverpool",
+  //     "london",
+  //     "marseille",
+  //     "morocco",
+  //     "moscow",
+  //     "munich",
+  //     "naples",
+  //     "north atlantic",
+  //     "north sea",
+  //     "norway",
+  //     "odessa",
+  //     "paris",
+  //     "prague",
+  //     "romania",
+  //     "rome",
+  //     "sheffield",
+  //     "spain",
+  //     "st. petersburg",
+  //     "sweden",
+  //     "trieste",
+  //     "tunis",
+  //     "turkey",
+  //     "venice",
+  //     "vienna",
+  //     "warsaw",
+  //     "west balkan",
+  //     "western mediterranean sea",
+  //   ]) {
+  //     provinces.set(province, {
+  //       unitCount: 0,
+  //       hasFactory: false,
+  //     });
+  //   }
+  //   provinces.get("vienna").hasFactory = true;
+  //   provinces.get("budapest").hasFactory = true;
+  //   provinces.get("paris").hasFactory = true;
+  //   provinces.get("bordeaux").hasFactory = true;
+  //   provinces.get("london").hasFactory = true;
+  //   provinces.get("liverpool").hasFactory = true;
+  //   provinces.get("berlin").hasFactory = true;
+  //   provinces.get("hamburg").hasFactory = true;
+  //   provinces.get("rome").hasFactory = true;
+  //   provinces.get("naples").hasFactory = true;
+  //   provinces.get("odessa").hasFactory = true;
+  //   provinces.get("moscow").hasFactory = true;
 
-    return provinces;
-  }
+  //   return provinces;
+  // }
 
   setupRondelSlots() {
     return [
@@ -103,14 +104,19 @@ export default class Imperial {
 
   tick(action) {
     if (action.type === "noop") {
+      this.log.push(action);
       return;
     } else if (action.type === "initialize") {
       const s = setup(action.payload);
+      this.allUnits = s.allUnits;
       this.availableBonds = s.availableBonds;
+      this.gameBoard = s.gameBoard;
       this.investorCardHolder = s.investorCardHolder;
       this.nations = s.nations;
       this.order = s.order;
       this.players = s.players;
+      this.provinces = s.provinces;
+      this.log.push(action);
       return;
     } else if (action.type === "bondPurchase") {
       this.purchaseBond(action);
@@ -138,6 +144,12 @@ export default class Imperial {
       this.nations.get(lastManeuver.payload.nation).flagCount += 1;
       this.provinces.get(action.payload.origin).unitCount -= 1;
       this.provinces.get(action.payload.destination).unitCount += 1;
+      // this.allUnits
+      //   .get(action.payload.origin)
+      //   .get(lastManeuver.payload.nation).units.armies -= 1;
+      // this.allUnits
+      //   .get(action.payload.destination)
+      //   .get(lastManeuver.payload.nation).units.armies += 1;
       this.availableActions = this.availableActionsState(action);
     } else if (action.type === "fight") {
       this.provinces.get(action.payload.province).unitCount -= 2;
@@ -261,12 +273,17 @@ export default class Imperial {
       action.payload.slot === "production1" ||
       action.payload.slot === "production2"
     ) {
-      this.homeProvinces(action.payload.nation)
-        .filter((province) => this.provinces.get(province).hasFactory === true)
-        .forEach((province) => {
-          this.provinces.get(province).unitCount += 1;
-          this.nations.get(action.payload.nation).unitCount += 1;
-        });
+      const homeProvinces = this.homeProvinces(action.payload.nation);
+      const factoryProvinces = homeProvinces.filter(
+        (province) => this.provinces.get(province).hasFactory === true
+      );
+      factoryProvinces.forEach((province) => {
+        this.provinces.get(province).unitCount += 1;
+        this.nations.get(action.payload.nation).unitCount += 1;
+        this.allUnits
+          .get(province)
+          .get(action.payload.nation.value).armies += 1;
+      });
     }
   }
 
@@ -302,7 +319,8 @@ export default class Imperial {
     const nation = this.getNationByProvince(action.payload.province);
     this.nations.get(nation).treasury -= 1;
     this.provinces.get(action.payload.province).unitCount += 1;
-    this.nations.get(nation).unitCount += 1;
+    // this.nations.get(nation).unitCount += 1;
+    // this.allUnits.get(action.payload.province).get(nation.value).armies += 1;
   }
 
   buildFactory(action) {
@@ -369,6 +387,24 @@ export default class Imperial {
     } else if (this.lastMoveWasTaxation(lastMove)) {
       return new Set(this.rondelActions(this.getNation(this.log)));
     } else if (this.lastMoveWasRondelManeuver(lastMove)) {
+      // TODO: Generalize this to all nations
+      const availableActions = new Set();
+      if (lastMove.payload.nation === Nation.GB) {
+        for (const [province, units] of this.allUnits) {
+          if (units.get("GB").fleets > 0 || units.get("GB").armies > 0) {
+            console.log(
+              this.provinces.get(province),
+              this.gameBoard.neighborsFor({
+                province,
+                nation: this.provinces.get(province).homeNation,
+                isOcean: this.provinces.get(province).isOcean,
+              })
+            );
+          }
+        }
+        return availableActions;
+      }
+
       switch (lastMove.payload.nation) {
         case Nation.FR:
           const FRLandDestinations = [
