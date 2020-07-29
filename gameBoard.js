@@ -1,5 +1,3 @@
-import Neighbors from "./neighbors";
-
 export default class GameBoard {
   constructor({ nodes, edges }) {
     this.graph = new Map();
@@ -10,12 +8,11 @@ export default class GameBoard {
   }
 
   setupGraph(nodes) {
-    for (const { name: province, nation, isOcean, units } of nodes) {
+    for (const { name: province, nation, isOcean } of nodes) {
       this.graph.set(province, {
         nation,
         neighbors: new Set(),
         isOcean,
-        units,
       });
 
       if (!this.byNation.has(nation)) {
@@ -32,19 +29,55 @@ export default class GameBoard {
     });
   }
 
-  neighborsFor(province) {
-    this.validate(province);
+  neighborsFor({ origin, nation, isFleet, friendlyFleets }) {
+    this.validate(origin);
 
-    const neighbors = new Neighbors(province);
-    neighbors.populate(this.graph, this.byNation);
-    neighbors.addConvoyDestinations(this.graph);
-    neighbors.removeImpassableDestinations(this.graph);
+    const out = new Set();
 
-    return neighbors.toSet;
+    // Add all immediate neighbors
+    for (const n of this.graph.get(origin).neighbors) {
+      out.add(n);
+    }
+
+    // Add all home provinces if origin is in their home nation
+    if (nation === this.graph.get(origin).nation && !isFleet) {
+      for (const n of this.byNation.get(nation)) {
+        for (const x of this.graph.get(n).neighbors) {
+          out.add(x);
+        }
+      }
+    }
+
+    // Convoy
+    if (!isFleet) {
+      for (const n of out) {
+        if (this.graph.get(n).isOcean) {
+          if (friendlyFleets.has(n)) {
+            for (const neighbor of this.graph.get(n).neighbors) {
+              out.add(neighbor);
+            }
+          }
+        }
+      }
+    }
+
+    // Armies can not swim
+    // We all dwell where we belong
+    // Navies can not walk
+    for (const n of out) {
+      if (this.graph.get(n).isOcean ^ isFleet) {
+        out.delete(n);
+      }
+    }
+
+    // Selflessness is a virtue
+    out.delete(origin);
+
+    return out;
   }
 
-  validate({ province }) {
-    if (!this.graph.has(province))
-      throw new Error(`province ${province} not found`);
+  validate(origin) {
+    if (!this.graph.has(origin))
+      throw new Error(`province ${origin} not found`);
   }
 }
