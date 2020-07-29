@@ -1,6 +1,7 @@
 import { Nation } from "./constants";
+import GameBoard from "./gameBoard";
 
-export default {
+export default new GameBoard({
   nodes: [
     // France
     { name: "paris", nation: Nation.FR, isOcean: false },
@@ -10,6 +11,9 @@ export default {
     { name: "marseille", nation: Nation.FR, isOcean: false },
     // Germany
     { name: "munich", nation: Nation.GE, isOcean: false },
+    // Great Britain
+    { name: "liverpool", nation: Nation.GB, isOcean: false },
+    { name: "london", nation: Nation.GB, isOcean: false },
     // Italy
     { name: "florence", nation: Nation.IT, isOcean: false },
     { name: "genoa", nation: Nation.IT, isOcean: false },
@@ -48,6 +52,9 @@ export default {
     ["marseille", "spain"],
     ["marseille", "western mediterranean sea"],
     ["marseille", "genoa"],
+    // Great Britain
+    ["liverpool", "north atlantic"],
+    ["london", "english channel"],
     // Neutral
     ["morocco", "algeria"],
     ["morocco", "bay of biscay"],
@@ -64,4 +71,4 @@ export default {
     ["western mediterranean sea", "algeria"],
     ["western mediterranean sea", "spain"],
   ],
-};
+});
