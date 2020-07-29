@@ -1,6 +1,7 @@
 import { Nation, Bond } from "./constants.js";
 import Action from "./action.js";
 import setup from "./setup.js";
+import standardGameBoard from "./standardGameBoard";
 
 export default class Imperial {
   static fromLog(log) {
@@ -369,6 +370,22 @@ export default class Imperial {
     } else if (this.lastMoveWasTaxation(lastMove)) {
       return new Set(this.rondelActions(this.getNation(this.log)));
     } else if (this.lastMoveWasRondelManeuver(lastMove)) {
+      // TODO: Generalize to all nations
+      if (lastMove.payload.nation === Nation.GB) {
+        const destinations = new Set();
+        ["london", "liverpool"].map((origin) => {
+          for (const destination of standardGameBoard.neighborsFor({
+            origin,
+            nation: Nation.GB,
+            isFleet: true,
+            friendlyFleets: new Set(),
+          })) {
+            destinations.add(Action.maneuver({ origin, destination }));
+          }
+        });
+
+        return destinations;
+      }
       switch (lastMove.payload.nation) {
         case Nation.FR:
           const FRLandDestinations = [
@@ -397,17 +414,6 @@ export default class Imperial {
               destination: "western mediterranean sea",
             }),
             ...parisActions,
-          ]);
-        case Nation.GB:
-          return new Set([
-            Action.maneuver({
-              origin: "liverpool",
-              destination: "north atlantic",
-            }),
-            Action.maneuver({
-              origin: "london",
-              destination: "english channel",
-            }),
           ]);
         case Nation.GE:
           return new Set([
