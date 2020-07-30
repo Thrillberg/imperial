@@ -388,22 +388,6 @@ export default class Imperial {
       }
       switch (lastMove.payload.nation) {
         case Nation.FR:
-          const FRLandDestinations = [
-            "brest",
-            "dijon",
-            "bordeaux",
-            "marseille",
-            "belgium",
-            "genoa",
-            "munich",
-            "spain",
-          ];
-          let parisActions = [];
-          FRLandDestinations.map((province) => {
-            parisActions.push(
-              Action.maneuver({ origin: "paris", destination: province })
-            );
-          });
           return new Set([
             Action.maneuver({
               origin: "bordeaux",
@@ -413,84 +397,36 @@ export default class Imperial {
               origin: "marseille",
               destination: "western mediterranean sea",
             }),
-            ...parisActions,
           ]);
         case Nation.GE:
           return new Set([
             Action.maneuver({ origin: "hamburg", destination: "north sea" }),
-            Action.maneuver({ origin: "berlin", destination: "danzig" }),
-            Action.maneuver({ origin: "berlin", destination: "prague" }),
-            Action.maneuver({ origin: "berlin", destination: "munich" }),
-            Action.maneuver({ origin: "berlin", destination: "cologne" }),
-            Action.maneuver({ origin: "berlin", destination: "hamburg" }),
-            Action.maneuver({ origin: "berlin", destination: "dijon" }),
-            Action.maneuver({ origin: "berlin", destination: "belgium" }),
-            Action.maneuver({ origin: "berlin", destination: "holland" }),
-            Action.maneuver({ origin: "berlin", destination: "denmark" }),
-            Action.maneuver({ origin: "berlin", destination: "london" }),
-            Action.maneuver({ origin: "berlin", destination: "sheffield" }),
-            Action.maneuver({ origin: "berlin", destination: "edinburgh" }),
-            Action.maneuver({ origin: "berlin", destination: "norway" }),
           ]);
         case Nation.AH:
-          return new Set(
-            this.unitLocations(Nation.AH)
-              .map((origin) => {
-                return this.possibleDestinations(origin).map((destination) => {
-                  return Action.maneuver({ origin, destination });
-                });
-              })
-              .reduce((acc, val) => acc.concat(val), [])
-          );
+          if (lastMove.payload.slot === "maneuver1") {
+            return new Set([
+              Action.maneuver({
+                origin: "ionian sea",
+                destination: "western mediterranean sea",
+              }),
+              Action.maneuver({
+                origin: "ionian sea",
+                destination: "eastern mediterranean sea",
+              }),
+            ]);
+          } else {
+            return new Set([
+              Action.maneuver({ origin: "trieste", destination: "ionian sea" }),
+            ]);
+          }
         case Nation.IT:
-          const ITLandDestinations = [
-            "naples",
-            "tunis",
-            "algeria",
-            "spain",
-            "marseille",
-            "genoa",
-            "florence",
-            "venice",
-            "vienna",
-            "trieste",
-          ];
-          let romeActions = [];
-          ITLandDestinations.map((province) => {
-            romeActions.push(
-              Action.maneuver({ origin: "rome", destination: province })
-            );
-          });
           return new Set([
             Action.maneuver({
               origin: "naples",
               destination: "western mediterranean sea",
             }),
-            ...romeActions,
           ]);
         case Nation.RU:
-          const RULandDestinations = [
-            "warsaw",
-            "odessa",
-            "kiev",
-            "st. petersburg",
-            "danzig",
-            "prague",
-            "lemberg",
-            "romania",
-            "bulgaria",
-            "turkey",
-            "sweden",
-            "berlin",
-            "hamburg",
-            "denmark",
-          ];
-          let moscowActions = [];
-          RULandDestinations.map((province) => {
-            moscowActions.push(
-              Action.maneuver({ origin: "moscow", destination: province })
-            );
-          });
           return new Set([
             Action.maneuver({
               origin: "st. petersburg",
@@ -500,7 +436,6 @@ export default class Imperial {
               origin: "odessa",
               destination: "black sea",
             }),
-            ...moscowActions,
           ]);
       }
     } else if (lastMove.type === "rondel") {
@@ -523,6 +458,183 @@ export default class Imperial {
             challenger: Nation.FR,
           }),
           ,
+        ]);
+      } else if (lastMove.payload.destination === "north sea") {
+        return new Set([
+          Action.maneuver({ origin: "berlin", destination: "danzig" }),
+          Action.maneuver({ origin: "berlin", destination: "prague" }),
+          Action.maneuver({ origin: "berlin", destination: "munich" }),
+          Action.maneuver({ origin: "berlin", destination: "cologne" }),
+          Action.maneuver({ origin: "berlin", destination: "hamburg" }),
+          Action.maneuver({ origin: "berlin", destination: "dijon" }),
+          Action.maneuver({ origin: "berlin", destination: "belgium" }),
+          Action.maneuver({ origin: "berlin", destination: "holland" }),
+          Action.maneuver({ origin: "berlin", destination: "denmark" }),
+          Action.maneuver({ origin: "berlin", destination: "london" }),
+          Action.maneuver({ origin: "berlin", destination: "sheffield" }),
+          Action.maneuver({ origin: "berlin", destination: "edinburgh" }),
+          Action.maneuver({ origin: "berlin", destination: "norway" }),
+        ]);
+      } else if (lastMove.payload.destination === "ionian sea") {
+        const landDestinations = [
+          "warsaw",
+          "kiev",
+          "budapest",
+          "prague",
+          "romania",
+          "danzig",
+          "munich",
+          "genoa",
+          "venice",
+          "berlin",
+          "vienna",
+          "trieste",
+          "west balkan",
+          "rome",
+          "naples",
+          "greece",
+          "tunis",
+        ];
+        let lembergActions = [];
+        let budapestActions = [];
+        let viennaActions = [];
+        landDestinations.map((province) => {
+          lembergActions.push(
+            Action.maneuver({ origin: "lemberg", destination: province })
+          );
+          budapestActions.push(
+            Action.maneuver({ origin: "budapest", destination: province })
+          );
+          viennaActions.push(
+            Action.maneuver({ origin: "vienna", destination: province })
+          );
+        });
+
+        return new Set([
+          ...lembergActions,
+          ...viennaActions,
+          ...budapestActions,
+        ]);
+      } else if (
+        lastMove.payload.origin === "naples" &&
+        lastMove.payload.destination === "western mediterranean sea"
+      ) {
+        const ITLandDestinations = [
+          "naples",
+          "tunis",
+          "algeria",
+          "spain",
+          "marseille",
+          "genoa",
+          "florence",
+          "venice",
+          "vienna",
+          "trieste",
+        ];
+        let romeActions = [];
+        ITLandDestinations.map((province) => {
+          romeActions.push(
+            Action.maneuver({ origin: "rome", destination: province })
+          );
+        });
+        return new Set(romeActions);
+      } else if (lastMove.payload.destination === "bay of biscay") {
+        const FRLandDestinations = [
+          "brest",
+          "dijon",
+          "bordeaux",
+          "marseille",
+          "belgium",
+          "genoa",
+          "munich",
+          "spain",
+        ];
+        let parisActions = [];
+        FRLandDestinations.map((province) => {
+          parisActions.push(
+            Action.maneuver({ origin: "paris", destination: province })
+          );
+        });
+        return new Set(parisActions);
+      } else if (lastMove.payload.destination === "black sea") {
+        const RULandDestinations = [
+          "warsaw",
+          "odessa",
+          "kiev",
+          "st. petersburg",
+          "danzig",
+          "prague",
+          "lemberg",
+          "romania",
+          "bulgaria",
+          "turkey",
+          "sweden",
+          "berlin",
+          "hamburg",
+          "denmark",
+        ];
+        let moscowActions = [];
+        RULandDestinations.map((province) => {
+          moscowActions.push(
+            Action.maneuver({ origin: "moscow", destination: province })
+          );
+        });
+        return new Set(moscowActions);
+      } else if (lastMove.payload.destination === "western mediterranean sea") {
+        const sharedLandDestinations = [
+          "trieste",
+          "vienna",
+          "budapest",
+          "lemberg",
+          "prague",
+        ];
+        const romaniaDestinations = [
+          ...sharedLandDestinations,
+          "odessa",
+          "bulgaria",
+          "west balkan",
+        ];
+        const romaniaActions = [];
+        romaniaDestinations.map((province) => {
+          romaniaActions.push(
+            Action.maneuver({ origin: "romania", destination: province })
+          );
+        });
+        const westBalkanDestinations = [
+          ...sharedLandDestinations,
+          "greece",
+          "bulgaria",
+          "romania",
+          "tunis",
+          "naples",
+          "rome",
+          "venice",
+        ];
+        const westBalkanActions = [];
+        westBalkanDestinations.map((province) => {
+          westBalkanActions.push(
+            Action.maneuver({ origin: "west balkan", destination: province })
+          );
+        });
+        const tunisDestinations = [
+          ...sharedLandDestinations,
+          "algeria",
+          "greece",
+          "west balkan",
+          "venice",
+          "rome",
+          "naples",
+        ];
+        const tunisActions = [];
+        tunisDestinations.map((province) => {
+          tunisActions.push(
+            Action.maneuver({ origin: "tunis", destination: province })
+          );
+        });
+        return new Set([
+          ...romaniaActions,
+          ...westBalkanActions,
+          ...tunisActions,
         ]);
       } else {
         return new Set(this.rondelActions(this.getNation(this.log)));
@@ -564,7 +676,7 @@ export default class Imperial {
 
       return maneuvers.map((maneuver) => maneuver.payload.destination);
     } else {
-      return ["lemberg", "trieste", "vienna", "budapest"];
+      return ["lemberg", "vienna", "budapest"];
     }
   }
 
@@ -776,7 +888,10 @@ export default class Imperial {
   }
 
   startedConflict(lastMove) {
-    return true;
+    return (
+      lastMove.payload.origin === "marseille" &&
+      lastMove.payload.destination === "western mediterranean sea"
+    );
   }
 
   factoryCount(nation) {

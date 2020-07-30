@@ -610,7 +610,7 @@ describe("Schnelleinsteig", () => {
         Action.rondel({ nation: Nation.GB, cost: 0, slot: "maneuver1" })
       );
 
-      test("GB's available actions are to move liverpool and london units", () => {
+      test("GB's available actions are to move liverpool and london fleets", () => {
         const availableActions = new Set([
           Action.maneuver({
             origin: "liverpool",
@@ -647,9 +647,20 @@ describe("Schnelleinsteig", () => {
         Action.rondel({ nation: Nation.GE, cost: 0, slot: "maneuver2" })
       );
 
-      test("GE's available actions are to move hamburg and berlin units", () => {
+      test("GE's available fleet maneuver is hamburg", () => {
+        expect(game.availableActions).toEqual(
+          new Set([
+            Action.maneuver({ origin: "hamburg", destination: "north sea" }),
+          ])
+        );
+      });
+
+      test("GE's available army maneuver is berlin", () => {
+        game.tick(
+          Action.maneuver({ origin: "hamburg", destination: "north sea" })
+        );
+
         const availableActions = new Set([
-          Action.maneuver({ origin: "hamburg", destination: "north sea" }),
           Action.maneuver({ origin: "berlin", destination: "danzig" }),
           Action.maneuver({ origin: "berlin", destination: "prague" }),
           Action.maneuver({ origin: "berlin", destination: "munich" }),
@@ -669,9 +680,6 @@ describe("Schnelleinsteig", () => {
       });
 
       test("north sea and norway have GE flags", () => {
-        game.tick(
-          Action.maneuver({ origin: "hamburg", destination: "north sea" })
-        );
         game.tick(Action.maneuver({ origin: "berlin", destination: "norway" }));
         const northSeaFlag = game.provinces.get("north sea").flag;
         const norwayFlag = game.provinces.get("norway").flag;
@@ -730,7 +738,18 @@ describe("Schnelleinsteig", () => {
         Action.rondel({ nation: Nation.AH, cost: 0, slot: "maneuver2" })
       );
 
-      test("AH's available actions are to move trieste, lemberg, budapest, and vienna", () => {
+      test("AH's available fleet maneuver is trieste", () => {
+        expect(game.availableActions).toEqual(
+          new Set([
+            Action.maneuver({ origin: "trieste", destination: "ionian sea" }),
+          ])
+        );
+      });
+
+      test("AH's available army maneuvers are lemberg, budapest, and vienna", () => {
+        game.tick(
+          Action.maneuver({ origin: "trieste", destination: "ionian sea" })
+        );
         const landDestinations = [
           "warsaw",
           "kiev",
@@ -767,7 +786,6 @@ describe("Schnelleinsteig", () => {
 
         const availableActions = new Set([
           ...lembergActions,
-          Action.maneuver({ origin: "trieste", destination: "ionian sea" }),
           ...viennaActions,
           ...budapestActions,
         ]);
@@ -775,9 +793,6 @@ describe("Schnelleinsteig", () => {
       });
 
       test("ionian sea, romania, west balkan, and tunis have AH flags", () => {
-        game.tick(
-          Action.maneuver({ origin: "trieste", destination: "ionian sea" })
-        );
         game.tick(
           Action.maneuver({ origin: "lemberg", destination: "romania" })
         );
@@ -805,7 +820,24 @@ describe("Schnelleinsteig", () => {
         Action.rondel({ nation: Nation.IT, cost: 0, slot: "maneuver2" })
       );
 
-      test("IT's available actions are to move naples and rome", () => {
+      test("IT's available fleet maneuver is naples", () => {
+        expect(game.availableActions).toEqual(
+          new Set([
+            Action.maneuver({
+              origin: "naples",
+              destination: "western mediterranean sea",
+            }),
+          ])
+        );
+      });
+
+      test("IT's available army maneuver is rome", () => {
+        game.tick(
+          Action.maneuver({
+            origin: "naples",
+            destination: "western mediterranean sea",
+          })
+        );
         const landDestinations = [
           "naples",
           "tunis",
@@ -825,23 +857,11 @@ describe("Schnelleinsteig", () => {
           );
         });
 
-        const availableActions = new Set([
-          Action.maneuver({
-            origin: "naples",
-            destination: "western mediterranean sea",
-          }),
-          ...romeActions,
-        ]);
+        const availableActions = new Set(romeActions);
         expect(game.availableActions).toEqual(availableActions);
       });
 
       test("spain and western mediterranean sea have IT flags", () => {
-        game.tick(
-          Action.maneuver({
-            origin: "naples",
-            destination: "western mediterranean sea",
-          })
-        );
         game.tick(Action.maneuver({ origin: "rome", destination: "spain" }));
         const westernMediterraneanSeaFlag = game.provinces.get(
           "western mediterranean sea"
@@ -860,23 +880,7 @@ describe("Schnelleinsteig", () => {
         Action.rondel({ nation: Nation.FR, cost: 0, slot: "maneuver1" })
       );
 
-      test("FR's available actions are to move bordeaux, marseille, and paris", () => {
-        const landDestinations = [
-          "brest",
-          "dijon",
-          "bordeaux",
-          "marseille",
-          "belgium",
-          "genoa",
-          "munich",
-          "spain",
-        ];
-        let parisActions = [];
-        landDestinations.map((province) => {
-          parisActions.push(
-            Action.maneuver({ origin: "paris", destination: province })
-          );
-        });
+      test("FR's available fleet maneuvers are bordeaux and marseille", () => {
         const availableActions = new Set([
           Action.maneuver({
             origin: "bordeaux",
@@ -886,9 +890,7 @@ describe("Schnelleinsteig", () => {
             origin: "marseille",
             destination: "western mediterranean sea",
           }),
-          ...parisActions,
         ]);
-
         expect(game.availableActions).toEqual(availableActions);
       });
 
@@ -930,26 +932,35 @@ describe("Schnelleinsteig", () => {
         expect(westernMed.flag).toEqual(Nation.IT);
       });
 
-      test("Morocco and bay of biscay have FR flags", () => {
-        game.tick(
-          Action.maneuver({
-            origin: "marseille",
-            destination: "western mediterranean sea",
-          })
-        );
-        game.tick(
-          Action.fight({
-            province: "western mediterranean sea",
-            incumbent: Nation.IT,
-            challenger: Nation.FR,
-          })
-        );
+      test("FR's available army maneuver is paris", () => {
         game.tick(
           Action.maneuver({
             origin: "bordeaux",
             destination: "bay of biscay",
           })
         );
+        const landDestinations = [
+          "brest",
+          "dijon",
+          "bordeaux",
+          "marseille",
+          "belgium",
+          "genoa",
+          "munich",
+          "spain",
+        ];
+        let parisActions = [];
+        landDestinations.map((province) => {
+          parisActions.push(
+            Action.maneuver({ origin: "paris", destination: province })
+          );
+        });
+        const availableActions = new Set(parisActions);
+
+        expect(game.availableActions).toEqual(availableActions);
+      });
+
+      test("Morocco and bay of biscay have FR flags", () => {
         game.tick(
           Action.maneuver({
             origin: "paris",
@@ -1315,7 +1326,34 @@ describe("Schnelleinsteig", () => {
         Action.rondel({ nation: Nation.RU, cost: 0, slot: "maneuver2" })
       );
 
-      test("RU's available actions are to move st. petersburg, odessa, and moscow (x3)", () => {
+      test("RU's available fleet maneuvers are st. petersburg and odessa", () => {
+        const availableActions = new Set([
+          Action.maneuver({
+            origin: "st. petersburg",
+            destination: "baltic sea",
+          }),
+          Action.maneuver({
+            origin: "odessa",
+            destination: "black sea",
+          }),
+        ]);
+
+        expect(game.availableActions).toEqual(availableActions);
+      });
+
+      test("RU's available army maneuver is moscow (x3)", () => {
+        game.tick(
+          Action.maneuver({
+            origin: "st. petersburg",
+            destination: "baltic sea",
+          })
+        );
+        game.tick(
+          Action.maneuver({
+            origin: "odessa",
+            destination: "black sea",
+          })
+        );
         const landDestinations = [
           "warsaw",
           "odessa",
@@ -1338,34 +1376,12 @@ describe("Schnelleinsteig", () => {
             Action.maneuver({ origin: "moscow", destination: province })
           );
         });
+        const availableActions = new Set(moscowActions);
 
-        const availableActions = new Set([
-          Action.maneuver({
-            origin: "st. petersburg",
-            destination: "baltic sea",
-          }),
-          Action.maneuver({
-            origin: "odessa",
-            destination: "black sea",
-          }),
-          ...moscowActions,
-        ]);
         expect(game.availableActions).toEqual(availableActions);
       });
 
       test("Sweden, Baltic Sea, Black Sea, and Turkey have RU flags", () => {
-        game.tick(
-          Action.maneuver({
-            origin: "st. petersburg",
-            destination: "baltic sea",
-          })
-        );
-        game.tick(
-          Action.maneuver({
-            origin: "odessa",
-            destination: "black sea",
-          })
-        );
         game.tick(
           Action.maneuver({
             origin: "moscow",
@@ -1405,7 +1421,28 @@ describe("Schnelleinsteig", () => {
         Action.rondel({ nation: Nation.AH, cost: 0, slot: "maneuver1" })
       );
 
-      test("AH's available actions are to move Tunis, Ionian Sea, West Balkan, and Romania", () => {
+      test("AH's available fleet maneuver is ionian sea", () => {
+        const availableActions = new Set([
+          Action.maneuver({
+            origin: "ionian sea",
+            destination: "western mediterranean sea",
+          }),
+          Action.maneuver({
+            origin: "ionian sea",
+            destination: "eastern mediterranean sea",
+          }),
+        ]);
+
+        expect(game.availableActions).toEqual(availableActions);
+      });
+
+      test("AH's available army maneuvers are Tunis, West Balkan, and Romania", () => {
+        game.tick(
+          Action.maneuver({
+            origin: "ionian sea",
+            destination: "western mediterranean sea",
+          })
+        );
         const sharedLandDestinations = [
           "trieste",
           "vienna",
@@ -1457,14 +1494,6 @@ describe("Schnelleinsteig", () => {
           );
         });
         const availableActions = new Set([
-          Action.maneuver({
-            origin: "ionian sea",
-            destination: "western mediterranean sea",
-          }),
-          Action.maneuver({
-            origin: "ionian sea",
-            destination: "eastern mediterranean sea",
-          }),
           ...romaniaActions,
           ...westBalkanActions,
           ...tunisActions,
@@ -1474,12 +1503,6 @@ describe("Schnelleinsteig", () => {
       });
 
       test("Algeria, Bulgaria, and Western Mediterranean have AH flags", () => {
-        game.tick(
-          Action.maneuver({
-            origin: "ionian sea",
-            destination: "western mediterranean sea",
-          })
-        );
         game.tick(Action.maneuver({ origin: "tunis", destination: "algeria" }));
         game.tick(
           Action.maneuver({ origin: "west balkan", destination: "bulgaria" })
