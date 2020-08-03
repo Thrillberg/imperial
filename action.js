@@ -43,7 +43,7 @@ export default {
   buildFactory: makeAction("buildFactory", ["province"]),
   coexist: makeAction("coexist", ["province", "incumbent", "challenger"]),
   fight: makeAction("fight", ["province", "incumbent", "challenger"]),
-  import: makeAction("import", ["province"]),
+  import: makeAction("import", ["province", "unit"]),
   maneuver: makeAction("maneuver", ["origin", "destination"]),
   production: makeAction("production", ["province"]),
   rondel: makeAction("rondel", ["nation", "cost", "slot"]),
