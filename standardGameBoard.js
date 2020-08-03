@@ -3,6 +3,12 @@ import GameBoard from "./gameBoard";
 
 export default new GameBoard({
   nodes: [
+    // Austria-Hungary
+    { name: "budapest", nation: Nation.AH, isOcean: false },
+    { name: "lemberg", nation: Nation.AH, isOcean: false },
+    { name: "prague", nation: Nation.AH, isOcean: false },
+    { name: "trieste", nation: Nation.AH, isOcean: false },
+    { name: "vienna", nation: Nation.AH, isOcean: false },
     // France
     { name: "paris", nation: Nation.FR, isOcean: false },
     { name: "dijon", nation: Nation.FR, isOcean: false },
@@ -10,6 +16,10 @@ export default new GameBoard({
     { name: "bordeaux", nation: Nation.FR, isOcean: false },
     { name: "marseille", nation: Nation.FR, isOcean: false },
     // Germany
+    { name: "berlin", nation: Nation.GE, isOcean: false },
+    { name: "cologne", nation: Nation.GE, isOcean: false },
+    { name: "danzig", nation: Nation.GE, isOcean: false },
+    { name: "hamburg", nation: Nation.GE, isOcean: false },
     { name: "munich", nation: Nation.GE, isOcean: false },
     // Great Britain
     { name: "liverpool", nation: Nation.GB, isOcean: false },
@@ -19,26 +29,39 @@ export default new GameBoard({
     { name: "genoa", nation: Nation.IT, isOcean: false },
     { name: "naples", nation: Nation.IT, isOcean: false },
     { name: "rome", nation: Nation.IT, isOcean: false },
+    // Russia
+    { name: "moscow", nation: Nation.RU, isOcean: false },
+    { name: "st. petersburg", nation: Nation.RU, isOcean: false },
+    { name: "odessa", nation: Nation.RU, isOcean: false },
     // Neutral
     { name: "algeria", nation: null, isOcean: false },
+    { name: "baltic sea", nation: null, isOcean: true },
+    { name: "black sea", nation: null, isOcean: true },
     { name: "bay of biscay", nation: null, isOcean: true },
     { name: "belgium", nation: null, isOcean: false },
+    { name: "denmark", nation: null, isOcean: false },
+    { name: "eastern mediterranean sea", nation: null, isOcean: true },
     { name: "english channel", nation: null, isOcean: true },
+    { name: "holland", nation: null, isOcean: false },
     { name: "ionian sea", nation: null, isOcean: true },
     { name: "morocco", nation: null, isOcean: false },
     { name: "north atlantic", nation: null, isOcean: true },
+    { name: "north sea", nation: null, isOcean: true },
     { name: "portugal", nation: null, isOcean: false },
     { name: "spain", nation: null, isOcean: false },
     { name: "tunis", nation: null, isOcean: false },
     { name: "western mediterranean sea", nation: null, isOcean: true },
   ],
   edges: [
+    // Austria-Hungary
+    ["trieste", "ionian sea"],
     // France
     ["paris", "dijon"],
     ["paris", "brest"],
     ["paris", "english channel"],
     ["paris", "belgium"],
     ["dijon", "belgium"],
+    ["dijon", "berlin"],
     ["dijon", "munich"],
     ["dijon", "marseille"],
     ["dijon", "bordeaux"],
@@ -52,9 +75,24 @@ export default new GameBoard({
     ["marseille", "spain"],
     ["marseille", "western mediterranean sea"],
     ["marseille", "genoa"],
+    // Germany
+    ["berlin", "belgium"],
+    ["berlin", "cologne"],
+    ["berlin", "danzig"],
+    ["berlin", "denmark"],
+    ["berlin", "hamburg"],
+    ["berlin", "holland"],
+    ["berlin", "munich"],
+    ["berlin", "prague"],
+    ["cologne", "munich"],
+    ["hamburg", "cologne"],
+    ["hamburg", "north sea"],
     // Great Britain
     ["liverpool", "north atlantic"],
     ["london", "english channel"],
+    // Russia
+    ["st. petersburg", "baltic sea"],
+    ["odessa", "black sea"],
     // Neutral
     ["morocco", "algeria"],
     ["morocco", "bay of biscay"],
@@ -62,6 +100,7 @@ export default new GameBoard({
     ["bay of biscay", "english channel"],
     ["bay of biscay", "spain"],
     ["bay of biscay", "portugal"],
+    ["ionian sea", "eastern mediterranean sea"],
     ["western mediterranean sea", "genoa"],
     ["western mediterranean sea", "florence"],
     ["western mediterranean sea", "rome"],
