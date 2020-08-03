@@ -696,11 +696,18 @@ export default class Imperial {
   }
 
   importAction(nation) {
-    return new Set(
+    const out = new Set(
       this.importLocations(nation).map((province) =>
-        Action.import({ province })
+        Action.import({ province, unit: "army" })
       )
     );
+    if (nation === Nation.AH) {
+      out.add(Action.import({ province: "trieste", unit: "fleet" }));
+    } else if (nation === Nation.RU) {
+      out.add(Action.import({ province: "st. petersburg", unit: "fleet" }));
+      out.add(Action.import({ province: "odessa", unit: "fleet" }));
+    }
+    return out;
   }
 
   importLocations(nation) {
