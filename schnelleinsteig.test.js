@@ -139,7 +139,10 @@ describe("Schnelleinsteig", () => {
           "prague",
           "lemberg",
           "trieste",
-        ].map((province) => Action.import({ province }));
+        ].map((province) => Action.import({ province, unit: "army" }));
+        expectedActions.push(
+          Action.import({ province: "trieste", unit: "fleet" })
+        );
 
         expect(game.availableActions).toEqual(new Set(expectedActions));
       });
@@ -702,7 +705,11 @@ describe("Schnelleinsteig", () => {
           "odessa",
           "kiev",
           "warsaw",
-        ].map((province) => Action.import({ province }));
+        ].map((province) => Action.import({ province, unit: "army" }));
+        expected.push(
+          Action.import({ province: "st. petersburg", unit: "fleet" })
+        );
+        expected.push(Action.import({ province: "odessa", unit: "fleet" }));
 
         expect(actions).toEqual(new Set(expected));
       });
