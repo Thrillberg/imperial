@@ -141,7 +141,7 @@ describe("Schnelleinsteig", () => {
         expect(game.availableActions).toEqual(new Set(expectedActions));
       });
 
-      test("AH's treasury is empty and Trieste & Lemberg have units", () => {
+      test("AH's treasury is empty and Trieste & Lemberg have AH armies", () => {
         const log = mainLog.slice(0, 15);
         log.push(
           Action.import({ province: "trieste" }),
@@ -149,12 +149,14 @@ describe("Schnelleinsteig", () => {
         );
         const game = Imperial.fromLog(log);
         const treasury = game.nations.get(Nation.AH).treasury;
-        const triesteUnitCount = game.provinces.get("trieste").unitCount;
-        const lembergUnitCount = game.provinces.get("lemberg").unitCount;
+        const triesteArmyCount = game.units.get(Nation.AH).get("trieste")
+          .armies;
+        const lembergArmyCount = game.units.get(Nation.AH).get("lemberg")
+          .armies;
 
         expect(treasury).toEqual(0);
-        expect(triesteUnitCount).toEqual(1);
-        expect(lembergUnitCount).toEqual(1);
+        expect(triesteArmyCount).toEqual(1);
+        expect(lembergArmyCount).toEqual(1);
       });
 
       test("it is now IT's turn", () => {
@@ -312,9 +314,9 @@ describe("Schnelleinsteig", () => {
         const log = mainLog.slice(0, 20);
         log.push(Action.buildFactory({ province: "marseille" }));
         const game = Imperial.fromLog(log);
-        const hasFactory = game.provinces.get("marseille").hasFactory;
+        const factory = game.provinces.get("marseille").factory;
 
-        expect(hasFactory).toEqual(true);
+        expect(factory).toEqual("shipyard");
       });
 
       test("FR has 6 million in its treasury", () => {
@@ -330,11 +332,11 @@ describe("Schnelleinsteig", () => {
         const log = mainLog.slice(0, 20);
         log.push(Action.buildFactory({ province: "marseille" }));
         const game = Imperial.fromLog(log);
-        const parisFactory = game.provinces.get("paris").hasFactory;
-        const bordeauxFactory = game.provinces.get("bordeaux").hasFactory;
+        const parisFactory = game.provinces.get("paris").factory;
+        const bordeauxFactory = game.provinces.get("bordeaux").factory;
 
-        expect(parisFactory).toEqual(true);
-        expect(bordeauxFactory).toEqual(true);
+        expect(parisFactory).toEqual("armaments");
+        expect(bordeauxFactory).toEqual("shipyard");
       });
 
       test("it is now GB's turn", () => {
@@ -354,11 +356,12 @@ describe("Schnelleinsteig", () => {
           Action.rondel({ nation: Nation.GB, cost: 0, slot: "production1" })
         );
         const game = Imperial.fromLog(log);
-        const londonUnitCount = game.provinces.get("london").unitCount;
-        const liverpoolUnitCount = game.provinces.get("liverpool").unitCount;
+        const londonFleetCount = game.units.get(Nation.GB).get("london").fleets;
+        const liverpoolFleetCount = game.units.get(Nation.GB).get("liverpool")
+          .fleets;
 
-        expect(londonUnitCount).toEqual(1);
-        expect(liverpoolUnitCount).toEqual(1);
+        expect(londonFleetCount).toEqual(1);
+        expect(liverpoolFleetCount).toEqual(1);
       });
 
       test("it is now GE's turn", () => {
@@ -380,11 +383,12 @@ describe("Schnelleinsteig", () => {
           Action.rondel({ nation: Nation.GE, cost: 0, slot: "production2" })
         );
         const game = Imperial.fromLog(log);
-        const berlinUnitCount = game.provinces.get("berlin").unitCount;
-        const hamburgUnitCount = game.provinces.get("hamburg").unitCount;
+        const berlinArmyCount = game.units.get(Nation.GE).get("berlin").armies;
+        const hamburgFleetCount = game.units.get(Nation.GE).get("hamburg")
+          .fleets;
 
-        expect(berlinUnitCount).toEqual(1);
-        expect(hamburgUnitCount).toEqual(1);
+        expect(berlinArmyCount).toEqual(1);
+        expect(hamburgFleetCount).toEqual(1);
       });
 
       test("it is now RU's turn", () => {
@@ -552,11 +556,12 @@ describe("Schnelleinsteig", () => {
       );
 
       test("vienna and budapest have 1 unit each", () => {
-        const viennaUnitCount = game.provinces.get("vienna").unitCount;
-        const budapestUnitCount = game.provinces.get("budapest").unitCount;
+        const viennaArmyCount = game.units.get(Nation.AH).get("vienna").armies;
+        const budapestArmyCount = game.units.get(Nation.AH).get("budapest")
+          .armies;
 
-        expect(viennaUnitCount).toEqual(1);
-        expect(budapestUnitCount).toEqual(1);
+        expect(viennaArmyCount).toEqual(1);
+        expect(budapestArmyCount).toEqual(1);
       });
 
       test("AH treasury remains empty", () => {
@@ -574,11 +579,11 @@ describe("Schnelleinsteig", () => {
       );
 
       test("rome and naples have 1 unit each", () => {
-        const romeUnitCount = game.provinces.get("rome").unitCount;
-        const naplesUnitCount = game.provinces.get("naples").unitCount;
+        const romeArmyCount = game.units.get(Nation.IT).get("rome").armies;
+        const naplesFleetCount = game.units.get(Nation.IT).get("naples").fleets;
 
-        expect(romeUnitCount).toEqual(1);
-        expect(naplesUnitCount).toEqual(1);
+        expect(romeArmyCount).toEqual(1);
+        expect(naplesFleetCount).toEqual(1);
       });
     });
 
@@ -590,13 +595,15 @@ describe("Schnelleinsteig", () => {
       );
 
       test("bordeaux, marseille, and paris have 1 unit each", () => {
-        const bordeauxUnitCount = game.provinces.get("bordeaux").unitCount;
-        const marseilleUnitCount = game.provinces.get("marseille").unitCount;
-        const parisUnitCount = game.provinces.get("paris").unitCount;
+        const bordeauxFleetCount = game.units.get(Nation.FR).get("bordeaux")
+          .fleets;
+        const marseilleFleetCount = game.units.get(Nation.FR).get("marseille")
+          .fleets;
+        const parisArmyCount = game.units.get(Nation.FR).get("paris").armies;
 
-        expect(bordeauxUnitCount).toEqual(1);
-        expect(marseilleUnitCount).toEqual(1);
-        expect(parisUnitCount).toEqual(1);
+        expect(bordeauxFleetCount).toEqual(1);
+        expect(marseilleFleetCount).toEqual(1);
+        expect(parisArmyCount).toEqual(1);
       });
     });
 
@@ -714,12 +721,13 @@ describe("Schnelleinsteig", () => {
         game.tick(Action.import({ province: "moscow" }));
 
         test("RU has 1 unit in st. petersburg and 2 units in moscow", () => {
-          const stPetersburgUnits = game.provinces.get("st. petersburg")
-            .unitCount;
-          const moscowUnits = game.provinces.get("moscow").unitCount;
+          const stPetersburgArmies = game.units
+            .get(Nation.RU)
+            .get("st. petersburg").armies;
+          const moscowArmies = game.units.get(Nation.RU).get("moscow").armies;
 
-          expect(stPetersburgUnits).toEqual(1);
-          expect(moscowUnits).toEqual(2);
+          expect(stPetersburgArmies).toEqual(1);
+          expect(moscowArmies).toEqual(2);
         });
 
         test("RU has 3 million in treasury", () => {
@@ -929,7 +937,12 @@ describe("Schnelleinsteig", () => {
         );
         const westernMed = game.provinces.get("western mediterranean sea");
 
-        expect(westernMed.unitCount).toEqual(0);
+        expect(
+          game.units.get(Nation.IT).get("western mediterranean sea").fleets
+        ).toEqual(0);
+        expect(
+          game.units.get(Nation.FR).get("western mediterranean sea").fleets
+        ).toEqual(0);
         expect(westernMed.flag).toEqual(Nation.IT);
       });
 
@@ -969,9 +982,11 @@ describe("Schnelleinsteig", () => {
           })
         );
 
-        expect(game.provinces.get("bay of biscay").unitCount).toEqual(1);
+        expect(game.units.get(Nation.FR).get("bay of biscay").fleets).toEqual(
+          1
+        );
         expect(game.provinces.get("bay of biscay").flag).toEqual(Nation.FR);
-        expect(game.provinces.get("morocco").unitCount).toEqual(1);
+        expect(game.units.get(Nation.FR).get("morocco").armies).toEqual(1);
         expect(game.provinces.get("morocco").flag).toEqual(Nation.FR);
       });
     });
@@ -1087,11 +1102,11 @@ describe("Schnelleinsteig", () => {
       );
 
       test("Odessa and Moscow have units", () => {
-        const odessaUnitCount = game.provinces.get("odessa").unitCount;
-        const moscowUnitCount = game.provinces.get("moscow").unitCount;
+        const odessaFleetCount = game.units.get(Nation.RU).get("odessa").fleets;
+        const moscowArmyCount = game.units.get(Nation.RU).get("moscow").armies;
 
-        expect(odessaUnitCount).toEqual(1);
-        expect(moscowUnitCount).toEqual(3);
+        expect(odessaFleetCount).toEqual(1);
+        expect(moscowArmyCount).toEqual(3);
       });
     });
   });
@@ -1147,11 +1162,11 @@ describe("Schnelleinsteig", () => {
       );
 
       test("Rome and Naples have units", () => {
-        const romeUnitCount = game.provinces.get("rome").unitCount;
-        const naplesUnitCount = game.provinces.get("naples").unitCount;
+        const romeArmyCount = game.units.get(Nation.IT).get("rome").armies;
+        const naplesFleetCount = game.units.get(Nation.IT).get("naples").fleets;
 
-        expect(romeUnitCount).toEqual(1);
-        expect(naplesUnitCount).toEqual(1);
+        expect(romeArmyCount).toEqual(1);
+        expect(naplesFleetCount).toEqual(1);
       });
     });
 
@@ -1163,13 +1178,15 @@ describe("Schnelleinsteig", () => {
       );
 
       test("Bordeaux, Marseille and Paris have units", () => {
-        const bordeauxUnitCount = game.provinces.get("bordeaux").unitCount;
-        const marseilleUnitCount = game.provinces.get("marseille").unitCount;
-        const parisUnitCount = game.provinces.get("paris").unitCount;
+        const bordeauxFleetCount = game.units.get(Nation.FR).get("bordeaux")
+          .fleets;
+        const marseilleFleetCount = game.units.get(Nation.FR).get("marseille")
+          .fleets;
+        const parisArmyCount = game.units.get(Nation.FR).get("paris").armies;
 
-        expect(bordeauxUnitCount).toEqual(1);
-        expect(marseilleUnitCount).toEqual(1);
-        expect(parisUnitCount).toEqual(1);
+        expect(bordeauxFleetCount).toEqual(1);
+        expect(marseilleFleetCount).toEqual(1);
+        expect(parisArmyCount).toEqual(1);
       });
 
       describe("investor card is activated", () => {
@@ -1280,12 +1297,13 @@ describe("Schnelleinsteig", () => {
         Action.rondel({ nation: Nation.GB, cost: 0, slot: "production2" })
       );
 
-      test("London and Liverpool have units", () => {
-        const londonUnitCount = game.provinces.get("london").unitCount;
-        const liverpoolUnitCount = game.provinces.get("liverpool").unitCount;
+      test("London and Liverpool have GB fleets", () => {
+        const londonFleetCount = game.units.get(Nation.GB).get("london").fleets;
+        const liverpoolFleetCount = game.units.get(Nation.GB).get("liverpool")
+          .fleets;
 
-        expect(londonUnitCount).toEqual(1);
-        expect(liverpoolUnitCount).toEqual(1);
+        expect(londonFleetCount).toEqual(1);
+        expect(liverpoolFleetCount).toEqual(1);
       });
     });
 
@@ -1307,9 +1325,9 @@ describe("Schnelleinsteig", () => {
         game.tick(Action.buildFactory({ province: "cologne" }));
 
         test("Cologne has a factory", () => {
-          const hasFactory = game.provinces.get("cologne").hasFactory;
+          const factory = game.provinces.get("cologne").factory;
 
-          expect(hasFactory).toEqual(true);
+          expect(factory).toEqual("armaments");
         });
 
         test("GE has 9 treasury", () => {

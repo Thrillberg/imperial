@@ -8,11 +8,12 @@ export default class GameBoard {
   }
 
   setupGraph(nodes) {
-    for (const { name: province, nation, isOcean } of nodes) {
+    for (const { name: province, nation, isOcean, factoryType } of nodes) {
       this.graph.set(province, {
         nation,
         neighbors: new Set(),
         isOcean,
+        factoryType,
       });
 
       if (!this.byNation.has(nation)) {
