@@ -98,6 +98,18 @@ export default new GameBoard({
     },
     // Great Britain
     {
+      name: "dublin",
+      nation: Nation.GB,
+      isOcean: false,
+      factoryType: "armaments",
+    },
+    {
+      name: "edinburgh",
+      nation: Nation.GB,
+      isOcean: false,
+      factoryType: "armaments",
+    },
+    {
       name: "liverpool",
       nation: Nation.GB,
       isOcean: false,
@@ -108,6 +120,12 @@ export default new GameBoard({
       nation: Nation.GB,
       isOcean: false,
       factoryType: "shipyard",
+    },
+    {
+      name: "sheffield",
+      nation: Nation.GB,
+      isOcean: false,
+      factoryType: "armaments",
     },
     // Italy
     {
@@ -134,7 +152,19 @@ export default new GameBoard({
       isOcean: false,
       factoryType: "armaments",
     },
+    {
+      name: "venice",
+      nation: Nation.IT,
+      isOcean: false,
+      factoryType: "armaments",
+    },
     // Russia
+    {
+      name: "kiev",
+      nation: Nation.RU,
+      isOcean: false,
+      factoryType: "armaments",
+    },
     {
       name: "moscow",
       nation: Nation.RU,
@@ -153,12 +183,19 @@ export default new GameBoard({
       isOcean: false,
       factoryType: "shipyard",
     },
+    {
+      name: "warsaw",
+      nation: Nation.RU,
+      isOcean: false,
+      factoryType: "armaments",
+    },
     // Neutral
     { name: "algeria", nation: null, isOcean: false },
     { name: "baltic sea", nation: null, isOcean: true },
     { name: "black sea", nation: null, isOcean: true },
     { name: "bay of biscay", nation: null, isOcean: true },
     { name: "belgium", nation: null, isOcean: false },
+    { name: "bulgaria", nation: null, isOcean: false },
     { name: "denmark", nation: null, isOcean: false },
     { name: "eastern mediterranean sea", nation: null, isOcean: true },
     { name: "english channel", nation: null, isOcean: true },
@@ -167,9 +204,14 @@ export default new GameBoard({
     { name: "morocco", nation: null, isOcean: false },
     { name: "north atlantic", nation: null, isOcean: true },
     { name: "north sea", nation: null, isOcean: true },
+    { name: "norway", nation: null, isOcean: false },
     { name: "portugal", nation: null, isOcean: false },
+    { name: "romania", nation: null, isOcean: false },
     { name: "spain", nation: null, isOcean: false },
+    { name: "sweden", nation: null, isOcean: false },
     { name: "tunis", nation: null, isOcean: false },
+    { name: "turkey", nation: null, isOcean: false },
+    { name: "west balkan", nation: null, isOcean: false },
     { name: "western mediterranean sea", nation: null, isOcean: true },
   ],
   edges: [
