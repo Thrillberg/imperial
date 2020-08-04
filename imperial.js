@@ -18,59 +18,8 @@ export default class Imperial {
 
   setupProvinces() {
     const provinces = new Map();
-    for (const province of [
-      "algeria",
-      "baltic sea",
-      "bay of biscay",
-      "berlin",
-      "black sea",
-      "bordeaux",
-      "brest",
-      "budapest",
-      "bulgaria",
-      "cologne",
-      "danzig",
-      "dijon",
-      "dublin",
-      "edinburgh",
-      "english channel",
-      "florence",
-      "genoa",
-      "hamburg",
-      "ionian sea",
-      "kiev",
-      "lemberg",
-      "liverpool",
-      "london",
-      "marseille",
-      "morocco",
-      "moscow",
-      "munich",
-      "naples",
-      "north atlantic",
-      "north sea",
-      "norway",
-      "odessa",
-      "paris",
-      "prague",
-      "romania",
-      "rome",
-      "sheffield",
-      "spain",
-      "st. petersburg",
-      "sweden",
-      "trieste",
-      "tunis",
-      "turkey",
-      "venice",
-      "vienna",
-      "warsaw",
-      "west balkan",
-      "western mediterranean sea",
-    ]) {
-      provinces.set(province, {
-        factory: null,
-      });
+    for (const province of standardGameBoard.graph.keys()) {
+      provinces.set(province, { factory: null });
     }
     provinces.get("vienna").factory = "armaments";
     provinces.get("budapest").factory = "armaments";

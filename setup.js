@@ -1,4 +1,5 @@
 import { AllBonds, Bond, Nation } from "./constants.js";
+import standardGameBoard from "./standardGameBoard.js";
 
 const error = (want) => (x) => {
   throw new Error(`got=${x.value}, want=${want}`);
@@ -148,56 +149,9 @@ export default ({ players }) => {
 
   const emptyProvinces = () => {
     const provinces = new Map();
-    [
-      "algeria",
-      "baltic sea",
-      "bay of biscay",
-      "berlin",
-      "black sea",
-      "bordeaux",
-      "brest",
-      "budapest",
-      "bulgaria",
-      "cologne",
-      "danzig",
-      "dijon",
-      "dublin",
-      "edinburgh",
-      "english channel",
-      "florence",
-      "genoa",
-      "hamburg",
-      "ionian sea",
-      "kiev",
-      "lemberg",
-      "liverpool",
-      "london",
-      "marseille",
-      "morocco",
-      "moscow",
-      "munich",
-      "naples",
-      "north atlantic",
-      "north sea",
-      "norway",
-      "odessa",
-      "paris",
-      "prague",
-      "romania",
-      "rome",
-      "sheffield",
-      "spain",
-      "st. petersburg",
-      "sweden",
-      "trieste",
-      "tunis",
-      "turkey",
-      "venice",
-      "vienna",
-      "warsaw",
-      "west balkan",
-      "western mediterranean sea",
-    ].forEach((province) => provinces.set(province, { armies: 0, fleets: 0 }));
+    for (const province of standardGameBoard.graph.keys()) {
+      provinces.set(province, { armies: 0, fleets: 0 });
+    }
     return provinces;
   };
 
