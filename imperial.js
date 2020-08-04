@@ -112,6 +112,7 @@ export default class Imperial {
       this.nations = s.nations;
       this.order = s.order;
       this.players = s.players;
+      this.units = s.units;
       return;
     } else if (action.type === "bondPurchase") {
       this.purchaseBond(action);
@@ -139,6 +140,16 @@ export default class Imperial {
       this.nations.get(lastManeuver.payload.nation).flagCount += 1;
       this.provinces.get(action.payload.origin).unitCount -= 1;
       this.provinces.get(action.payload.destination).unitCount += 1;
+      if (
+        this.units.get(lastManeuver.payload.nation).get(action.payload.origin)
+          .fleets > 0
+      ) {
+        this.units.get(lastManeuver.payload.nation).get(action.payload.origin)
+          .fleets--;
+        this.units
+          .get(lastManeuver.payload.nation)
+          .get(action.payload.destination).fleets++;
+      }
       this.availableActions = this.availableActionsState(action);
     } else if (action.type === "fight") {
       this.provinces.get(action.payload.province).unitCount -= 2;
@@ -267,6 +278,14 @@ export default class Imperial {
         .forEach((province) => {
           this.provinces.get(province).unitCount += 1;
           this.nations.get(action.payload.nation).unitCount += 1;
+          if (
+            this.units.get(action.payload.nation).get(province).factory ===
+            "shipyard"
+          ) {
+            this.units.get(action.payload.nation).get(province).fleets++;
+          } else {
+            this.units.get(action.payload.nation).get(province).armies++;
+          }
         });
     }
   }
@@ -304,12 +323,18 @@ export default class Imperial {
     this.nations.get(nation).treasury -= 1;
     this.provinces.get(action.payload.province).unitCount += 1;
     this.nations.get(nation).unitCount += 1;
+    if (action.payload.unit === "fleet") {
+      this.units.get(nation).get(action.payload.province).fleets++;
+    } else {
+      this.units.get(nation).get(action.payload.province).armies++;
+    }
   }
 
   buildFactory(action) {
     const nation = this.getNationByProvince(action.payload.province);
     this.provinces.get(action.payload.province).hasFactory = true;
     this.nations.get(nation).treasury -= 5;
+    this.units.get(nation).get(action.payload.province).factory = "shipyard";
   }
 
   getNationByProvince(province) {
@@ -370,74 +395,27 @@ export default class Imperial {
     } else if (this.lastMoveWasTaxation(lastMove)) {
       return new Set(this.rondelActions(this.getNation(this.log)));
     } else if (this.lastMoveWasRondelManeuver(lastMove)) {
-      // TODO: Generalize to all nations
-      if (lastMove.payload.nation === Nation.GB) {
-        const destinations = new Set();
-        ["london", "liverpool"].map((origin) => {
-          for (const destination of standardGameBoard.neighborsFor({
-            origin,
-            nation: Nation.GB,
-            isFleet: true,
-            friendlyFleets: new Set(),
-          })) {
-            destinations.add(Action.maneuver({ origin, destination }));
-          }
-        });
+      const destinations = new Set();
+      const provincesWithFleets = new Map();
 
-        return destinations;
+      for (const [province, units] of this.units.get(lastMove.payload.nation)) {
+        if (units.fleets > 0) {
+          provincesWithFleets.set(province, units.fleets);
+        }
       }
-      switch (lastMove.payload.nation) {
-        case Nation.FR:
-          return new Set([
-            Action.maneuver({
-              origin: "bordeaux",
-              destination: "bay of biscay",
-            }),
-            Action.maneuver({
-              origin: "marseille",
-              destination: "western mediterranean sea",
-            }),
-          ]);
-        case Nation.GE:
-          return new Set([
-            Action.maneuver({ origin: "hamburg", destination: "north sea" }),
-          ]);
-        case Nation.AH:
-          if (lastMove.payload.slot === "maneuver1") {
-            return new Set([
-              Action.maneuver({
-                origin: "ionian sea",
-                destination: "western mediterranean sea",
-              }),
-              Action.maneuver({
-                origin: "ionian sea",
-                destination: "eastern mediterranean sea",
-              }),
-            ]);
-          } else {
-            return new Set([
-              Action.maneuver({ origin: "trieste", destination: "ionian sea" }),
-            ]);
-          }
-        case Nation.IT:
-          return new Set([
-            Action.maneuver({
-              origin: "naples",
-              destination: "western mediterranean sea",
-            }),
-          ]);
-        case Nation.RU:
-          return new Set([
-            Action.maneuver({
-              origin: "st. petersburg",
-              destination: "baltic sea",
-            }),
-            Action.maneuver({
-              origin: "odessa",
-              destination: "black sea",
-            }),
-          ]);
+
+      for (const [origin, count] of provincesWithFleets) {
+        for (const destination of standardGameBoard.neighborsFor({
+          origin,
+          nation: lastMove.payload.nation,
+          isFleet: true,
+          friendlyFleets: new Set(),
+        })) {
+          destinations.add(Action.maneuver({ origin, destination }));
+        }
       }
+
+      return destinations;
     } else if (lastMove.type === "rondel") {
       if (lastMove.payload.slot === "factory") {
         return new Set(this.buildFactoryAction(lastMove.payload.nation));
