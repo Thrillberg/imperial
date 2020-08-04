@@ -69,22 +69,21 @@ export default class Imperial {
       "western mediterranean sea",
     ]) {
       provinces.set(province, {
-        unitCount: 0,
-        hasFactory: false,
+        factory: null,
       });
     }
-    provinces.get("vienna").hasFactory = true;
-    provinces.get("budapest").hasFactory = true;
-    provinces.get("paris").hasFactory = true;
-    provinces.get("bordeaux").hasFactory = true;
-    provinces.get("london").hasFactory = true;
-    provinces.get("liverpool").hasFactory = true;
-    provinces.get("berlin").hasFactory = true;
-    provinces.get("hamburg").hasFactory = true;
-    provinces.get("rome").hasFactory = true;
-    provinces.get("naples").hasFactory = true;
-    provinces.get("odessa").hasFactory = true;
-    provinces.get("moscow").hasFactory = true;
+    provinces.get("vienna").factory = "armaments";
+    provinces.get("budapest").factory = "armaments";
+    provinces.get("paris").factory = "armaments";
+    provinces.get("bordeaux").factory = "shipyard";
+    provinces.get("london").factory = "shipyard";
+    provinces.get("liverpool").factory = "shipyard";
+    provinces.get("berlin").factory = "armaments";
+    provinces.get("hamburg").factory = "shipyard";
+    provinces.get("rome").factory = "armaments";
+    provinces.get("naples").factory = "shipyard";
+    provinces.get("odessa").factory = "shipyard";
+    provinces.get("moscow").factory = "armaments";
 
     return provinces;
   }
@@ -138,8 +137,6 @@ export default class Imperial {
       this.provinces.get(action.payload.destination).flag =
         lastManeuver.payload.nation;
       this.nations.get(lastManeuver.payload.nation).flagCount += 1;
-      this.provinces.get(action.payload.origin).unitCount -= 1;
-      this.provinces.get(action.payload.destination).unitCount += 1;
       if (
         this.units.get(lastManeuver.payload.nation).get(action.payload.origin)
           .fleets > 0
@@ -150,9 +147,20 @@ export default class Imperial {
           .get(lastManeuver.payload.nation)
           .get(action.payload.destination).fleets++;
       }
+      if (
+        this.units.get(lastManeuver.payload.nation).get(action.payload.origin)
+          .armies > 0
+      ) {
+        this.units.get(lastManeuver.payload.nation).get(action.payload.origin)
+          .armies--;
+        this.units
+          .get(lastManeuver.payload.nation)
+          .get(action.payload.destination).armies++;
+      }
       this.availableActions = this.availableActionsState(action);
     } else if (action.type === "fight") {
-      this.provinces.get(action.payload.province).unitCount -= 2;
+      this.units.get(Nation.FR).get(action.payload.province).fleets -= 1;
+      this.units.get(Nation.IT).get(action.payload.province).fleets -= 1;
       this.provinces.get(action.payload.province).flag =
         action.payload.incumbent;
     }
@@ -274,13 +282,9 @@ export default class Imperial {
       action.payload.slot === "production2"
     ) {
       this.homeProvinces(action.payload.nation)
-        .filter((province) => this.provinces.get(province).hasFactory === true)
+        .filter((province) => this.provinces.get(province).factory !== null)
         .forEach((province) => {
-          this.provinces.get(province).unitCount += 1;
-          if (
-            this.units.get(action.payload.nation).get(province).factory ===
-            "shipyard"
-          ) {
+          if (this.provinces.get(province).factory === "shipyard") {
             this.units.get(action.payload.nation).get(province).fleets++;
           } else {
             this.units.get(action.payload.nation).get(province).armies++;
@@ -329,7 +333,6 @@ export default class Imperial {
   import(action) {
     const nation = this.getNationByProvince(action.payload.province);
     this.nations.get(nation).treasury -= 1;
-    this.provinces.get(action.payload.province).unitCount += 1;
     if (action.payload.unit === "fleet") {
       this.units.get(nation).get(action.payload.province).fleets++;
     } else {
@@ -339,9 +342,12 @@ export default class Imperial {
 
   buildFactory(action) {
     const nation = this.getNationByProvince(action.payload.province);
-    this.provinces.get(action.payload.province).hasFactory = true;
+    this.provinces.get(
+      action.payload.province
+    ).factory = standardGameBoard.graph.get(
+      action.payload.province
+    ).factoryType;
     this.nations.get(nation).treasury -= 5;
-    this.units.get(nation).get(action.payload.province).factory = "shipyard";
   }
 
   getNationByProvince(province) {
