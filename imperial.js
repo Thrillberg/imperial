@@ -277,7 +277,6 @@ export default class Imperial {
         .filter((province) => this.provinces.get(province).hasFactory === true)
         .forEach((province) => {
           this.provinces.get(province).unitCount += 1;
-          this.nations.get(action.payload.nation).unitCount += 1;
           if (
             this.units.get(action.payload.nation).get(province).factory ===
             "shipyard"
@@ -295,7 +294,7 @@ export default class Imperial {
       const nationName = action.payload.nation;
       const nation = this.nations.get(nationName);
       const taxes = this.factoryCount(nationName) * 2 + nation.flagCount;
-      nation.treasury += taxes - nation.unitCount;
+      nation.treasury += taxes - this.unitCount(nationName);
 
       this.players[this.getController(nationName)].cash +=
         taxes - nation.taxChartPosition;
@@ -306,6 +305,15 @@ export default class Imperial {
         nation.powerPoints += 3;
       }
     }
+  }
+
+  unitCount(nation) {
+    let out = 0;
+    for (const [province, units] of this.units.get(nation)) {
+      out += units.armies;
+      out += units.fleets;
+    }
+    return out;
   }
 
   handleSkippingInvestorSlot(action) {
@@ -322,7 +330,6 @@ export default class Imperial {
     const nation = this.getNationByProvince(action.payload.province);
     this.nations.get(nation).treasury -= 1;
     this.provinces.get(action.payload.province).unitCount += 1;
-    this.nations.get(nation).unitCount += 1;
     if (action.payload.unit === "fleet") {
       this.units.get(nation).get(action.payload.province).fleets++;
     } else {

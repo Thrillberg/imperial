@@ -70,7 +70,6 @@ describe("Imperial", () => {
               controller: v,
               treasury: 11,
               rondelPosition: null,
-              unitCount: 0,
               taxChartPosition: 5,
               flagCount: 0,
               powerPoints: 0,
@@ -181,7 +180,6 @@ describe("Imperial", () => {
               rondelPosition: null,
               flagCount: 0,
               powerPoints: 0,
-              unitCount: 0,
               taxChartPosition: 5,
             },
           ])
@@ -284,7 +282,6 @@ describe("Imperial", () => {
               rondelPosition: null,
               flagCount: 0,
               powerPoints: 0,
-              unitCount: 0,
               taxChartPosition: 5,
             },
           ])
@@ -399,7 +396,6 @@ describe("Imperial", () => {
               rondelPosition: null,
               flagCount: 0,
               powerPoints: 0,
-              unitCount: 0,
               taxChartPosition: 5,
             },
           ])
@@ -506,7 +502,6 @@ describe("Imperial", () => {
               rondelPosition: null,
               flagCount: 0,
               powerPoints: 0,
-              unitCount: 0,
               taxChartPosition: 5,
             },
           ])

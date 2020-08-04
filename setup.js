@@ -133,7 +133,6 @@ export default ({ players }) => {
       treasury: totalCost,
       rondelPosition: null,
       flagCount: 0,
-      unitCount: 0,
       powerPoints: 0,
       taxChartPosition: 5,
     });
