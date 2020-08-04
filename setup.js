@@ -146,5 +146,83 @@ export default ({ players }) => {
       out.investorCardHolder = out.order[AHPlayerIndex - 1];
     }
   }
+
+  const emptyProvinces = () => {
+    const provinces = new Map();
+    [
+      "algeria",
+      "baltic sea",
+      "bay of biscay",
+      "berlin",
+      "black sea",
+      "bordeaux",
+      "brest",
+      "budapest",
+      "bulgaria",
+      "cologne",
+      "danzig",
+      "dijon",
+      "dublin",
+      "edinburgh",
+      "english channel",
+      "florence",
+      "genoa",
+      "hamburg",
+      "ionian sea",
+      "kiev",
+      "lemberg",
+      "liverpool",
+      "london",
+      "marseille",
+      "morocco",
+      "moscow",
+      "munich",
+      "naples",
+      "north atlantic",
+      "north sea",
+      "norway",
+      "odessa",
+      "paris",
+      "prague",
+      "romania",
+      "rome",
+      "sheffield",
+      "spain",
+      "st. petersburg",
+      "sweden",
+      "trieste",
+      "tunis",
+      "turkey",
+      "venice",
+      "vienna",
+      "warsaw",
+      "west balkan",
+      "western mediterranean sea",
+    ].forEach((province) =>
+      provinces.set(province, { armies: 0, fleets: 0, factory: null })
+    );
+    provinces.get("vienna").factory = "armaments";
+    provinces.get("budapest").factory = "armaments";
+    provinces.get("paris").factory = "armaments";
+    provinces.get("bordeaux").factory = "shipyard";
+    provinces.get("london").factory = "shipyard";
+    provinces.get("liverpool").factory = "shipyard";
+    provinces.get("berlin").factory = "armaments";
+    provinces.get("hamburg").factory = "shipyard";
+    provinces.get("rome").factory = "armaments";
+    provinces.get("naples").factory = "shipyard";
+    provinces.get("odessa").factory = "shipyard";
+    provinces.get("moscow").factory = "armaments";
+    return provinces;
+  };
+
+  const units = new Map();
+  [Nation.AH, Nation.IT, Nation.FR, Nation.GB, Nation.GE, Nation.RU].map(
+    (nation) => {
+      units.set(nation, emptyProvinces());
+    }
+  );
+  out.units = units;
+
   return out;
 };
