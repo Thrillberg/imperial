@@ -14,48 +14,60 @@ const cloneUnits = (units) => {
   return out;
 };
 
+const newGame = () => {
+  const board = new GameBoard({
+    nodes: [
+      { name: "a", nation: "nation" },
+      { name: "b", nation: "nation" },
+    ],
+    edges: [],
+  });
+
+  const game = new Imperial(board);
+  game.tick(
+    Action.initialize({
+      players: [
+        { id: "player1", nation: "nation" },
+        { id: "player2", nation: "nation2" },
+      ],
+      setup,
+    })
+  );
+  return game;
+};
+
 describe("imperial", () => {
   describe("#tick", () => {
     describe("import", () => {
-      const board = new GameBoard({
-        nodes: [
-          { name: "a", nation: "nation" },
-          { name: "b", nation: "nation" },
-        ],
-        edges: [],
-      });
-      const game = new Imperial(board);
-      game.tick(
-        Action.initialize({
-          players: [
-            { id: "player1", nation: "nation" },
-            { id: "player2", nation: "nation2" },
-          ],
-          setup,
-        })
-      );
-
       test("import nothing adds no new units", () => {
-        const before = cloneUnits(game.units);
+        const game = newGame();
+        const beforeUnits = cloneUnits(game.units);
+        const beforeTreasury = 13;
 
         game.tick(Action.blimport([]));
 
-        expect(game.units).toEqual(before);
+        expect(game.units).toEqual(beforeUnits);
+        expect(game.nations.get("nation").treasury).toEqual(beforeTreasury);
       });
 
       test("import one army", () => {
+        const game = newGame();
         const expected = cloneUnits(game.units);
         expected.get("nation").get("a").armies++;
+        const expectedTreasury = 12;
 
         game.tick(Action.blimport([{ province: "a", type: "army" }]));
 
         expect(game.units).toEqual(expected);
+        expect(game.nations.get("nation").treasury).toEqual(expectedTreasury);
       });
 
       test("import one army and one fleet", () => {
+        const game = newGame();
         const expected = cloneUnits(game.units);
         expected.get("nation").get("a").armies++;
         expected.get("nation").get("a").fleets++;
+        const expectedTreasury = 11;
 
         game.tick(
           Action.blimport([
@@ -65,13 +77,16 @@ describe("imperial", () => {
         );
 
         expect(game.units).toEqual(expected);
+        expect(game.nations.get("nation").treasury).toEqual(expectedTreasury);
       });
 
       test("import two armies and one fleet", () => {
+        const game = newGame();
         const expected = cloneUnits(game.units);
         expected.get("nation").get("a").armies++;
         expected.get("nation").get("b").armies++;
         expected.get("nation").get("a").fleets++;
+        const expectedTreasury = 10;
 
         game.tick(
           Action.blimport([
@@ -82,6 +97,7 @@ describe("imperial", () => {
         );
 
         expect(game.units).toEqual(expected);
+        expect(game.nations.get("nation").treasury).toEqual(expectedTreasury);
       });
     });
   });
