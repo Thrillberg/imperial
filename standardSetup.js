@@ -1,5 +1,4 @@
 import { AllBonds, Bond, Nation } from "./constants.js";
-import standardGameBoard from "./standardGameBoard.js";
 
 const error = (want) => (x) => {
   throw new Error(`got=${x.value}, want=${want}`);
@@ -162,6 +161,27 @@ export default ({ players, provinceNames }) => {
     }
   );
   out.units = units;
+
+  const provinces = new Map();
+  const armaments = ["vienna", "budapest", "paris", "berlin", "rome", "moscow"];
+  const shipyard = [
+    "bordeaux",
+    "london",
+    "liverpool",
+    "hamburg",
+    "naples",
+    "odessa",
+  ];
+  for (const province of provinceNames) {
+    let factory = null;
+    if (armaments.includes(province)) {
+      factory = "armaments";
+    } else if (shipyard.includes(province)) {
+      factory = "shipyard";
+    }
+    provinces.set(province, { factory });
+  }
+  out.provinces = provinces;
 
   return out;
 };
