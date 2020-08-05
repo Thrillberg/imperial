@@ -5,7 +5,7 @@ const error = (want) => (x) => {
   throw new Error(`got=${x.value}, want=${want}`);
 };
 
-export default ({ players }) => {
+export default ({ players, provinceNames }) => {
   const nationAssignments = {
     2: ({ id, nation }) =>
       nation.when({
@@ -149,7 +149,7 @@ export default ({ players }) => {
 
   const emptyProvinces = () => {
     const provinces = new Map();
-    for (const province of standardGameBoard.graph.keys()) {
+    for (const province of provinceNames) {
       provinces.set(province, { armies: 0, fleets: 0 });
     }
     return provinces;

@@ -10,7 +10,8 @@ export default class Imperial {
     return game;
   }
 
-  constructor() {
+  constructor(board) {
+    this.board = board || standardGameBoard;
     this.log = [];
     this.provinces = this.setupProvinces();
     this.rondelSlots = this.setupRondelSlots();
@@ -18,7 +19,7 @@ export default class Imperial {
 
   setupProvinces() {
     const provinces = new Map();
-    for (const province of standardGameBoard.graph.keys()) {
+    for (const province of this.board.graph.keys()) {
       provinces.set(province, { factory: null });
     }
     provinces.get("vienna").factory = "armaments";
@@ -54,7 +55,10 @@ export default class Imperial {
     if (action.type === "noop") {
       return;
     } else if (action.type === "initialize") {
-      const s = setup(action.payload);
+      const s = setup({
+        players: action.payload.players,
+        provinceNames: this.board.graph.keys(),
+      });
       this.availableBonds = s.availableBonds;
       this.investorCardHolder = s.investorCardHolder;
       this.nations = s.nations;
