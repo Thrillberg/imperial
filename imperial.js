@@ -54,7 +54,7 @@ export default class Imperial {
       this.handleTaxation(action);
       this.handleSkippingInvestorSlot(action);
       this.availableActions = this.availableActionsState(action);
-    } else if (action.type === "blimport") {
+    } else if (action.type === "import") {
       action.payload.forEach(({ province, type }) => {
         const nation = this.board.graph.get(province).nation;
         if (type === "army") {
@@ -64,8 +64,6 @@ export default class Imperial {
         }
         this.nations.get(nation).treasury--;
       });
-    } else if (action.type === "import") {
-      this.import(action);
     } else if (action.type === "buildFactory") {
       this.buildFactory(action);
     } else if (action.type === "maneuver") {
@@ -112,12 +110,11 @@ export default class Imperial {
 
   handleAdvancePlayer(action) {
     if (
-      action.type === "blimport" ||
+      action.type === "import" ||
       action.type === "bondPurchase" ||
       action.type === "buildFactory" ||
       action.payload.slot === "production1" ||
-      action.payload.slot === "production2" ||
-      this.log[this.log.length - 1].type === "import"
+      action.payload.slot === "production2"
     ) {
       this.currentNation = this.getNation(this.log);
       this.currentPlayerName = this.getController(this.currentNation);
@@ -270,16 +267,6 @@ export default class Imperial {
       this.previousRondelPosition(action.payload.nation) === "maneuver1"
     ) {
       this.players[this.currentPlayerName].cash += 2;
-    }
-  }
-
-  import(action) {
-    const nation = this.getNationByProvince(action.payload.province);
-    this.nations.get(nation).treasury -= 1;
-    if (action.payload.unit === "fleet") {
-      this.units.get(nation).get(action.payload.province).fleets++;
-    } else {
-      this.units.get(nation).get(action.payload.province).armies++;
     }
   }
 

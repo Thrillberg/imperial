@@ -144,26 +144,30 @@ describe("Schnelleinsteig", () => {
       test("AH's treasury is empty and Trieste & Lemberg have AH armies", () => {
         const log = mainLog.slice(0, 15);
         log.push(
-          Action.import({ province: "trieste" }),
-          Action.import({ province: "lemberg" })
+          Action.import([
+            { province: "trieste", type: "fleet" },
+            { province: "lemberg", type: "army" },
+          ])
         );
         const game = Imperial.fromLog(log);
         const treasury = game.nations.get(Nation.AH).treasury;
-        const triesteArmyCount = game.units.get(Nation.AH).get("trieste")
-          .armies;
+        const triesteFleetCount = game.units.get(Nation.AH).get("trieste")
+          .fleets;
         const lembergArmyCount = game.units.get(Nation.AH).get("lemberg")
           .armies;
 
         expect(treasury).toEqual(0);
-        expect(triesteArmyCount).toEqual(1);
+        expect(triesteFleetCount).toEqual(1);
         expect(lembergArmyCount).toEqual(1);
       });
 
       test("it is now IT's turn", () => {
         const log = mainLog.slice(0, 15);
         log.push(
-          Action.import({ province: "trieste" }),
-          Action.import({ province: "lemberg" })
+          Action.import([
+            { province: "trieste", type: "fleet" },
+            { province: "lemberg", type: "army" },
+          ])
         );
         const game = Imperial.fromLog(log);
         const currentPlayerName = game.getController(Nation.IT);
@@ -716,17 +720,21 @@ describe("Schnelleinsteig", () => {
       });
 
       describe("Russia imports 1 in St. Petersburg and 2 in Moscow", () => {
-        game.tick(Action.import({ province: "st. petersburg" }));
-        game.tick(Action.import({ province: "moscow" }));
-        game.tick(Action.import({ province: "moscow" }));
+        game.tick(
+          Action.import([
+            { province: "st. petersburg", type: "fleet" },
+            { province: "moscow", type: "army" },
+            { province: "moscow", type: "army" },
+          ])
+        );
 
-        test("RU has 1 unit in st. petersburg and 2 units in moscow", () => {
-          const stPetersburgArmies = game.units
+        test("RU has 1 fleet in st. petersburg and 2 armies in moscow", () => {
+          const stPetersburgFleets = game.units
             .get(Nation.RU)
-            .get("st. petersburg").armies;
+            .get("st. petersburg").fleets;
           const moscowArmies = game.units.get(Nation.RU).get("moscow").armies;
 
-          expect(stPetersburgArmies).toEqual(1);
+          expect(stPetersburgFleets).toEqual(1);
           expect(moscowArmies).toEqual(2);
         });
 
@@ -1095,7 +1103,7 @@ describe("Schnelleinsteig", () => {
     });
 
     describe("6. RU does production2", () => {
-      const log = mainLog.slice(0, 52);
+      const log = mainLog.slice(0, 53);
       const game = Imperial.fromLog(log);
       game.tick(
         Action.rondel({ nation: Nation.RU, cost: 0, slot: "production2" })

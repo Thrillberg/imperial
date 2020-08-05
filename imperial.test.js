@@ -44,7 +44,7 @@ describe("imperial", () => {
         const beforeUnits = cloneUnits(game.units);
         const beforeTreasury = 13;
 
-        game.tick(Action.blimport([]));
+        game.tick(Action.import([]));
 
         expect(game.units).toEqual(beforeUnits);
         expect(game.nations.get("nation").treasury).toEqual(beforeTreasury);
@@ -56,7 +56,7 @@ describe("imperial", () => {
         expected.get("nation").get("a").armies++;
         const expectedTreasury = 12;
 
-        game.tick(Action.blimport([{ province: "a", type: "army" }]));
+        game.tick(Action.import([{ province: "a", type: "army" }]));
 
         expect(game.units).toEqual(expected);
         expect(game.nations.get("nation").treasury).toEqual(expectedTreasury);
@@ -70,7 +70,7 @@ describe("imperial", () => {
         const expectedTreasury = 11;
 
         game.tick(
-          Action.blimport([
+          Action.import([
             { province: "a", type: "army" },
             { province: "a", type: "fleet" },
           ])
@@ -89,7 +89,7 @@ describe("imperial", () => {
         const expectedTreasury = 10;
 
         game.tick(
-          Action.blimport([
+          Action.import([
             { province: "a", type: "army" },
             { province: "b", type: "army" },
             { province: "a", type: "fleet" },
