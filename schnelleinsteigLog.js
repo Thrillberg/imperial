@@ -1,5 +1,6 @@
 import { Nation } from "./constants.js";
 import Action from "./action.js";
+import setup from "./standardSetup.js";
 
 export default [
   // setup
@@ -10,6 +11,7 @@ export default [
       { id: "Bert", nation: Nation.GB },
       { id: "Anton", nation: Nation.IT },
     ],
+    setup,
   }),
   Action.noop,
   Action.noop,

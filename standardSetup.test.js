@@ -1,4 +1,4 @@
-import setup from "./setup";
+import setup from "./standardSetup";
 import { AllBonds, Bond, Nation } from "./constants.js";
 
 describe("Imperial", () => {
@@ -13,6 +13,7 @@ describe("Imperial", () => {
           { id: "e", nation: Nation.IT },
           { id: "f", nation: Nation.GE },
         ],
+        provinceNames: new Set(["1", "2"]),
       };
       const actual = setup(payload);
 
@@ -126,6 +127,7 @@ describe("Imperial", () => {
           { id: "d", nation: Nation.GE },
           { id: "e", nation: Nation.IT },
         ],
+        provinceNames: new Set(["1", "2"]),
       };
       const actual = setup(payload);
 
@@ -233,6 +235,7 @@ describe("Imperial", () => {
           { id: "c", nation: Nation.AH },
           { id: "d", nation: Nation.GE },
         ],
+        provinceNames: new Set(["1", "2"]),
       };
       const actual = setup(payload);
 
@@ -334,6 +337,7 @@ describe("Imperial", () => {
           { id: "b", nation: Nation.FR },
           { id: "c", nation: Nation.AH },
         ],
+        provinceNames: new Set(["1", "2"]),
       };
       const actual = setup(payload);
 
@@ -447,6 +451,7 @@ describe("Imperial", () => {
           { id: "b", nation: Nation.AH },
           { id: "a", nation: Nation.IT },
         ],
+        provinceNames: new Set(["1", "2"]),
       };
       const actual = setup(payload);
 

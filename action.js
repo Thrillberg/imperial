@@ -23,22 +23,29 @@ import { memoize } from "./memo.js";
  *      single, object argument into a list of sorted values
  */
 const makeAction = (type, payloadKeys) => {
-  payloadKeys.sort();
-  const memoized = memoize((...values) => {
-    const payload = {};
-    values.forEach((v, i) => {
-      payload[payloadKeys[i]] = v;
+  if (payloadKeys) {
+    payloadKeys.sort();
+    const memoized = memoize((...values) => {
+      const payload = {};
+      values.forEach((v, i) => {
+        payload[payloadKeys[i]] = v;
+      });
+      return { type, payload };
     });
-    return { type, payload };
-  });
-  return (obj) => memoized(...payloadKeys.map((k) => obj[k]));
+    return (obj) => memoized(...payloadKeys.map((k) => obj[k]));
+  } else {
+    return (ary) => {
+      return { type, payload: ary };
+    };
+  }
 };
 
 const noop = Object.freeze({ type: "noop" });
 
 export default {
   noop,
-  initialize: makeAction("initialize", ["players"]),
+  initialize: makeAction("initialize", ["players", "setup"]),
+  blimport: makeAction("blimport"),
   bondPurchase: makeAction("bondPurchase", ["nation", "player", "cost"]),
   buildFactory: makeAction("buildFactory", ["province"]),
   coexist: makeAction("coexist", ["province", "incumbent", "challenger"]),
