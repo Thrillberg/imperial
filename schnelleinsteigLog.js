@@ -28,8 +28,11 @@ export default [
   Action.noop,
   // first round
   Action.rondel({ nation: Nation.AH, cost: 0, slot: "import" }),
-  Action.import({ province: "trieste", unit: "fleet" }),
-  Action.import({ province: "lemberg", unit: "army" }),
+  Action.import([
+    { province: "trieste", type: "fleet" },
+    { province: "lemberg", type: "army" },
+  ]),
+  Action.noop,
   Action.rondel({ nation: Nation.IT, cost: 0, slot: "investor" }),
   Action.bondPurchase({ nation: Nation.GE, player: "Daniel", cost: 4 }),
   Action.rondel({ nation: Nation.FR, cost: 0, slot: "factory" }),
@@ -49,9 +52,13 @@ export default [
   Action.maneuver({ origin: "hamburg", destination: "north sea" }),
   Action.maneuver({ origin: "berlin", destination: "norway" }),
   Action.rondel({ nation: Nation.RU, cost: 0, slot: "import" }),
-  Action.import({ province: "st. petersburg", unit: "fleet" }),
-  Action.import({ province: "moscow", unit: "army" }),
-  Action.import({ province: "moscow", unit: "army" }),
+  Action.import([
+    { province: "st. petersburg", type: "fleet" },
+    { province: "moscow", type: "army" },
+    { province: "moscow", type: "army" },
+  ]),
+  Action.noop,
+  Action.noop,
   // third round
   Action.rondel({ nation: Nation.AH, cost: 0, slot: "maneuver2" }),
   Action.maneuver({ origin: "trieste", destination: "ionian sea" }),
