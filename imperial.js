@@ -617,34 +617,14 @@ export default class Imperial {
   }
 
   importAction(nation) {
-    const out = new Set(
-      this.importLocations(nation).map((province) =>
-        Action.import({ province, unit: "army" })
-      )
-    );
-    if (nation === Nation.AH) {
-      out.add(Action.import({ province: "trieste", unit: "fleet" }));
-    } else if (nation === Nation.RU) {
-      out.add(Action.import({ province: "st. petersburg", unit: "fleet" }));
-      out.add(Action.import({ province: "odessa", unit: "fleet" }));
+    const out = new Set();
+    for (const province of this.board.byNation.get(nation)) {
+      if (this.board.graph.get(province).factoryType === "shipyard") {
+        out.add(Action.import({ province, unit: "fleet" }));
+      }
+      out.add(Action.import({ province, unit: "army" }));
     }
     return out;
-  }
-
-  importLocations(nation) {
-    if (nation === Nation.AH) {
-      return ["vienna", "budapest", "prague", "lemberg", "trieste"];
-    } else if (nation === Nation.IT) {
-      return ["rome", "naples"];
-    } else if (nation === Nation.FR) {
-      return ["paris", "bordeaux"];
-    } else if (nation === Nation.GB) {
-      return ["london", "liverpool"];
-    } else if (nation === Nation.GE) {
-      return ["berlin", "hamburg"];
-    } else if (nation === Nation.RU) {
-      return ["moscow", "st. petersburg", "odessa", "kiev", "warsaw"];
-    }
   }
 
   buildFactoryAction(nation) {
