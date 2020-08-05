@@ -2,8 +2,8 @@ export default ({ players, provinceNames }) => {
   return {
     currentNation: "nation",
     nations: new Map([
-      ["nation", { controller: "player1" }],
-      ["nation2", { controller: "player2" }],
+      ["nation", { controller: "player1", treasury: 13 }],
+      ["nation2", { controller: "player2", treasury: 13 }],
     ]),
     units: new Map([
       [

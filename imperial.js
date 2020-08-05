@@ -62,6 +62,7 @@ export default class Imperial {
         } else {
           this.units.get(nation).get(province).fleets++;
         }
+        this.nations.get(nation).treasury--;
       });
     } else if (action.type === "import") {
       this.import(action);
