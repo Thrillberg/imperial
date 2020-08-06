@@ -1,5 +1,5 @@
-import { Nation } from "./constants";
-import GameBoard from "./gameBoard";
+import { Nation } from "./constants.js";
+import GameBoard from "./gameBoard.js";
 
 export default new GameBoard({
   nodes: [

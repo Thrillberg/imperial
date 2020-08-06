@@ -1,6 +1,6 @@
 import { Nation, Bond } from "./constants.js";
 import Action from "./action.js";
-import standardGameBoard from "./standardGameBoard";
+import standardGameBoard from "./standardGameBoard.js";
 
 export default class Imperial {
   static fromLog(log) {
