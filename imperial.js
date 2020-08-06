@@ -66,6 +66,16 @@ export default class Imperial {
       });
     } else if (action.type === "buildFactory") {
       this.buildFactory(action);
+    } else if (action.type === "blaneuver") {
+      action.payload.forEach(({ origin, destination, nation, type }) => {
+        if (type === "army") {
+          this.units.get(nation).get(origin).armies--;
+          this.units.get(nation).get(destination).armies++;
+        } else {
+          this.units.get(nation).get(origin).fleets--;
+          this.units.get(nation).get(destination).fleets++;
+        }
+      });
     } else if (action.type === "maneuver") {
       const maneuverActions = this.log.filter(
         (action) =>

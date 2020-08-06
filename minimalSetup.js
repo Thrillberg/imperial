@@ -11,6 +11,8 @@ export default ({ players, provinceNames }) => {
         new Map([
           ["a", { armies: 0, fleets: 0 }],
           ["b", { armies: 0, fleets: 0 }],
+          ["c", { armies: 0, fleets: 0 }],
+          ["d", { armies: 0, fleets: 0 }],
         ]),
       ],
       ["nation2", new Map()],

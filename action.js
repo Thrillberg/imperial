@@ -45,6 +45,7 @@ const noop = Object.freeze({ type: "noop" });
 export default {
   noop,
   initialize: makeAction("initialize", ["players", "setup"]),
+  blaneuver: makeAction("blaneuver"),
   bondPurchase: makeAction("bondPurchase", ["nation", "player", "cost"]),
   buildFactory: makeAction("buildFactory", ["province"]),
   coexist: makeAction("coexist", ["province", "incumbent", "challenger"]),

@@ -19,8 +19,14 @@ const newGame = () => {
     nodes: [
       { name: "a", nation: "nation" },
       { name: "b", nation: "nation" },
+      { name: "c", nation: "nation" },
+      { name: "d", nation: "nation", isOcean: true },
     ],
-    edges: [],
+    edges: [
+      ["a", "b"],
+      ["b", "c"],
+      ["a", "d"],
+    ],
   });
 
   const game = new Imperial(board);
@@ -98,6 +104,53 @@ describe("imperial", () => {
 
         expect(game.units).toEqual(expected);
         expect(game.nations.get("nation").treasury).toEqual(expectedTreasury);
+      });
+    });
+
+    describe("maneuver", () => {
+      test("maneuver with no units", () => {
+        const game = newGame();
+        const expected = cloneUnits(game.units);
+
+        game.tick(Action.blaneuver([]));
+
+        expect(game.units).toEqual(expected);
+      });
+
+      test("maneuver with one army", () => {
+        const game = newGame();
+        game.units.get("nation").get("a").armies++;
+        const expected = cloneUnits(game.units);
+        expected.get("nation").get("a").armies--;
+        expected.get("nation").get("b").armies++;
+
+        game.tick(
+          Action.blaneuver([
+            { origin: "a", destination: "b", nation: "nation", type: "army" },
+          ])
+        );
+
+        expect(game.units).toEqual(expected);
+      });
+
+      test("maneuver with an army and a fleet", () => {
+        const game = newGame();
+        game.units.get("nation").get("a").armies++;
+        game.units.get("nation").get("a").fleets++;
+        const expected = cloneUnits(game.units);
+        expected.get("nation").get("a").armies--;
+        expected.get("nation").get("c").armies++;
+        expected.get("nation").get("a").fleets--;
+        expected.get("nation").get("d").fleets++;
+
+        game.tick(
+          Action.blaneuver([
+            { origin: "a", destination: "c", nation: "nation", type: "army" },
+            { origin: "a", destination: "d", nation: "nation", type: "fleet" },
+          ])
+        );
+
+        expect(game.units).toEqual(expected);
       });
     });
   });
