@@ -179,7 +179,7 @@ export default ({ players, provinceNames }) => {
     } else if (shipyard.includes(province)) {
       factory = "shipyard";
     }
-    provinces.set(province, { factory });
+    provinces.set(province, { factory, flag: null });
   }
   out.provinces = provinces;
 

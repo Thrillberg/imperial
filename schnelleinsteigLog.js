@@ -46,11 +46,36 @@ export default [
   Action.rondel({ nation: Nation.IT, cost: 0, slot: "production2" }),
   Action.rondel({ nation: Nation.FR, cost: 0, slot: "production1" }),
   Action.rondel({ nation: Nation.GB, cost: 0, slot: "maneuver1" }),
-  Action.maneuver({ origin: "liverpool", destination: "north atlantic" }),
-  Action.maneuver({ origin: "london", destination: "english channel" }),
+  Action.maneuver([
+    {
+      origin: "liverpool",
+      destination: "north atlantic",
+      nation: Nation.GB,
+      type: "fleet",
+    },
+    {
+      origin: "london",
+      destination: "english channel",
+      nation: Nation.GB,
+      type: "fleet",
+    },
+  ]),
+  Action.noop,
   Action.rondel({ nation: Nation.GE, cost: 0, slot: "maneuver2" }),
-  Action.maneuver({ origin: "hamburg", destination: "north sea" }),
-  Action.maneuver({ origin: "berlin", destination: "norway" }),
+  Action.maneuver([
+    {
+      origin: "hamburg",
+      destination: "north sea",
+      nation: Nation.GE,
+      type: "fleet",
+    },
+    {
+      origin: "berlin",
+      destination: "norway",
+      nation: Nation.GE,
+      type: "army",
+    },
+  ]),
   Action.rondel({ nation: Nation.RU, cost: 0, slot: "import" }),
   Action.import([
     { province: "st. petersburg", type: "fleet" },
@@ -61,28 +86,78 @@ export default [
   Action.noop,
   // third round
   Action.rondel({ nation: Nation.AH, cost: 0, slot: "maneuver2" }),
-  Action.maneuver({ origin: "trieste", destination: "ionian sea" }),
-  Action.maneuver({ origin: "lemberg", destination: "romania" }),
-  Action.maneuver({ origin: "budapest", destination: "west balkan" }),
-  Action.maneuver({ origin: "vienna", destination: "tunis" }),
+  Action.maneuver([
+    {
+      origin: "trieste",
+      destination: "ionian sea",
+      nation: Nation.AH,
+      type: "fleet",
+    },
+    {
+      origin: "lemberg",
+      destination: "romania",
+      nation: Nation.AH,
+      type: "army",
+    },
+    {
+      origin: "budapest",
+      destination: "west balkan",
+      nation: Nation.AH,
+      type: "army",
+    },
+    {
+      origin: "vienna",
+      destination: "tunis",
+      nation: Nation.AH,
+      type: "army",
+    },
+  ]),
+  Action.noop,
+  Action.noop,
+  Action.noop,
   Action.rondel({ nation: Nation.IT, cost: 0, slot: "maneuver2" }),
-  Action.maneuver({
-    origin: "naples",
-    destination: "western mediterranean sea",
-  }),
-  Action.maneuver({ origin: "rome", destination: "spain" }),
+  Action.maneuver([
+    {
+      origin: "naples",
+      destination: "western mediterranean sea",
+      nation: Nation.IT,
+      type: "fleet",
+    },
+    {
+      origin: "rome",
+      destination: "spain",
+      nation: Nation.IT,
+      type: "army",
+    },
+  ]),
+  Action.noop,
   Action.rondel({ nation: Nation.FR, cost: 0, slot: "maneuver1" }),
-  Action.maneuver({
-    origin: "marseille",
-    destination: "western mediterranean sea",
-  }),
-  Action.maneuver({
-    origin: "bordeaux",
-    destination: "bay of biscay",
-  }),
-  Action.maneuver({
-    origin: "paris",
-    destination: "morocco",
+  Action.maneuver([
+    {
+      origin: "marseille",
+      destination: "western mediterranean sea",
+      nation: Nation.FR,
+      type: "fleet",
+    },
+    {
+      origin: "bordeaux",
+      destination: "bay of biscay",
+      nation: Nation.FR,
+      type: "fleet",
+    },
+    {
+      origin: "paris",
+      destination: "morocco",
+      nation: Nation.FR,
+      type: "army",
+    },
+  ]),
+  Action.noop,
+  Action.noop,
+  Action.fight({
+    province: "western mediterranean sea",
+    incumbent: Nation.IT,
+    challenger: Nation.FR,
   }),
   Action.rondel({ nation: Nation.GB, cost: 0, slot: "investor" }),
   Action.bondPurchase({ nation: Nation.RU, player: "Bert", cost: 6 }),
@@ -97,24 +172,40 @@ export default [
   Action.rondel({ nation: Nation.GE, cost: 0, slot: "factory" }),
   Action.buildFactory({ province: "cologne" }),
   Action.rondel({ nation: Nation.RU, cost: 0, slot: "maneuver2" }),
-  Action.maneuver({
-    origin: "st. petersburg",
-    destination: "baltic sea",
-  }),
-  Action.maneuver({
-    origin: "odessa",
-    destination: "black sea",
-  }),
-  Action.maneuver({
-    origin: "moscow",
-    destination: "sweden",
-  }),
-  Action.maneuver({
-    origin: "moscow",
-    destination: "turkey",
-  }),
-  Action.maneuver({
-    origin: "moscow",
-    destination: "lemberg",
-  }),
+  Action.maneuver([
+    {
+      origin: "st. petersburg",
+      destination: "baltic sea",
+      nation: Nation.RU,
+      type: "fleet",
+    },
+    {
+      origin: "odessa",
+      destination: "black sea",
+      nation: Nation.RU,
+      type: "fleet",
+    },
+    {
+      origin: "moscow",
+      destination: "sweden",
+      nation: Nation.RU,
+      type: "army",
+    },
+    {
+      origin: "moscow",
+      destination: "turkey",
+      nation: Nation.RU,
+      type: "army",
+    },
+    {
+      origin: "moscow",
+      destination: "lemberg",
+      nation: Nation.RU,
+      type: "army",
+    },
+  ]),
+  Action.noop,
+  Action.noop,
+  Action.noop,
+  Action.noop,
 ];

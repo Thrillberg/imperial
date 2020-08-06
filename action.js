@@ -45,13 +45,12 @@ const noop = Object.freeze({ type: "noop" });
 export default {
   noop,
   initialize: makeAction("initialize", ["players", "setup"]),
-  blaneuver: makeAction("blaneuver"),
   bondPurchase: makeAction("bondPurchase", ["nation", "player", "cost"]),
   buildFactory: makeAction("buildFactory", ["province"]),
   coexist: makeAction("coexist", ["province", "incumbent", "challenger"]),
   fight: makeAction("fight", ["province", "incumbent", "challenger"]),
   import: makeAction("import"),
-  maneuver: makeAction("maneuver", ["origin", "destination"]),
+  maneuver: makeAction("maneuver"),
   production: makeAction("production", ["province"]),
   rondel: makeAction("rondel", ["nation", "cost", "slot"]),
 };

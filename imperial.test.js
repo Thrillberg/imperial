@@ -19,8 +19,8 @@ const newGame = () => {
     nodes: [
       { name: "a", nation: "nation" },
       { name: "b", nation: "nation" },
-      { name: "c", nation: "nation" },
-      { name: "d", nation: "nation", isOcean: true },
+      { name: "c", nation: null },
+      { name: "d", nation: null, isOcean: true },
     ],
     edges: [
       ["a", "b"],
@@ -112,31 +112,34 @@ describe("imperial", () => {
         const game = newGame();
         const expected = cloneUnits(game.units);
 
-        game.tick(Action.blaneuver([]));
+        game.tick(Action.maneuver([]));
 
         expect(game.units).toEqual(expected);
       });
 
-      test("maneuver with one army", () => {
+      test("maneuver with one army and no resistance", () => {
         const game = newGame();
         game.units.get("nation").get("a").armies++;
         const expected = cloneUnits(game.units);
         expected.get("nation").get("a").armies--;
-        expected.get("nation").get("b").armies++;
+        expected.get("nation").get("c").armies++;
 
         game.tick(
-          Action.blaneuver([
-            { origin: "a", destination: "b", nation: "nation", type: "army" },
+          Action.maneuver([
+            { origin: "a", destination: "c", nation: "nation", type: "army" },
           ])
         );
 
         expect(game.units).toEqual(expected);
+        expect(game.provinces.get("c").flag).toEqual("nation");
       });
 
-      test("maneuver with an army and a fleet", () => {
+      test("maneuver with an army and a fleet, where the army meets resistance", () => {
         const game = newGame();
         game.units.get("nation").get("a").armies++;
         game.units.get("nation").get("a").fleets++;
+        game.units.get("nation2").get("c").armies++;
+        game.provinces.get("c").flag = "nation2";
         const expected = cloneUnits(game.units);
         expected.get("nation").get("a").armies--;
         expected.get("nation").get("c").armies++;
@@ -144,13 +147,14 @@ describe("imperial", () => {
         expected.get("nation").get("d").fleets++;
 
         game.tick(
-          Action.blaneuver([
+          Action.maneuver([
             { origin: "a", destination: "c", nation: "nation", type: "army" },
             { origin: "a", destination: "d", nation: "nation", type: "fleet" },
           ])
         );
 
         expect(game.units).toEqual(expected);
+        expect(game.provinces.get("c").flag).toEqual("nation2");
       });
     });
   });

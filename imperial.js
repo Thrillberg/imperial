@@ -66,7 +66,7 @@ export default class Imperial {
       });
     } else if (action.type === "buildFactory") {
       this.buildFactory(action);
-    } else if (action.type === "blaneuver") {
+    } else if (action.type === "maneuver") {
       action.payload.forEach(({ origin, destination, nation, type }) => {
         if (type === "army") {
           this.units.get(nation).get(origin).armies--;
@@ -74,6 +74,23 @@ export default class Imperial {
         } else {
           this.units.get(nation).get(origin).fleets--;
           this.units.get(nation).get(destination).fleets++;
+        }
+
+        const alreadyOccupied = Array.from(this.nations.keys()).some(
+          (nation) => {
+            return (
+              nation !== this.currentNation &&
+              (this.units.get(nation).get(destination).armies > 0 ||
+                this.units.get(nation).get(destination).fleets > 0)
+            );
+          }
+        );
+
+        const isNeutralProvince =
+          this.board.graph.get(destination).nation === null ? true : false;
+
+        if (!alreadyOccupied && isNeutralProvince) {
+          this.provinces.get(destination).flag = nation;
         }
       });
     } else if (action.type === "maneuver") {
@@ -124,7 +141,8 @@ export default class Imperial {
       action.type === "bondPurchase" ||
       action.type === "buildFactory" ||
       action.payload.slot === "production1" ||
-      action.payload.slot === "production2"
+      action.payload.slot === "production2" ||
+      action.type === "maneuver"
     ) {
       this.currentNation = this.getNation(this.log);
       this.currentPlayerName = this.getController(this.currentNation);
@@ -247,7 +265,8 @@ export default class Imperial {
     if (action.payload.slot === "taxation") {
       const nationName = action.payload.nation;
       const nation = this.nations.get(nationName);
-      const taxes = this.factoryCount(nationName) * 2 + nation.flagCount;
+      const taxes =
+        this.factoryCount(nationName) * 2 + this.flagCount(nationName);
       nation.treasury += taxes - this.unitCount(nationName);
 
       this.players[this.getController(nationName)].cash +=
@@ -678,6 +697,16 @@ export default class Imperial {
 
   factoryCount(nation) {
     return 2;
+  }
+
+  flagCount(nation) {
+    let count = 0;
+    for (const [_, { flag }] of this.provinces) {
+      if (flag === nation) {
+        count++;
+      }
+    }
+    return count;
   }
 
   homeProvinces(nation) {

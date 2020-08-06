@@ -5,6 +5,12 @@ export default ({ players, provinceNames }) => {
       ["nation", { controller: "player1", treasury: 13 }],
       ["nation2", { controller: "player2", treasury: 13 }],
     ]),
+    provinces: new Map([
+      ["a", { flag: null }],
+      ["b", { flag: null }],
+      ["c", { flag: null }],
+      ["d", { flag: null }],
+    ]),
     units: new Map([
       [
         "nation",
@@ -15,7 +21,15 @@ export default ({ players, provinceNames }) => {
           ["d", { armies: 0, fleets: 0 }],
         ]),
       ],
-      ["nation2", new Map()],
+      [
+        "nation2",
+        new Map([
+          ["a", { armies: 0, fleets: 0 }],
+          ["b", { armies: 0, fleets: 0 }],
+          ["c", { armies: 0, fleets: 0 }],
+          ["d", { armies: 0, fleets: 0 }],
+        ]),
+      ],
     ]),
   };
 };
