@@ -226,7 +226,7 @@ export default class Imperial {
       action.payload.slot === "production1" ||
       action.payload.slot === "production2"
     ) {
-      this.homeProvinces(action.payload.nation)
+      Array.from(this.board.byNation.get(action.payload.nation))
         .filter((province) => this.provinces.get(province).factory !== null)
         .forEach((province) => {
           if (this.provinces.get(province).factory === "shipyard") {
@@ -672,17 +672,12 @@ export default class Imperial {
   }
 
   factoryCount(nation) {
-    return 2;
-  }
-
-  homeProvinces(nation) {
-    return nation.when({
-      AH: () => ["vienna", "budapest", "prague", "lemberg", "trieste"],
-      IT: () => ["rome", "naples", "genoa", "venice", "florence"],
-      FR: () => ["paris", "bordeaux", "marseille", "dijon", "brest"],
-      GB: () => ["london", "liverpool", "dublin", "edinburgh", "sheffield"],
-      GE: () => ["berlin", "hamburg", "munich", "danzig", "cologne"],
-      RU: () => ["moscow", "st. petersburg", "odessa", "kiev", "warsaw"],
-    });
+    let count = 0;
+    for (const province of this.board.byNation.get(nation)) {
+      if (this.provinces.get(province).factory) {
+        count++;
+      }
+    }
+    return count;
   }
 }
