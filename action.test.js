@@ -16,4 +16,21 @@ describe("Action.rondel", () => {
 
     expect(first).toBe(second);
   });
+
+  describe("validation", () => {
+    test("missing keys", () => {
+      expect(() => Action.rondel({})).toThrowError();
+    });
+
+    test("extra keys", () => {
+      expect(() =>
+        Action.rondel({
+          nation: Nation.AH,
+          cost: 42,
+          slot: "maneuver1",
+          blimport: true,
+        })
+      ).toThrowError();
+    });
+  });
 });
