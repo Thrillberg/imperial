@@ -10,6 +10,8 @@ export default ({ players, provinceNames }) => {
       ["b", { flag: null }],
       ["c", { flag: null }],
       ["d", { flag: null }],
+      ["e", { flag: null }],
+      ["f", { flag: null }],
     ]),
     units: new Map([
       [
@@ -19,6 +21,8 @@ export default ({ players, provinceNames }) => {
           ["b", { armies: 0, fleets: 0 }],
           ["c", { armies: 0, fleets: 0 }],
           ["d", { armies: 0, fleets: 0 }],
+          ["e", { armies: 0, fleets: 0 }],
+          ["f", { armies: 0, fleets: 0 }],
         ]),
       ],
       [
@@ -28,6 +32,8 @@ export default ({ players, provinceNames }) => {
           ["b", { armies: 0, fleets: 0 }],
           ["c", { armies: 0, fleets: 0 }],
           ["d", { armies: 0, fleets: 0 }],
+          ["e", { armies: 0, fleets: 0 }],
+          ["f", { armies: 0, fleets: 0 }],
         ]),
       ],
     ]),

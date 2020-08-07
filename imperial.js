@@ -335,27 +335,72 @@ export default class Imperial {
     } else if (this.lastMoveWasTaxation(lastMove)) {
       return new Set(this.rondelActions(this.getNation(this.log)));
     } else if (this.lastMoveWasRondelManeuver(lastMove)) {
-      const destinations = new Set();
+      const actions = new Set([Action.maneuver([])]);
+      // const fleetDestinations = [];
       const provincesWithFleets = new Map();
+      const provincesWithArmies = [];
 
       for (const [province, units] of this.units.get(lastMove.payload.nation)) {
         if (units.fleets > 0) {
           provincesWithFleets.set(province, units.fleets);
+        } else if (units.armies > 0) {
+          provincesWithArmies.push(province);
         }
       }
 
-      for (const [origin, count] of provincesWithFleets) {
-        for (const destination of standardGameBoard.neighborsFor({
-          origin,
-          nation: lastMove.payload.nation,
-          isFleet: true,
-          friendlyFleets: new Set(),
-        })) {
-          destinations.add(Action.maneuver({ origin, destination }));
-        }
-      }
+      // for (const [origin, count] of provincesWithFleets) {
+      //   for (const destination of this.board.neighborsFor({
+      //     origin,
+      //     nation: lastMove.payload.nation,
+      //     isFleet: true,
+      //     friendlyFleets: new Set(),
+      //   })) {
+      //     fleetDestinations.push({
+      //       origin,
+      //       destination,
+      //       nation: lastMove.payload.nation,
+      //       type: "fleet",
+      //     });
+      //   }
+      // }
+      // if (fleetDestinations.length > 0) {
+      //   actions.add(Action.maneuver(fleetDestinations));
+      // }
 
-      return destinations;
+      const maneuversByOrigin = provincesWithArmies
+        .map((origin) => {
+          const out = [];
+          const neighbors = this.board.neighborsFor({
+            origin,
+            nation: "nation",
+            isFleet: false,
+            friendlyFleets: new Set(),
+          });
+
+          for (const destination of neighbors) {
+            out.push([origin, destination]);
+          }
+
+          return out;
+        })
+        .flat();
+
+      this.combinations(maneuversByOrigin).map((maneuver) => {
+        actions.add(
+          Action.maneuver(
+            maneuver.map(([origin, destination]) => {
+              return {
+                origin,
+                destination,
+                nation: "nation",
+                type: "army",
+              };
+            })
+          )
+        );
+      });
+
+      return actions;
     } else if (lastMove.type === "rondel") {
       if (lastMove.payload.slot === "factory") {
         return new Set(this.buildFactoryAction(lastMove.payload.nation));
@@ -365,6 +410,22 @@ export default class Imperial {
         return new Set(this.rondelActions(this.getNation(this.log)));
       }
     }
+  }
+
+  combinations(arr) {
+    if (arr.length === 0) return [];
+    let fn = (active, rest, out) => {
+      out.push([active]);
+      if (rest.length === 0) return;
+      rest.forEach((pair) => {
+        if (pair[0] !== active[0]) {
+          out.push([active, pair]);
+        }
+      });
+      fn(rest[0], rest.slice(1), out);
+      return out;
+    };
+    return fn(arr[0], arr.slice(1), []);
   }
 
   rondelActions(nation) {
