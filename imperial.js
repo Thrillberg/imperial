@@ -399,6 +399,38 @@ export default class Imperial {
         }
       );
 
+      for (action of actions) {
+        const friendlyFleets = new Set();
+        action.payload.forEach((maneuver) => {
+          if (maneuver.type === "fleet") {
+            friendlyFleets.add(maneuver.destination);
+          }
+        });
+        if (friendlyFleets.size > 0) {
+          action.payload.forEach((maneuver) => {
+            if (maneuver.type === "army") {
+              const allNeighbors = this.board.neighborsFor({
+                origin: maneuver.origin,
+                nation: "nation",
+                isFleet: false,
+                friendlyFleets,
+              });
+              allNeighbors.forEach((neighbor) => {
+                console.log(
+                  this.board
+                    .neighborsFor({
+                      origin: maneuver.origin,
+                      nation: "nation",
+                      isFleet: false,
+                    })
+                    .includes(neighbor)
+                );
+              });
+            }
+          });
+        }
+      }
+
       return actions;
     } else if (lastMove.type === "rondel") {
       if (lastMove.payload.slot === "factory") {

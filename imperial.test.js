@@ -50,6 +50,8 @@ const newGame = () => {
       ["d", "g"],
       ["d", "h"],
       ["i", "j"],
+      ["c", "j"],
+      ["j", "f"],
     ],
   });
 
@@ -526,6 +528,69 @@ describe("imperial", () => {
                 Action.maneuver([]),
               ])
             );
+          });
+        });
+
+        describe("convoy", () => {
+          test.only("nation can maneuver one fleet to one possible destination and then convoy an army", () => {
+            ["maneuver1", "maneuver2"].forEach((maneuver) => {
+              const game = newGame();
+              game.units.get("nation").get("i").fleets++;
+              game.units.get("nation").get("c").armies++;
+              game.tick(
+                Action.rondel({ slot: maneuver, cost: 0, nation: "nation" })
+              );
+
+              expect(game.availableActions).toEqual(
+                new Set([
+                  Action.maneuver([
+                    {
+                      origin: "i",
+                      destination: "j",
+                      nation: "nation",
+                      type: "fleet",
+                    },
+                  ]),
+                  Action.maneuver([
+                    {
+                      origin: "c",
+                      destination: "b",
+                      nation: "nation",
+                      type: "army",
+                    },
+                  ]),
+                  Action.maneuver([
+                    {
+                      origin: "i",
+                      destination: "j",
+                      nation: "nation",
+                      type: "fleet",
+                    },
+                    {
+                      origin: "c",
+                      destination: "f",
+                      nation: "nation",
+                      type: "army",
+                    },
+                  ]),
+                  Action.maneuver([
+                    {
+                      origin: "i",
+                      destination: "j",
+                      nation: "nation",
+                      type: "fleet",
+                    },
+                    {
+                      origin: "c",
+                      destination: "b",
+                      nation: "nation",
+                      type: "army",
+                    },
+                  ]),
+                  Action.maneuver([]),
+                ])
+              );
+            });
           });
         });
       });
