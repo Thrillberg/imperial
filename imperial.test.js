@@ -37,12 +37,19 @@ const newGame = () => {
       { name: "d", nation: null, isOcean: true },
       { name: "e", nation: null },
       { name: "f", nation: null },
+      { name: "g", nation: null, isOcean: true },
+      { name: "h", nation: null, isOcean: true },
+      { name: "i", nation: null, isOcean: true },
+      { name: "j", nation: null, isOcean: true },
     ],
     edges: [
       ["a", "b"],
       ["b", "c"],
       ["a", "d"],
       ["e", "f"],
+      ["d", "g"],
+      ["d", "h"],
+      ["i", "j"],
     ],
   });
 
@@ -363,6 +370,154 @@ describe("imperial", () => {
                   },
                   {
                     origin: "b",
+                    destination: "c",
+                    nation: "nation",
+                    type: "army",
+                  },
+                ]),
+                Action.maneuver([]),
+              ])
+            );
+          });
+        });
+
+        test("nation can maneuver one fleet to two possible destinations", () => {
+          ["maneuver1", "maneuver2"].forEach((maneuver) => {
+            const game = newGame();
+            game.units.get("nation").get("d").fleets++;
+            game.tick(
+              Action.rondel({ slot: maneuver, cost: 0, nation: "nation" })
+            );
+
+            expect(game.availableActions).toEqual(
+              new Set([
+                Action.maneuver([
+                  {
+                    origin: "d",
+                    destination: "g",
+                    nation: "nation",
+                    type: "fleet",
+                  },
+                ]),
+                Action.maneuver([
+                  {
+                    origin: "d",
+                    destination: "h",
+                    nation: "nation",
+                    type: "fleet",
+                  },
+                ]),
+                Action.maneuver([]),
+              ])
+            );
+          });
+        });
+
+        test("nation can maneuver two fleets to one possible destination", () => {
+          ["maneuver1", "maneuver2"].forEach((maneuver) => {
+            const game = newGame();
+            game.units.get("nation").get("i").fleets++;
+            game.units.get("nation").get("j").fleets++;
+            game.tick(
+              Action.rondel({ slot: maneuver, cost: 0, nation: "nation" })
+            );
+
+            expect(game.availableActions).toEqual(
+              new Set([
+                Action.maneuver([
+                  {
+                    origin: "i",
+                    destination: "j",
+                    nation: "nation",
+                    type: "fleet",
+                  },
+                ]),
+                Action.maneuver([
+                  {
+                    origin: "j",
+                    destination: "i",
+                    nation: "nation",
+                    type: "fleet",
+                  },
+                ]),
+                Action.maneuver([
+                  {
+                    origin: "i",
+                    destination: "j",
+                    nation: "nation",
+                    type: "fleet",
+                  },
+                  {
+                    origin: "j",
+                    destination: "i",
+                    nation: "nation",
+                    type: "fleet",
+                  },
+                ]),
+                Action.maneuver([]),
+              ])
+            );
+          });
+        });
+
+        test("nation can maneuver one fleet to one destination and one army to two destinations", () => {
+          ["maneuver1", "maneuver2"].forEach((maneuver) => {
+            const game = newGame();
+            game.units.get("nation").get("j").fleets++;
+            game.units.get("nation").get("a").armies++;
+            game.tick(
+              Action.rondel({ slot: maneuver, cost: 0, nation: "nation" })
+            );
+
+            expect(game.availableActions).toEqual(
+              new Set([
+                Action.maneuver([
+                  {
+                    origin: "a",
+                    destination: "b",
+                    nation: "nation",
+                    type: "army",
+                  },
+                ]),
+                Action.maneuver([
+                  {
+                    origin: "a",
+                    destination: "c",
+                    nation: "nation",
+                    type: "army",
+                  },
+                ]),
+                Action.maneuver([
+                  {
+                    origin: "j",
+                    destination: "i",
+                    nation: "nation",
+                    type: "fleet",
+                  },
+                ]),
+                Action.maneuver([
+                  {
+                    origin: "j",
+                    destination: "i",
+                    nation: "nation",
+                    type: "fleet",
+                  },
+                  {
+                    origin: "a",
+                    destination: "b",
+                    nation: "nation",
+                    type: "army",
+                  },
+                ]),
+                Action.maneuver([
+                  {
+                    origin: "j",
+                    destination: "i",
+                    nation: "nation",
+                    type: "fleet",
+                  },
+                  {
+                    origin: "a",
                     destination: "c",
                     nation: "nation",
                     type: "army",

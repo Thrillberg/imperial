@@ -336,36 +336,33 @@ export default class Imperial {
       return new Set(this.rondelActions(this.getNation(this.log)));
     } else if (this.lastMoveWasRondelManeuver(lastMove)) {
       const actions = new Set([Action.maneuver([])]);
-      // const fleetDestinations = [];
-      const provincesWithFleets = new Map();
+      const provincesWithFleets = [];
       const provincesWithArmies = [];
 
       for (const [province, units] of this.units.get(lastMove.payload.nation)) {
         if (units.fleets > 0) {
-          provincesWithFleets.set(province, units.fleets);
+          provincesWithFleets.push(province);
         } else if (units.armies > 0) {
           provincesWithArmies.push(province);
         }
       }
 
-      // for (const [origin, count] of provincesWithFleets) {
-      //   for (const destination of this.board.neighborsFor({
-      //     origin,
-      //     nation: lastMove.payload.nation,
-      //     isFleet: true,
-      //     friendlyFleets: new Set(),
-      //   })) {
-      //     fleetDestinations.push({
-      //       origin,
-      //       destination,
-      //       nation: lastMove.payload.nation,
-      //       type: "fleet",
-      //     });
-      //   }
-      // }
-      // if (fleetDestinations.length > 0) {
-      //   actions.add(Action.maneuver(fleetDestinations));
-      // }
+      const fleetManeuversByOrigin = provincesWithFleets
+        .map((origin) => {
+          const out = [];
+          const neighbors = this.board.neighborsFor({
+            origin,
+            nation: "nation",
+            isFleet: true,
+          });
+
+          for (const destination of neighbors) {
+            out.push([origin, destination, true]);
+          }
+
+          return out;
+        })
+        .flat();
 
       const maneuversByOrigin = provincesWithArmies
         .map((origin) => {
@@ -378,27 +375,29 @@ export default class Imperial {
           });
 
           for (const destination of neighbors) {
-            out.push([origin, destination]);
+            out.push([origin, destination, false]);
           }
 
           return out;
         })
         .flat();
 
-      this.combinations(maneuversByOrigin).map((maneuver) => {
-        actions.add(
-          Action.maneuver(
-            maneuver.map(([origin, destination]) => {
-              return {
-                origin,
-                destination,
-                nation: "nation",
-                type: "army",
-              };
-            })
-          )
-        );
-      });
+      this.combinations([...fleetManeuversByOrigin, ...maneuversByOrigin]).map(
+        (maneuver) => {
+          actions.add(
+            Action.maneuver(
+              maneuver.map(([origin, destination, isFleet]) => {
+                return {
+                  origin,
+                  destination,
+                  nation: "nation",
+                  type: isFleet ? "fleet" : "army",
+                };
+              })
+            )
+          );
+        }
+      );
 
       return actions;
     } else if (lastMove.type === "rondel") {
