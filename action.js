@@ -1,44 +1,51 @@
 import { memoize } from "./memo.js";
 
-/* This deserves some explanation.
- *
- * Our memoize() function supports only primitive arguments; that
- * is, it cannot perform deep equality checks on objects. That's a
- * problem, because we want our action creation functions to accept
- * a single object as their argument. We hack around that with some
- * assumptions:
- *
- *   - our arguments are objects whose values are all primitives
- *     (ie. { huhu: 2 } instead of { huhu: { bebe: 2 } }
- *   - our objects' keys have a stable lexical sorting (ie. they
- *     are all strings)
- *
- * Those assumptions let us flatten the object in a stable way into
- * memoizable arguments:
- *
- *   1. sort the expected argument keys
- *   2. memoize a function that expects values in the order of those
- *      sorted keys
- *   3. wrap the memoized function in a function that translates a
- *      single, object argument into a list of sorted values
- */
-const makeAction = (type, payloadKeys) => {
-  if (payloadKeys) {
-    payloadKeys.sort();
-    const memoized = memoize((...values) => {
-      const payload = {};
-      values.forEach((v, i) => {
-        payload[payloadKeys[i]] = v;
-      });
-      return { type, payload };
-    });
-    return (obj) => memoized(...payloadKeys.map((k) => obj[k]));
-  } else {
-    return (ary) => {
-      return { type, payload: ary };
-    };
+// Given two sets, A and B, membership calculates a 3-tuple containing:
+// [A - B, A & B, B - A]
+//
+// A and B are equal if A - B and B - A are both empty.
+// A and B are disjoint if A & B is empty.
+const membership = (a, b) => {
+  const left = new Set();
+  const both = new Set();
+  const right = new Set();
+  for (const e of a) {
+    if (b.has(e)) {
+      both.add(e);
+    } else {
+      left.add(e);
+    }
   }
+  for (const e of b) {
+    if (a.has(e)) {
+      both.add(e);
+    } else {
+      right.add(e);
+    }
+  }
+  return [left, both, right];
 };
+
+const makeAction = (type, payloadKeys) => {
+  const expected = new Set(payloadKeys);
+  return memoize((payload) => {
+    // lightly validate the payload keys
+    const [l, b, r] = membership(expected, new Set(Object.keys(payload)));
+    if (l.size > 0 || r.size > 0) {
+      throw new Error(
+        JSON.stringify({
+          extra: [...l],
+          missing: [...r],
+          ok: [...b],
+        })
+      );
+    }
+    return { type, payload };
+  });
+};
+
+const makeUnvalidatedAction = (type) =>
+  memoize((payload) => ({ type, payload }));
 
 const noop = Object.freeze({ type: "noop" });
 
@@ -49,7 +56,7 @@ export default {
   buildFactory: makeAction("buildFactory", ["province"]),
   coexist: makeAction("coexist", ["province", "incumbent", "challenger"]),
   fight: makeAction("fight", ["province", "incumbent", "challenger"]),
-  import: makeAction("import"),
+  import: makeUnvalidatedAction("import"),
   maneuver: makeAction("maneuver", ["origin", "destination"]),
   production: makeAction("production", ["province"]),
   rondel: makeAction("rondel", ["nation", "cost", "slot"]),
