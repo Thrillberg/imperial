@@ -32,5 +32,9 @@ describe("Action.rondel", () => {
         })
       ).toThrowError();
     });
+
+    test("it works for nullary functions", () => {
+      Action.endManeuver();
+    });
   });
 });

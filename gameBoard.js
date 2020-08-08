@@ -79,6 +79,10 @@ export default class GameBoard {
 
   validate(origin) {
     if (!this.graph.has(origin))
-      throw new Error(`province ${origin} not found`);
+      throw new Error(
+        `province ${origin} not found. Available provinces are: ${[
+          ...this.graph.keys(),
+        ]}`
+      );
   }
 }

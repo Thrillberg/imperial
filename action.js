@@ -30,13 +30,14 @@ const makeAction = (type, payloadKeys) => {
   const expected = new Set(payloadKeys);
   return memoize((payload) => {
     // lightly validate the payload keys
-    const [l, b, r] = membership(expected, new Set(Object.keys(payload)));
+    const [l, b, r] = membership(expected, new Set(Object.keys(payload || {})));
     if (l.size > 0 || r.size > 0) {
       throw new Error(
         JSON.stringify({
-          extra: [...l],
-          missing: [...r],
+          expected: [...l],
+          unexpected: [...r],
           ok: [...b],
+          type: type,
         })
       );
     }
@@ -55,6 +56,7 @@ export default {
   bondPurchase: makeAction("bondPurchase", ["nation", "player", "cost"]),
   buildFactory: makeAction("buildFactory", ["province"]),
   coexist: makeAction("coexist", ["province", "incumbent", "challenger"]),
+  endManeuver: makeAction("endManeuver", []),
   fight: makeAction("fight", ["province", "incumbent", "challenger"]),
   import: makeUnvalidatedAction("import"),
   maneuver: makeAction("maneuver", ["origin", "destination"]),
