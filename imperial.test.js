@@ -1,7 +1,7 @@
 import Action from "./action.js";
 import GameBoard from "./gameBoard.js";
 import Imperial from "./imperial.js";
-import setup from "./minimalSetup.js";
+import { Nation } from "./constants.js";
 
 const cloneUnits = (units) => {
   const out = new Map();
@@ -17,8 +17,8 @@ const cloneUnits = (units) => {
 const newGame = () => {
   const board = new GameBoard({
     nodes: [
-      { name: "a", nation: "nation" },
-      { name: "b", nation: "nation" },
+      { name: "a", nation: Nation.AH },
+      { name: "b", nation: Nation.AH },
     ],
     edges: [],
   });
@@ -27,10 +27,9 @@ const newGame = () => {
   game.tick(
     Action.initialize({
       players: [
-        { id: "player1", nation: "nation" },
-        { id: "player2", nation: "nation2" },
+        { id: "player1", nation: Nation.AH },
+        { id: "player2", nation: Nation.IT },
       ],
-      setup,
     })
   );
   return game;
@@ -42,32 +41,33 @@ describe("imperial", () => {
       test("import nothing adds no new units", () => {
         const game = newGame();
         const beforeUnits = cloneUnits(game.units);
-        const beforeTreasury = 13;
+        expect(game.nations.get(Nation.AH).treasury).toEqual(11);
 
         game.tick(Action.import([]));
 
         expect(game.units).toEqual(beforeUnits);
-        expect(game.nations.get("nation").treasury).toEqual(beforeTreasury);
+        expect(game.nations.get(Nation.AH).treasury).toEqual(11);
       });
 
       test("import one army", () => {
         const game = newGame();
         const expected = cloneUnits(game.units);
-        expected.get("nation").get("a").armies++;
-        const expectedTreasury = 12;
+        expected.get(Nation.AH).get("a").armies++;
+        expect(game.nations.get(Nation.AH).treasury).toEqual(11);
 
         game.tick(Action.import([{ province: "a", type: "army" }]));
 
         expect(game.units).toEqual(expected);
-        expect(game.nations.get("nation").treasury).toEqual(expectedTreasury);
+        expect(game.nations.get(Nation.AH).treasury).toEqual(10);
       });
 
       test("import one army and one fleet", () => {
         const game = newGame();
         const expected = cloneUnits(game.units);
-        expected.get("nation").get("a").armies++;
-        expected.get("nation").get("a").fleets++;
-        const expectedTreasury = 11;
+        expected.get(Nation.AH).get("a").armies++;
+        expected.get(Nation.AH).get("a").fleets++;
+
+        expect(game.nations.get(Nation.AH).treasury).toEqual(11);
 
         game.tick(
           Action.import([
@@ -77,16 +77,16 @@ describe("imperial", () => {
         );
 
         expect(game.units).toEqual(expected);
-        expect(game.nations.get("nation").treasury).toEqual(expectedTreasury);
+        expect(game.nations.get(Nation.AH).treasury).toEqual(9);
       });
 
       test("import two armies and one fleet", () => {
         const game = newGame();
         const expected = cloneUnits(game.units);
-        expected.get("nation").get("a").armies++;
-        expected.get("nation").get("b").armies++;
-        expected.get("nation").get("a").fleets++;
-        const expectedTreasury = 10;
+        expected.get(Nation.AH).get("a").armies++;
+        expected.get(Nation.AH).get("b").armies++;
+        expected.get(Nation.AH).get("a").fleets++;
+        expect(game.nations.get(Nation.AH).treasury).toEqual(11);
 
         game.tick(
           Action.import([
@@ -97,7 +97,7 @@ describe("imperial", () => {
         );
 
         expect(game.units).toEqual(expected);
-        expect(game.nations.get("nation").treasury).toEqual(expectedTreasury);
+        expect(game.nations.get(Nation.AH).treasury).toEqual(8);
       });
     });
   });
