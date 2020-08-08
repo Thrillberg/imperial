@@ -1,6 +1,7 @@
 import { Nation, Bond } from "./constants.js";
 import Action from "./action.js";
 import standardGameBoard from "./standardGameBoard.js";
+import setup from "./standardSetup.js";
 
 export default class Imperial {
   static fromLog(log) {
@@ -32,7 +33,7 @@ export default class Imperial {
     if (action.type === "noop") {
       return;
     } else if (action.type === "initialize") {
-      const s = action.payload.setup({
+      const s = setup({
         players: action.payload.players,
         provinceNames: Array.from(this.board.graph.keys()),
       });
@@ -117,7 +118,11 @@ export default class Imperial {
       action.payload.slot === "production2"
     ) {
       this.currentNation = this.getNation(this.log);
-      this.currentPlayerName = this.getController(this.currentNation);
+      try {
+        this.currentPlayerName = this.getController(this.currentNation);
+      } catch (e) {
+        console.log(this.currentNation);
+      }
     } else {
       this.availableActions = this.availableActionsState(action);
     }
