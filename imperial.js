@@ -49,6 +49,7 @@ export default class Imperial {
     } else if (action.type === "bondPurchase") {
       this.purchaseBond(action);
     } else if (action.type === "rondel") {
+      this.currentNation = action.payload.nation;
       this.removeNationFromOldSlot(action);
       this.addNationToNewSlot(action);
       this.handleInvestorAndProduction(action);
@@ -118,11 +119,7 @@ export default class Imperial {
       action.payload.slot === "production2"
     ) {
       this.currentNation = this.getNation(this.log);
-      try {
-        this.currentPlayerName = this.getController(this.currentNation);
-      } catch (e) {
-        console.log(this.currentNation);
-      }
+      this.currentPlayerName = this.getController(this.currentNation);
     } else {
       this.availableActions = this.availableActionsState(action);
     }
@@ -277,9 +274,7 @@ export default class Imperial {
 
   buildFactory(action) {
     const nation = this.getNationByProvince(action.payload.province);
-    this.provinces.get(
-      action.payload.province
-    ).factory = standardGameBoard.graph.get(
+    this.provinces.get(action.payload.province).factory = this.board.graph.get(
       action.payload.province
     ).factoryType;
     this.nations.get(nation).treasury -= 5;
@@ -343,8 +338,9 @@ export default class Imperial {
     } else if (this.lastMoveWasTaxation(lastMove)) {
       return new Set(this.rondelActions(this.getNation(this.log)));
     } else if (this.lastMoveWasRondelManeuver(lastMove)) {
-      const destinations = new Set();
+      const destinations = new Set([Action.endManeuver()]);
       const provincesWithFleets = new Map();
+      const provincesWithArmies = new Map();
 
       for (const [province, units] of this.units.get(lastMove.payload.nation)) {
         if (units.fleets > 0) {
@@ -353,13 +349,40 @@ export default class Imperial {
       }
 
       for (const [origin, count] of provincesWithFleets) {
-        for (const destination of standardGameBoard.neighborsFor({
+        for (const destination of this.board.neighborsFor({
           origin,
           nation: lastMove.payload.nation,
           isFleet: true,
           friendlyFleets: new Set(),
         })) {
-          destinations.add(Action.maneuver({ origin, destination }));
+          destinations.add(
+            Action.maneuver({
+              origin,
+              destination,
+            })
+          );
+        }
+      }
+
+      for (const [province, units] of this.units.get(lastMove.payload.nation)) {
+        if (units.armies > 0) {
+          provincesWithArmies.set(province, units.armies);
+        }
+      }
+
+      for (const [origin, count] of provincesWithArmies) {
+        for (const destination of this.board.neighborsFor({
+          origin,
+          nation: lastMove.payload.nation,
+          isFleet: false,
+          friendlyFleets: new Set(),
+        })) {
+          destinations.add(
+            Action.maneuver({
+              origin,
+              destination,
+            })
+          );
         }
       }
 
