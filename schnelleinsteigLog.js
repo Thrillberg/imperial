@@ -74,6 +74,11 @@ export default [
     origin: "marseille",
     destination: "western mediterranean sea",
   }),
+  Action.fight({
+    province: "western mediterranean sea",
+    incumbent: Nation.IT,
+    challenger: Nation.FR,
+  }),
   Action.maneuver({
     origin: "bordeaux",
     destination: "bay of biscay",

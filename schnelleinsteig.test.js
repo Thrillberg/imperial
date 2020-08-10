@@ -626,6 +626,8 @@ describe("Schnelleinsteig", () => {
             destination: "north atlantic",
           }),
           Action.maneuver({ origin: "london", destination: "english channel" }),
+          Action.maneuver({ origin: "london", destination: "north sea" }),
+          Action.maneuver({ origin: "london", destination: "north atlantic" }),
         ]);
 
         expect(game.availableActions).toEqual(availableActions);
@@ -661,6 +663,7 @@ describe("Schnelleinsteig", () => {
           new Set([
             Action.endManeuver(),
             Action.maneuver({ origin: "hamburg", destination: "north sea" }),
+            Action.maneuver({ origin: "hamburg", destination: "baltic sea" }),
             Action.maneuver({ origin: "berlin", destination: "danzig" }),
             Action.maneuver({ origin: "berlin", destination: "prague" }),
             Action.maneuver({ origin: "berlin", destination: "munich" }),
@@ -686,6 +689,7 @@ describe("Schnelleinsteig", () => {
         );
 
         const availableActions = new Set([
+          Action.endManeuver(),
           Action.maneuver({ origin: "berlin", destination: "danzig" }),
           Action.maneuver({ origin: "berlin", destination: "prague" }),
           Action.maneuver({ origin: "berlin", destination: "munich" }),
@@ -695,10 +699,13 @@ describe("Schnelleinsteig", () => {
           Action.maneuver({ origin: "berlin", destination: "belgium" }),
           Action.maneuver({ origin: "berlin", destination: "holland" }),
           Action.maneuver({ origin: "berlin", destination: "denmark" }),
-          Action.maneuver({ origin: "berlin", destination: "london" }),
           Action.maneuver({ origin: "berlin", destination: "sheffield" }),
           Action.maneuver({ origin: "berlin", destination: "edinburgh" }),
           Action.maneuver({ origin: "berlin", destination: "norway" }),
+          Action.maneuver({ origin: "berlin", destination: "london" }),
+          Action.maneuver({ origin: "berlin", destination: "st. petersburg" }),
+          Action.maneuver({ origin: "berlin", destination: "warsaw" }),
+          Action.maneuver({ origin: "berlin", destination: "vienna" }),
         ]);
 
         expect(game.availableActions).toEqual(availableActions);
@@ -827,10 +834,10 @@ describe("Schnelleinsteig", () => {
         game.tick(
           Action.maneuver({ origin: "trieste", destination: "ionian sea" })
         );
+        const availableActions = new Set([Action.endManeuver()]);
         const landDestinations = [
           "warsaw",
           "kiev",
-          "budapest",
           "prague",
           "romania",
           "danzig",
@@ -838,7 +845,6 @@ describe("Schnelleinsteig", () => {
           "genoa",
           "venice",
           "berlin",
-          "vienna",
           "trieste",
           "west balkan",
           "rome",
@@ -846,26 +852,36 @@ describe("Schnelleinsteig", () => {
           "greece",
           "tunis",
         ];
-        let lembergActions = [];
-        let budapestActions = [];
-        let viennaActions = [];
         landDestinations.map((province) => {
-          lembergActions.push(
+          availableActions.add(
             Action.maneuver({ origin: "lemberg", destination: province })
           );
-          budapestActions.push(
+          availableActions.add(
             Action.maneuver({ origin: "budapest", destination: province })
           );
-          viennaActions.push(
+          availableActions.add(
             Action.maneuver({ origin: "vienna", destination: province })
           );
         });
+        availableActions.add(
+          Action.maneuver({ origin: "lemberg", destination: "budapest" })
+        );
+        availableActions.add(
+          Action.maneuver({ origin: "lemberg", destination: "vienna" })
+        );
+        availableActions.add(
+          Action.maneuver({ origin: "budapest", destination: "lemberg" })
+        );
+        availableActions.add(
+          Action.maneuver({ origin: "budapest", destination: "vienna" })
+        );
+        availableActions.add(
+          Action.maneuver({ origin: "vienna", destination: "lemberg" })
+        );
+        availableActions.add(
+          Action.maneuver({ origin: "vienna", destination: "budapest" })
+        );
 
-        const availableActions = new Set([
-          ...lembergActions,
-          ...viennaActions,
-          ...budapestActions,
-        ]);
         expect(game.availableActions).toEqual(availableActions);
       });
 
@@ -904,6 +920,10 @@ describe("Schnelleinsteig", () => {
             origin: "naples",
             destination: "western mediterranean sea",
           }),
+          Action.maneuver({
+            origin: "naples",
+            destination: "ionian sea",
+          }),
         ]);
         const landDestinations = [
           "naples",
@@ -931,6 +951,7 @@ describe("Schnelleinsteig", () => {
             destination: "western mediterranean sea",
           })
         );
+        const availableActions = new Set([Action.endManeuver()]);
         const landDestinations = [
           "naples",
           "tunis",
@@ -943,14 +964,12 @@ describe("Schnelleinsteig", () => {
           "vienna",
           "trieste",
         ];
-        let romeActions = [];
         landDestinations.map((province) => {
-          romeActions.push(
+          availableActions.add(
             Action.maneuver({ origin: "rome", destination: province })
           );
         });
 
-        const availableActions = new Set(romeActions);
         expect(game.availableActions).toEqual(availableActions);
       });
 
@@ -1022,7 +1041,6 @@ describe("Schnelleinsteig", () => {
             incumbent: Nation.IT,
             challenger: Nation.FR,
           }),
-          ,
         ];
 
         expect(game.availableActions).toEqual(new Set(expectedActions));
@@ -1057,20 +1075,21 @@ describe("Schnelleinsteig", () => {
         const landDestinations = [
           "brest",
           "dijon",
+          "belgium",
+          "munich",
           "bordeaux",
           "marseille",
-          "belgium",
           "genoa",
-          "munich",
           "spain",
+          "portugal",
+          "morocco",
         ];
-        let parisActions = [];
+        const availableActions = new Set([Action.endManeuver()]);
         landDestinations.map((province) => {
-          parisActions.push(
+          availableActions.add(
             Action.maneuver({ origin: "paris", destination: province })
           );
         });
-        const availableActions = new Set(parisActions);
 
         expect(game.availableActions).toEqual(availableActions);
       });
@@ -1490,6 +1509,7 @@ describe("Schnelleinsteig", () => {
             destination: "black sea",
           })
         );
+        const availableActions = new Set([Action.endManeuver()]);
         const landDestinations = [
           "warsaw",
           "odessa",
@@ -1505,14 +1525,13 @@ describe("Schnelleinsteig", () => {
           "berlin",
           "hamburg",
           "denmark",
+          "norway",
         ];
-        let moscowActions = [];
         landDestinations.map((province) => {
-          moscowActions.push(
+          availableActions.add(
             Action.maneuver({ origin: "moscow", destination: province })
           );
         });
-        const availableActions = new Set(moscowActions);
 
         expect(game.availableActions).toEqual(availableActions);
       });
@@ -1609,61 +1628,48 @@ describe("Schnelleinsteig", () => {
             destination: "western mediterranean sea",
           })
         );
-        const sharedLandDestinations = [
-          "trieste",
-          "vienna",
-          "budapest",
-          "lemberg",
-          "prague",
-        ];
+        const availableActions = new Set([Action.endManeuver()]);
         const romaniaDestinations = [
-          ...sharedLandDestinations,
           "odessa",
           "bulgaria",
           "west balkan",
+          "budapest",
+          "lemberg",
+          "kiev",
         ];
-        const romaniaActions = [];
         romaniaDestinations.map((province) => {
-          romaniaActions.push(
+          availableActions.add(
             Action.maneuver({ origin: "romania", destination: province })
           );
         });
         const westBalkanDestinations = [
-          ...sharedLandDestinations,
           "greece",
           "bulgaria",
           "romania",
-          "tunis",
-          "naples",
-          "rome",
-          "venice",
+          "trieste",
+          "budapest",
         ];
-        const westBalkanActions = [];
         westBalkanDestinations.map((province) => {
-          westBalkanActions.push(
+          availableActions.add(
             Action.maneuver({ origin: "west balkan", destination: province })
           );
         });
         const tunisDestinations = [
-          ...sharedLandDestinations,
           "algeria",
-          "greece",
-          "west balkan",
-          "venice",
+          "florence",
           "rome",
           "naples",
+          "genoa",
+          "marseille",
+          "spain",
         ];
-        const tunisActions = [];
         tunisDestinations.map((province) => {
-          tunisActions.push(
+          availableActions.add(
             Action.maneuver({ origin: "tunis", destination: province })
           );
         });
-        const availableActions = new Set([
-          ...romaniaActions,
-          ...westBalkanActions,
-          ...tunisActions,
-        ]);
+
+        // console.log(game.availableActions);
 
         expect(game.availableActions).toEqual(availableActions);
       });

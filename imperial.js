@@ -69,36 +69,62 @@ export default class Imperial {
     } else if (action.type === "buildFactory") {
       this.buildFactory(action);
     } else if (action.type === "maneuver") {
-      const maneuverActions = this.log.filter(
-        (action) =>
-          action.type === "rondel" &&
-          (action.payload.slot === "maneuver1" ||
-            action.payload.slot === "maneuver2")
+      const origin = action.payload.origin;
+      const destination = action.payload.destination;
+      const unitType = this.board.graph.get(destination).isOcean
+        ? "fleet"
+        : "army";
+
+      // Update province flag
+      this.provinces.get(destination).flag = this.currentNation;
+      // TODO: Do we really want to store (and need to update)
+      // flag count like this?
+      this.nations.get(this.currentNation).flagCount += 1;
+
+      // Execute the unit movement
+      if (unitType === "fleet") {
+        this.units.get(this.currentNation).get(origin).fleets--;
+        this.units.get(this.currentNation).get(destination).fleets++;
+      }
+      if (unitType === "army") {
+        this.units.get(this.currentNation).get(origin).armies--;
+        this.units.get(this.currentNation).get(destination).armies++;
+
+        // Fleets cannot move after armies!
+        this.unitsToMove = this.unitsToMove.filter(
+          ([_, type]) => type === "army"
+        );
+      }
+
+      // Remove the unit that just moved from this.unitsToMove
+      const i = this.unitsToMove.findIndex(
+        (arr) => arr[0] === action.payload.origin && arr[1] === unitType
       );
-      const lastManeuver = maneuverActions[maneuverActions.length - 1];
-      this.provinces.get(action.payload.destination).flag =
-        lastManeuver.payload.nation;
-      this.nations.get(lastManeuver.payload.nation).flagCount += 1;
-      if (
-        this.units.get(lastManeuver.payload.nation).get(action.payload.origin)
-          .fleets > 0
-      ) {
-        this.units.get(lastManeuver.payload.nation).get(action.payload.origin)
-          .fleets--;
-        this.units
-          .get(lastManeuver.payload.nation)
-          .get(action.payload.destination).fleets++;
+      this.unitsToMove.splice(i, 1);
+
+      // Interrupt manuevers in case of potential conflict!
+      for (const [nation, _] of this.nations) {
+        if (
+          nation !== this.currentNation &&
+          (this.units.get(nation).get(destination).armies > 0 ||
+            this.units.get(nation).get(destination).fleets > 0)
+        ) {
+          this.availableActions = new Set([
+            Action.coexist({
+              province: destination,
+              incumbent: nation,
+              challenger: this.currentNation,
+            }),
+            Action.fight({
+              province: destination,
+              incumbent: nation,
+              challenger: this.currentNation,
+            }),
+          ]);
+          return;
+        }
       }
-      if (
-        this.units.get(lastManeuver.payload.nation).get(action.payload.origin)
-          .armies > 0
-      ) {
-        this.units.get(lastManeuver.payload.nation).get(action.payload.origin)
-          .armies--;
-        this.units
-          .get(lastManeuver.payload.nation)
-          .get(action.payload.destination).armies++;
-      }
+
       this.availableActions = this.availableActionsState(action);
     } else if (action.type === "fight") {
       this.units.get(Nation.FR).get(action.payload.province).fleets -= 1;
@@ -339,6 +365,23 @@ export default class Imperial {
       return new Set(this.rondelActions(this.getNation(this.log)));
     } else if (this.lastMoveWasRondelManeuver(lastMove)) {
       const destinations = new Set([Action.endManeuver()]);
+
+      // Collect all units that are allowed to move on this turn
+      this.unitsToMove = [];
+      for (const [province, units] of this.units.get(lastMove.payload.nation)) {
+        let fleetCount = units.fleets;
+        let armyCount = units.armies;
+        while (fleetCount > 0 || armyCount > 0) {
+          if (fleetCount > 0) {
+            this.unitsToMove.push([province, "fleet"]);
+            fleetCount--;
+          } else if (armyCount > 0) {
+            this.unitsToMove.push([province, "army"]);
+            armyCount--;
+          }
+        }
+      }
+
       const provincesWithFleets = new Map();
       const provincesWithArmies = new Map();
 
@@ -394,198 +437,47 @@ export default class Imperial {
         return new Set(this.importAction(lastMove.payload.nation));
       }
     } else if (lastMove.type === "maneuver") {
-      if (this.startedConflict(lastMove)) {
-        return new Set([
-          Action.coexist({
-            province: "western mediterranean sea",
-            incumbent: Nation.IT,
-            challenger: Nation.FR,
-          }),
-          Action.fight({
-            province: "western mediterranean sea",
-            incumbent: Nation.IT,
-            challenger: Nation.FR,
-          }),
-          ,
-        ]);
-      } else if (lastMove.payload.destination === "north sea") {
-        return new Set([
-          Action.maneuver({ origin: "berlin", destination: "danzig" }),
-          Action.maneuver({ origin: "berlin", destination: "prague" }),
-          Action.maneuver({ origin: "berlin", destination: "munich" }),
-          Action.maneuver({ origin: "berlin", destination: "cologne" }),
-          Action.maneuver({ origin: "berlin", destination: "hamburg" }),
-          Action.maneuver({ origin: "berlin", destination: "dijon" }),
-          Action.maneuver({ origin: "berlin", destination: "belgium" }),
-          Action.maneuver({ origin: "berlin", destination: "holland" }),
-          Action.maneuver({ origin: "berlin", destination: "denmark" }),
-          Action.maneuver({ origin: "berlin", destination: "london" }),
-          Action.maneuver({ origin: "berlin", destination: "sheffield" }),
-          Action.maneuver({ origin: "berlin", destination: "edinburgh" }),
-          Action.maneuver({ origin: "berlin", destination: "norway" }),
-        ]);
-      } else if (lastMove.payload.destination === "ionian sea") {
-        const landDestinations = [
-          "warsaw",
-          "kiev",
-          "budapest",
-          "prague",
-          "romania",
-          "danzig",
-          "munich",
-          "genoa",
-          "venice",
-          "berlin",
-          "vienna",
-          "trieste",
-          "west balkan",
-          "rome",
-          "naples",
-          "greece",
-          "tunis",
-        ];
-        let lembergActions = [];
-        let budapestActions = [];
-        let viennaActions = [];
-        landDestinations.map((province) => {
-          lembergActions.push(
-            Action.maneuver({ origin: "lemberg", destination: province })
-          );
-          budapestActions.push(
-            Action.maneuver({ origin: "budapest", destination: province })
-          );
-          viennaActions.push(
-            Action.maneuver({ origin: "vienna", destination: province })
-          );
+      if (this.unitsToMove.length > 0) {
+        const provincesWithFleets = new Map();
+        const provincesWithArmies = new Map();
+        const out = new Set([Action.endManeuver()]);
+        this.unitsToMove.forEach(([origin, type]) => {
+          const units = this.units.get(this.currentNation).get(origin);
+          if (units.fleets > 0) {
+            provincesWithFleets.set(origin, units.fleets);
+          } else if (units.armies > 0) {
+            provincesWithArmies.set(origin, units.armies);
+          }
+          for (const [origin, count] of provincesWithFleets) {
+            for (const destination of this.board.neighborsFor({
+              origin,
+              nation: this.currentNation,
+              isFleet: true,
+              friendlyFleets: new Set(),
+            })) {
+              out.add(Action.maneuver({ origin, destination }));
+            }
+          }
+          const friendlyFleets = new Set();
+          for (const [province, units] of this.units.get(this.currentNation)) {
+            if (units.fleets > 0) {
+              friendlyFleets.add(province);
+            }
+          }
+          for (const [origin, count] of provincesWithArmies) {
+            for (const destination of this.board.neighborsFor({
+              origin,
+              nation: this.currentNation,
+              isFleet: false,
+              friendlyFleets,
+            })) {
+              out.add(Action.maneuver({ origin, destination }));
+            }
+          }
         });
-
-        return new Set([
-          ...lembergActions,
-          ...viennaActions,
-          ...budapestActions,
-        ]);
-      } else if (
-        lastMove.payload.origin === "naples" &&
-        lastMove.payload.destination === "western mediterranean sea"
-      ) {
-        const ITLandDestinations = [
-          "naples",
-          "tunis",
-          "algeria",
-          "spain",
-          "marseille",
-          "genoa",
-          "florence",
-          "venice",
-          "vienna",
-          "trieste",
-        ];
-        let romeActions = [];
-        ITLandDestinations.map((province) => {
-          romeActions.push(
-            Action.maneuver({ origin: "rome", destination: province })
-          );
-        });
-        return new Set(romeActions);
-      } else if (lastMove.payload.destination === "bay of biscay") {
-        const FRLandDestinations = [
-          "brest",
-          "dijon",
-          "bordeaux",
-          "marseille",
-          "belgium",
-          "genoa",
-          "munich",
-          "spain",
-        ];
-        let parisActions = [];
-        FRLandDestinations.map((province) => {
-          parisActions.push(
-            Action.maneuver({ origin: "paris", destination: province })
-          );
-        });
-        return new Set(parisActions);
-      } else if (lastMove.payload.destination === "black sea") {
-        const RULandDestinations = [
-          "warsaw",
-          "odessa",
-          "kiev",
-          "st. petersburg",
-          "danzig",
-          "prague",
-          "lemberg",
-          "romania",
-          "bulgaria",
-          "turkey",
-          "sweden",
-          "berlin",
-          "hamburg",
-          "denmark",
-        ];
-        let moscowActions = [];
-        RULandDestinations.map((province) => {
-          moscowActions.push(
-            Action.maneuver({ origin: "moscow", destination: province })
-          );
-        });
-        return new Set(moscowActions);
-      } else if (lastMove.payload.destination === "western mediterranean sea") {
-        const sharedLandDestinations = [
-          "trieste",
-          "vienna",
-          "budapest",
-          "lemberg",
-          "prague",
-        ];
-        const romaniaDestinations = [
-          ...sharedLandDestinations,
-          "odessa",
-          "bulgaria",
-          "west balkan",
-        ];
-        const romaniaActions = [];
-        romaniaDestinations.map((province) => {
-          romaniaActions.push(
-            Action.maneuver({ origin: "romania", destination: province })
-          );
-        });
-        const westBalkanDestinations = [
-          ...sharedLandDestinations,
-          "greece",
-          "bulgaria",
-          "romania",
-          "tunis",
-          "naples",
-          "rome",
-          "venice",
-        ];
-        const westBalkanActions = [];
-        westBalkanDestinations.map((province) => {
-          westBalkanActions.push(
-            Action.maneuver({ origin: "west balkan", destination: province })
-          );
-        });
-        const tunisDestinations = [
-          ...sharedLandDestinations,
-          "algeria",
-          "greece",
-          "west balkan",
-          "venice",
-          "rome",
-          "naples",
-        ];
-        const tunisActions = [];
-        tunisDestinations.map((province) => {
-          tunisActions.push(
-            Action.maneuver({ origin: "tunis", destination: province })
-          );
-        });
-        return new Set([
-          ...romaniaActions,
-          ...westBalkanActions,
-          ...tunisActions,
-        ]);
+        return out;
       } else {
+        this.currentNation = this.getNation(this.log);
         return new Set(this.rondelActions(this.getNation(this.log)));
       }
     }
@@ -685,13 +577,6 @@ export default class Imperial {
 
   getController(nation) {
     return this.nations.get(nation).controller;
-  }
-
-  startedConflict(lastMove) {
-    return (
-      lastMove.payload.origin === "marseille" &&
-      lastMove.payload.destination === "western mediterranean sea"
-    );
   }
 
   factoryCount(nation) {
