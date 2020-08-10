@@ -299,23 +299,10 @@ export default class Imperial {
   }
 
   buildFactory(action) {
-    const nation = this.getNationByProvince(action.payload.province);
     this.provinces.get(action.payload.province).factory = this.board.graph.get(
       action.payload.province
     ).factoryType;
-    this.nations.get(nation).treasury -= 5;
-  }
-
-  getNationByProvince(province) {
-    if (province === "st. petersburg" || province === "moscow") {
-      return Nation.RU;
-    } else if (province === "marseille") {
-      return Nation.FR;
-    } else if (province === "cologne") {
-      return Nation.GE;
-    }
-
-    return Nation.AH;
+    this.nations.get(this.currentNation).treasury -= 5;
   }
 
   availableActionsState(action) {
