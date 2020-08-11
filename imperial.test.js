@@ -1,7 +1,7 @@
 import Action from "./action.js";
 import GameBoard from "./gameBoard.js";
 import Imperial from "./imperial.js";
-import { Nation } from "./constants.js";
+import { Bond, Nation } from "./constants.js";
 
 const cloneUnits = (units) => {
   const out = new Map();
@@ -16,6 +16,103 @@ const cloneUnits = (units) => {
 
 describe("imperial", () => {
   describe("#tick", () => {
+    describe("bondPurchase", () => {
+      const newGame = () => {
+        const board = new GameBoard({
+          nodes: [
+            { name: "a", nation: Nation.AH },
+            { name: "b", nation: Nation.AH },
+          ],
+          edges: [],
+        });
+
+        const game = new Imperial(board);
+        game.tick(
+          Action.initialize({
+            players: [
+              { id: "player1", nation: Nation.AH },
+              { id: "player2", nation: Nation.IT },
+            ],
+          })
+        );
+        return game;
+      };
+
+      test("player purchases a bond outright", () => {
+        const game = newGame();
+        // Empty out player's bonds
+        game.players["player1"].bonds = new Set();
+        // Give player enough cash to afford a bond
+        game.players["player1"].cash = 4;
+
+        game.tick(
+          Action.bondPurchase({ player: "player1", cost: 4, nation: Nation.IT })
+        );
+
+        expect(game.players["player1"].bonds).toEqual(
+          new Set([Bond(Nation.IT, 2)])
+        );
+      });
+
+      test("player purchases a bond by trading one in", () => {
+        const game = newGame();
+        // Give player one bond to trade in
+        game.players["player1"].bonds = new Set([Bond(Nation.AH, 1)]);
+
+        game.tick(
+          Action.bondPurchase({ player: "player1", cost: 4, nation: Nation.AH })
+        );
+
+        expect(game.players["player1"].bonds).toEqual(
+          new Set([Bond(Nation.AH, 2)])
+        );
+      });
+    });
+
+    describe("endManeuver", () => {
+      const newGame = () => {
+        const board = new GameBoard({
+          nodes: [],
+          edges: [],
+        });
+
+        const game = new Imperial(board);
+        game.tick(
+          Action.initialize({
+            players: [
+              { id: "player1", nation: Nation.AH },
+              { id: "player2", nation: Nation.IT },
+            ],
+          })
+        );
+        return game;
+      };
+
+      test("it is IT's turn to select a rondel slot", () => {
+        const game = newGame();
+
+        game.tick(
+          Action.rondel({ slot: "maneuver1", cost: 0, nation: Nation.AH })
+        );
+        game.tick(Action.endManeuver());
+
+        expect(game.availableActions).toEqual(
+          new Set(
+            [
+              "factory",
+              "production1",
+              "maneuver1",
+              "investor",
+              "import",
+              "production2",
+              "maneuver2",
+              "taxation",
+            ].map((slot) => Action.rondel({ nation: Nation.IT, cost: 0, slot }))
+          )
+        );
+      });
+    });
+
     describe("import", () => {
       const newGame = () => {
         const board = new GameBoard({
@@ -101,6 +198,46 @@ describe("imperial", () => {
       });
     });
 
+    describe("initialize", () => {
+      const newGame = () => {
+        const board = new GameBoard({
+          nodes: [],
+          edges: [],
+        });
+
+        const game = new Imperial(board);
+        return game;
+      };
+
+      test("it is AH's turn to select a rondel slot", () => {
+        const game = newGame();
+
+        game.tick(
+          Action.initialize({
+            players: [
+              { id: "player1", nation: Nation.AH },
+              { id: "player2", nation: Nation.IT },
+            ],
+          })
+        );
+
+        expect(game.availableActions).toEqual(
+          new Set(
+            [
+              "factory",
+              "production1",
+              "maneuver1",
+              "investor",
+              "import",
+              "production2",
+              "maneuver2",
+              "taxation",
+            ].map((slot) => Action.rondel({ nation: Nation.AH, cost: 0, slot }))
+          )
+        );
+      });
+    });
+
     describe("rondel", () => {
       describe("maneuver1 or manuever2", () => {
         const newGame = () => {
@@ -183,6 +320,53 @@ describe("imperial", () => {
                   destination: "d",
                 }),
               ])
+            );
+          });
+        });
+      });
+
+      describe("production1 or production2", () => {
+        const newGame = () => {
+          const board = new GameBoard({
+            nodes: [{ name: "a", nation: Nation.AH }],
+            edges: [],
+          });
+
+          const game = new Imperial(board);
+          game.tick(
+            Action.initialize({
+              players: [
+                { id: "player1", nation: Nation.AH },
+                { id: "player2", nation: Nation.IT },
+              ],
+            })
+          );
+          return game;
+        };
+
+        ["production1", "production2"].forEach((production) => {
+          test("it is IT's turn to select a rondel slot", () => {
+            const game = newGame();
+
+            game.tick(
+              Action.rondel({ slot: production, cost: 0, nation: Nation.AH })
+            );
+
+            expect(game.availableActions).toEqual(
+              new Set(
+                [
+                  "factory",
+                  "production1",
+                  "maneuver1",
+                  "investor",
+                  "import",
+                  "production2",
+                  "maneuver2",
+                  "taxation",
+                ].map((slot) =>
+                  Action.rondel({ nation: Nation.IT, cost: 0, slot })
+                )
+              )
             );
           });
         });
