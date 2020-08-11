@@ -75,25 +75,38 @@ Vue.component("nation", {
   },
 });
 
+Vue.component("current-turn", {
+  props: ["type", "payload"],
+  template: `<div>{{ type }}{{ payload }}</div>`,
+});
+
+Vue.component("action", {
+  props: ["action", "dispatch", "text"],
+  template: `<button v-on:click="dispatch(action)">{{ text }}</button>`,
+});
+
 var app = new Vue({
   el: "#app",
   data: {
     game: {},
     gameStarted: false,
-    gameLog: [],
-    logIndex: 0,
   },
   methods: {
     startGame: function () {
-      this.gameLog.push(log[this.logIndex]);
-      this.game = Imperial.fromLog(this.gameLog);
-      this.logIndex += 1;
+      this.game = Imperial.fromLog(log.slice(0, 2));
       this.gameStarted = true;
     },
-    tick: function () {
-      this.logIndex += 1;
-      this.gameLog.push(log[this.logIndex]);
-      this.game = Imperial.fromLog(this.gameLog);
+    tickWithAction: function (action) {
+      this.game.tick(action);
+    },
+    actionToText: function (action) {
+      if (action.type === "rondel") {
+        return action.payload.slot;
+      } else if (action.type === "import") {
+        return `Import ${action.payload.unit} in ${action.payload.province}`;
+      } else if (action.type === "buildFactory") {
+        return `Build factory in ${action.payload.province}`;
+      }
     },
   },
 });

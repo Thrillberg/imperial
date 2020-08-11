@@ -28,11 +28,24 @@
             v-bind:nations="slot.nations"
           ></rondel-slot>
         </ul>
-        <button v-on:click="tick">
-          Tick
-        </button>
+        <current-turn
+          v-bind:type="game.log[game.log.length - 1].type"
+          v-bind:payload="game.log[game.log.length - 1].payload"
+        ></current-turn>
+        <div>
+          It is {{ game.currentNation.value }}'s turn
+        </div>
+        <div class="buttons">
+          <action
+            v-for="action in game.availableActions"
+            v-bind:key="JSON.stringify(action)"
+            v-bind:action="action"
+            v-bind:text="actionToText(action)"
+            v-bind:dispatch="tickWithAction"
+          ></action>
+        </div>
       </div>
-      <div v-else>
+      <div v-else class="buttons">
         <button v-on:click="startGame">
           Start Game
         </button>
