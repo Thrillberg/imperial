@@ -108,7 +108,7 @@ export default class Imperial {
         this.availableActions = this.availableActionsState(action);
       }
     } else if (action.type === "import") {
-      action.payload.forEach(({ province, type }) => {
+      action.payload.placements.forEach(({ province, type }) => {
         const nation = this.board.graph.get(province).nation;
         if (type === "army") {
           this.units.get(nation).get(province).armies++;
@@ -544,9 +544,9 @@ export default class Imperial {
     const out = new Set();
     for (const province of this.board.byNation.get(nation)) {
       if (this.board.graph.get(province).factoryType === "shipyard") {
-        out.add(Action.import({ province, unit: "fleet" }));
+        out.add(Action.import({ placements: [{ province, unit: "fleet" }] }));
       }
-      out.add(Action.import({ province, unit: "army" }));
+      out.add(Action.import({ placements: [{ province, unit: "army" }] }));
     }
     return out;
   }

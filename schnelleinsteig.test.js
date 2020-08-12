@@ -133,9 +133,13 @@ describe("Schnelleinsteig", () => {
           "prague",
           "lemberg",
           "trieste",
-        ].map((province) => Action.import({ province, unit: "army" }));
+        ].map((province) =>
+          Action.import({ placements: [{ province, unit: "army" }] })
+        );
         expectedActions.push(
-          Action.import({ province: "trieste", unit: "fleet" })
+          Action.import({
+            placements: [{ province: "trieste", unit: "fleet" }],
+          })
         );
 
         expect(game.availableActions).toEqual(new Set(expectedActions));
@@ -144,10 +148,12 @@ describe("Schnelleinsteig", () => {
       test("AH's treasury is empty and Trieste & Lemberg have AH armies", () => {
         const log = mainLog.slice(0, 15);
         log.push(
-          Action.import([
-            { province: "trieste", type: "fleet" },
-            { province: "lemberg", type: "army" },
-          ])
+          Action.import({
+            placements: [
+              { province: "trieste", type: "fleet" },
+              { province: "lemberg", type: "army" },
+            ],
+          })
         );
         const game = Imperial.fromLog(log);
         const treasury = game.nations.get(Nation.AH).treasury;
@@ -164,10 +170,12 @@ describe("Schnelleinsteig", () => {
       test("it is now IT's turn", () => {
         const log = mainLog.slice(0, 15);
         log.push(
-          Action.import([
-            { province: "trieste", type: "fleet" },
-            { province: "lemberg", type: "army" },
-          ])
+          Action.import({
+            placements: [
+              { province: "trieste", type: "fleet" },
+              { province: "lemberg", type: "army" },
+            ],
+          })
         );
         const game = Imperial.fromLog(log);
         const currentPlayerName = game.getController(Nation.IT);
@@ -734,22 +742,30 @@ describe("Schnelleinsteig", () => {
           "odessa",
           "kiev",
           "warsaw",
-        ].map((province) => Action.import({ province, unit: "army" }));
-        expected.push(
-          Action.import({ province: "st. petersburg", unit: "fleet" })
+        ].map((province) =>
+          Action.import({ placements: [{ province, unit: "army" }] })
         );
-        expected.push(Action.import({ province: "odessa", unit: "fleet" }));
+        expected.push(
+          Action.import({
+            placements: [{ province: "st. petersburg", unit: "fleet" }],
+          })
+        );
+        expected.push(
+          Action.import({ placements: [{ province: "odessa", unit: "fleet" }] })
+        );
 
         expect(actions).toEqual(new Set(expected));
       });
 
       describe("Russia imports 1 in St. Petersburg and 2 in Moscow", () => {
         game.tick(
-          Action.import([
-            { province: "st. petersburg", type: "fleet" },
-            { province: "moscow", type: "army" },
-            { province: "moscow", type: "army" },
-          ])
+          Action.import({
+            placements: [
+              { province: "st. petersburg", type: "fleet" },
+              { province: "moscow", type: "army" },
+              { province: "moscow", type: "army" },
+            ],
+          })
         );
 
         test("RU has 1 fleet in st. petersburg and 2 armies in moscow", () => {

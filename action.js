@@ -45,9 +45,6 @@ const makeAction = (type, payloadKeys) => {
   });
 };
 
-const makeUnvalidatedAction = (type) =>
-  memoize((payload) => ({ type, payload }));
-
 const noop = Object.freeze({ type: "noop" });
 
 export default {
@@ -58,7 +55,7 @@ export default {
   coexist: makeAction("coexist", ["province", "incumbent", "challenger"]),
   endManeuver: makeAction("endManeuver", []),
   fight: makeAction("fight", ["province", "incumbent", "challenger"]),
-  import: makeUnvalidatedAction("import"),
+  import: makeAction("import", ["placements"]), // placement : { province: string, type: "army"|"fleet" }
   maneuver: makeAction("maneuver", ["origin", "destination"]),
   production: makeAction("production", ["province"]),
   rondel: makeAction("rondel", ["nation", "cost", "slot"]),
