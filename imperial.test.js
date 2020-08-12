@@ -140,7 +140,7 @@ describe("imperial", () => {
         const beforeUnits = cloneUnits(game.units);
         expect(game.nations.get(Nation.AH).treasury).toEqual(11);
 
-        game.tick(Action.import([]));
+        game.tick(Action.import({ placements: [] }));
 
         expect(game.units).toEqual(beforeUnits);
         expect(game.nations.get(Nation.AH).treasury).toEqual(11);
@@ -152,7 +152,9 @@ describe("imperial", () => {
         expected.get(Nation.AH).get("a").armies++;
         expect(game.nations.get(Nation.AH).treasury).toEqual(11);
 
-        game.tick(Action.import([{ province: "a", type: "army" }]));
+        game.tick(
+          Action.import({ placements: [{ province: "a", type: "army" }] })
+        );
 
         expect(game.units).toEqual(expected);
         expect(game.nations.get(Nation.AH).treasury).toEqual(10);
@@ -167,10 +169,12 @@ describe("imperial", () => {
         expect(game.nations.get(Nation.AH).treasury).toEqual(11);
 
         game.tick(
-          Action.import([
-            { province: "a", type: "army" },
-            { province: "a", type: "fleet" },
-          ])
+          Action.import({
+            placements: [
+              { province: "a", type: "army" },
+              { province: "a", type: "fleet" },
+            ],
+          })
         );
 
         expect(game.units).toEqual(expected);
@@ -186,11 +190,13 @@ describe("imperial", () => {
         expect(game.nations.get(Nation.AH).treasury).toEqual(11);
 
         game.tick(
-          Action.import([
-            { province: "a", type: "army" },
-            { province: "b", type: "army" },
-            { province: "a", type: "fleet" },
-          ])
+          Action.import({
+            placements: [
+              { province: "a", type: "army" },
+              { province: "b", type: "army" },
+              { province: "a", type: "fleet" },
+            ],
+          })
         );
 
         expect(game.units).toEqual(expected);
