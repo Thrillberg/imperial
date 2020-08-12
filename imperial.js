@@ -102,6 +102,42 @@ export default class Imperial {
 
         this.log.push(action);
         this.handleAdvancePlayer(action);
+      } else if (action.payload.slot === "import") {
+        const availableActions = new Set([Action.import({ placements: [] })]);
+        const homeProvinces = this.board.byNation.get(action.payload.nation);
+        for (const province of homeProvinces) {
+          availableActions.add(
+            Action.import({ placements: [{ province, type: "army" }] })
+          );
+
+          for (const province2 of homeProvinces) {
+            if (province2 === province) continue;
+
+            availableActions.add(
+              Action.import({
+                placements: [
+                  { province, type: "army" },
+                  { province: province2, type: "army" },
+                ],
+              })
+            );
+
+            for (const province3 of homeProvinces) {
+              if (province === province3 || province2 === province3) continue;
+
+              availableActions.add(
+                Action.import({
+                  placements: [
+                    { province, type: "army" },
+                    { province: province2, type: "army" },
+                    { province: province3, type: "army" },
+                  ],
+                })
+              );
+            }
+          }
+        }
+        this.availableActions = availableActions;
       } else {
         this.log.push(action);
         this.handleAdvancePlayer(action);

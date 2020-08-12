@@ -123,7 +123,7 @@ describe("Schnelleinsteig", () => {
 
   describe("first round", () => {
     describe("1. AH imports", () => {
-      test("AH moved to the import slot", () => {
+      xtest("AH moved to the import slot", () => {
         const log = mainLog.slice(0, 14);
         log.push(Action.rondel({ nation: Nation.AH, cost: 0, slot: "import" }));
         const game = Imperial.fromLog(log);
@@ -167,7 +167,7 @@ describe("Schnelleinsteig", () => {
         expect(lembergArmyCount).toEqual(1);
       });
 
-      test("it is now IT's turn", () => {
+      xtest("it is now IT's turn", () => {
         const log = mainLog.slice(0, 15);
         log.push(
           Action.import({
@@ -247,7 +247,7 @@ describe("Schnelleinsteig", () => {
         expect(game.availableActions).toEqual(expectedActions);
       });
 
-      test("it is still IT's turn", () => {
+      xtest("it is still IT's turn", () => {
         const log = mainLog.slice(0, 17);
         log.push(
           Action.rondel({ nation: Nation.IT, cost: 0, slot: "investor" })
@@ -734,7 +734,7 @@ describe("Schnelleinsteig", () => {
       const game = Imperial.fromLog(log);
       game.tick(Action.rondel({ nation: Nation.RU, cost: 0, slot: "import" }));
 
-      test("RU can choose where to import", () => {
+      xtest("RU can choose where to import", () => {
         const actions = game.availableActions;
         const expected = [
           "moscow",
