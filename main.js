@@ -49,7 +49,7 @@ Vue.component("rondel-slot", {
 
 Vue.component("nation", {
   props: ["current_nation", "nation"],
-  template: `<li :class="flagClass()">{{ flag() }}</li>`,
+  template: `<li :class="flagClass()"><img class="sm-flag" :src="flag()"></li>`,
   methods: {
     flagClass: function () {
       return this.current_nation === this.nation
@@ -59,17 +59,17 @@ Vue.component("nation", {
     flag: function () {
       switch (this.nation) {
         case "AH":
-          return "🇦🇹";
+          return "flags/ah.svg";
         case "IT":
-          return "🇮🇹";
+          return "flags/it.svg";
         case "FR":
-          return "🇫🇷";
+          return "flags/fr.svg";
         case "GB":
-          return "🇬🇧";
+          return "flags/gb.svg";
         case "GE":
-          return "🇩🇪";
+          return "flags/ge.svg";
         case "RU":
-          return "🇷🇺";
+          return "flags/ru.svg";
       }
     },
   },

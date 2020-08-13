@@ -50,3 +50,7 @@ ul {
   position: absolute;
   top: -0.2rem;
 }
+
+.sm-flag {
+  height: 1rem;
+}
