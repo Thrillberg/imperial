@@ -32,49 +32,6 @@ Vue.component("bond", {
   template: `<li class="bond">{{ nation }}{{ cost }}</li>`,
 });
 
-Vue.component("rondel-slot", {
-  props: ["current_nation", "name", "nations"],
-  template: `
-    <li>
-      <div class="rondel-slot">{{ name }}</div>
-      <nation
-        v-for="nation in nations"
-        v-bind:current_nation="current_nation"
-        v-bind:key="nation"
-        v-bind:nation="nation"
-      ></nation>
-    </li>
-  `,
-});
-
-Vue.component("nation", {
-  props: ["current_nation", "nation"],
-  template: `<li :class="flagClass()"><img class="sm-flag" :src="flag()"></li>`,
-  methods: {
-    flagClass: function () {
-      return this.current_nation === this.nation
-        ? "flag current_nation"
-        : "flag";
-    },
-    flag: function () {
-      switch (this.nation) {
-        case "AH":
-          return "flags/ah.svg";
-        case "IT":
-          return "flags/it.svg";
-        case "FR":
-          return "flags/fr.svg";
-        case "GB":
-          return "flags/gb.svg";
-        case "GE":
-          return "flags/ge.svg";
-        case "RU":
-          return "flags/ru.svg";
-      }
-    },
-  },
-});
-
 Vue.component("current-turn", {
   props: ["type", "payload"],
   template: `<div>{{ type }}{{ payload }}</div>`,
@@ -90,14 +47,39 @@ var app = new Vue({
   data: {
     game: {},
     gameStarted: false,
+    rondel: "",
+  },
+  mounted() {
+    fetch("rondel.svg")
+      .then((response) => response.text())
+      .then((text) => {
+        this.rondel = text;
+      });
   },
   methods: {
     startGame: function () {
       this.game = Imperial.fromLog(log.slice(0, 2));
       this.gameStarted = true;
     },
+    flag: function (nation) {
+      switch (nation) {
+        case "AH":
+          return "flags/ah.svg";
+        case "IT":
+          return "flags/it.svg";
+        case "FR":
+          return "flags/fr.svg";
+        case "GB":
+          return "flags/gb.svg";
+        case "GE":
+          return "flags/ge.svg";
+        case "RU":
+          return "flags/ru.svg";
+      }
+    },
     tickWithAction: function (action) {
       this.game.tick(action);
+      this.updateRondel();
     },
     actionToText: function (action) {
       if (action.type === "rondel") {
@@ -106,6 +88,34 @@ var app = new Vue({
         return `Import ${action.payload.unit} in ${action.payload.province}`;
       } else if (action.type === "buildFactory") {
         return `Build factory in ${action.payload.province}`;
+      }
+    },
+    updateRondel: function () {
+      for (const [nation, { rondelPosition }] of this.game.nations) {
+        if (rondelPosition === null) continue;
+        const el = document.getElementById(rondelPosition);
+        const bBox = el.getBBox();
+        const flag = document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          "image"
+        );
+        flag.setAttribute("height", "20");
+
+        // This is a really rough way to get the center of the SVG path
+        const step = el.getTotalLength() / 100;
+        let totalX = 0;
+        let totalY = 0;
+        for (let dist = 0; dist < el.getTotalLength(); dist += step) {
+          const pt = el.getPointAtLength(dist);
+          totalX += pt.x;
+          totalY += pt.y;
+        }
+
+        flag.setAttribute("x", totalX / 100);
+        flag.setAttribute("y", totalY / 100);
+
+        flag.setAttribute("href", this.flag(nation.value));
+        el.parentNode.append(flag);
       }
     },
   },
