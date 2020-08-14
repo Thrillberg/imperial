@@ -29,18 +29,8 @@ ul {
   padding: 3rem;
 }
 
-.rondel-slot {
-  text-decoration: underline;
-}
-
-.flag {
-  font-size: 3rem;
-}
-
-.current_nation {
-  background: #ffd700;
-  border-radius: 50%;
-  padding: 0.2rem 0.5rem 0rem 0.5rem;
+.rondel {
+  text-align: center;
 }
 
 .current_player {
