@@ -313,6 +313,7 @@ describe("imperial", () => {
           );
 
           expect(game.availableActions).toEqual(availableActions);
+          expect(game.nations.get(Nation.AH).rondelPosition).toEqual("import");
         });
 
         test.todo("fleets");

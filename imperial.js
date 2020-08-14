@@ -13,20 +13,6 @@ export default class Imperial {
   constructor(board) {
     this.board = board || standardGameBoard;
     this.log = [];
-    this.rondelSlots = this.setupRondelSlots();
-  }
-
-  setupRondelSlots() {
-    return [
-      { name: "factory", nations: [] },
-      { name: "production1", nations: [] },
-      { name: "maneuver1", nations: [] },
-      { name: "investor", nations: [] },
-      { name: "import", nations: [] },
-      { name: "production2", nations: [] },
-      { name: "maneuver2", nations: [] },
-      { name: "taxation", nations: [] },
-    ];
   }
 
   tick(action) {
@@ -57,8 +43,7 @@ export default class Imperial {
       this.handleAdvancePlayer(action);
     } else if (action.type === "rondel") {
       this.currentNation = action.payload.nation;
-      this.removeNationFromOldSlot(action);
-      this.addNationToNewSlot(action);
+      this.nations.get(this.currentNation).rondelPosition = action.payload.slot;
       if (action.payload.slot === "investor") {
         this.players[this.investorCardHolder].cash += 2;
         for (var player of Object.keys(this.players)) {
@@ -306,21 +291,6 @@ export default class Imperial {
         this.investorCardHolder = this.order[index - 1];
       }
     }
-  }
-
-  removeNationFromOldSlot(action) {
-    this.rondelSlots.forEach((slot) => {
-      const nationIndex = slot.nations.indexOf(action.payload.nation.value);
-      if (nationIndex !== -1) {
-        slot.nations.splice(nationIndex, 1);
-      }
-    });
-  }
-
-  addNationToNewSlot(action) {
-    this.rondelSlots
-      .find((slot) => slot.name === action.payload.slot)
-      .nations.push(action.payload.nation.value);
   }
 
   handleTaxation(action) {
