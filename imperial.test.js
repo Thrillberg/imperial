@@ -90,26 +90,27 @@ describe("imperial", () => {
 
       test("it is IT's turn to select a rondel slot", () => {
         const game = newGame();
+        const expected = new Set();
+        ["investor", "import", "production2"].forEach((slot) => {
+          expected.add(Action.rondel({ nation: Nation.IT, cost: 0, slot }));
+        });
+        expected.add(
+          Action.rondel({ nation: Nation.IT, cost: 2, slot: "maneuver2" })
+        );
+        expected.add(
+          Action.rondel({ nation: Nation.IT, cost: 4, slot: "taxation" })
+        );
+        expected.add(
+          Action.rondel({ nation: Nation.IT, cost: 6, slot: "factory" })
+        );
 
+        game.nations.get(Nation.IT).rondelPosition = "maneuver1";
         game.tick(
           Action.rondel({ slot: "maneuver1", cost: 0, nation: Nation.AH })
         );
         game.tick(Action.endManeuver());
 
-        expect(game.availableActions).toEqual(
-          new Set(
-            [
-              "factory",
-              "production1",
-              "maneuver1",
-              "investor",
-              "import",
-              "production2",
-              "maneuver2",
-              "taxation",
-            ].map((slot) => Action.rondel({ nation: Nation.IT, cost: 0, slot }))
-          )
-        );
+        expect(game.availableActions).toEqual(expected);
       });
     });
 
@@ -427,27 +428,26 @@ describe("imperial", () => {
         ["production1", "production2"].forEach((production) => {
           test("it is IT's turn to select a rondel slot", () => {
             const game = newGame();
+            const expected = new Set();
+            ["factory", "production1", "maneuver1"].forEach((slot) => {
+              expected.add(Action.rondel({ nation: Nation.IT, cost: 0, slot }));
+            });
+            expected.add(
+              Action.rondel({ nation: Nation.IT, cost: 2, slot: "investor" })
+            );
+            expected.add(
+              Action.rondel({ nation: Nation.IT, cost: 4, slot: "import" })
+            );
+            expected.add(
+              Action.rondel({ nation: Nation.IT, cost: 6, slot: "production2" })
+            );
+            game.nations.get(Nation.IT).rondelPosition = "taxation";
 
             game.tick(
               Action.rondel({ slot: production, cost: 0, nation: Nation.AH })
             );
 
-            expect(game.availableActions).toEqual(
-              new Set(
-                [
-                  "factory",
-                  "production1",
-                  "maneuver1",
-                  "investor",
-                  "import",
-                  "production2",
-                  "maneuver2",
-                  "taxation",
-                ].map((slot) =>
-                  Action.rondel({ nation: Nation.IT, cost: 0, slot })
-                )
-              )
-            );
+            expect(game.availableActions).toEqual(expected);
           });
         });
       });

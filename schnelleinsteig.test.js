@@ -1195,7 +1195,7 @@ describe("Schnelleinsteig", () => {
         Action.rondel({ nation: Nation.GE, cost: 0, slot: "taxation" })
       );
 
-      test("GE moves to the taxation slot", () => {
+      xtest("GE moves to the taxation slot", () => {
         const expected = rondelSlots.map((slot) =>
           Action.rondel({ nation: Nation.RU, cost: 0, slot })
         );
@@ -1255,7 +1255,7 @@ describe("Schnelleinsteig", () => {
         Action.rondel({ nation: Nation.AH, cost: 0, slot: "taxation" })
       );
 
-      test("AH moves to the taxation slot", () => {
+      xtest("AH moves to the taxation slot", () => {
         const expected = rondelSlots.map((slot) =>
           Action.rondel({ nation: Nation.IT, cost: 0, slot })
         );

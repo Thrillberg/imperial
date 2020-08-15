@@ -494,18 +494,58 @@ export default class Imperial {
   }
 
   rondelActions(nation) {
-    return new Set(
+    const rondelPositions = [
+      "factory",
+      "production1",
+      "maneuver1",
+      "investor",
+      "import",
+      "production2",
+      "maneuver2",
+      "taxation",
+    ];
+    const currentPosition = this.nations.get(nation).rondelPosition;
+    const out = new Set();
+    if (currentPosition) {
+      const currentIndex = rondelPositions.indexOf(currentPosition);
+      const distance = currentIndex - 8;
       [
-        "factory",
-        "production1",
-        "maneuver1",
-        "investor",
-        "import",
-        "production2",
-        "maneuver2",
-        "taxation",
-      ].map((slot) => Action.rondel({ nation, cost: 0, slot }))
-    );
+        rondelPositions[currentIndex + 1] || rondelPositions[distance + 1],
+        rondelPositions[currentIndex + 2] || rondelPositions[distance + 2],
+        rondelPositions[currentIndex + 3] || rondelPositions[distance + 3],
+      ].forEach((slot) => {
+        out.add(Action.rondel({ nation, cost: 0, slot }));
+      });
+      out.add(
+        Action.rondel({
+          nation,
+          cost: 2,
+          slot:
+            rondelPositions[currentIndex + 4] || rondelPositions[distance + 4],
+        })
+      );
+      out.add(
+        Action.rondel({
+          nation,
+          cost: 4,
+          slot:
+            rondelPositions[currentIndex + 5] || rondelPositions[distance + 5],
+        })
+      );
+      out.add(
+        Action.rondel({
+          nation,
+          cost: 6,
+          slot:
+            rondelPositions[currentIndex + 6] || rondelPositions[distance + 6],
+        })
+      );
+    } else {
+      rondelPositions.forEach((slot) => {
+        out.add(Action.rondel({ nation, cost: 0, slot }));
+      });
+    }
+    return out;
   }
 
   getNation(log) {
