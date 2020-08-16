@@ -67,6 +67,20 @@ describe("imperial", () => {
           new Set([Bond(Nation.AH, 2)])
         );
       });
+
+      test("purchasing a bond can grant control of the nation", () => {
+        const game = newGame();
+        game.players["player1"].bonds = new Set();
+        game.players["player1"].cash = 4;
+        // Nobody controls Italy
+        game.nations.get(Nation.IT).controller = null;
+
+        game.tick(
+          Action.bondPurchase({ player: "player1", cost: 4, nation: Nation.IT })
+        );
+
+        expect(game.nations.get(Nation.IT).controller).toEqual("player1");
+      });
     });
 
     describe("endManeuver", () => {
