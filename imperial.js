@@ -272,14 +272,31 @@ export default class Imperial {
     this.players[action.payload.player].bonds.add(newBond);
     this.availableBonds.delete(newBond);
 
-    const totalInvestmentInNation = [...bonds]
-      .filter((bond) => bond.nation === action.payload.nation)
-      .reduce((x, y) => x + y.cost, 0);
-    if (totalInvestmentInNation >= 6) {
+    if (this.nations.get(action.payload.nation).controller === null) {
+      this.nations.get(action.payload.nation).controller =
+        action.payload.player;
+    }
+
+    if (
+      this.totalInvestmentInNation(
+        action.payload.player,
+        action.payload.nation
+      ) >
+      this.totalInvestmentInNation(
+        this.nations.get(action.payload.nation).controller,
+        action.payload.nation
+      )
+    ) {
       this.nations.get(action.payload.nation).controller =
         action.payload.player;
     }
     this.advanceInvestorCard();
+  }
+
+  totalInvestmentInNation(player, nation) {
+    return [...this.players[player].bonds]
+      .filter((bond) => bond.nation === nation)
+      .reduce((x, y) => x + y.cost, 0);
   }
 
   advanceInvestorCard() {
