@@ -44,6 +44,7 @@ export default class Imperial {
     } else if (action.type === "rondel") {
       this.currentNation = action.payload.nation;
       this.nations.get(this.currentNation).rondelPosition = action.payload.slot;
+      this.players[this.currentPlayerName].cash -= action.payload.cost;
       if (action.payload.slot === "investor") {
         this.players[this.investorCardHolder].cash += 2;
         for (var player of Object.keys(this.players)) {
