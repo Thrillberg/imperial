@@ -260,6 +260,49 @@ describe("imperial", () => {
     });
 
     describe("rondel", () => {
+      describe("slots that cost money", () => {
+        const newGame = () => {
+          const board = new GameBoard({
+            nodes: [],
+            edges: [],
+          });
+
+          const game = new Imperial(board);
+          game.tick(
+            Action.initialize({
+              players: [
+                { id: "player1", nation: Nation.AH },
+                { id: "player2", nation: Nation.IT },
+              ],
+            })
+          );
+          return game;
+        };
+
+        test("a free slot does not deduct any money", () => {
+          const game = newGame();
+
+          expect(game.nations.get(Nation.AH).treasury).toEqual(11);
+
+          game.tick(
+            Action.rondel({ slot: "factory", cost: 0, nation: Nation.AH })
+          );
+
+          expect(game.nations.get(Nation.AH).treasury).toEqual(11);
+        });
+        test("a slot can deduct 3 million", () => {
+          const game = newGame();
+
+          game.players["player1"].cash = 3;
+
+          game.tick(
+            Action.rondel({ slot: "factory", cost: 3, nation: Nation.AH })
+          );
+
+          expect(game.players["player1"].cash).toEqual(0);
+        });
+      });
+
       describe("import", () => {
         const newGame = () => {
           const board = new GameBoard({
