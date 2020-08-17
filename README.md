@@ -1,4 +1,4 @@
-https://github.com/Thrillberg/imperial/workflows/Node.js%20CI/badge.svg
+![](https://github.com/Thrillberg/imperial/workflows/Node.js%20CI/badge.svg)
 
 # Imperial
 
