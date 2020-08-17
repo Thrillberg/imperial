@@ -508,6 +508,152 @@ describe("imperial", () => {
           });
         });
       });
+
+      describe("investor", () => {
+        const newGame = () => {
+          const board = new GameBoard({
+            nodes: [],
+            edges: [],
+          });
+
+          const game = new Imperial(board);
+          game.tick(
+            Action.initialize({
+              players: [
+                { id: "player1", nation: Nation.AH },
+                { id: "player2", nation: Nation.IT },
+              ],
+            })
+          );
+          return game;
+        };
+
+        describe("1. Nation pays bond-holders interest", () => {
+          test("nation pays interest to both players", () => {
+            const game = newGame();
+            game.players["player2"].bonds.add(Bond(Nation.AH, 2));
+
+            expect(game.players["player1"].cash).toEqual(2);
+            expect(game.players["player2"].cash).toEqual(2);
+            expect(game.nations.get(Nation.AH).treasury).toEqual(11);
+
+            game.tick(
+              Action.rondel({ slot: "investor", nation: Nation.AH, cost: 0 })
+            );
+
+            expect(game.players["player1"].cash).toEqual(7);
+            // NB: player2 has an "extra" 2m because they hold the investor card
+            expect(game.players["player2"].cash).toEqual(6);
+            expect(game.nations.get(Nation.AH).treasury).toEqual(4);
+          });
+
+          test("nation pays non-controlling players first when nation does not have enough money", () => {
+            const game = newGame();
+            game.players["player2"].bonds.add(Bond(Nation.AH, 2));
+            game.nations.get(Nation.AH).treasury = 2;
+
+            expect(game.players["player1"].cash).toEqual(2);
+            expect(game.players["player2"].cash).toEqual(2);
+            expect(game.nations.get(Nation.AH).treasury).toEqual(2);
+
+            game.tick(
+              Action.rondel({ slot: "investor", nation: Nation.AH, cost: 0 })
+            );
+
+            expect(game.players["player1"].cash).toEqual(2);
+            // NB: player2 has an "extra" 2m because they hold the investor card
+            expect(game.players["player2"].cash).toEqual(6);
+            expect(game.nations.get(Nation.AH).treasury).toEqual(0);
+          });
+
+          test("controlling player must make up shortfall from nation when nation can't pay other investors", () => {
+            const game = newGame();
+            game.players["player2"].bonds.add(Bond(Nation.AH, 2));
+            game.nations.get(Nation.AH).treasury = 0;
+
+            expect(game.players["player1"].cash).toEqual(2);
+            expect(game.players["player2"].cash).toEqual(2);
+            expect(game.nations.get(Nation.AH).treasury).toEqual(0);
+
+            game.tick(
+              Action.rondel({ slot: "investor", nation: Nation.AH, cost: 0 })
+            );
+
+            expect(game.players["player1"].cash).toEqual(0);
+            // NB: player2 has an "extra" 2m because they hold the investor card
+            expect(game.players["player2"].cash).toEqual(6);
+            expect(game.nations.get(Nation.AH).treasury).toEqual(0);
+          });
+        });
+
+        describe("2. Investor is activated", () => {
+          test("investor card holder gets 2m", () => {
+            const game = newGame();
+            // Make player1 the investor card holder
+            game.investorCardHolder = "player1";
+            // Empty out their bonds so that they don't impact player1's cash
+            game.players["player1"].bonds = new Set();
+
+            expect(game.players["player1"].cash).toEqual(2);
+
+            game.tick(
+              Action.rondel({ slot: "investor", nation: Nation.AH, cost: 0 })
+            );
+
+            expect(game.players["player1"].cash).toEqual(4);
+          });
+
+          test("available bonds for sale outright", () => {
+            const game = newGame();
+
+            expect(game.players["player2"].cash).toEqual(2);
+
+            game.tick(
+              Action.rondel({ slot: "investor", nation: Nation.AH, cost: 0 })
+            );
+
+            expect(game.availableActions).toEqual(
+              new Set([
+                Action.bondPurchase({
+                  nation: Nation.AH,
+                  player: "player2",
+                  cost: 4,
+                }),
+              ])
+            );
+          });
+
+          test("available bonds that can be traded up for", () => {
+            const game = newGame();
+
+            // Give the AH, 2 bond to player2
+            game.availableBonds.delete(Bond(Nation.AH, 2));
+            game.players["player2"].bonds.add(Bond(Nation.AH, 2));
+
+            expect(game.players["player2"].cash).toEqual(2);
+
+            game.tick(
+              Action.rondel({ slot: "investor", nation: Nation.AH, cost: 0 })
+            );
+
+            // player2 can use their own 2m plus the trade-in value of 4m
+            // from their AH, 2 bond to buy the AH, 3 bond
+            expect(game.availableActions).toEqual(
+              new Set([
+                Action.bondPurchase({
+                  nation: Nation.AH,
+                  player: "player2",
+                  cost: 6,
+                }),
+              ])
+            );
+          });
+        });
+
+        describe("3. Investing without a flag", () => {
+          test.todo("test me plz");
+        });
+      });
     });
 
     describe("maneuver", () => {

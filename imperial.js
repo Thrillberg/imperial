@@ -183,22 +183,45 @@ export default class Imperial {
 
         switch (action.payload.slot) {
           case "investor":
-            this.players[this.investorCardHolder].cash += 2;
-            for (var player of Object.keys(this.players)) {
-              if (this.players[player].bonds.size > 0) {
-                for (const bond of this.players[player].bonds) {
-                  if (bond.nation === action.payload.nation) {
-                    if (bond.cost === 9) {
-                      this.players[player].cash += 4;
-                      this.nations.get(action.payload.nation).treasury -= 4;
+            // 1. Nation pays bond-holders interest
+            for (const player of Object.keys(this.players)) {
+              if (player !== this.currentPlayerName) {
+                this.playerBondsOfNation(player, action.payload.nation).forEach(
+                  (bond) => {
+                    if (
+                      this.nations.get(action.payload.nation).treasury >=
+                      bond.number
+                    ) {
+                      this.nations.get(action.payload.nation).treasury -=
+                        bond.number;
                     } else {
-                      this.players[player].cash += 1;
-                      this.nations.get(action.payload.nation).treasury -= 1;
+                      this.players[this.currentPlayerName].cash -= bond.number;
                     }
+                    this.players[player].cash += bond.number;
                   }
-                }
+                );
               }
             }
+            // Nation pays its controller interest
+            const amountOwedToController = [
+              ...this.players[this.currentPlayerName].bonds,
+            ]
+              .filter((bond) => bond.nation === action.payload.nation)
+              .reduce((x, y) => x + y.number, 0);
+            if (
+              this.nations.get(action.payload.nation).treasury >
+              amountOwedToController
+            ) {
+              this.players[
+                this.currentPlayerName
+              ].cash += amountOwedToController;
+              this.nations.get(
+                action.payload.nation
+              ).treasury -= amountOwedToController;
+            }
+            // 2. Investor card holder gets 2m cash
+            this.players[this.investorCardHolder].cash += 2;
+            // Investor card holder may buy a bond belonging to the nation
             this.availableActions = new Set(
               [...this.availableBonds]
                 .filter((bond) => {
@@ -209,7 +232,10 @@ export default class Imperial {
                     })
                     .map((x) => x.cost);
                   const topBondCost = Math.max(exchangeableBondCosts);
-                  return bond.cost <= this.players[player].cash + topBondCost;
+                  return (
+                    bond.nation === action.payload.nation &&
+                    bond.cost <= this.players[player].cash + topBondCost
+                  );
                 })
                 .map((bond) => {
                   return Action.bondPurchase({
@@ -219,6 +245,7 @@ export default class Imperial {
                   });
                 })
             );
+            // TODO: 3. Investing without a flag
             return;
           case "import":
             const availableActions = new Set([
@@ -444,6 +471,16 @@ export default class Imperial {
             return;
         }
     }
+  }
+
+  playerBondsOfNation(player, nation) {
+    const out = [];
+    for (const bond of this.players[player].bonds) {
+      if (bond.nation === nation) {
+        out.push(bond);
+      }
+    }
+    return out;
   }
 
   handleAdvancePlayer() {

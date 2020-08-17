@@ -227,21 +227,8 @@ describe("Schnelleinsteig", () => {
         );
         const game = Imperial.fromLog(log);
         const expectedActions = new Set([
-          Action.bondPurchase({ nation: Nation.AH, player: "Daniel", cost: 4 }),
           Action.bondPurchase({ nation: Nation.IT, player: "Daniel", cost: 2 }),
           Action.bondPurchase({ nation: Nation.IT, player: "Daniel", cost: 4 }),
-          Action.bondPurchase({ nation: Nation.FR, player: "Daniel", cost: 4 }),
-          Action.bondPurchase({ nation: Nation.FR, player: "Daniel", cost: 6 }),
-          Action.bondPurchase({ nation: Nation.GB, player: "Daniel", cost: 4 }),
-          Action.bondPurchase({ nation: Nation.GE, player: "Daniel", cost: 2 }),
-          Action.bondPurchase({ nation: Nation.GE, player: "Daniel", cost: 4 }),
-          Action.bondPurchase({ nation: Nation.RU, player: "Daniel", cost: 4 }),
-          Action.bondPurchase({ nation: Nation.RU, player: "Daniel", cost: 6 }),
-          Action.bondPurchase({
-            nation: Nation.RU,
-            player: "Daniel",
-            cost: 12,
-          }),
         ]);
 
         expect(game.availableActions).toEqual(expectedActions);
@@ -475,19 +462,6 @@ describe("Schnelleinsteig", () => {
         );
         const game = Imperial.fromLog(log);
         const expectedActions = new Set([
-          Action.bondPurchase({ nation: Nation.AH, player: "Anton", cost: 4 }),
-          Action.bondPurchase({ nation: Nation.AH, player: "Anton", cost: 6 }),
-          Action.bondPurchase({ nation: Nation.IT, player: "Anton", cost: 2 }),
-          Action.bondPurchase({ nation: Nation.IT, player: "Anton", cost: 4 }),
-          Action.bondPurchase({ nation: Nation.IT, player: "Anton", cost: 6 }),
-          Action.bondPurchase({ nation: Nation.IT, player: "Anton", cost: 12 }),
-          Action.bondPurchase({ nation: Nation.IT, player: "Anton", cost: 16 }),
-          Action.bondPurchase({ nation: Nation.FR, player: "Anton", cost: 4 }),
-          Action.bondPurchase({ nation: Nation.FR, player: "Anton", cost: 6 }),
-          Action.bondPurchase({ nation: Nation.GB, player: "Anton", cost: 4 }),
-          Action.bondPurchase({ nation: Nation.GB, player: "Anton", cost: 6 }),
-          Action.bondPurchase({ nation: Nation.GE, player: "Anton", cost: 2 }),
-          Action.bondPurchase({ nation: Nation.GE, player: "Anton", cost: 6 }),
           Action.bondPurchase({ nation: Nation.RU, player: "Anton", cost: 4 }),
           Action.bondPurchase({ nation: Nation.RU, player: "Anton", cost: 6 }),
         ]);
@@ -1149,22 +1123,10 @@ describe("Schnelleinsteig", () => {
 
       test("Bert can buy a bond", () => {
         const expectedActions = [
-          Action.bondPurchase({ nation: Nation.AH, player: "Bert", cost: 4 }),
-          Action.bondPurchase({ nation: Nation.AH, player: "Bert", cost: 6 }),
-          Action.bondPurchase({ nation: Nation.AH, player: "Bert", cost: 9 }),
-          Action.bondPurchase({ nation: Nation.IT, player: "Bert", cost: 2 }),
-          Action.bondPurchase({ nation: Nation.IT, player: "Bert", cost: 4 }),
-          Action.bondPurchase({ nation: Nation.IT, player: "Bert", cost: 6 }),
-          Action.bondPurchase({ nation: Nation.FR, player: "Bert", cost: 4 }),
-          Action.bondPurchase({ nation: Nation.FR, player: "Bert", cost: 6 }),
           Action.bondPurchase({ nation: Nation.GB, player: "Bert", cost: 4 }),
           Action.bondPurchase({ nation: Nation.GB, player: "Bert", cost: 6 }),
           Action.bondPurchase({ nation: Nation.GB, player: "Bert", cost: 12 }),
           Action.bondPurchase({ nation: Nation.GB, player: "Bert", cost: 16 }),
-          Action.bondPurchase({ nation: Nation.GE, player: "Bert", cost: 2 }),
-          Action.bondPurchase({ nation: Nation.GE, player: "Bert", cost: 9 }),
-          Action.bondPurchase({ nation: Nation.RU, player: "Bert", cost: 4 }),
-          Action.bondPurchase({ nation: Nation.RU, player: "Bert", cost: 6 }),
         ];
 
         expect(game.availableActions).toEqual(new Set(expectedActions));
@@ -1739,11 +1701,6 @@ describe("Schnelleinsteig", () => {
         test("Daniel can buy a bond", () => {
           const expectedActions = new Set([
             Action.bondPurchase({
-              nation: Nation.AH,
-              player: "Daniel",
-              cost: 4,
-            }),
-            Action.bondPurchase({
               nation: Nation.IT,
               player: "Daniel",
               cost: 2,
@@ -1757,46 +1714,6 @@ describe("Schnelleinsteig", () => {
               nation: Nation.IT,
               player: "Daniel",
               cost: 6,
-            }),
-            Action.bondPurchase({
-              nation: Nation.FR,
-              player: "Daniel",
-              cost: 4,
-            }),
-            Action.bondPurchase({
-              nation: Nation.FR,
-              player: "Daniel",
-              cost: 6,
-            }),
-            Action.bondPurchase({
-              nation: Nation.GB,
-              player: "Daniel",
-              cost: 4,
-            }),
-            Action.bondPurchase({
-              nation: Nation.GB,
-              player: "Daniel",
-              cost: 6,
-            }),
-            Action.bondPurchase({
-              nation: Nation.GE,
-              player: "Daniel",
-              cost: 2,
-            }),
-            Action.bondPurchase({
-              nation: Nation.GE,
-              player: "Daniel",
-              cost: 9,
-            }),
-            Action.bondPurchase({
-              nation: Nation.RU,
-              player: "Daniel",
-              cost: 4,
-            }),
-            Action.bondPurchase({
-              nation: Nation.RU,
-              player: "Daniel",
-              cost: 12,
             }),
           ]);
 
