@@ -1307,8 +1307,9 @@ describe("Schnelleinsteig", () => {
     });
 
     describe("3. FR does production2", () => {
-      const log = mainLog.slice(0, 56);
+      const log = mainLog.slice(0, 57);
       const game = Imperial.fromLog(log);
+
       game.tick(
         Action.rondel({ nation: Nation.FR, cost: 0, slot: "production2" })
       );

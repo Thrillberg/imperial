@@ -16,6 +16,8 @@ export default class Imperial {
   }
 
   tick(action) {
+    this.log.push(action);
+
     switch (action.type) {
       case "noop":
         return;
@@ -35,18 +37,15 @@ export default class Imperial {
         this.currentPlayerName = this.nations.get(
           this.currentNation
         ).controller;
-        this.log.push(action);
         this.availableActions = new Set(this.rondelActions(Nation.AH));
         return;
       case "bondPurchase":
         this.purchaseBond(action);
-        this.log.push(action);
         this.handleAdvancePlayer();
         return;
       case "endManeuver":
         this.currentNation = this.nextNation(this.currentNation);
         this.availableActions = new Set(this.rondelActions(this.currentNation));
-        this.log.push(action);
         this.handleAdvancePlayer();
         return;
       case "fight":
@@ -57,7 +56,6 @@ export default class Imperial {
         return;
       case "buildFactory":
         this.buildFactory(action);
-        this.log.push(action);
         this.handleAdvancePlayer();
         return;
       case "import":
@@ -70,7 +68,6 @@ export default class Imperial {
           }
           this.nations.get(nation).treasury--;
         });
-        this.log.push(action);
         this.handleAdvancePlayer();
         return;
       case "maneuver":
@@ -177,7 +174,6 @@ export default class Imperial {
             this.rondelActions(this.getNation(this.log))
           );
         }
-        this.log.push(action);
         return;
       case "rondel":
         this.currentNation = action.payload.nation;
@@ -203,7 +199,6 @@ export default class Imperial {
                 }
               }
             }
-            this.log.push(action);
             this.availableActions = new Set(
               [...this.availableBonds]
                 .filter((bond) => {
@@ -266,8 +261,6 @@ export default class Imperial {
               }
             }
             this.availableActions = availableActions;
-            this.log.push(action);
-
             return;
           case "production1":
           case "production2":
@@ -345,13 +338,7 @@ export default class Imperial {
                 }),
               ]);
             } else {
-              this.log.push(action);
-              if (
-                action.payload.slot === "production1" ||
-                action.payload.slot === "production2"
-              ) {
-                this.handleAdvancePlayer();
-              }
+              this.handleAdvancePlayer();
               this.availableActions = new Set(
                 this.rondelActions(this.currentNation)
               );
@@ -371,14 +358,12 @@ export default class Imperial {
             } else {
               nation.powerPoints += 3;
             }
-            this.log.push(action);
             this.availableActions = new Set(
               this.rondelActions(this.getNation(this.log))
             );
             return;
           case "maneuver1":
           case "maneuver2":
-            this.log.push(action);
             const destinations = new Set([Action.endManeuver()]);
 
             // Collect all units that are allowed to move on this turn
@@ -453,7 +438,6 @@ export default class Imperial {
             this.availableActions = destinations;
             return;
           case "factory":
-            this.log.push(action);
             this.availableActions = new Set(
               this.buildFactoryAction(action.payload.nation)
             );
@@ -681,7 +665,7 @@ export default class Imperial {
       (action) => action.type === "rondel" && action.payload.nation === nation
     );
     if (rondelActions.length > 2) {
-      return rondelActions[rondelActions.length - 1].payload.slot;
+      return rondelActions[rondelActions.length - 2].payload.slot;
     }
   }
 
