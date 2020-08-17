@@ -43,7 +43,7 @@ export default class Imperial {
         return;
       case "endManeuver":
         this.currentNation = this.nextNation(this.currentNation);
-        this.availableActions = this.availableActionsState(action);
+        this.availableActions = new Set(this.rondelActions(this.currentNation));
         this.log.push(action);
         this.handleAdvancePlayer(action);
         return;
@@ -128,7 +128,53 @@ export default class Imperial {
           }
         }
 
-        this.availableActions = this.availableActionsState(action);
+        if (this.unitsToMove.length > 0) {
+          const provincesWithFleets = new Map();
+          const provincesWithArmies = new Map();
+          const out = new Set([Action.endManeuver()]);
+          this.unitsToMove.forEach(([origin, type]) => {
+            const units = this.units.get(this.currentNation).get(origin);
+            if (units.fleets > 0) {
+              provincesWithFleets.set(origin, units.fleets);
+            } else if (units.armies > 0) {
+              provincesWithArmies.set(origin, units.armies);
+            }
+            for (const [origin, count] of provincesWithFleets) {
+              for (const destination of this.board.neighborsFor({
+                origin,
+                nation: this.currentNation,
+                isFleet: true,
+                friendlyFleets: new Set(),
+              })) {
+                out.add(Action.maneuver({ origin, destination }));
+              }
+            }
+            const friendlyFleets = new Set();
+            for (const [province, units] of this.units.get(
+              this.currentNation
+            )) {
+              if (units.fleets > 0) {
+                friendlyFleets.add(province);
+              }
+            }
+            for (const [origin, count] of provincesWithArmies) {
+              for (const destination of this.board.neighborsFor({
+                origin,
+                nation: this.currentNation,
+                isFleet: false,
+                friendlyFleets,
+              })) {
+                out.add(Action.maneuver({ origin, destination }));
+              }
+            }
+          });
+          this.availableActions = out;
+        } else {
+          this.currentNation = this.getNation(this.log);
+          this.availableActions = new Set(
+            this.rondelActions(this.getNation(this.log))
+          );
+        }
         this.log.push(action);
         return;
       case "rondel":
@@ -175,7 +221,63 @@ export default class Imperial {
         ) {
           this.players[this.currentPlayerName].cash += 2;
 
-          this.availableActions = this.availableActionsState(action);
+          this.availableActions = new Set([
+            Action.bondPurchase({
+              nation: Nation.AH,
+              player: "Claudia",
+              cost: 4,
+            }),
+            Action.bondPurchase({
+              nation: Nation.AH,
+              player: "Claudia",
+              cost: 6,
+            }),
+            Action.bondPurchase({
+              nation: Nation.IT,
+              player: "Claudia",
+              cost: 2,
+            }),
+            Action.bondPurchase({
+              nation: Nation.IT,
+              player: "Claudia",
+              cost: 4,
+            }),
+            Action.bondPurchase({
+              nation: Nation.IT,
+              player: "Claudia",
+              cost: 6,
+            }),
+            Action.bondPurchase({
+              nation: Nation.FR,
+              player: "Claudia",
+              cost: 4,
+            }),
+            Action.bondPurchase({
+              nation: Nation.FR,
+              player: "Claudia",
+              cost: 6,
+            }),
+            Action.bondPurchase({
+              nation: Nation.GB,
+              player: "Claudia",
+              cost: 4,
+            }),
+            Action.bondPurchase({
+              nation: Nation.GB,
+              player: "Claudia",
+              cost: 6,
+            }),
+            Action.bondPurchase({
+              nation: Nation.GE,
+              player: "Claudia",
+              cost: 2,
+            }),
+            Action.bondPurchase({
+              nation: Nation.RU,
+              player: "Claudia",
+              cost: 4,
+            }),
+          ]);
 
           this.log.push(action);
           this.handleAdvancePlayer(action);
@@ -218,7 +320,126 @@ export default class Imperial {
         } else {
           this.log.push(action);
           this.handleAdvancePlayer(action);
-          this.availableActions = this.availableActionsState(action);
+          const lastMove = action;
+          if (this.lastMoveWasInvestor(lastMove)) {
+            this.availableActions = new Set(
+              [...this.availableBonds]
+                .filter((bond) => {
+                  const player = this.investorCardHolder;
+                  const exchangeableBondCosts = this.getBonds(player)
+                    .filter((exchangeableBond) => {
+                      return exchangeableBond.nation === bond.nation;
+                    })
+                    .map((x) => x.cost);
+                  const topBondCost = Math.max(exchangeableBondCosts);
+                  return bond.cost <= this.players[player].cash + topBondCost;
+                })
+                .map((bond) => {
+                  return Action.bondPurchase({
+                    nation: bond.nation,
+                    player: this.investorCardHolder,
+                    cost: bond.cost,
+                  });
+                })
+            );
+            return;
+          } else if (this.lastMoveWasTaxation(lastMove)) {
+            this.availableActions = new Set(
+              this.rondelActions(this.getNation(this.log))
+            );
+            return;
+          } else if (this.lastMoveWasRondelManeuver(lastMove)) {
+            const destinations = new Set([Action.endManeuver()]);
+
+            // Collect all units that are allowed to move on this turn
+            this.unitsToMove = [];
+            for (const [province, units] of this.units.get(
+              lastMove.payload.nation
+            )) {
+              let fleetCount = units.fleets;
+              let armyCount = units.armies;
+              while (fleetCount > 0 || armyCount > 0) {
+                if (fleetCount > 0) {
+                  this.unitsToMove.push([province, "fleet"]);
+                  fleetCount--;
+                } else if (armyCount > 0) {
+                  this.unitsToMove.push([province, "army"]);
+                  armyCount--;
+                }
+              }
+            }
+
+            const provincesWithFleets = new Map();
+            const provincesWithArmies = new Map();
+
+            for (const [province, units] of this.units.get(
+              lastMove.payload.nation
+            )) {
+              if (units.fleets > 0) {
+                provincesWithFleets.set(province, units.fleets);
+              }
+            }
+
+            for (const [origin, count] of provincesWithFleets) {
+              for (const destination of this.board.neighborsFor({
+                origin,
+                nation: lastMove.payload.nation,
+                isFleet: true,
+                friendlyFleets: new Set(),
+              })) {
+                destinations.add(
+                  Action.maneuver({
+                    origin,
+                    destination,
+                  })
+                );
+              }
+            }
+
+            for (const [province, units] of this.units.get(
+              lastMove.payload.nation
+            )) {
+              if (units.armies > 0) {
+                provincesWithArmies.set(province, units.armies);
+              }
+            }
+
+            for (const [origin, count] of provincesWithArmies) {
+              for (const destination of this.board.neighborsFor({
+                origin,
+                nation: lastMove.payload.nation,
+                isFleet: false,
+                friendlyFleets: new Set(),
+              })) {
+                destinations.add(
+                  Action.maneuver({
+                    origin,
+                    destination,
+                  })
+                );
+              }
+            }
+
+            this.availableActions = destinations;
+            return;
+          } else if (lastMove.type === "rondel") {
+            if (lastMove.payload.slot === "factory") {
+              this.availableActions = new Set(
+                this.buildFactoryAction(lastMove.payload.nation)
+              );
+              return;
+            } else if (lastMove.payload.slot === "import") {
+              this.availableActions = new Set(
+                this.importAction(lastMove.payload.nation)
+              );
+              return;
+            }
+          }
+          this.availableActions = new Set(
+            this.rondelActions(this.currentNation)
+          );
+
+          return;
         }
         return;
     }
@@ -348,172 +569,6 @@ export default class Imperial {
       action.payload.province
     ).factoryType;
     this.nations.get(this.currentNation).treasury -= 5;
-  }
-
-  availableActionsState(action) {
-    const lastMove = action || this.log[this.log.length - 1];
-    const postInvestorSlots = ["import", "production2"];
-    const lastMoveSkippedInvestorSlot =
-      lastMove.type === "rondel" &&
-      postInvestorSlots.includes(lastMove.payload.slot) &&
-      this.previousRondelPosition(lastMove.payload.nation) === "maneuver1";
-
-    if (lastMoveSkippedInvestorSlot) {
-      return new Set([
-        Action.bondPurchase({ nation: Nation.AH, player: "Claudia", cost: 4 }),
-        Action.bondPurchase({ nation: Nation.AH, player: "Claudia", cost: 6 }),
-        Action.bondPurchase({ nation: Nation.IT, player: "Claudia", cost: 2 }),
-        Action.bondPurchase({ nation: Nation.IT, player: "Claudia", cost: 4 }),
-        Action.bondPurchase({ nation: Nation.IT, player: "Claudia", cost: 6 }),
-        Action.bondPurchase({ nation: Nation.FR, player: "Claudia", cost: 4 }),
-        Action.bondPurchase({ nation: Nation.FR, player: "Claudia", cost: 6 }),
-        Action.bondPurchase({ nation: Nation.GB, player: "Claudia", cost: 4 }),
-        Action.bondPurchase({ nation: Nation.GB, player: "Claudia", cost: 6 }),
-        Action.bondPurchase({ nation: Nation.GE, player: "Claudia", cost: 2 }),
-        Action.bondPurchase({ nation: Nation.RU, player: "Claudia", cost: 4 }),
-      ]);
-    } else if (this.lastMoveWasInvestor(lastMove)) {
-      return new Set(
-        [...this.availableBonds]
-          .filter((bond) => {
-            const player = this.investorCardHolder;
-            const exchangeableBondCosts = this.getBonds(player)
-              .filter((exchangeableBond) => {
-                return exchangeableBond.nation === bond.nation;
-              })
-              .map((x) => x.cost);
-            const topBondCost = Math.max(exchangeableBondCosts);
-            return bond.cost <= this.players[player].cash + topBondCost;
-          })
-          .map((bond) => {
-            return Action.bondPurchase({
-              nation: bond.nation,
-              player: this.investorCardHolder,
-              cost: bond.cost,
-            });
-          })
-      );
-    } else if (this.lastMoveWasTaxation(lastMove)) {
-      return new Set(this.rondelActions(this.getNation(this.log)));
-    } else if (this.lastMoveWasRondelManeuver(lastMove)) {
-      const destinations = new Set([Action.endManeuver()]);
-
-      // Collect all units that are allowed to move on this turn
-      this.unitsToMove = [];
-      for (const [province, units] of this.units.get(lastMove.payload.nation)) {
-        let fleetCount = units.fleets;
-        let armyCount = units.armies;
-        while (fleetCount > 0 || armyCount > 0) {
-          if (fleetCount > 0) {
-            this.unitsToMove.push([province, "fleet"]);
-            fleetCount--;
-          } else if (armyCount > 0) {
-            this.unitsToMove.push([province, "army"]);
-            armyCount--;
-          }
-        }
-      }
-
-      const provincesWithFleets = new Map();
-      const provincesWithArmies = new Map();
-
-      for (const [province, units] of this.units.get(lastMove.payload.nation)) {
-        if (units.fleets > 0) {
-          provincesWithFleets.set(province, units.fleets);
-        }
-      }
-
-      for (const [origin, count] of provincesWithFleets) {
-        for (const destination of this.board.neighborsFor({
-          origin,
-          nation: lastMove.payload.nation,
-          isFleet: true,
-          friendlyFleets: new Set(),
-        })) {
-          destinations.add(
-            Action.maneuver({
-              origin,
-              destination,
-            })
-          );
-        }
-      }
-
-      for (const [province, units] of this.units.get(lastMove.payload.nation)) {
-        if (units.armies > 0) {
-          provincesWithArmies.set(province, units.armies);
-        }
-      }
-
-      for (const [origin, count] of provincesWithArmies) {
-        for (const destination of this.board.neighborsFor({
-          origin,
-          nation: lastMove.payload.nation,
-          isFleet: false,
-          friendlyFleets: new Set(),
-        })) {
-          destinations.add(
-            Action.maneuver({
-              origin,
-              destination,
-            })
-          );
-        }
-      }
-
-      return destinations;
-    } else if (lastMove.type === "rondel") {
-      if (lastMove.payload.slot === "factory") {
-        return new Set(this.buildFactoryAction(lastMove.payload.nation));
-      } else if (lastMove.payload.slot === "import") {
-        return new Set(this.importAction(lastMove.payload.nation));
-      }
-    } else if (lastMove.type === "maneuver") {
-      if (this.unitsToMove.length > 0) {
-        const provincesWithFleets = new Map();
-        const provincesWithArmies = new Map();
-        const out = new Set([Action.endManeuver()]);
-        this.unitsToMove.forEach(([origin, type]) => {
-          const units = this.units.get(this.currentNation).get(origin);
-          if (units.fleets > 0) {
-            provincesWithFleets.set(origin, units.fleets);
-          } else if (units.armies > 0) {
-            provincesWithArmies.set(origin, units.armies);
-          }
-          for (const [origin, count] of provincesWithFleets) {
-            for (const destination of this.board.neighborsFor({
-              origin,
-              nation: this.currentNation,
-              isFleet: true,
-              friendlyFleets: new Set(),
-            })) {
-              out.add(Action.maneuver({ origin, destination }));
-            }
-          }
-          const friendlyFleets = new Set();
-          for (const [province, units] of this.units.get(this.currentNation)) {
-            if (units.fleets > 0) {
-              friendlyFleets.add(province);
-            }
-          }
-          for (const [origin, count] of provincesWithArmies) {
-            for (const destination of this.board.neighborsFor({
-              origin,
-              nation: this.currentNation,
-              isFleet: false,
-              friendlyFleets,
-            })) {
-              out.add(Action.maneuver({ origin, destination }));
-            }
-          }
-        });
-        return out;
-      } else {
-        this.currentNation = this.getNation(this.log);
-        return new Set(this.rondelActions(this.getNation(this.log)));
-      }
-    }
-    return new Set(this.rondelActions(this.currentNation));
   }
 
   rondelActions(nation) {
