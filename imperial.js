@@ -39,13 +39,13 @@ export default class Imperial {
       case "bondPurchase":
         this.purchaseBond(action);
         this.log.push(action);
-        this.handleAdvancePlayer(action);
+        this.handleAdvancePlayer();
         return;
       case "endManeuver":
         this.currentNation = this.nextNation(this.currentNation);
         this.availableActions = new Set(this.rondelActions(this.currentNation));
         this.log.push(action);
-        this.handleAdvancePlayer(action);
+        this.handleAdvancePlayer();
         return;
       case "fight":
         this.units.get(Nation.FR).get(action.payload.province).fleets -= 1;
@@ -56,7 +56,7 @@ export default class Imperial {
       case "buildFactory":
         this.buildFactory(action);
         this.log.push(action);
-        this.handleAdvancePlayer(action);
+        this.handleAdvancePlayer();
         return;
       case "import":
         action.payload.placements.forEach(({ province, type }) => {
@@ -69,7 +69,7 @@ export default class Imperial {
           this.nations.get(nation).treasury--;
         });
         this.log.push(action);
-        this.handleAdvancePlayer(action);
+        this.handleAdvancePlayer();
         return;
       case "maneuver":
         const origin = action.payload.origin;
@@ -280,7 +280,7 @@ export default class Imperial {
           ]);
 
           this.log.push(action);
-          this.handleAdvancePlayer(action);
+          this.handleAdvancePlayer();
         } else if (action.payload.slot === "import") {
           const availableActions = new Set([Action.import({ placements: [] })]);
           const homeProvinces = this.board.byNation.get(action.payload.nation);
@@ -319,7 +319,12 @@ export default class Imperial {
           this.availableActions = availableActions;
         } else {
           this.log.push(action);
-          this.handleAdvancePlayer(action);
+          if (
+            action.payload.slot === "production1" ||
+            action.payload.slot === "production2"
+          ) {
+            this.handleAdvancePlayer();
+          }
           const lastMove = action;
           if (this.lastMoveWasInvestor(lastMove)) {
             this.availableActions = new Set(
@@ -445,18 +450,9 @@ export default class Imperial {
     }
   }
 
-  handleAdvancePlayer(action) {
-    if (
-      action.type === "import" ||
-      action.type === "bondPurchase" ||
-      action.type === "buildFactory" ||
-      action.type === "endManeuver" ||
-      action.payload.slot === "production1" ||
-      action.payload.slot === "production2"
-    ) {
-      this.currentNation = this.getNation(this.log);
-      this.currentPlayerName = this.getController(this.currentNation);
-    }
+  handleAdvancePlayer() {
+    this.currentNation = this.getNation(this.log);
+    this.currentPlayerName = this.getController(this.currentNation);
   }
 
   purchaseBond(action) {
