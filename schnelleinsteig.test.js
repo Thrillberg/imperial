@@ -178,7 +178,7 @@ describe("Schnelleinsteig", () => {
           })
         );
         const game = Imperial.fromLog(log);
-        const currentPlayerName = game.getController(Nation.IT);
+        const currentPlayerName = game.nations.get(Nation.IT).controller;
 
         expect(game.currentPlayerName).toEqual(currentPlayerName);
       });
@@ -253,7 +253,7 @@ describe("Schnelleinsteig", () => {
           Action.rondel({ nation: Nation.IT, cost: 0, slot: "investor" })
         );
         const game = Imperial.fromLog(log);
-        const currentPlayerName = game.getController(Nation.IT);
+        const currentPlayerName = game.nations.get(Nation.IT).controller;
 
         expect(game.currentPlayerName).toEqual(currentPlayerName);
       });
@@ -300,7 +300,7 @@ describe("Schnelleinsteig", () => {
           })
         );
         const game = Imperial.fromLog(log);
-        const currentPlayerName = game.getController(Nation.FR);
+        const currentPlayerName = game.nations.get(Nation.FR).controller;
 
         expect(game.currentPlayerName).toEqual(currentPlayerName);
       });
@@ -355,7 +355,7 @@ describe("Schnelleinsteig", () => {
         const log = mainLog.slice(0, 20);
         log.push(Action.buildFactory({ province: "marseille" }));
         const game = Imperial.fromLog(log);
-        const currentPlayerName = game.getController(Nation.GB);
+        const currentPlayerName = game.nations.get(Nation.GB).controller;
 
         expect(game.currentPlayerName).toEqual(currentPlayerName);
       });
@@ -382,7 +382,7 @@ describe("Schnelleinsteig", () => {
           Action.rondel({ nation: Nation.GB, cost: 0, slot: "production1" })
         );
         const game = Imperial.fromLog(log);
-        const currentPlayerName = game.getController(Nation.GE);
+        const currentPlayerName = game.nations.get(Nation.GE).controller;
 
         expect(game.currentPlayerName).toEqual(currentPlayerName);
       });
@@ -409,7 +409,7 @@ describe("Schnelleinsteig", () => {
           Action.rondel({ nation: Nation.GE, cost: 0, slot: "production2" })
         );
         const game = Imperial.fromLog(log);
-        const currentPlayerName = game.getController(Nation.RU);
+        const currentPlayerName = game.nations.get(Nation.RU).controller;
 
         expect(game.currentPlayerName).toEqual(currentPlayerName);
       });
@@ -553,7 +553,7 @@ describe("Schnelleinsteig", () => {
         })
       );
       const game = Imperial.fromLog(log);
-      const currentPlayerName = game.getController(Nation.AH);
+      const currentPlayerName = game.nations.get(Nation.AH).controller;
 
       expect(game.currentPlayerName).toEqual(currentPlayerName);
     });
