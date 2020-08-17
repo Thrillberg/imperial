@@ -32,7 +32,9 @@ export default class Imperial {
         this.players = s.players;
         this.provinces = s.provinces;
         this.units = s.units;
-        this.currentPlayerName = this.getController(this.currentNation);
+        this.currentPlayerName = this.nations.get(
+          this.currentNation
+        ).controller;
         this.log.push(action);
         this.availableActions = new Set(this.rondelActions(Nation.AH));
         return;
@@ -182,156 +184,31 @@ export default class Imperial {
         this.nations.get(this.currentNation).rondelPosition =
           action.payload.slot;
         this.players[this.currentPlayerName].cash -= action.payload.cost;
-        if (action.payload.slot === "investor") {
-          this.players[this.investorCardHolder].cash += 2;
-          for (var player of Object.keys(this.players)) {
-            if (this.players[player].bonds.size > 0) {
-              for (const bond of this.players[player].bonds) {
-                if (bond.nation === action.payload.nation) {
-                  if (bond.cost === 9) {
-                    this.players[player].cash += 4;
-                    this.nations.get(action.payload.nation).treasury -= 4;
-                  } else {
-                    this.players[player].cash += 1;
-                    this.nations.get(action.payload.nation).treasury -= 1;
+
+        switch (action.payload.slot) {
+          case "investor":
+            this.players[this.investorCardHolder].cash += 2;
+            for (var player of Object.keys(this.players)) {
+              if (this.players[player].bonds.size > 0) {
+                for (const bond of this.players[player].bonds) {
+                  if (bond.nation === action.payload.nation) {
+                    if (bond.cost === 9) {
+                      this.players[player].cash += 4;
+                      this.nations.get(action.payload.nation).treasury -= 4;
+                    } else {
+                      this.players[player].cash += 1;
+                      this.nations.get(action.payload.nation).treasury -= 1;
+                    }
                   }
                 }
               }
             }
-          }
-        } else if (
-          action.payload.slot === "production1" ||
-          action.payload.slot === "production2"
-        ) {
-          Array.from(this.board.byNation.get(action.payload.nation))
-            .filter((province) => this.provinces.get(province).factory !== null)
-            .forEach((province) => {
-              if (this.provinces.get(province).factory === "shipyard") {
-                this.units.get(action.payload.nation).get(province).fleets++;
-              } else {
-                this.units.get(action.payload.nation).get(province).armies++;
-              }
-            });
-        }
-        this.handleTaxation(action);
-        const postInvestorSlots = ["import", "production2"];
-        if (
-          postInvestorSlots.includes(action.payload.slot) &&
-          this.previousRondelPosition(action.payload.nation) === "maneuver1"
-        ) {
-          this.players[this.currentPlayerName].cash += 2;
-
-          this.availableActions = new Set([
-            Action.bondPurchase({
-              nation: Nation.AH,
-              player: "Claudia",
-              cost: 4,
-            }),
-            Action.bondPurchase({
-              nation: Nation.AH,
-              player: "Claudia",
-              cost: 6,
-            }),
-            Action.bondPurchase({
-              nation: Nation.IT,
-              player: "Claudia",
-              cost: 2,
-            }),
-            Action.bondPurchase({
-              nation: Nation.IT,
-              player: "Claudia",
-              cost: 4,
-            }),
-            Action.bondPurchase({
-              nation: Nation.IT,
-              player: "Claudia",
-              cost: 6,
-            }),
-            Action.bondPurchase({
-              nation: Nation.FR,
-              player: "Claudia",
-              cost: 4,
-            }),
-            Action.bondPurchase({
-              nation: Nation.FR,
-              player: "Claudia",
-              cost: 6,
-            }),
-            Action.bondPurchase({
-              nation: Nation.GB,
-              player: "Claudia",
-              cost: 4,
-            }),
-            Action.bondPurchase({
-              nation: Nation.GB,
-              player: "Claudia",
-              cost: 6,
-            }),
-            Action.bondPurchase({
-              nation: Nation.GE,
-              player: "Claudia",
-              cost: 2,
-            }),
-            Action.bondPurchase({
-              nation: Nation.RU,
-              player: "Claudia",
-              cost: 4,
-            }),
-          ]);
-
-          this.log.push(action);
-          this.handleAdvancePlayer();
-        } else if (action.payload.slot === "import") {
-          const availableActions = new Set([Action.import({ placements: [] })]);
-          const homeProvinces = this.board.byNation.get(action.payload.nation);
-          for (const province of homeProvinces) {
-            availableActions.add(
-              Action.import({ placements: [{ province, type: "army" }] })
-            );
-
-            for (const province2 of homeProvinces) {
-              if (province2 === province) continue;
-
-              availableActions.add(
-                Action.import({
-                  placements: [
-                    { province, type: "army" },
-                    { province: province2, type: "army" },
-                  ],
-                })
-              );
-
-              for (const province3 of homeProvinces) {
-                if (province === province3 || province2 === province3) continue;
-
-                availableActions.add(
-                  Action.import({
-                    placements: [
-                      { province, type: "army" },
-                      { province: province2, type: "army" },
-                      { province: province3, type: "army" },
-                    ],
-                  })
-                );
-              }
-            }
-          }
-          this.availableActions = availableActions;
-        } else {
-          this.log.push(action);
-          if (
-            action.payload.slot === "production1" ||
-            action.payload.slot === "production2"
-          ) {
-            this.handleAdvancePlayer();
-          }
-          const lastMove = action;
-          if (this.lastMoveWasInvestor(lastMove)) {
+            this.log.push(action);
             this.availableActions = new Set(
               [...this.availableBonds]
                 .filter((bond) => {
                   const player = this.investorCardHolder;
-                  const exchangeableBondCosts = this.getBonds(player)
+                  const exchangeableBondCosts = [...this.players[player].bonds]
                     .filter((exchangeableBond) => {
                       return exchangeableBond.nation === bond.nation;
                     })
@@ -348,18 +225,166 @@ export default class Imperial {
                 })
             );
             return;
-          } else if (this.lastMoveWasTaxation(lastMove)) {
+          case "import":
+            const availableActions = new Set([
+              Action.import({ placements: [] }),
+            ]);
+            const homeProvinces = this.board.byNation.get(
+              action.payload.nation
+            );
+            for (const province of homeProvinces) {
+              availableActions.add(
+                Action.import({ placements: [{ province, type: "army" }] })
+              );
+
+              for (const province2 of homeProvinces) {
+                if (province2 === province) continue;
+
+                availableActions.add(
+                  Action.import({
+                    placements: [
+                      { province, type: "army" },
+                      { province: province2, type: "army" },
+                    ],
+                  })
+                );
+
+                for (const province3 of homeProvinces) {
+                  if (province === province3 || province2 === province3)
+                    continue;
+
+                  availableActions.add(
+                    Action.import({
+                      placements: [
+                        { province, type: "army" },
+                        { province: province2, type: "army" },
+                        { province: province3, type: "army" },
+                      ],
+                    })
+                  );
+                }
+              }
+            }
+            this.availableActions = availableActions;
+            this.log.push(action);
+
+            return;
+          case "production1":
+          case "production2":
+            Array.from(this.board.byNation.get(action.payload.nation))
+              .filter(
+                (province) => this.provinces.get(province).factory !== null
+              )
+              .forEach((province) => {
+                if (this.provinces.get(province).factory === "shipyard") {
+                  this.units.get(action.payload.nation).get(province).fleets++;
+                } else {
+                  this.units.get(action.payload.nation).get(province).armies++;
+                }
+              });
+            if (
+              this.previousRondelPosition(action.payload.nation) === "maneuver1"
+            ) {
+              this.players[this.currentPlayerName].cash += 2;
+
+              this.availableActions = new Set([
+                Action.bondPurchase({
+                  nation: Nation.AH,
+                  player: "Claudia",
+                  cost: 4,
+                }),
+                Action.bondPurchase({
+                  nation: Nation.AH,
+                  player: "Claudia",
+                  cost: 6,
+                }),
+                Action.bondPurchase({
+                  nation: Nation.IT,
+                  player: "Claudia",
+                  cost: 2,
+                }),
+                Action.bondPurchase({
+                  nation: Nation.IT,
+                  player: "Claudia",
+                  cost: 4,
+                }),
+                Action.bondPurchase({
+                  nation: Nation.IT,
+                  player: "Claudia",
+                  cost: 6,
+                }),
+                Action.bondPurchase({
+                  nation: Nation.FR,
+                  player: "Claudia",
+                  cost: 4,
+                }),
+                Action.bondPurchase({
+                  nation: Nation.FR,
+                  player: "Claudia",
+                  cost: 6,
+                }),
+                Action.bondPurchase({
+                  nation: Nation.GB,
+                  player: "Claudia",
+                  cost: 4,
+                }),
+                Action.bondPurchase({
+                  nation: Nation.GB,
+                  player: "Claudia",
+                  cost: 6,
+                }),
+                Action.bondPurchase({
+                  nation: Nation.GE,
+                  player: "Claudia",
+                  cost: 2,
+                }),
+                Action.bondPurchase({
+                  nation: Nation.RU,
+                  player: "Claudia",
+                  cost: 4,
+                }),
+              ]);
+            } else {
+              this.log.push(action);
+              if (
+                action.payload.slot === "production1" ||
+                action.payload.slot === "production2"
+              ) {
+                this.handleAdvancePlayer();
+              }
+              this.availableActions = new Set(
+                this.rondelActions(this.currentNation)
+              );
+            }
+            return;
+          case "taxation":
+            const nationName = action.payload.nation;
+            const nation = this.nations.get(nationName);
+            const taxes = this.factoryCount(nationName) * 2 + nation.flagCount;
+            nation.treasury += taxes - this.unitCount(nationName);
+
+            this.players[this.nations.get(nationName).controller].cash +=
+              taxes - nation.taxChartPosition;
+            nation.taxChartPosition = taxes;
+            if (taxes === 6) {
+              nation.powerPoints += 1;
+            } else {
+              nation.powerPoints += 3;
+            }
+            this.log.push(action);
             this.availableActions = new Set(
               this.rondelActions(this.getNation(this.log))
             );
             return;
-          } else if (this.lastMoveWasRondelManeuver(lastMove)) {
+          case "maneuver1":
+          case "maneuver2":
+            this.log.push(action);
             const destinations = new Set([Action.endManeuver()]);
 
             // Collect all units that are allowed to move on this turn
             this.unitsToMove = [];
             for (const [province, units] of this.units.get(
-              lastMove.payload.nation
+              action.payload.nation
             )) {
               let fleetCount = units.fleets;
               let armyCount = units.armies;
@@ -378,7 +403,7 @@ export default class Imperial {
             const provincesWithArmies = new Map();
 
             for (const [province, units] of this.units.get(
-              lastMove.payload.nation
+              action.payload.nation
             )) {
               if (units.fleets > 0) {
                 provincesWithFleets.set(province, units.fleets);
@@ -388,7 +413,7 @@ export default class Imperial {
             for (const [origin, count] of provincesWithFleets) {
               for (const destination of this.board.neighborsFor({
                 origin,
-                nation: lastMove.payload.nation,
+                nation: action.payload.nation,
                 isFleet: true,
                 friendlyFleets: new Set(),
               })) {
@@ -402,7 +427,7 @@ export default class Imperial {
             }
 
             for (const [province, units] of this.units.get(
-              lastMove.payload.nation
+              action.payload.nation
             )) {
               if (units.armies > 0) {
                 provincesWithArmies.set(province, units.armies);
@@ -412,7 +437,7 @@ export default class Imperial {
             for (const [origin, count] of provincesWithArmies) {
               for (const destination of this.board.neighborsFor({
                 origin,
-                nation: lastMove.payload.nation,
+                nation: action.payload.nation,
                 isFleet: false,
                 friendlyFleets: new Set(),
               })) {
@@ -427,32 +452,19 @@ export default class Imperial {
 
             this.availableActions = destinations;
             return;
-          } else if (lastMove.type === "rondel") {
-            if (lastMove.payload.slot === "factory") {
-              this.availableActions = new Set(
-                this.buildFactoryAction(lastMove.payload.nation)
-              );
-              return;
-            } else if (lastMove.payload.slot === "import") {
-              this.availableActions = new Set(
-                this.importAction(lastMove.payload.nation)
-              );
-              return;
-            }
-          }
-          this.availableActions = new Set(
-            this.rondelActions(this.currentNation)
-          );
-
-          return;
+          case "factory":
+            this.log.push(action);
+            this.availableActions = new Set(
+              this.buildFactoryAction(action.payload.nation)
+            );
+            return;
         }
-        return;
     }
   }
 
   handleAdvancePlayer() {
     this.currentNation = this.getNation(this.log);
-    this.currentPlayerName = this.getController(this.currentNation);
+    this.currentPlayerName = this.nations.get(this.currentNation).controller;
   }
 
   purchaseBond(action) {
@@ -529,24 +541,6 @@ export default class Imperial {
         this.investorCardHolder = this.order[this.order.length - 1];
       } else {
         this.investorCardHolder = this.order[index - 1];
-      }
-    }
-  }
-
-  handleTaxation(action) {
-    if (action.payload.slot === "taxation") {
-      const nationName = action.payload.nation;
-      const nation = this.nations.get(nationName);
-      const taxes = this.factoryCount(nationName) * 2 + nation.flagCount;
-      nation.treasury += taxes - this.unitCount(nationName);
-
-      this.players[this.getController(nationName)].cash +=
-        taxes - nation.taxChartPosition;
-      nation.taxChartPosition = taxes;
-      if (taxes === 6) {
-        nation.powerPoints += 1;
-      } else {
-        nation.powerPoints += 3;
       }
     }
   }
@@ -641,10 +635,6 @@ export default class Imperial {
     );
   }
 
-  lastMoveWasInvestor(lastMove) {
-    return lastMove.type === "rondel" && lastMove.payload.slot === "investor";
-  }
-
   lastMoveWasTaxation(lastMove) {
     return lastMove.type === "rondel" && lastMove.payload.slot === "taxation";
   }
@@ -686,10 +676,6 @@ export default class Imperial {
     );
   }
 
-  getBonds(player) {
-    return [...this.players[player].bonds];
-  }
-
   previousRondelPosition(nation) {
     const rondelActions = this.log.filter(
       (action) => action.type === "rondel" && action.payload.nation === nation
@@ -697,10 +683,6 @@ export default class Imperial {
     if (rondelActions.length > 2) {
       return rondelActions[rondelActions.length - 1].payload.slot;
     }
-  }
-
-  getController(nation) {
-    return this.nations.get(nation).controller;
   }
 
   factoryCount(nation) {
