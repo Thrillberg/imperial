@@ -1685,8 +1685,6 @@ describe("Schnelleinsteig", () => {
           );
         });
 
-        // console.log(game.availableActions);
-
         expect(game.availableActions).toEqual(availableActions);
       });
 
