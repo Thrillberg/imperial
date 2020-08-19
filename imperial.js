@@ -219,9 +219,10 @@ export default class Imperial {
                 action.payload.nation
               ).treasury -= amountOwedToController;
             }
+
             // 2. Investor card holder gets 2m cash
             this.players[this.investorCardHolder].cash += 2;
-            // Investor card holder may buy a bond belonging to the nation
+            // Investor card holder may buy a bond
             this.availableActions = new Set(
               [...this.availableBonds]
                 .filter((bond) => {
@@ -232,10 +233,7 @@ export default class Imperial {
                     })
                     .map((x) => x.cost);
                   const topBondCost = Math.max(exchangeableBondCosts);
-                  return (
-                    bond.nation === action.payload.nation &&
-                    bond.cost <= this.players[player].cash + topBondCost
-                  );
+                  return bond.cost <= this.players[player].cash + topBondCost;
                 })
                 .map((bond) => {
                   return Action.bondPurchase({
