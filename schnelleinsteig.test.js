@@ -419,6 +419,7 @@ describe("Schnelleinsteig", () => {
       test("Turn begins with Anton holding the investor card", () => {
         const log = mainLog.slice(0, 23);
         const game = Imperial.fromLog(log);
+
         const investorCardHolder = game.investorCardHolder;
 
         expect(investorCardHolder).toEqual("Anton");
@@ -732,6 +733,7 @@ describe("Schnelleinsteig", () => {
     describe("6. Russia imports", () => {
       const log = mainLog.slice(0, 34);
       const game = Imperial.fromLog(log);
+
       game.tick(Action.rondel({ nation: Nation.RU, cost: 0, slot: "import" }));
 
       xtest("RU can choose where to import", () => {
@@ -1128,8 +1130,9 @@ describe("Schnelleinsteig", () => {
     });
 
     describe("4. GB invests", () => {
-      const log = mainLog.slice(0, 50);
+      const log = mainLog.slice(0, 51);
       const game = Imperial.fromLog(log);
+
       game.tick(
         Action.rondel({ nation: Nation.GB, cost: 0, slot: "investor" })
       );
@@ -1343,7 +1346,27 @@ describe("Schnelleinsteig", () => {
             Action.bondPurchase({
               nation: Nation.AH,
               player: "Claudia",
+              cost: 9,
+            }),
+            Action.bondPurchase({
+              nation: Nation.AH,
+              player: "Claudia",
               cost: 6,
+            }),
+            Action.bondPurchase({
+              nation: Nation.FR,
+              player: "Claudia",
+              cost: 6,
+            }),
+            Action.bondPurchase({
+              nation: Nation.FR,
+              player: "Claudia",
+              cost: 12,
+            }),
+            Action.bondPurchase({
+              nation: Nation.FR,
+              player: "Claudia",
+              cost: 16,
             }),
             Action.bondPurchase({
               nation: Nation.IT,
