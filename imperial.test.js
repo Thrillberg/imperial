@@ -2137,6 +2137,7 @@ describe("imperial", () => {
         // End maneuver just because it is simple; the action is unimportant
         game.tick(Action.endManeuver());
 
+        console.log(game.getController(Nation.IT));
         expect(game.currentNation).toEqual(Nation.FR);
         expect(game.currentPlayerName).toEqual("player1");
       });

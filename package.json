@@ -5,6 +5,7 @@
     "static-server": "^2.2.1"
   },
   "scripts": {
+    "board": "node board.js | sfdp -Tsvg > board.svg",
     "lint": "prettier -c *.js",
     "lint:fix": "prettier --write *.js",
     "start": "static-server",
