@@ -56,6 +56,12 @@ export default class Imperial {
         return;
       case "buildFactory":
         this.buildFactory(action);
+        if (
+          this.nations.get(this.currentNation).previousRondelPosition ===
+          "maneuver1"
+        ) {
+          this.endOfInvestorTurn();
+        }
         this.handleAdvancePlayer();
         return;
       case "import":
@@ -68,6 +74,20 @@ export default class Imperial {
           }
           this.nations.get(nation).treasury--;
         });
+        const potentialPreInvestorSlots = [
+          "maneuver1",
+          "production1",
+          "factory",
+          "taxation",
+          "maneuver2",
+        ];
+        if (
+          potentialPreInvestorSlots.includes(
+            this.nations.get(this.currentNation).previousRondelPosition
+          )
+        ) {
+          this.endOfInvestorTurn();
+        }
         this.handleAdvancePlayer();
         return;
       case "maneuver":
@@ -169,6 +189,22 @@ export default class Imperial {
           });
           this.availableActions = out;
         } else {
+          if (
+            this.nations.get(this.currentNation).rondelPosition === "maneuver2"
+          ) {
+            const potentialPreInvestorSlots = [
+              "factory",
+              "production1",
+              "maneuver1",
+            ];
+            if (
+              potentialPreInvestorSlots.includes(
+                this.nations.get(this.currentNation).previousRondelPosition
+              )
+            ) {
+              this.endOfInvestorTurn();
+            }
+          }
           this.currentNation = this.getNation(this.log);
           this.availableActions = new Set(
             this.rondelActions(this.getNation(this.log))
@@ -177,6 +213,11 @@ export default class Imperial {
         return;
       case "rondel":
         this.currentNation = action.payload.nation;
+        this.nations.get(
+          this.currentNation
+        ).previousRondelPosition = this.nations.get(
+          this.currentNation
+        ).rondelPosition;
         this.nations.get(this.currentNation).rondelPosition =
           action.payload.slot;
         this.players[this.currentPlayerName].cash -= action.payload.cost;
@@ -219,31 +260,7 @@ export default class Imperial {
                 action.payload.nation
               ).treasury -= amountOwedToController;
             }
-
-            // 2. Investor card holder gets 2m cash
-            this.players[this.investorCardHolder].cash += 2;
-            // Investor card holder may buy a bond
-            this.availableActions = new Set(
-              [...this.availableBonds]
-                .filter((bond) => {
-                  const player = this.investorCardHolder;
-                  const exchangeableBondCosts = [...this.players[player].bonds]
-                    .filter((exchangeableBond) => {
-                      return exchangeableBond.nation === bond.nation;
-                    })
-                    .map((x) => x.cost);
-                  const topBondCost = Math.max(exchangeableBondCosts);
-                  return bond.cost <= this.players[player].cash + topBondCost;
-                })
-                .map((bond) => {
-                  return Action.bondPurchase({
-                    nation: bond.nation,
-                    player: this.investorCardHolder,
-                    cost: bond.cost,
-                  });
-                })
-            );
-            // TODO: 3. Investing without a flag
+            this.endOfInvestorTurn();
             return;
           case "import":
             const availableActions = new Set([
@@ -300,74 +317,28 @@ export default class Imperial {
                   this.units.get(action.payload.nation).get(province).armies++;
                 }
               });
-            if (
-              this.previousRondelPosition(action.payload.nation) === "maneuver1"
-            ) {
-              this.players[this.currentPlayerName].cash += 2;
-
-              this.availableActions = new Set([
-                Action.bondPurchase({
-                  nation: Nation.AH,
-                  player: "Claudia",
-                  cost: 4,
-                }),
-                Action.bondPurchase({
-                  nation: Nation.AH,
-                  player: "Claudia",
-                  cost: 6,
-                }),
-                Action.bondPurchase({
-                  nation: Nation.IT,
-                  player: "Claudia",
-                  cost: 2,
-                }),
-                Action.bondPurchase({
-                  nation: Nation.IT,
-                  player: "Claudia",
-                  cost: 4,
-                }),
-                Action.bondPurchase({
-                  nation: Nation.IT,
-                  player: "Claudia",
-                  cost: 6,
-                }),
-                Action.bondPurchase({
-                  nation: Nation.FR,
-                  player: "Claudia",
-                  cost: 4,
-                }),
-                Action.bondPurchase({
-                  nation: Nation.FR,
-                  player: "Claudia",
-                  cost: 6,
-                }),
-                Action.bondPurchase({
-                  nation: Nation.GB,
-                  player: "Claudia",
-                  cost: 4,
-                }),
-                Action.bondPurchase({
-                  nation: Nation.GB,
-                  player: "Claudia",
-                  cost: 6,
-                }),
-                Action.bondPurchase({
-                  nation: Nation.GE,
-                  player: "Claudia",
-                  cost: 2,
-                }),
-                Action.bondPurchase({
-                  nation: Nation.RU,
-                  player: "Claudia",
-                  cost: 4,
-                }),
-              ]);
-            } else {
-              this.handleAdvancePlayer();
-              this.availableActions = new Set(
-                this.rondelActions(this.currentNation)
-              );
+            if (action.payload.slot === "production2") {
+              const potentialPreInvestorSlots = [
+                "maneuver1",
+                "production1",
+                "factory",
+                "taxation",
+              ];
+              if (
+                potentialPreInvestorSlots.includes(
+                  this.nations.get(this.currentNation).previousRondelPosition
+                )
+              ) {
+                this.endOfInvestorTurn();
+                this.handleAdvancePlayer();
+                return;
+              }
             }
+            this.handleAdvancePlayer();
+            this.availableActions = new Set(
+              this.rondelActions(this.currentNation)
+            );
+
             return;
           case "taxation":
             const nationName = action.payload.nation;
@@ -386,6 +357,14 @@ export default class Imperial {
             this.availableActions = new Set(
               this.rondelActions(this.getNation(this.log))
             );
+            const potentialPreInvestorSlots = ["maneuver1", "production1"];
+            if (
+              potentialPreInvestorSlots.includes(
+                this.nations.get(this.currentNation).previousRondelPosition
+              )
+            ) {
+              this.endOfInvestorTurn();
+            }
             return;
           case "maneuver1":
           case "maneuver2":
@@ -469,6 +448,33 @@ export default class Imperial {
             return;
         }
     }
+  }
+
+  endOfInvestorTurn() {
+    // 2. Investor card holder gets 2m cash
+    this.players[this.investorCardHolder].cash += 2;
+    // Investor card holder may buy a bond belonging to the nation
+    this.availableActions = new Set(
+      [...this.availableBonds]
+        .filter((bond) => {
+          const player = this.investorCardHolder;
+          const exchangeableBondCosts = [...this.players[player].bonds]
+            .filter((exchangeableBond) => {
+              return exchangeableBond.nation === bond.nation;
+            })
+            .map((x) => x.cost);
+          const topBondCost = Math.max(exchangeableBondCosts) || 0;
+          return bond.cost <= this.players[player].cash + topBondCost;
+        })
+        .map((bond) => {
+          return Action.bondPurchase({
+            nation: bond.nation,
+            player: this.investorCardHolder,
+            cost: bond.cost,
+          });
+        })
+    );
+    // TODO: 3. Investing without a flag
   }
 
   playerBondsOfNation(player, nation) {
@@ -646,18 +652,6 @@ export default class Imperial {
     }
   }
 
-  lastMoveWasRondelManeuver(lastMove) {
-    return (
-      lastMove.type === "rondel" &&
-      (lastMove.payload.slot === "maneuver1" ||
-        lastMove.payload.slot === "maneuver2")
-    );
-  }
-
-  lastMoveWasTaxation(lastMove) {
-    return lastMove.type === "rondel" && lastMove.payload.slot === "taxation";
-  }
-
   nextNation(lastTurnNation) {
     return lastTurnNation.when({
       AH: () => Nation.IT,
@@ -693,15 +687,6 @@ export default class Imperial {
         })
         .map((province) => Action.buildFactory({ province }))
     );
-  }
-
-  previousRondelPosition(nation) {
-    const rondelActions = this.log.filter(
-      (action) => action.type === "rondel" && action.payload.nation === nation
-    );
-    if (rondelActions.length > 2) {
-      return rondelActions[rondelActions.length - 2].payload.slot;
-    }
   }
 
   factoryCount(nation) {
