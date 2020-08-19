@@ -19,16 +19,39 @@
             v-bind:key="player.name"
           ></player>
         </ul>
+        <board
+          v-bind:board="board"
+          v-bind:add_highlights="addHighlightsToRondel"
+        ></board>
         <div class="rondel" v-html="rondel"></div>
+        <ul class="nations">
+          <nation
+            v-for="[nation, data] of game.nations"
+            v-bind:flag="flag(nation.value)"
+            v-bind:treasury="game.nations.get(nation).treasury"
+            v-bind:current_nation="game.currentNation === nation ? 'current_nation' : ''"
+            v-bind:key="nation.value"
+          ></nation>
+        </ul>
         <current-turn
           v-bind:type="game.log[game.log.length - 1].type"
           v-bind:payload="game.log[game.log.length - 1].payload"
         ></current-turn>
-        <div>
-          It is {{ game.currentNation.value }}'s turn
-        </div>
         <div class="buttons">
           <action
+            v-if="importStatus.active"
+            v-bind:action="importStatus.placements"
+            v-bind:text="'End import'"
+            v-bind:dispatch="runImport"
+          ></action>
+          <action
+            v-else-if="maneuverStatus.active"
+            v-bind:action="importStatus.endManeuver"
+            v-bind:text="'End maneuver'"
+            v-bind:dispatch="submitManeuver"
+          ></action>
+          <action
+            v-else-if="purchasingBond || buildingFactory"
             v-for="action in game.availableActions"
             v-bind:key="JSON.stringify(action)"
             v-bind:action="action"
@@ -38,9 +61,12 @@
         </div>
       </div>
       <div v-else class="buttons">
-        <button v-on:click="startGame">
-          Start Game
-        </button>
+        <player-count
+          v-for="count in playerCounts"
+          v-bind:key="count"
+          v-bind:count="count"
+          v-bind:start_game="startGame"
+        ></player-count>
       </div>
     </div>
     <script src="./main.js" type="module"></script>

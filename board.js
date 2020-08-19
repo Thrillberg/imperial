@@ -1,5 +1,5 @@
 import { Nation } from "./constants.js";
-// import render from "./render.js";
+import render from "./render.js";
 import GameBoard from "./gameBoard.js";
 
 const nodes = [

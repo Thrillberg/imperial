@@ -1,5 +1,15 @@
 import Imperial from "./imperial.js";
-import log from "./schnelleinsteigLog.js";
+import Action from "./action.js";
+import { Nation } from "./constants.js";
+import action from "./action.js";
+
+Vue.component("board", {
+  props: ["board", "add_highlights"],
+  template: `<div v-html="board"></div>`,
+  mounted() {
+    this.add_highlights();
+  },
+});
 
 Vue.component("player", {
   props: ["name", "cash", "bonds", "current_player"],
@@ -18,13 +28,18 @@ Vue.component("player", {
             v-for="bond in bonds"
             v-bind:nation="bond.nation.value"
             v-bind:cost="bond.cost"
-            v-bind:key="bond.nation.value"
+            v-bind:key="bond.nation.value + bond.cost"
           ></bond>
         </ul>
       </div>
     </div>
   </li>
   `,
+});
+
+Vue.component("nation", {
+  props: ["flag", "treasury", "current_nation"],
+  template: `<li><img v-bind:src="flag" class="md-flag"  :class="current_nation" /><div>{{ treasury }}m</div></li>`,
 });
 
 Vue.component("bond", {
@@ -42,12 +57,31 @@ Vue.component("action", {
   template: `<button v-on:click="dispatch(action)">{{ text }}</button>`,
 });
 
+Vue.component("player-count", {
+  props: ["count", "start_game"],
+  template: `<button v-on:click="start_game(count)">{{ count }} players</button>`,
+});
+
 var app = new Vue({
   el: "#app",
   data: {
+    board: "",
     game: {},
     gameStarted: false,
     rondel: "",
+    importStatus: {
+      active: false,
+      placements: [],
+      targets: [],
+    },
+    maneuverStatus: {
+      active: false,
+      endManeuver: Action.endManeuver(),
+      origin: "",
+    },
+    purchasingBond: false,
+    buildingFactory: false,
+    playerCounts: [2, 3, 4, 5, 6],
   },
   mounted() {
     fetch("rondel.svg")
@@ -55,11 +89,56 @@ var app = new Vue({
       .then((text) => {
         this.rondel = text;
       });
+    fetch("board.svg")
+      .then((response) => response.text())
+      .then((text) => {
+        this.board = text;
+      });
   },
   methods: {
-    startGame: function () {
-      this.game = Imperial.fromLog(log.slice(0, 2));
+    startGame: function (playerCount) {
+      const players = this.getPlayers(playerCount);
+      this.game = Imperial.fromLog([Action.initialize({ players })]);
       this.gameStarted = true;
+    },
+    getPlayers: function (playerCount) {
+      switch (playerCount) {
+        case 2:
+          return [
+            { id: "Henry Davison", nation: Nation.AH },
+            { id: "Georg Siemens", nation: Nation.IT },
+          ];
+        case 3:
+          return [
+            { id: "Henry Davison", nation: Nation.AH },
+            { id: "Georg Siemens", nation: Nation.IT },
+            { id: "John Baring", nation: Nation.FR },
+          ];
+        case 4:
+          return [
+            { id: "Henry Davison", nation: Nation.AH },
+            { id: "Georg Siemens", nation: Nation.IT },
+            { id: "John Baring", nation: Nation.FR },
+            { id: "Henri Germain", nation: Nation.GE },
+          ];
+        case 5:
+          return [
+            { id: "Henry Davison", nation: Nation.AH },
+            { id: "Georg Siemens", nation: Nation.IT },
+            { id: "John Baring", nation: Nation.FR },
+            { id: "Henri Germain", nation: Nation.GE },
+            { id: "Johann Heinrich Schröder", nation: Nation.RU },
+          ];
+        case 6:
+          return [
+            { id: "Henry Davison", nation: Nation.AH },
+            { id: "Georg Siemens", nation: Nation.IT },
+            { id: "John Baring", nation: Nation.FR },
+            { id: "Henri Germain", nation: Nation.GE },
+            { id: "Johann Heinrich Schröder", nation: Nation.RU },
+            { id: "Gerson von Bleichröder", nation: Nation.GB },
+          ];
+      }
     },
     flag: function (nation) {
       switch (nation) {
@@ -78,19 +157,117 @@ var app = new Vue({
       }
     },
     tickWithAction: function (action) {
+      if (action.type === "rondel" && action.payload.slot === "import") {
+        this.importStatus.active = true;
+        this.setImportProvinces(
+          this.game.board.byNation.get(action.payload.nation)
+        );
+      }
+      if (action.type === "rondel" && action.payload.slot === "investor") {
+        this.purchasingBond = true;
+      }
+      if (action.type === "bondPurchase") {
+        this.purchasingBond = false;
+      }
+      if (action.type === "rondel" && action.payload.slot === "factory") {
+        this.buildingFactory = true;
+      }
+      if (action.type === "buildFactory") {
+        this.buildingFactory = false;
+      }
+      this.removeFlagFromRondel();
       this.game.tick(action);
-      this.updateRondel();
+      this.addFlagToRondel();
+      this.removeHighlightsFromRondel();
+      this.addHighlightsToRondel();
+      this.updateUnits();
+      if (
+        action.type === "rondel" &&
+        (action.payload.slot === "maneuver1" ||
+          action.payload.slot === "maneuver2")
+      ) {
+        this.maneuverStatus.active = true;
+        this.highlightManeuverProvinces(this.game.availableActions);
+        this.prepareDestinations(this.game.availableActions);
+      }
+      if (action.type === "maneuver") {
+        const el = document.getElementById(action.payload.origin);
+        el.removeAttribute("filter");
+      }
     },
     actionToText: function (action) {
       if (action.type === "rondel") {
         return action.payload.slot;
-      } else if (action.type === "import") {
-        return `Import ${action.payload.unit} in ${action.payload.province}`;
       } else if (action.type === "buildFactory") {
         return `Build factory in ${action.payload.province}`;
+      } else if (action.type === "bondPurchase") {
+        return `Purchase a ${action.payload.nation.value} bond for ${action.payload.cost}`;
+      } else if (action.type === "endManeuver") {
+        return `End maneuver`;
+      } else if (action.type === "coexist") {
+        return `Coexist`;
+      } else if (action.type === "fight") {
+        return `Fight`;
       }
     },
-    updateRondel: function () {
+    updateUnits: function () {
+      [...document.getElementsByClassName("unit")].forEach((e) => e.remove());
+
+      for (const [nation, _] of this.game.units) {
+        for (const [province, { armies, fleets }] of this.game.units.get(
+          nation
+        )) {
+          if (armies > 0) {
+            const target = document.getElementById(province);
+            const army = document.createElementNS(
+              "http://www.w3.org/2000/svg",
+              "image"
+            );
+            const x = (
+              parseInt(target.lastElementChild.getAttribute("x")) - 20
+            ).toString();
+            const y = (
+              parseInt(target.lastElementChild.getAttribute("y")) + 3
+            ).toString();
+            army.setAttribute("x", x);
+            army.setAttribute("y", y);
+            army.setAttribute("class", "unit");
+            army.setAttribute("height", "8");
+            army.setAttribute("href", this.flag(nation.value));
+
+            target.append(army);
+          }
+          if (fleets > 0) {
+            const target = document.getElementById(province);
+            const fleet = document.createElementNS(
+              "http://www.w3.org/2000/svg",
+              "image"
+            );
+            const x = (
+              parseInt(target.lastElementChild.getAttribute("x")) - 20
+            ).toString();
+            const y = (
+              parseInt(target.lastElementChild.getAttribute("y")) + 3
+            ).toString();
+            fleet.setAttribute("x", x);
+            fleet.setAttribute("y", y);
+            fleet.setAttribute("class", "unit");
+            fleet.setAttribute("height", "0.5rem");
+            fleet.setAttribute("href", this.flag(nation.value));
+
+            target.append(fleet);
+          }
+        }
+      }
+    },
+    removeFlagFromRondel: function () {
+      if (document.getElementById(`${this.game.currentNation.value}_flag`)) {
+        document
+          .getElementById(`${this.game.currentNation.value}_flag`)
+          .remove();
+      }
+    },
+    addFlagToRondel: function () {
       for (const [nation, { rondelPosition }] of this.game.nations) {
         if (rondelPosition === null) continue;
         const el = document.getElementById(rondelPosition);
@@ -100,6 +277,7 @@ var app = new Vue({
           "image"
         );
         flag.setAttribute("height", "20");
+        flag.setAttribute("id", `${nation.value}_flag`);
 
         // This is a really rough way to get the center of the SVG path
         const step = el.getTotalLength() / 100;
@@ -116,6 +294,120 @@ var app = new Vue({
 
         flag.setAttribute("href", this.flag(nation.value));
         el.parentNode.append(flag);
+      }
+    },
+    addHighlightsToRondel: function () {
+      for (const action of this.game.availableActions) {
+        if (action.type === "rondel") {
+          const slot = document.getElementById(action.payload.slot);
+          slot.addEventListener("mouseenter", this.darken);
+          slot.addEventListener("mouseleave", (event) => {
+            event.target.removeAttribute("filter");
+          });
+          slot.addEventListener("click", this.tickWithEvent);
+        }
+      }
+    },
+    tickWithEvent: function (event) {
+      for (const action of this.game.availableActions) {
+        if (event.target.id === action.payload.slot) {
+          this.tickWithAction(action);
+        }
+      }
+    },
+    removeHighlightsFromRondel: function () {
+      [
+        "factory",
+        "production1",
+        "maneuver1",
+        "investor",
+        "import",
+        "production2",
+        "maneuver2",
+        "taxation",
+      ].forEach((slot) => {
+        const slotElement = document.getElementById(slot);
+        slotElement.removeEventListener("mouseenter", this.darken);
+        slotElement.removeEventListener("click", this.tickWithEvent);
+      });
+    },
+    darken: function (event) {
+      event.target.setAttribute("filter", "brightness(0.8)");
+    },
+    setImportProvinces: function (provinces) {
+      for (const province of provinces) {
+        const el = document.getElementById(province);
+        el.addEventListener("click", this.prepareImport);
+      }
+    },
+    prepareImport: function (event) {
+      event.target.parentNode.children[1].setAttribute(
+        "filter",
+        "brightness(0.8)"
+      );
+      this.importStatus.targets.push(event.target);
+      this.importStatus.placements.push(event.target.parentNode.id);
+    },
+    runImport: function () {
+      for (const { payload } of this.game.availableActions) {
+        const allowedCombo = payload.placements.map(({ province }) => province);
+        const allPlacementsAreAllowed = allowedCombo.sort().every((item) => {
+          return this.importStatus.placements.includes(item);
+        });
+        if (
+          allowedCombo.length === this.importStatus.placements.length &&
+          allPlacementsAreAllowed
+        ) {
+          this.importStatus.active = false;
+          this.tickWithAction(Action.import(payload));
+          this.importStatus.placements = [];
+          this.importStatus.targets.forEach((target) => {
+            target.parentNode.children[1].removeAttribute("filter");
+          });
+          this.importStatus.targets = [];
+          return;
+        }
+      }
+
+      this.importStatus.placements = [];
+      this.importStatus.targets.forEach((target) => {
+        target.parentNode.children[1].removeAttribute("filter");
+      });
+      this.importStatus.targets = [];
+    },
+    highlightManeuverProvinces: function (availableActions) {
+      for (const { payload } of availableActions) {
+        if (payload === undefined) continue;
+        const origin = document.getElementById(payload.origin);
+        origin.setAttribute("filter", "brightness(0.8)");
+        origin.addEventListener("click", this.prepareManeuver);
+      }
+    },
+    prepareDestinations: function (availableActions) {
+      for (const { payload } of availableActions) {
+        if (payload === undefined) continue;
+        const el = document.getElementById(payload.origin);
+      }
+    },
+    prepareManeuver: function (event) {
+      this.maneuverStatus.origin = event.target.parentNode.id;
+      for (const { payload } of this.game.availableActions) {
+        if (payload === undefined) continue;
+        if (payload.origin === event.target.parentNode.id) {
+          const destination = document.getElementById(payload.destination);
+          destination.addEventListener("click", this.submitManeuver);
+        }
+      }
+    },
+    submitManeuver: function (event) {
+      const proposedAction = Action.maneuver({
+        origin: this.maneuverStatus.origin,
+        destination: event.target.parentNode.id,
+      });
+      if (this.game.availableActions.has(proposedAction)) {
+        this.tickWithAction(proposedAction);
+        this.maneuverStatus.active = false;
+        this.maneuverStatus.origin = "";
       }
     },
   },
