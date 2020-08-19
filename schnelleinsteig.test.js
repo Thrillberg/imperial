@@ -632,11 +632,11 @@ describe("Schnelleinsteig", () => {
           Action.endManeuver(),
           Action.maneuver({
             origin: "liverpool",
-            destination: "north atlantic",
+            destination: "northatlantic",
           }),
-          Action.maneuver({ origin: "london", destination: "english channel" }),
-          Action.maneuver({ origin: "london", destination: "north sea" }),
-          Action.maneuver({ origin: "london", destination: "north atlantic" }),
+          Action.maneuver({ origin: "london", destination: "englishchannel" }),
+          Action.maneuver({ origin: "london", destination: "northsea" }),
+          Action.maneuver({ origin: "london", destination: "northatlantic" }),
         ]);
 
         expect(game.availableActions).toEqual(availableActions);
@@ -646,14 +646,14 @@ describe("Schnelleinsteig", () => {
         game.tick(
           Action.maneuver({
             origin: "liverpool",
-            destination: "north atlantic",
+            destination: "northatlantic",
           })
         );
         game.tick(
-          Action.maneuver({ origin: "london", destination: "english channel" })
+          Action.maneuver({ origin: "london", destination: "englishchannel" })
         );
-        const northAtlanticFlag = game.provinces.get("north atlantic").flag;
-        const englishChannelFlag = game.provinces.get("english channel").flag;
+        const northAtlanticFlag = game.provinces.get("northatlantic").flag;
+        const englishChannelFlag = game.provinces.get("englishchannel").flag;
 
         expect(northAtlanticFlag).toEqual(Nation.GB);
         expect(englishChannelFlag).toEqual(Nation.GB);
@@ -671,8 +671,8 @@ describe("Schnelleinsteig", () => {
         expect(game.availableActions).toEqual(
           new Set([
             Action.endManeuver(),
-            Action.maneuver({ origin: "hamburg", destination: "north sea" }),
-            Action.maneuver({ origin: "hamburg", destination: "baltic sea" }),
+            Action.maneuver({ origin: "hamburg", destination: "northsea" }),
+            Action.maneuver({ origin: "hamburg", destination: "balticsea" }),
             Action.maneuver({ origin: "berlin", destination: "danzig" }),
             Action.maneuver({ origin: "berlin", destination: "prague" }),
             Action.maneuver({ origin: "berlin", destination: "munich" }),
@@ -686,7 +686,7 @@ describe("Schnelleinsteig", () => {
             Action.maneuver({ origin: "berlin", destination: "warsaw" }),
             Action.maneuver({
               origin: "berlin",
-              destination: "st. petersburg",
+              destination: "stpetersburg",
             }),
           ])
         );
@@ -694,7 +694,7 @@ describe("Schnelleinsteig", () => {
 
       test("GE's available army maneuver is berlin", () => {
         game.tick(
-          Action.maneuver({ origin: "hamburg", destination: "north sea" })
+          Action.maneuver({ origin: "hamburg", destination: "northsea" })
         );
 
         const availableActions = new Set([
@@ -712,7 +712,7 @@ describe("Schnelleinsteig", () => {
           Action.maneuver({ origin: "berlin", destination: "edinburgh" }),
           Action.maneuver({ origin: "berlin", destination: "norway" }),
           Action.maneuver({ origin: "berlin", destination: "london" }),
-          Action.maneuver({ origin: "berlin", destination: "st. petersburg" }),
+          Action.maneuver({ origin: "berlin", destination: "stpetersburg" }),
           Action.maneuver({ origin: "berlin", destination: "warsaw" }),
           Action.maneuver({ origin: "berlin", destination: "vienna" }),
         ]);
@@ -722,7 +722,7 @@ describe("Schnelleinsteig", () => {
 
       test("north sea and norway have GE flags", () => {
         game.tick(Action.maneuver({ origin: "berlin", destination: "norway" }));
-        const northSeaFlag = game.provinces.get("north sea").flag;
+        const northSeaFlag = game.provinces.get("northsea").flag;
         const norwayFlag = game.provinces.get("norway").flag;
 
         expect(northSeaFlag).toEqual(Nation.GE);
@@ -740,7 +740,7 @@ describe("Schnelleinsteig", () => {
         const actions = game.availableActions;
         const expected = [
           "moscow",
-          "st. petersburg",
+          "stpetersburg",
           "odessa",
           "kiev",
           "warsaw",
@@ -749,7 +749,7 @@ describe("Schnelleinsteig", () => {
         );
         expected.push(
           Action.import({
-            placements: [{ province: "st. petersburg", unit: "fleet" }],
+            placements: [{ province: "stpetersburg", unit: "fleet" }],
           })
         );
         expected.push(
@@ -763,7 +763,7 @@ describe("Schnelleinsteig", () => {
         game.tick(
           Action.import({
             placements: [
-              { province: "st. petersburg", type: "fleet" },
+              { province: "stpetersburg", type: "fleet" },
               { province: "moscow", type: "army" },
               { province: "moscow", type: "army" },
             ],
@@ -773,7 +773,7 @@ describe("Schnelleinsteig", () => {
         test("RU has 1 fleet in st. petersburg and 2 armies in moscow", () => {
           const stPetersburgFleets = game.units
             .get(Nation.RU)
-            .get("st. petersburg").fleets;
+            .get("stpetersburg").fleets;
           const moscowArmies = game.units.get(Nation.RU).get("moscow").armies;
 
           expect(stPetersburgFleets).toEqual(1);
@@ -800,7 +800,7 @@ describe("Schnelleinsteig", () => {
       test("AH's available fleet maneuver is trieste", () => {
         const availableActions = new Set([
           Action.endManeuver(),
-          Action.maneuver({ origin: "trieste", destination: "ionian sea" }),
+          Action.maneuver({ origin: "trieste", destination: "ioniansea" }),
         ]);
         const landDestinations = [
           "warsaw",
@@ -813,7 +813,7 @@ describe("Schnelleinsteig", () => {
           "venice",
           "berlin",
           "trieste",
-          "west balkan",
+          "westbalkan",
         ];
         landDestinations.map((province) => {
           availableActions.add(
@@ -850,7 +850,7 @@ describe("Schnelleinsteig", () => {
 
       test("AH's available army maneuvers are lemberg, budapest, and vienna", () => {
         game.tick(
-          Action.maneuver({ origin: "trieste", destination: "ionian sea" })
+          Action.maneuver({ origin: "trieste", destination: "ioniansea" })
         );
         const availableActions = new Set([Action.endManeuver()]);
         const landDestinations = [
@@ -864,7 +864,7 @@ describe("Schnelleinsteig", () => {
           "venice",
           "berlin",
           "trieste",
-          "west balkan",
+          "westbalkan",
           "rome",
           "naples",
           "greece",
@@ -908,13 +908,13 @@ describe("Schnelleinsteig", () => {
           Action.maneuver({ origin: "lemberg", destination: "romania" })
         );
         game.tick(
-          Action.maneuver({ origin: "budapest", destination: "west balkan" })
+          Action.maneuver({ origin: "budapest", destination: "westbalkan" })
         );
         game.tick(Action.maneuver({ origin: "vienna", destination: "tunis" }));
 
-        const ionianSeaFlag = game.provinces.get("ionian sea").flag;
+        const ionianSeaFlag = game.provinces.get("ioniansea").flag;
         const romaniaFlag = game.provinces.get("romania").flag;
-        const westBalkanFlag = game.provinces.get("west balkan").flag;
+        const westBalkanFlag = game.provinces.get("westbalkan").flag;
         const tunisFlag = game.provinces.get("tunis").flag;
 
         expect(ionianSeaFlag).toEqual(Nation.AH);
@@ -936,11 +936,11 @@ describe("Schnelleinsteig", () => {
           Action.endManeuver(),
           Action.maneuver({
             origin: "naples",
-            destination: "western mediterranean sea",
+            destination: "westernmediterraneansea",
           }),
           Action.maneuver({
             origin: "naples",
-            destination: "ionian sea",
+            destination: "ioniansea",
           }),
         ]);
         const landDestinations = [
@@ -966,7 +966,7 @@ describe("Schnelleinsteig", () => {
         game.tick(
           Action.maneuver({
             origin: "naples",
-            destination: "western mediterranean sea",
+            destination: "westernmediterraneansea",
           })
         );
         const availableActions = new Set([Action.endManeuver()]);
@@ -994,7 +994,7 @@ describe("Schnelleinsteig", () => {
       test("spain and western mediterranean sea have IT flags", () => {
         game.tick(Action.maneuver({ origin: "rome", destination: "spain" }));
         const westernMediterraneanSeaFlag = game.provinces.get(
-          "western mediterranean sea"
+          "westernmediterraneansea"
         ).flag;
         const spainFlag = game.provinces.get("spain").flag;
 
@@ -1015,11 +1015,11 @@ describe("Schnelleinsteig", () => {
           Action.endManeuver(),
           Action.maneuver({
             origin: "bordeaux",
-            destination: "bay of biscay",
+            destination: "bayofbiscay",
           }),
           Action.maneuver({
             origin: "marseille",
-            destination: "western mediterranean sea",
+            destination: "westernmediterraneansea",
           }),
         ]);
         const landDestinations = [
@@ -1045,17 +1045,17 @@ describe("Schnelleinsteig", () => {
         game.tick(
           Action.maneuver({
             origin: "marseille",
-            destination: "western mediterranean sea",
+            destination: "westernmediterraneansea",
           })
         );
         const expectedActions = [
           Action.coexist({
-            province: "western mediterranean sea",
+            province: "westernmediterraneansea",
             incumbent: Nation.IT,
             challenger: Nation.FR,
           }),
           Action.fight({
-            province: "western mediterranean sea",
+            province: "westernmediterraneansea",
             incumbent: Nation.IT,
             challenger: Nation.FR,
           }),
@@ -1067,18 +1067,18 @@ describe("Schnelleinsteig", () => {
       test("IT chooses to fight so both fleets get removed", () => {
         game.tick(
           Action.fight({
-            province: "western mediterranean sea",
+            province: "westernmediterraneansea",
             incumbent: Nation.IT,
             challenger: Nation.FR,
           })
         );
-        const westernMed = game.provinces.get("western mediterranean sea");
+        const westernMed = game.provinces.get("westernmediterraneansea");
 
         expect(
-          game.units.get(Nation.IT).get("western mediterranean sea").fleets
+          game.units.get(Nation.IT).get("westernmediterraneansea").fleets
         ).toEqual(0);
         expect(
-          game.units.get(Nation.FR).get("western mediterranean sea").fleets
+          game.units.get(Nation.FR).get("westernmediterraneansea").fleets
         ).toEqual(0);
         expect(westernMed.flag).toEqual(Nation.IT);
       });
@@ -1087,7 +1087,7 @@ describe("Schnelleinsteig", () => {
         game.tick(
           Action.maneuver({
             origin: "bordeaux",
-            destination: "bay of biscay",
+            destination: "bayofbiscay",
           })
         );
         const landDestinations = [
@@ -1120,10 +1120,8 @@ describe("Schnelleinsteig", () => {
           })
         );
 
-        expect(game.units.get(Nation.FR).get("bay of biscay").fleets).toEqual(
-          1
-        );
-        expect(game.provinces.get("bay of biscay").flag).toEqual(Nation.FR);
+        expect(game.units.get(Nation.FR).get("bayofbiscay").fleets).toEqual(1);
+        expect(game.provinces.get("bayofbiscay").flag).toEqual(Nation.FR);
         expect(game.units.get(Nation.FR).get("morocco").armies).toEqual(1);
         expect(game.provinces.get("morocco").flag).toEqual(Nation.FR);
       });
@@ -1468,11 +1466,14 @@ describe("Schnelleinsteig", () => {
     });
 
     describe("5. GE builds a factory", () => {
-      const log = mainLog.slice(0, 57);
+      const log = mainLog.slice(0, 60);
       const game = Imperial.fromLog(log);
-      game.tick(Action.rondel({ nation: Nation.GE, cost: 0, slot: "factory" }));
 
       test("GE can choose where to build the factory", () => {
+        game.tick(
+          Action.rondel({ nation: Nation.GE, cost: 0, slot: "factory" })
+        );
+
         const expected = new Set(
           ["danzig", "munich", "cologne"].map((province) =>
             Action.buildFactory({ province })
@@ -1509,19 +1510,19 @@ describe("Schnelleinsteig", () => {
         const availableActions = new Set([
           Action.endManeuver(),
           Action.maneuver({
-            origin: "st. petersburg",
-            destination: "baltic sea",
+            origin: "stpetersburg",
+            destination: "balticsea",
           }),
           Action.maneuver({
             origin: "odessa",
-            destination: "black sea",
+            destination: "blacksea",
           }),
         ]);
         const landDestinations = [
           "warsaw",
           "odessa",
           "kiev",
-          "st. petersburg",
+          "stpetersburg",
           "danzig",
           "prague",
           "lemberg",
@@ -1539,14 +1540,14 @@ describe("Schnelleinsteig", () => {
       test("RU's available army maneuver is moscow (x3)", () => {
         game.tick(
           Action.maneuver({
-            origin: "st. petersburg",
-            destination: "baltic sea",
+            origin: "stpetersburg",
+            destination: "balticsea",
           })
         );
         game.tick(
           Action.maneuver({
             origin: "odessa",
-            destination: "black sea",
+            destination: "blacksea",
           })
         );
         const availableActions = new Set([Action.endManeuver()]);
@@ -1554,7 +1555,7 @@ describe("Schnelleinsteig", () => {
           "warsaw",
           "odessa",
           "kiev",
-          "st. petersburg",
+          "stpetersburg",
           "danzig",
           "prague",
           "lemberg",
@@ -1595,9 +1596,9 @@ describe("Schnelleinsteig", () => {
             destination: "lemberg",
           })
         );
-        const balticSeaFlag = game.provinces.get("baltic sea").flag;
+        const balticSeaFlag = game.provinces.get("balticsea").flag;
         const swedenFlag = game.provinces.get("sweden").flag;
-        const blackSeaFlag = game.provinces.get("black sea").flag;
+        const blackSeaFlag = game.provinces.get("blacksea").flag;
         const turkeyFlag = game.provinces.get("turkey").flag;
 
         expect(balticSeaFlag).toEqual(Nation.RU);
@@ -1620,12 +1621,12 @@ describe("Schnelleinsteig", () => {
         const availableActions = new Set([
           Action.endManeuver(),
           Action.maneuver({
-            origin: "ionian sea",
-            destination: "western mediterranean sea",
+            origin: "ioniansea",
+            destination: "westernmediterraneansea",
           }),
           Action.maneuver({
-            origin: "ionian sea",
-            destination: "eastern mediterranean sea",
+            origin: "ioniansea",
+            destination: "easternmediterraneansea",
           }),
         ]);
         const romaniaDestinations = [
@@ -1634,7 +1635,7 @@ describe("Schnelleinsteig", () => {
           "lemberg",
           "budapest",
           "bulgaria",
-          "west balkan",
+          "westbalkan",
         ];
         romaniaDestinations.map((province) => {
           availableActions.add(
@@ -1650,7 +1651,7 @@ describe("Schnelleinsteig", () => {
         ];
         westBalkanDestinations.map((province) => {
           availableActions.add(
-            Action.maneuver({ origin: "west balkan", destination: province })
+            Action.maneuver({ origin: "westbalkan", destination: province })
           );
         });
         availableActions.add(
@@ -1664,15 +1665,15 @@ describe("Schnelleinsteig", () => {
       test("AH's available army maneuvers are Tunis, West Balkan, and Romania", () => {
         game.tick(
           Action.maneuver({
-            origin: "ionian sea",
-            destination: "western mediterranean sea",
+            origin: "ioniansea",
+            destination: "westernmediterraneansea",
           })
         );
         const availableActions = new Set([Action.endManeuver()]);
         const romaniaDestinations = [
           "odessa",
           "bulgaria",
-          "west balkan",
+          "westbalkan",
           "budapest",
           "lemberg",
           "kiev",
@@ -1691,7 +1692,7 @@ describe("Schnelleinsteig", () => {
         ];
         westBalkanDestinations.map((province) => {
           availableActions.add(
-            Action.maneuver({ origin: "west balkan", destination: province })
+            Action.maneuver({ origin: "westbalkan", destination: province })
           );
         });
         const tunisDestinations = [
@@ -1715,13 +1716,13 @@ describe("Schnelleinsteig", () => {
       test("Algeria, Bulgaria, and Western Mediterranean have AH flags", () => {
         game.tick(Action.maneuver({ origin: "tunis", destination: "algeria" }));
         game.tick(
-          Action.maneuver({ origin: "west balkan", destination: "bulgaria" })
+          Action.maneuver({ origin: "westbalkan", destination: "bulgaria" })
         );
         game.tick(
           Action.maneuver({ origin: "romania", destination: "odessa" })
         );
         const westernMediterraneanSeaFlag = game.provinces.get(
-          "western mediterranean sea"
+          "westernmediterraneansea"
         ).flag;
         const algeriaFlag = game.provinces.get("algeria").flag;
         const bulgariaFlag = game.provinces.get("bulgaria").flag;
