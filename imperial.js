@@ -42,6 +42,7 @@ export default class Imperial {
       case "bondPurchase":
         this.purchaseBond(action);
         this.handleAdvancePlayer();
+        this.availableActions = new Set(this.rondelActions(this.currentNation));
         return;
       case "endManeuver":
         this.currentNation = this.nextNation(this.currentNation);
@@ -63,6 +64,7 @@ export default class Imperial {
           this.endOfInvestorTurn();
         }
         this.handleAdvancePlayer();
+        this.availableActions = new Set(this.rondelActions(this.currentNation));
         return;
       case "import":
         action.payload.placements.forEach(({ province, type }) => {
@@ -87,8 +89,10 @@ export default class Imperial {
           )
         ) {
           this.endOfInvestorTurn();
+          return;
         }
         this.handleAdvancePlayer();
+        this.availableActions = new Set(this.rondelActions(this.currentNation));
         return;
       case "maneuver":
         const origin = action.payload.origin;
@@ -205,9 +209,9 @@ export default class Imperial {
               this.endOfInvestorTurn();
             }
           }
-          this.currentNation = this.getNation(this.log);
+          this.currentNation = this.nextNation(this.currentNation);
           this.availableActions = new Set(
-            this.rondelActions(this.getNation(this.log))
+            this.rondelActions(this.currentNation)
           );
         }
         return;
@@ -355,7 +359,7 @@ export default class Imperial {
               nation.powerPoints += 3;
             }
             this.availableActions = new Set(
-              this.rondelActions(this.getNation(this.log))
+              this.rondelActions(this.nextNation(this.currentNation))
             );
             const potentialPreInvestorSlots = ["maneuver1", "production1"];
             if (
@@ -488,7 +492,7 @@ export default class Imperial {
   }
 
   handleAdvancePlayer() {
-    this.currentNation = this.getNation(this.log);
+    this.currentNation = this.nextNation(this.currentNation);
     this.currentPlayerName = this.nations.get(this.currentNation).controller;
   }
 
@@ -641,19 +645,8 @@ export default class Imperial {
     return out;
   }
 
-  getNation(log) {
-    const rondelActions = log.filter((action) => action.type === "rondel");
-    if (rondelActions.length > 0) {
-      const lastTurnNation =
-        rondelActions[rondelActions.length - 1].payload.nation;
-      return this.nextNation(lastTurnNation);
-    } else {
-      return this.currentNation;
-    }
-  }
-
   nextNation(lastTurnNation) {
-    return lastTurnNation.when({
+    const nextNation = lastTurnNation.when({
       AH: () => Nation.IT,
       IT: () => Nation.FR,
       FR: () => Nation.GB,
@@ -661,6 +654,11 @@ export default class Imperial {
       GE: () => Nation.RU,
       RU: () => Nation.AH,
     });
+    if (this.nations.get(nextNation).controller) {
+      return nextNation;
+    } else {
+      return this.nextNation(nextNation);
+    }
   }
 
   importAction(nation) {

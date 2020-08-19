@@ -44,13 +44,31 @@ describe("imperial", () => {
         game.players["player1"].bonds = new Set();
         // Give player enough cash to afford a bond
         game.players["player1"].cash = 4;
+        game.investorCardHolder = "player1";
 
+        game.tick(
+          Action.rondel({ nation: Nation.AH, cost: 0, slot: "investor" })
+        );
         game.tick(
           Action.bondPurchase({ player: "player1", cost: 4, nation: Nation.IT })
         );
 
         expect(game.players["player1"].bonds).toEqual(
           new Set([Bond(Nation.IT, 2)])
+        );
+        expect(game.availableActions).toEqual(
+          new Set(
+            [
+              "factory",
+              "production1",
+              "maneuver1",
+              "investor",
+              "import",
+              "production2",
+              "maneuver2",
+              "taxation",
+            ].map((slot) => Action.rondel({ nation: Nation.IT, cost: 0, slot }))
+          )
         );
       });
 
@@ -128,6 +146,50 @@ describe("imperial", () => {
       });
     });
 
+    describe("buildFactory", () => {
+      const newGame = () => {
+        const board = new GameBoard({
+          nodes: [{ name: "a", nation: Nation.AH, factoryType: "armaments" }],
+          edges: [],
+        });
+
+        const game = new Imperial(board);
+        game.tick(
+          Action.initialize({
+            players: [
+              { id: "player1", nation: Nation.AH },
+              { id: "player2", nation: Nation.IT },
+            ],
+          })
+        );
+        return game;
+      };
+
+      describe("AH builds a factory", () => {
+        const game = newGame();
+
+        game.tick(
+          Action.rondel({ nation: Nation.AH, cost: 0, slot: "factory" })
+        );
+        game.tick(Action.buildFactory({ province: "a" }));
+
+        expect(game.availableActions).toEqual(
+          new Set(
+            [
+              "factory",
+              "production1",
+              "maneuver1",
+              "investor",
+              "import",
+              "production2",
+              "maneuver2",
+              "taxation",
+            ].map((slot) => Action.rondel({ nation: Nation.IT, cost: 0, slot }))
+          )
+        );
+      });
+    });
+
     describe("import", () => {
       const newGame = () => {
         const board = new GameBoard({
@@ -159,6 +221,20 @@ describe("imperial", () => {
 
         expect(game.units).toEqual(beforeUnits);
         expect(game.nations.get(Nation.AH).treasury).toEqual(11);
+        expect(game.availableActions).toEqual(
+          new Set(
+            [
+              "factory",
+              "production1",
+              "maneuver1",
+              "investor",
+              "import",
+              "production2",
+              "maneuver2",
+              "taxation",
+            ].map((slot) => Action.rondel({ nation: Nation.IT, cost: 0, slot }))
+          )
+        );
       });
 
       test("import one army", () => {
@@ -1319,6 +1395,38 @@ describe("imperial", () => {
             ])
           );
         });
+      });
+    });
+
+    describe("currentPlayerName on new turn", () => {
+      const newGame = () => {
+        const board = new GameBoard({
+          nodes: [],
+          edges: [],
+        });
+
+        const game = new Imperial(board);
+        game.tick(
+          Action.initialize({
+            players: [
+              { id: "player1", nation: Nation.AH },
+              { id: "player2", nation: Nation.IT },
+            ],
+          })
+        );
+        return game;
+      };
+
+      xtest("when nobody controls a nation, that nation skips their turn", () => {
+        const game = newGame();
+        // Remove player2 from controlling Italy
+        game.nations.get(Nation.IT).controller = null;
+
+        // End maneuver just because it is simple; the action is unimportant
+        game.tick(Action.endManeuver());
+
+        expect(game.currentNation).toEqual(Nation.FR);
+        expect(game.currentPlayerName).toEqual("player1");
       });
     });
   });
