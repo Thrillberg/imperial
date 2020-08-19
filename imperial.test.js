@@ -605,6 +605,8 @@ describe("imperial", () => {
 
           test("available bonds for sale outright", () => {
             const game = newGame();
+            // Empty out their bonds so they can't trade any in (that's tested below)
+            game.players["player2"].bonds = new Set();
 
             expect(game.players["player2"].cash).toEqual(2);
 
@@ -619,18 +621,43 @@ describe("imperial", () => {
                   player: "player2",
                   cost: 4,
                 }),
+                Action.bondPurchase({
+                  nation: Nation.IT,
+                  player: "player2",
+                  cost: 4,
+                }),
+                Action.bondPurchase({
+                  nation: Nation.FR,
+                  player: "player2",
+                  cost: 4,
+                }),
+                Action.bondPurchase({
+                  nation: Nation.GB,
+                  player: "player2",
+                  cost: 4,
+                }),
+                Action.bondPurchase({
+                  nation: Nation.GE,
+                  player: "player2",
+                  cost: 4,
+                }),
+                Action.bondPurchase({
+                  nation: Nation.RU,
+                  player: "player2",
+                  cost: 4,
+                }),
               ])
             );
           });
 
           test("available bonds that can be traded up for", () => {
             const game = newGame();
+            game.investorCardHolder = "player2";
 
             // Give the AH, 2 bond to player2
             game.availableBonds.delete(Bond(Nation.AH, 2));
-            game.players["player2"].bonds.add(Bond(Nation.AH, 2));
-
-            expect(game.players["player2"].cash).toEqual(2);
+            game.players["player2"].bonds = new Set([Bond(Nation.AH, 2)]);
+            game.players["player2"].cash = 0;
 
             game.tick(
               Action.rondel({ slot: "investor", nation: Nation.AH, cost: 0 })
@@ -644,6 +671,31 @@ describe("imperial", () => {
                   nation: Nation.AH,
                   player: "player2",
                   cost: 6,
+                }),
+                Action.bondPurchase({
+                  nation: Nation.IT,
+                  player: "player2",
+                  cost: 4,
+                }),
+                Action.bondPurchase({
+                  nation: Nation.FR,
+                  player: "player2",
+                  cost: 4,
+                }),
+                Action.bondPurchase({
+                  nation: Nation.GB,
+                  player: "player2",
+                  cost: 4,
+                }),
+                Action.bondPurchase({
+                  nation: Nation.GE,
+                  player: "player2",
+                  cost: 4,
+                }),
+                Action.bondPurchase({
+                  nation: Nation.RU,
+                  player: "player2",
+                  cost: 4,
                 }),
               ])
             );
