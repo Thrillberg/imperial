@@ -408,11 +408,17 @@ var app = new Vue({
         origin: this.maneuverStatus.origin,
         destination: event.target.parentNode.id,
       });
+
       if (this.game.availableActions.has(proposedAction)) {
         this.tickWithAction(proposedAction);
         this.maneuverStatus.active = false;
         this.maneuverStatus.origin = "";
       }
+    },
+    endManeuver: function (action) {
+      this.tickWithAction(action);
+      this.maneuverStatus.active = false;
+      this.maneuverStatus.origin = "";
     },
   },
 });
