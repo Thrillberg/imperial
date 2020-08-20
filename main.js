@@ -1,7 +1,6 @@
 import Imperial from "./imperial.js";
 import Action from "./action.js";
 import { Nation } from "./constants.js";
-import action from "./action.js";
 
 Vue.component("board", {
   props: ["board", "add_highlights"],
@@ -175,7 +174,7 @@ var app = new Vue({
       if (action.type === "buildFactory") {
         this.buildingFactory = false;
       }
-      this.removeFlagFromRondel();
+      this.removeFlagFromAllRondelSlots();
       this.game.tick(action);
       this.addFlagToRondel();
       this.removeHighlightsFromRondel();
@@ -260,11 +259,16 @@ var app = new Vue({
         }
       }
     },
-    removeFlagFromRondel: function () {
-      if (document.getElementById(`${this.game.currentNation.value}_flag`)) {
-        document
-          .getElementById(`${this.game.currentNation.value}_flag`)
-          .remove();
+    removeFlagFromAllRondelSlots: function () {
+      for (const [nation, { rondelPosition }] of this.game.nations) {
+        if (rondelPosition === null) continue;
+        this.removeFlagFromRondelSlot(nation.value);
+      }
+    },
+    removeFlagFromRondelSlot: function (nation) {
+      if (document.getElementById(`${nation}_flag`)) {
+        document.getElementById(`${nation}_flag`).remove();
+        this.removeFlagFromRondelSlot(nation);
       }
     },
     addFlagToRondel: function () {
