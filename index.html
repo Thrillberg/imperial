@@ -46,9 +46,9 @@
           ></action>
           <action
             v-else-if="maneuverStatus.active"
-            v-bind:action="importStatus.endManeuver"
+            v-bind:action="maneuverStatus.endManeuver"
             v-bind:text="'End maneuver'"
-            v-bind:dispatch="submitManeuver"
+            v-bind:dispatch="endManeuver"
           ></action>
           <action
             v-else-if="purchasingBond || buildingFactory"
