@@ -31,12 +31,12 @@
             </text>
             <g id="Group" transform="translate(313.000000, 1577.000000)" stroke="#000000">
                 <path id="import" d="M200,200 L58.5858586,341.414141 C21.0777049,303.909815 0.00382691492,253.041833 0,200 L200,200 Z" fill="#F39D81" fill-rule="nonzero"></path>
-                <path id="production1" d="M200,200 L0,200 C0.00382691492,146.958167 21.0777049,96.0901852 58.5858586,58.5858586 L200,200 Z" fill="#8C8798" fill-rule="nonzero"></path>
-                <path id="maneuver1" d="M200,200 L58.5858586,58.5858586 C96.0901852,21.0777049 146.958167,0.00382691492 200,0 L200,200 Z" fill="#7EA850" fill-rule="nonzero"></path>
+                <path id="production2" d="M200,200 L0,200 C0.00382691492,146.958167 21.0777049,96.0901852 58.5858586,58.5858586 L200,200 Z" fill="#8C8798" fill-rule="nonzero"></path>
+                <path id="maneuver2" d="M200,200 L58.5858586,58.5858586 C96.0901852,21.0777049 146.958167,0.00382691492 200,0 L200,200 Z" fill="#7EA850" fill-rule="nonzero"></path>
                 <path id="taxation" d="M200,200 L200,0 C253.041833,0.00382691492 303.909815,21.0777049 341.414141,58.5858586 L200,200 Z" fill="#FFD281" fill-rule="nonzero"></path>
                 <path id="factory" d="M200,200 L341.414141,58.5858586 C378.922295,96.0901852 399.996173,146.958167 400,200 L200,200 Z" fill="#8DBCFB" fill-rule="nonzero"></path>
-                <path id="production2" d="M200,200 L400,200 C399.996173,253.041833 378.922295,303.909815 341.414141,341.414141 L200,200 Z" fill="#8C8798" fill-rule="nonzero"></path>
-                <path id="maneuver2" d="M200,200 L341.414141,341.414141 C303.909815,378.922295 253.041833,399.996173 200,400 L200,200 Z" fill="#7EA850" fill-rule="nonzero"></path>
+                <path id="production1" d="M200,200 L400,200 C399.996173,253.041833 378.922295,303.909815 341.414141,341.414141 L200,200 Z" fill="#8C8798" fill-rule="nonzero"></path>
+                <path id="maneuver1" d="M200,200 L341.414141,341.414141 C303.909815,378.922295 253.041833,399.996173 200,400 L200,200 Z" fill="#7EA850" fill-rule="nonzero"></path>
                 <path id="investor" d="M200,200 L200,400 C146.958167,399.996173 96.0901852,378.922295 58.5858586,341.414141 L200,200 Z" fill="#8EDFFF" fill-rule="nonzero"></path>
                 <circle id="Oval" fill="#FFFFFF" cx="199.5" cy="200.5" r="37"></circle>
             </g>
