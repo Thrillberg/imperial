@@ -47,7 +47,6 @@ export default class Imperial {
       case "endManeuver":
         this.currentNation = this.nextNation(this.currentNation);
         this.availableActions = new Set(this.rondelActions(this.currentNation));
-        this.handleAdvancePlayer();
         return;
       case "fight":
         this.units.get(Nation.FR).get(action.payload.province).fleets -= 1;
