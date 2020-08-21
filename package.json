@@ -7,8 +7,7 @@
   "scripts": {
     "lint": "prettier -c *.js",
     "lint:fix": "prettier --write *.js",
-    "start": "static-server",
+    "start": "cd imperial-vue && yarn serve",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
-  },
-  "type": "module"
+  }
 }
