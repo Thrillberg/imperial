@@ -20,7 +20,8 @@
     "@vue/cli-plugin-babel": "~4.5.0",
     "@vue/cli-plugin-eslint": "~4.5.0",
     "@vue/cli-service": "~4.5.0",
-    "vue-template-compiler": "^2.6.11"
+    "vue-svg-loader": "^0.16.0",
+    "vue-template-compiler": "^2.6.12"
   },
   "eslintConfig": {
     "root": true,

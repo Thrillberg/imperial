@@ -36,20 +36,22 @@ export default {
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-/* h3 {
-  margin: 40px 0 0;
+.bonds {
+  list-style: none;
+  padding-left: 0;
 }
-ul {
-  list-style-type: none;
-  padding: 0;
+
+.current_player {
+  font-size: 3rem;
+  margin-top: 0.5rem;
+  padding: 1rem 0;
+  position: absolute;
+  top: -0.2rem;
 }
-li {
-  display: inline-block;
-  margin: 0 10px;
+
+.player {
+  background: #9dd7d0;
+  padding: 3rem;
 }
-a {
-  color: #42b983;
-} */
 </style>

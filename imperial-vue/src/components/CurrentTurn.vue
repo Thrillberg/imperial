@@ -7,7 +7,7 @@ export default {
   name: "CurrentTurn",
   props: {
     type: String,
-    payload: String,
+    payload: Object,
   },
 };
 </script>

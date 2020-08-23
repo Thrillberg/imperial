@@ -10,7 +10,9 @@
         v-bind:key="player.name"
       ></Player>
     </ul>
-    <div class="rondel" v-html="rondel"></div>
+    <div class="rondel">
+      <Rondel />
+    </div>
     <CurrentTurn
       v-bind:type="game.log[game.log.length - 1].type"
       v-bind:payload="game.log[game.log.length - 1].payload"
@@ -37,20 +39,25 @@
 import Action from "./components/Action.vue";
 import CurrentTurn from "./components/CurrentTurn.vue";
 import Player from "./components/Player.vue";
+
+import AHFlag from "./assets/flags/ah.vue";
+import FRFlag from "./assets/flags/fr.vue";
+import GBFlag from "./assets/flags/gb.vue";
+import GEFlag from "./assets/flags/ge.vue";
+import ITFlag from "./assets/flags/it.vue";
+import RUFlag from "./assets/flags/ru.vue";
+import Rondel from "./assets/Rondel.vue";
+
 import Imperial from "./../../imperial.js";
 import log from "./../../schnelleinsteigLog";
 
 export default {
   name: "App",
   data() {
-    return { game: {}, gameStarted: false, rondel: "" };
-  },
-  mounted() {
-    fetch("rondel.svg")
-      .then((response) => response.text())
-      .then((text) => {
-        this.rondel = text;
-      });
+    return {
+      game: {},
+      gameStarted: false,
+    };
   },
   methods: {
     startGame: function () {
@@ -60,17 +67,17 @@ export default {
     flag: function (nation) {
       switch (nation) {
         case "AH":
-          return "flags/ah.svg";
+          return AHFlag;
         case "IT":
-          return "flags/it.svg";
+          return ITFlag;
         case "FR":
-          return "flags/fr.svg";
+          return FRFlag;
         case "GB":
-          return "flags/gb.svg";
+          return GBFlag;
         case "GE":
-          return "flags/ge.svg";
+          return GEFlag;
         case "RU":
-          return "flags/ru.svg";
+          return RUFlag;
       }
     },
     tickWithAction: function (action) {
@@ -90,7 +97,6 @@ export default {
       for (const [nation, { rondelPosition }] of this.game.nations) {
         if (rondelPosition === null) continue;
         const el = document.getElementById(rondelPosition);
-        // const bBox = el.getBBox();
         const flag = document.createElementNS(
           "http://www.w3.org/2000/svg",
           "image"
@@ -119,17 +125,34 @@ export default {
     Action,
     CurrentTurn,
     Player,
+    Rondel,
   },
 };
 </script>
 
 <style>
-/* #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+button {
+  background: #224f4a;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.buttons {
+  display: flex;
+  justify-content: space-around;
+}
+
+ul {
+  display: flex;
+  justify-content: space-around;
+  list-style: none;
+  padding-left: 0;
+}
+
+.rondel {
   text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-} */
+}
 </style>

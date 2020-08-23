@@ -1,13 +1,17 @@
 {
   "devDependencies": {
+    "eslint": "^7.7.0",
+    "eslint-plugin-vue": "^6.2.2",
     "jest": "^26.0.1",
-    "prettier": "^2.0.5",
-    "static-server": "^2.2.1"
+    "prettier": "^2.0.5"
   },
   "scripts": {
+    "build": "cd imperial-vue && yarn build",
+    "deploy": "cd imperial-vue && yarn deploy",
     "lint": "prettier -c *.js",
     "lint:fix": "prettier --write *.js",
     "start": "cd imperial-vue && yarn serve",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
-  }
+  },
+  "dependencies": {}
 }

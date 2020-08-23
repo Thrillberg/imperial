@@ -1,0 +1,174 @@
+<template>
+  <!-- <?xml version="1.0" encoding="UTF-8"?> -->
+  <svg
+    width="470px"
+    height="456px"
+    viewBox="0 0 470 456"
+    version="1.1"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+  >
+    <!-- Generator: Sketch 61.2 (89653) - https://sketch.com -->
+    <title>Page 1</title>
+    <desc>Created with Sketch.</desc>
+    <g
+      id="Page-1"
+      stroke="none"
+      stroke-width="1"
+      fill="none"
+      fill-rule="evenodd"
+    >
+      <g id="Desktop" transform="translate(-272.000000, -1550.000000)">
+        <text
+          id="Taxation"
+          transform="translate(608.979835, 1577.124356) rotate(25.000000) translate(-608.979835, -1577.124356) "
+          font-family="Baskerville"
+          font-size="24"
+          font-weight="normal"
+          letter-spacing="0.61714304"
+          fill="#000000"
+        >
+          <tspan x="562.979835" y="1585.12436">Taxation</tspan>
+        </text>
+        <text
+          id="Factory"
+          transform="translate(721.479835, 1691.124356) rotate(70.000000) translate(-721.479835, -1691.124356) "
+          font-family="Baskerville"
+          font-size="24"
+          font-weight="normal"
+          letter-spacing="0.61714304"
+          fill="#000000"
+        >
+          <tspan x="682.979835" y="1699.12436">Factory</tspan>
+        </text>
+        <text
+          id="Production"
+          transform="translate(715.479835, 1865.124356) rotate(-70.000000) translate(-715.479835, -1865.124356) "
+          font-family="Baskerville"
+          font-size="24"
+          font-weight="normal"
+          letter-spacing="0.61714304"
+          fill="#000000"
+        >
+          <tspan x="658.979835" y="1873.12436">Production</tspan>
+        </text>
+        <text
+          id="Production"
+          transform="translate(298.479835, 1695.124356) rotate(-70.000000) translate(-298.479835, -1695.124356) "
+          font-family="Baskerville"
+          font-size="24"
+          font-weight="normal"
+          letter-spacing="0.61714304"
+          fill="#000000"
+        >
+          <tspan x="241.979835" y="1703.12436">Production</tspan>
+        </text>
+        <text
+          id="Maneuver"
+          transform="translate(607.979835, 1973.124356) rotate(-30.000000) translate(-607.979835, -1973.124356) "
+          font-family="Baskerville"
+          font-size="24"
+          font-weight="normal"
+          letter-spacing="0.61714304"
+          fill="#000000"
+        >
+          <tspan x="555.979835" y="1981.12436">Maneuver</tspan>
+        </text>
+        <text
+          id="Maneuver"
+          transform="translate(415.979835, 1578.124356) rotate(-30.000000) translate(-415.979835, -1578.124356) "
+          font-family="Baskerville"
+          font-size="24"
+          font-weight="normal"
+          letter-spacing="0.61714304"
+          fill="#000000"
+        >
+          <tspan x="363.979835" y="1586.12436">Maneuver</tspan>
+        </text>
+        <text
+          id="Investor"
+          transform="translate(415.479835, 1973.124356) rotate(30.000000) translate(-415.479835, -1973.124356) "
+          font-family="Baskerville"
+          font-size="24"
+          font-weight="normal"
+          letter-spacing="0.61714304"
+          fill="#000000"
+        >
+          <tspan x="373.979835" y="1981.12436">Investor</tspan>
+        </text>
+        <text
+          id="Import"
+          transform="translate(306.979835, 1860.124356) rotate(70.000000) translate(-306.979835, -1860.124356) "
+          font-family="Baskerville"
+          font-size="24"
+          font-weight="normal"
+          letter-spacing="0.61714304"
+          fill="#000000"
+        >
+          <tspan x="270.979835" y="1868.12436">Import</tspan>
+        </text>
+        <g
+          id="Group"
+          transform="translate(313.000000, 1577.000000)"
+          stroke="#000000"
+        >
+          <path
+            id="import"
+            d="M200,200 L58.5858586,341.414141 C21.0777049,303.909815 0.00382691492,253.041833 0,200 L200,200 Z"
+            fill="#F39D81"
+            fill-rule="nonzero"
+          ></path>
+          <path
+            id="production1"
+            d="M200,200 L0,200 C0.00382691492,146.958167 21.0777049,96.0901852 58.5858586,58.5858586 L200,200 Z"
+            fill="#8C8798"
+            fill-rule="nonzero"
+          ></path>
+          <path
+            id="maneuver1"
+            d="M200,200 L58.5858586,58.5858586 C96.0901852,21.0777049 146.958167,0.00382691492 200,0 L200,200 Z"
+            fill="#7EA850"
+            fill-rule="nonzero"
+          ></path>
+          <path
+            id="taxation"
+            d="M200,200 L200,0 C253.041833,0.00382691492 303.909815,21.0777049 341.414141,58.5858586 L200,200 Z"
+            fill="#FFD281"
+            fill-rule="nonzero"
+          ></path>
+          <path
+            id="factory"
+            d="M200,200 L341.414141,58.5858586 C378.922295,96.0901852 399.996173,146.958167 400,200 L200,200 Z"
+            fill="#8DBCFB"
+            fill-rule="nonzero"
+          ></path>
+          <path
+            id="production2"
+            d="M200,200 L400,200 C399.996173,253.041833 378.922295,303.909815 341.414141,341.414141 L200,200 Z"
+            fill="#8C8798"
+            fill-rule="nonzero"
+          ></path>
+          <path
+            id="maneuver2"
+            d="M200,200 L341.414141,341.414141 C303.909815,378.922295 253.041833,399.996173 200,400 L200,200 Z"
+            fill="#7EA850"
+            fill-rule="nonzero"
+          ></path>
+          <path
+            id="investor"
+            d="M200,200 L200,400 C146.958167,399.996173 96.0901852,378.922295 58.5858586,341.414141 L200,200 Z"
+            fill="#8EDFFF"
+            fill-rule="nonzero"
+          ></path>
+          <circle
+            id="Oval"
+            fill="#FFFFFF"
+            cx="199.5"
+            cy="200.5"
+            r="37"
+          ></circle>
+        </g>
+      </g>
+    </g>
+  </svg>
+</template>
