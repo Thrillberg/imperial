@@ -7,17 +7,18 @@
     "css-loader": "^4.2.1",
     "jest": "^26.0.1",
     "prettier": "^2.0.5",
-    "static-server": "^2.2.1",
     "style-loader": "^1.2.1",
     "vue-svg-loader": "^0.16.0",
     "vue-template-compiler": "^2.6.12",
     "webpack": "^4.44.1",
-    "webpack-cli": "^3.3.12"
+    "webpack-cli": "^3.3.12",
+    "webpack-dev-server": "^3.11.0"
   },
   "scripts": {
+    "build": "npx webpack",
     "lint": "prettier -c *.js",
     "lint:fix": "prettier --write *.js",
-    "start": "static-server",
+    "start": "webpack-dev-server",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
   "private": true
