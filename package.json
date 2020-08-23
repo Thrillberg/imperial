@@ -1,8 +1,14 @@
 {
   "devDependencies": {
+    "@babel/core": "^7.11.4",
+    "@babel/preset-env": "^7.11.0",
+    "babel-jest": "^26.3.0",
+    "babel-loader": "^8.1.0",
+    "css-loader": "^4.2.1",
     "jest": "^26.0.1",
     "prettier": "^2.0.5",
     "static-server": "^2.2.1",
+    "style-loader": "^1.2.1",
     "webpack": "^4.44.1",
     "webpack-cli": "^3.3.12"
   },
@@ -12,9 +18,5 @@
     "start": "static-server",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
-  "private": true,
-  "type": "module",
-  "dependencies": {
-    "lodash": "^4.17.20"
-  }
+  "private": true
 }
