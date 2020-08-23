@@ -1,5 +1,5 @@
-import Imperial from "./imperial.js";
-import log from "./schnelleinsteigLog.js";
+import Imperial from "../imperial.js";
+import log from "../schnelleinsteigLog.js";
 
 Vue.component("player", {
   props: ["name", "cash", "bonds", "current_player"],
@@ -42,19 +42,20 @@ Vue.component("action", {
   template: `<button v-on:click="dispatch(action)">{{ text }}</button>`,
 });
 
-var app = new Vue({
-  el: "#app",
-  data: {
-    game: {},
-    gameStarted: false,
-    rondel: "",
+export default Vue.component("app", {
+  data() {
+    return {
+      game: {},
+      gameStarted: false,
+      rondel: "",
+    };
   },
   mounted() {
-    fetch("rondel.svg")
-      .then((response) => response.text())
-      .then((text) => {
-        this.rondel = text;
-      });
+    // fetch("rondel.svg")
+    //   .then((response) => response.text())
+    //   .then((text) => {
+    //     this.rondel = text;
+    //   });
   },
   methods: {
     startGame: function () {
@@ -119,4 +120,40 @@ var app = new Vue({
       }
     },
   },
+  template: `
+  <div v-if="gameStarted">
+    <ul class="players">
+      <player
+        v-for="player in game.players"
+        v-bind:name="player.name"
+        v-bind:cash="player.cash"
+        v-bind:bonds="player.bonds"
+        v-bind:current_player="game.currentPlayerName"
+        v-bind:key="player.name"
+      ></player>
+    </ul>
+    <div class="rondel" v-html="rondel"></div>
+    <current-turn
+      v-bind:type="game.log[game.log.length - 1].type"
+      v-bind:payload="game.log[game.log.length - 1].payload"
+    ></current-turn>
+    <div>
+      It is {{ game.currentNation.value }}'s turn
+    </div>
+    <div class="buttons">
+      <action
+        v-for="action in game.availableActions"
+        v-bind:key="JSON.stringify(action)"
+        v-bind:action="action"
+        v-bind:text="actionToText(action)"
+        v-bind:dispatch="tickWithAction"
+      ></action>
+    </div>
+  </div>
+  <div v-else class="buttons">
+    <button v-on:click="startGame">
+      Start Game
+    </button>
+  </div>
+`,
 });

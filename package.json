@@ -12,5 +12,9 @@
     "start": "static-server",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
-  "type": "module"
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "lodash": "^4.17.20"
+  }
 }
