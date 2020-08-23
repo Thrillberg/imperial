@@ -1,5 +1,6 @@
 import Imperial from "../imperial.js";
 import log from "../schnelleinsteigLog.js";
+import Rondel from "./rondel.svg";
 
 Vue.component("player", {
   props: ["name", "cash", "bonds", "current_player"],
@@ -42,6 +43,8 @@ Vue.component("action", {
   template: `<button v-on:click="dispatch(action)">{{ text }}</button>`,
 });
 
+Vue.component("rondel", Rondel);
+
 export default Vue.component("app", {
   data() {
     return {
@@ -49,13 +52,6 @@ export default Vue.component("app", {
       gameStarted: false,
       rondel: "",
     };
-  },
-  mounted() {
-    // fetch("rondel.svg")
-    //   .then((response) => response.text())
-    //   .then((text) => {
-    //     this.rondel = text;
-    //   });
   },
   methods: {
     startGame: function () {
@@ -132,7 +128,9 @@ export default Vue.component("app", {
         v-bind:key="player.name"
       ></player>
     </ul>
-    <div class="rondel" v-html="rondel"></div>
+    <div class="rondel">
+      <rondel />
+    </div>
     <current-turn
       v-bind:type="game.log[game.log.length - 1].type"
       v-bind:payload="game.log[game.log.length - 1].payload"

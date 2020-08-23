@@ -2,9 +2,10 @@
 
 # Imperial
 
-This is an implementation of the board game, [Imperial](https://en.wikipedia.org/wiki/Imperial_(board_game)).
+This is an implementation of the board game, [Imperial](<https://en.wikipedia.org/wiki/Imperial_(board_game)>).
 
 ## To run locally:
+
 ```
 npm install
 npm start
@@ -13,9 +14,16 @@ npm start
 Navigate to `http://localhost:9080` in a web browser.
 
 ## To run tests:
+
 ```
 npm install
 npm test
+```
+
+## To build:
+
+```
+npm run build
 ```
 
 ## What the heck is a _Schnelleinsteig_??
