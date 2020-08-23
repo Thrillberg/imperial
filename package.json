@@ -9,6 +9,8 @@
     "prettier": "^2.0.5",
     "static-server": "^2.2.1",
     "style-loader": "^1.2.1",
+    "vue-svg-loader": "^0.16.0",
+    "vue-template-compiler": "^2.6.12",
     "webpack": "^4.44.1",
     "webpack-cli": "^3.3.12"
   },
