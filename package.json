@@ -16,10 +16,10 @@
     "webpack-merge": "^5.1.2"
   },
   "scripts": {
-    "build": "npx webpack",
+    "build": "webpack --config webpack.prod.js",
     "lint": "prettier -c *.js",
     "lint:fix": "prettier --write *.js",
-    "start": "webpack-dev-server",
+    "start": "webpack-dev-server --config webpack.dev.js",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
   "private": true
