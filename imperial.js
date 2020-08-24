@@ -175,9 +175,6 @@ export default class Imperial {
 
         // Update province flag
         this.provinces.get(destination).flag = this.currentNation;
-        // TODO: Do we really want to store (and need to update)
-        // flag count like this?
-        this.nations.get(this.currentNation).flagCount += 1;
 
         if (this.unitsToMove.length > 0) {
           const provincesWithFleets = new Map();
@@ -376,17 +373,39 @@ export default class Imperial {
           case "taxation":
             const nationName = action.payload.nation;
             const nation = this.nations.get(nationName);
-            const taxes = this.factoryCount(nationName) * 2 + nation.flagCount;
-            nation.treasury += taxes - this.unitCount(nationName);
-
-            this.players[this.nations.get(nationName).controller].cash +=
-              taxes - nation.taxChartPosition;
-            nation.taxChartPosition = taxes;
-            if (taxes === 6) {
-              nation.powerPoints += 1;
-            } else {
-              nation.powerPoints += 3;
+            // 1. Tax revenue / success bonus
+            let taxes =
+              this.unoccupiedFactoryCount(nationName) * 2 +
+              this.flagCount(nationName);
+            // Taxes cannot exceed 20m
+            if (taxes > 20) taxes = 20;
+            let excessTaxes = taxes - nation.taxChartPosition;
+            // Players can never lose money here and
+            // nations cannot descend in taxChartPosition
+            if (excessTaxes < 0) {
+              excessTaxes = 0;
             }
+            // Player receives full excess taxes
+            this.players[this.currentPlayerName].cash += excessTaxes;
+            // Nation's taxChartPosition increases to match taxes
+            nation.taxChartPosition += excessTaxes;
+            // The tax chart maxes out at 15
+            if (nation.taxChartPosition > 15) nation.taxChartPosition = 15;
+            // 2. Collecting money
+            let payment = taxes - this.unitCount(nationName);
+            // Nations cannot be paid less than 0m
+            if (payment < 0) payment = 0;
+            nation.treasury += payment;
+            // 3. Adding power points
+            let powerPoints = taxes - 5;
+            if (powerPoints < 0) powerPoints = 0;
+            nation.powerPoints += powerPoints;
+            if (nation.powerPoints + taxes >= 25) {
+              nation.powerPoints = 25;
+              this.tick(Action.endGame());
+              return;
+            }
+
             this.availableActions = new Set(
               this.rondelActions(this.nextNation(this.currentNation))
             );
@@ -481,6 +500,16 @@ export default class Imperial {
             return;
         }
     }
+  }
+
+  flagCount(nation) {
+    let count = 0;
+    for (const [_, { flag }] of this.provinces) {
+      if (flag === nation) {
+        count++;
+      }
+    }
+    return count;
   }
 
   endOfInvestorTurn() {
@@ -716,10 +745,18 @@ export default class Imperial {
     );
   }
 
-  factoryCount(nation) {
+  unoccupiedFactoryCount(nation) {
     let count = 0;
     for (const province of this.board.byNation.get(nation)) {
-      if (this.provinces.get(province).factory) {
+      let provinceIsUnoccupied = true;
+      for (const [occupyingNation, _] of this.units) {
+        if (occupyingNation !== nation) {
+          if (this.units.get(occupyingNation).get(province).armies > 0) {
+            provinceIsUnoccupied = false;
+          }
+        }
+      }
+      if (this.provinces.get(province).factory && provinceIsUnoccupied) {
         count++;
       }
     }
