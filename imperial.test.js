@@ -1398,6 +1398,140 @@ describe("imperial", () => {
       });
     });
 
+    describe("fight", () => {
+      const newGame = () => {
+        const board = new GameBoard({
+          nodes: [
+            { name: "a", nation: null },
+            { name: "b", nation: null, isOcean: true },
+          ],
+          edges: [],
+        });
+
+        const game = new Imperial(board);
+        game.tick(
+          Action.initialize({
+            players: [
+              { id: "player1", nation: Nation.AH },
+              { id: "player2", nation: Nation.IT },
+            ],
+          })
+        );
+        return game;
+      };
+
+      describe("nations have the same number of units", () => {
+        test("flag remains for the incumbent", () => {
+          const game = newGame();
+          game.units.get(Nation.AH).get("a").armies++;
+          game.units.get(Nation.IT).get("a").armies++;
+
+          game.tick(
+            Action.fight({
+              province: "a",
+              incumbent: Nation.AH,
+              challenger: Nation.IT,
+            })
+          );
+
+          expect(game.provinces.get("a").flag).toEqual(Nation.AH);
+        });
+
+        test("both nations lose an army", () => {
+          const game = newGame();
+          game.units.get(Nation.AH).get("a").armies++;
+          game.units.get(Nation.IT).get("a").armies++;
+
+          game.tick(
+            Action.fight({
+              province: "a",
+              incumbent: Nation.AH,
+              challenger: Nation.IT,
+            })
+          );
+
+          expect(game.units.get(Nation.AH).get("a")).toEqual({
+            armies: 0,
+            fleets: 0,
+          });
+          expect(game.units.get(Nation.IT).get("a")).toEqual({
+            armies: 0,
+            fleets: 0,
+          });
+        });
+
+        test("both nations lose a fleet", () => {
+          const game = newGame();
+          game.units.get(Nation.AH).get("b").fleets++;
+          game.units.get(Nation.IT).get("b").fleets++;
+
+          game.tick(
+            Action.fight({
+              province: "b",
+              incumbent: Nation.AH,
+              challenger: Nation.IT,
+            })
+          );
+
+          expect(game.units.get(Nation.AH).get("b")).toEqual({
+            armies: 0,
+            fleets: 0,
+          });
+          expect(game.units.get(Nation.IT).get("b")).toEqual({
+            armies: 0,
+            fleets: 0,
+          });
+        });
+      });
+
+      describe("one nation has more armies than another", () => {
+        test("flag changes to the challenger", () => {
+          const game = newGame();
+          game.units.get(Nation.AH).get("a").armies++;
+          game.units.get(Nation.IT).get("a").armies++;
+          game.units.get(Nation.IT).get("a").armies++;
+
+          game.tick(
+            Action.fight({
+              province: "a",
+              incumbent: Nation.AH,
+              challenger: Nation.IT,
+            })
+          );
+
+          expect(game.provinces.get("a").flag).toEqual(Nation.IT);
+        });
+
+        test("both nations lose one army but another remains", () => {
+          const game = newGame();
+          game.units.get(Nation.AH).get("a").armies++;
+          game.units.get(Nation.AH).get("a").armies++;
+          game.units.get(Nation.IT).get("a").armies++;
+
+          game.tick(
+            Action.fight({
+              province: "a",
+              incumbent: Nation.AH,
+              challenger: Nation.IT,
+            })
+          );
+
+          expect(game.units.get(Nation.AH).get("a")).toEqual({
+            armies: 1,
+            fleets: 0,
+          });
+          expect(game.units.get(Nation.IT).get("a")).toEqual({
+            armies: 0,
+            fleets: 0,
+          });
+        });
+      });
+
+      describe("a coastal province with a mixture of armies and fleets", () => {
+        test.todo("it works");
+      });
+    });
+
     describe("currentPlayerName on new turn", () => {
       const newGame = () => {
         const board = new GameBoard({
