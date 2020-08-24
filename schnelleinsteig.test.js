@@ -1192,19 +1192,11 @@ describe("Schnelleinsteig", () => {
     });
 
     describe("5. GE does taxation", () => {
-      const log = mainLog.slice(0, 52);
+      const log = mainLog.slice(0, 53);
       const game = Imperial.fromLog(log);
       game.tick(
         Action.rondel({ nation: Nation.GE, cost: 0, slot: "taxation" })
       );
-
-      xtest("GE moves to the taxation slot", () => {
-        const expected = rondelSlots.map((slot) =>
-          Action.rondel({ nation: Nation.RU, cost: 0, slot })
-        );
-
-        expect(game.availableActions).toEqual(new Set(expected));
-      });
 
       describe("consequences", () => {
         test("GE has 14 million in its treasury", () => {
@@ -1252,19 +1244,11 @@ describe("Schnelleinsteig", () => {
 
   describe("fourth round", () => {
     describe("1. AH does taxation", () => {
-      const log = mainLog.slice(0, 53);
+      const log = mainLog.slice(0, 55);
       const game = Imperial.fromLog(log);
       game.tick(
         Action.rondel({ nation: Nation.AH, cost: 0, slot: "taxation" })
       );
-
-      xtest("AH moves to the taxation slot", () => {
-        const expected = rondelSlots.map((slot) =>
-          Action.rondel({ nation: Nation.IT, cost: 0, slot })
-        );
-
-        expect(game.availableActions).toEqual(new Set(expected));
-      });
 
       describe("consequences", () => {
         test("AH has 4 million in its treasury", () => {

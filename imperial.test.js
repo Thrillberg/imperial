@@ -1108,6 +1108,246 @@ describe("imperial", () => {
           });
         });
       });
+
+      describe("taxation", () => {
+        const newGame = () => {
+          const board = new GameBoard({
+            nodes: [
+              { name: "a", nation: Nation.AH },
+              { name: "b", nation: Nation.AH },
+              { name: "c", nation: null },
+              { name: "d", nation: null },
+              { name: "e", nation: Nation.AH },
+              { name: "f", nation: Nation.AH },
+              { name: "g", nation: Nation.AH },
+              { name: "h", nation: null },
+              { name: "i", nation: null },
+              { name: "j", nation: null },
+              { name: "k", nation: null },
+              { name: "l", nation: null },
+              { name: "m", nation: null },
+              { name: "n", nation: null },
+              { name: "o", nation: null },
+              { name: "p", nation: null },
+            ],
+            edges: [],
+          });
+
+          const game = new Imperial(board);
+          game.tick(
+            Action.initialize({
+              players: [
+                { id: "player1", nation: Nation.AH },
+                { id: "player2", nation: Nation.IT },
+              ],
+            })
+          );
+          return game;
+        };
+
+        describe("tax revenue / success bonus & collecting money", () => {
+          test("taxes are paid out even when there is no increase on tax chart", () => {
+            const game = newGame();
+            // Set taxChartPosition to lowest value, 5
+            game.nations.get(Nation.AH).taxChartPosition = 5;
+            // Place two AH factories on the board
+            game.provinces.get("a").factory = "armaments";
+            game.provinces.get("b").factory = "armaments";
+            // Add a flag for AH
+            game.provinces.get("c").flag = Nation.AH;
+            // Arbitrarily give AH 5 treasury; we want this to increase by 5
+            game.nations.get(Nation.AH).treasury = 5;
+
+            game.tick(
+              Action.rondel({ cost: 0, nation: Nation.AH, slot: "taxation" })
+            );
+
+            expect(game.nations.get(Nation.AH).treasury).toEqual(10);
+          });
+
+          test("payment comes when advancement on tax chart happens", () => {
+            const game = newGame();
+            // Set taxChartPosition to lowest value, 5
+            game.nations.get(Nation.AH).taxChartPosition = 5;
+            // Place two AH factories on the board
+            game.provinces.get("a").factory = "armaments";
+            game.provinces.get("b").factory = "armaments";
+            // Add two flags for AH
+            game.provinces.get("c").flag = Nation.AH;
+            game.provinces.get("d").flag = Nation.AH;
+            // Arbitrarily give AH 5 treasury; we want this to increase by 6
+            game.nations.get(Nation.AH).treasury = 5;
+
+            game.tick(
+              Action.rondel({ cost: 0, nation: Nation.AH, slot: "taxation" })
+            );
+
+            expect(game.nations.get(Nation.AH).treasury).toEqual(11);
+            expect(game.nations.get(Nation.AH).taxChartPosition).toEqual(6);
+          });
+
+          test("occupied factories generate no taxes", () => {
+            const game = newGame();
+            // Set taxChartPosition to lowest value, 5
+            game.nations.get(Nation.AH).taxChartPosition = 5;
+            // Place three AH factories on the board
+            game.provinces.get("a").factory = "armaments";
+            game.provinces.get("b").factory = "armaments";
+            game.provinces.get("e").factory = "armaments";
+            // Add a flag for AH
+            game.provinces.get("c").flag = Nation.AH;
+            // Italy is occupying "a"!
+            game.units.get(Nation.IT).get("a").armies = 1;
+            // Arbitrarily give AH 5 treasury; we want this to increase by 5
+            game.nations.get(Nation.AH).treasury = 5;
+
+            game.tick(
+              Action.rondel({ cost: 0, nation: Nation.AH, slot: "taxation" })
+            );
+
+            expect(game.nations.get(Nation.AH).treasury).toEqual(10);
+          });
+
+          test("tax revenue cannot exceed 20 and taxChartPosition cannot exceed 15", () => {
+            const game = newGame();
+            // Set taxChartPosition to lowest value, 5
+            game.nations.get(Nation.AH).taxChartPosition = 5;
+            // Place five AH factories on the board
+            game.provinces.get("a").factory = "armaments";
+            game.provinces.get("b").factory = "armaments";
+            game.provinces.get("e").factory = "armaments";
+            game.provinces.get("f").factory = "armaments";
+            game.provinces.get("g").factory = "armaments";
+            // Add eleven flags for AH
+            game.provinces.get("c").flag = Nation.AH;
+            game.provinces.get("d").flag = Nation.AH;
+            game.provinces.get("h").flag = Nation.AH;
+            game.provinces.get("i").flag = Nation.AH;
+            game.provinces.get("j").flag = Nation.AH;
+            game.provinces.get("k").flag = Nation.AH;
+            game.provinces.get("l").flag = Nation.AH;
+            game.provinces.get("m").flag = Nation.AH;
+            game.provinces.get("n").flag = Nation.AH;
+            game.provinces.get("o").flag = Nation.AH;
+            game.provinces.get("p").flag = Nation.AH;
+            // Arbitrarily give AH 5 treasury; we want this to increase by 20, not 21
+            game.nations.get(Nation.AH).treasury = 5;
+
+            game.tick(
+              Action.rondel({ cost: 0, nation: Nation.AH, slot: "taxation" })
+            );
+
+            expect(game.nations.get(Nation.AH).treasury).toEqual(25);
+            expect(game.nations.get(Nation.AH).taxChartPosition).toEqual(15);
+          });
+
+          test("nation's taxChartPosition cannot fall", () => {
+            const game = newGame();
+            // Set taxChartPosition to lowest value, 5
+            game.nations.get(Nation.AH).taxChartPosition = 5;
+            // Place one AH factory on the board
+            game.provinces.get("a").factory = "armaments";
+            // Arbitrarily give AH 5 treasury; we want this to increase by 2
+            game.nations.get(Nation.AH).treasury = 5;
+
+            game.tick(
+              Action.rondel({ cost: 0, nation: Nation.AH, slot: "taxation" })
+            );
+
+            expect(game.nations.get(Nation.AH).treasury).toEqual(7);
+            expect(game.nations.get(Nation.AH).taxChartPosition).toEqual(5);
+          });
+
+          test("payment to nation is reduced if they control units", () => {
+            const game = newGame();
+            // Set taxChartPosition to lowest value, 5
+            game.nations.get(Nation.AH).taxChartPosition = 5;
+            // Place two AH factories on the board
+            game.provinces.get("a").factory = "armaments";
+            game.provinces.get("b").factory = "armaments";
+            // Add two flags for AH
+            game.provinces.get("c").flag = Nation.AH;
+            game.provinces.get("d").flag = Nation.AH;
+            // Arbitrarily give AH 5 treasury; we want this to increase to 10
+            game.nations.get(Nation.AH).treasury = 5;
+            // AH controls one army
+            game.units.get(Nation.AH).get("a").armies = 1;
+
+            game.tick(
+              Action.rondel({ cost: 0, nation: Nation.AH, slot: "taxation" })
+            );
+
+            expect(game.nations.get(Nation.AH).treasury).toEqual(10);
+            expect(game.nations.get(Nation.AH).taxChartPosition).toEqual(6);
+          });
+
+          test("nations cannot be paid less than 0 if they control many units", () => {
+            const game = newGame();
+            // Set taxChartPosition to lowest value, 5
+            game.nations.get(Nation.AH).taxChartPosition = 5;
+            // Arbitrarily give AH 5 treasury; we want this to increase by 1
+            game.nations.get(Nation.AH).treasury = 5;
+            // AH controls one army
+            game.units.get(Nation.AH).get("a").armies = 1;
+
+            game.tick(
+              Action.rondel({ cost: 0, nation: Nation.AH, slot: "taxation" })
+            );
+
+            expect(game.nations.get(Nation.AH).treasury).toEqual(5);
+          });
+        });
+
+        describe("adding power points", () => {
+          test("nation earns no power points", () => {
+            const game = newGame();
+            // Arbitrarily give AH 3 power points
+            game.nations.get(Nation.AH).powerPoints = 3;
+
+            game.tick(
+              Action.rondel({ cost: 0, nation: Nation.AH, slot: "taxation" })
+            );
+
+            expect(game.nations.get(Nation.AH).powerPoints).toEqual(3);
+          });
+
+          test("nation earns one power point", () => {
+            const game = newGame();
+            // Arbitrarily give AH 3 power points
+            game.nations.get(Nation.AH).powerPoints = 3;
+            // Give AH factories and flags for 6 taxes
+            game.provinces.get("a").factory = "armaments";
+            game.provinces.get("b").factory = "armaments";
+            game.provinces.get("c").flag = Nation.AH;
+            game.provinces.get("d").flag = Nation.AH;
+
+            game.tick(
+              Action.rondel({ cost: 0, nation: Nation.AH, slot: "taxation" })
+            );
+
+            expect(game.nations.get(Nation.AH).powerPoints).toEqual(4);
+          });
+
+          test("achieving 25 power points (or more) triggers game end", () => {
+            const game = newGame();
+            // Arbitrarily give AH 3 power points
+            game.nations.get(Nation.AH).powerPoints = 24;
+            // Give AH stuff to put AH's power points over 25
+            game.provinces.get("a").factory = "armaments";
+            game.provinces.get("b").factory = "armaments";
+            game.provinces.get("c").flag = Nation.AH;
+            game.provinces.get("d").flag = Nation.AH;
+            game.provinces.get("e").flag = Nation.AH;
+
+            game.tick(
+              Action.rondel({ cost: 0, nation: Nation.AH, slot: "taxation" })
+            );
+
+            expect(game.nations.get(Nation.AH).powerPoints).toEqual(25);
+            expect(game.log[game.log.length - 1]).toEqual(Action.endGame());
+          });
+        });
+      });
     });
 
     describe("maneuver", () => {
