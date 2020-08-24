@@ -49,10 +49,31 @@ export default class Imperial {
         this.availableActions = new Set(this.rondelActions(this.currentNation));
         return;
       case "fight":
-        this.units.get(Nation.FR).get(action.payload.province).fleets -= 1;
-        this.units.get(Nation.IT).get(action.payload.province).fleets -= 1;
-        this.provinces.get(action.payload.province).flag =
-          action.payload.incumbent;
+        let units = "armies";
+        if (this.board.graph.get(action.payload.province).isOcean) {
+          units = "fleets";
+        }
+        this.units.get(action.payload.incumbent).get(action.payload.province)[
+          units
+        ] -= 1;
+        this.units.get(action.payload.challenger).get(action.payload.province)[
+          units
+        ] -= 1;
+        if (
+          this.units.get(action.payload.incumbent).get(action.payload.province)[
+            units
+          ] >=
+          this.units
+            .get(action.payload.challenger)
+            .get(action.payload.province)[units]
+        ) {
+          this.provinces.get(action.payload.province).flag =
+            action.payload.incumbent;
+        } else {
+          this.provinces.get(action.payload.province).flag =
+            action.payload.challenger;
+        }
+
         return;
       case "buildFactory":
         this.buildFactory(action);
