@@ -82,6 +82,7 @@ export default [
     province: "westernmediterraneansea",
     incumbent: Nation.IT,
     challenger: Nation.FR,
+    targetType: null,
   }),
   Action.maneuver({
     origin: "bordeaux",

@@ -1058,6 +1058,7 @@ describe("Schnelleinsteig", () => {
             province: "westernmediterraneansea",
             incumbent: Nation.IT,
             challenger: Nation.FR,
+            targetType: null,
           }),
         ];
 
@@ -1070,6 +1071,7 @@ describe("Schnelleinsteig", () => {
             province: "westernmediterraneansea",
             incumbent: Nation.IT,
             challenger: Nation.FR,
+            targetType: null,
           })
         );
         const westernMed = game.provinces.get("westernmediterraneansea");

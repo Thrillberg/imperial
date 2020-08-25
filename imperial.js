@@ -49,27 +49,34 @@ export default class Imperial {
         this.availableActions = new Set(this.rondelActions(this.currentNation));
         return;
       case "fight":
-        let units = "armies";
-        if (this.board.graph.get(action.payload.province).isOcean) {
-          units = "fleets";
-        }
-        this.units.get(action.payload.incumbent).get(action.payload.province)[
-          units
-        ] -= 1;
-        this.units.get(action.payload.challenger).get(action.payload.province)[
-          units
-        ] -= 1;
-        if (
-          this.units.get(action.payload.incumbent).get(action.payload.province)[
-            units
-          ] >=
-          this.units
-            .get(action.payload.challenger)
-            .get(action.payload.province)[units]
-        ) {
-          this.provinces.get(action.payload.province).flag =
-            action.payload.incumbent;
+        const incumbentUnitsAtProvince = this.units
+          .get(action.payload.incumbent)
+          .get(action.payload.province);
+        const challengerUnitsAtProvince = this.units
+          .get(action.payload.challenger)
+          .get(action.payload.province);
+
+        // Remove units at the fight
+        if (incumbentUnitsAtProvince.fleets > 0) {
+          if (action.payload.targetType === "army") {
+            incumbentUnitsAtProvince.armies -= 1;
+            challengerUnitsAtProvince.armies -= 1;
+          } else {
+            incumbentUnitsAtProvince.fleets -= 1;
+            challengerUnitsAtProvince.fleets -= 1;
+          }
         } else {
+          incumbentUnitsAtProvince.armies -= 1;
+          challengerUnitsAtProvince.armies -= 1;
+        }
+
+        const totalIncumbentUnitsAtProvince =
+          incumbentUnitsAtProvince.armies + incumbentUnitsAtProvince.fleets;
+        const totalChallengerUnitsAtProvince =
+          challengerUnitsAtProvince.armies + challengerUnitsAtProvince.fleets;
+
+        // Change flags, if challenger wins
+        if (totalChallengerUnitsAtProvince > totalIncumbentUnitsAtProvince) {
           this.provinces.get(action.payload.province).flag =
             action.payload.challenger;
         }
@@ -121,12 +128,6 @@ export default class Imperial {
           ? "fleet"
           : "army";
 
-        // Update province flag
-        this.provinces.get(destination).flag = this.currentNation;
-        // TODO: Do we really want to store (and need to update)
-        // flag count like this?
-        this.nations.get(this.currentNation).flagCount += 1;
-
         // Execute the unit movement
         if (unitType === "fleet") {
           this.units.get(this.currentNation).get(origin).fleets--;
@@ -165,11 +166,18 @@ export default class Imperial {
                 province: destination,
                 incumbent: nation,
                 challenger: this.currentNation,
+                targetType: null,
               }),
             ]);
             return;
           }
         }
+
+        // Update province flag
+        this.provinces.get(destination).flag = this.currentNation;
+        // TODO: Do we really want to store (and need to update)
+        // flag count like this?
+        this.nations.get(this.currentNation).flagCount += 1;
 
         if (this.unitsToMove.length > 0) {
           const provincesWithFleets = new Map();
@@ -234,6 +242,7 @@ export default class Imperial {
             this.rondelActions(this.currentNation)
           );
         }
+
         return;
       case "rondel":
         this.currentNation = action.payload.nation;
