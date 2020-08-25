@@ -54,7 +54,12 @@ export default {
   buildFactory: makeAction("buildFactory", ["province"]),
   coexist: makeAction("coexist", ["province", "incumbent", "challenger"]),
   endManeuver: makeAction("endManeuver", []),
-  fight: makeAction("fight", ["province", "incumbent", "challenger"]),
+  fight: makeAction("fight", [
+    "province",
+    "incumbent",
+    "challenger",
+    "targetType",
+  ]),
   import: makeAction("import", ["placements"]), // placement : { province: string, type: "army"|"fleet" }
   maneuver: makeAction("maneuver", ["origin", "destination"]),
   production: makeAction("production", ["province"]),

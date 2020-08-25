@@ -1192,6 +1192,7 @@ describe("imperial", () => {
                 province: "b",
                 incumbent: Nation.IT,
                 challenger: Nation.AH,
+                targetType: null,
               }),
             ])
           );
@@ -1272,6 +1273,7 @@ describe("imperial", () => {
                 province: "d",
                 incumbent: Nation.IT,
                 challenger: Nation.AH,
+                targetType: null,
               }),
             ])
           );
@@ -1423,6 +1425,7 @@ describe("imperial", () => {
       describe("nations have the same number of units", () => {
         test("flag remains for the incumbent", () => {
           const game = newGame();
+          game.provinces.get("a").flag = Nation.AH;
           game.units.get(Nation.AH).get("a").armies++;
           game.units.get(Nation.IT).get("a").armies++;
 
@@ -1431,6 +1434,7 @@ describe("imperial", () => {
               province: "a",
               incumbent: Nation.AH,
               challenger: Nation.IT,
+              targetType: null,
             })
           );
 
@@ -1447,6 +1451,7 @@ describe("imperial", () => {
               province: "a",
               incumbent: Nation.AH,
               challenger: Nation.IT,
+              targetType: null,
             })
           );
 
@@ -1470,6 +1475,7 @@ describe("imperial", () => {
               province: "b",
               incumbent: Nation.AH,
               challenger: Nation.IT,
+              targetType: null,
             })
           );
 
@@ -1496,6 +1502,7 @@ describe("imperial", () => {
               province: "a",
               incumbent: Nation.AH,
               challenger: Nation.IT,
+              targetType: null,
             })
           );
 
@@ -1513,6 +1520,7 @@ describe("imperial", () => {
               province: "a",
               incumbent: Nation.AH,
               challenger: Nation.IT,
+              targetType: null,
             })
           );
 
@@ -1528,7 +1536,55 @@ describe("imperial", () => {
       });
 
       describe("a coastal province with a mixture of armies and fleets", () => {
-        test.todo("it works");
+        test("challenger chose to attack the fleet", () => {
+          const game = newGame();
+          game.units.get(Nation.AH).get("a").armies++;
+          game.units.get(Nation.AH).get("a").fleets++;
+          game.units.get(Nation.IT).get("a").armies++;
+
+          game.tick(
+            Action.fight({
+              province: "a",
+              incumbent: Nation.AH,
+              challenger: Nation.IT,
+              targetType: "fleet",
+            })
+          );
+
+          expect(game.units.get(Nation.AH).get("a")).toEqual({
+            armies: 1,
+            fleets: 0,
+          });
+          expect(game.units.get(Nation.IT).get("b")).toEqual({
+            armies: 0,
+            fleets: 0,
+          });
+        });
+
+        test("challenger chose to attack the army", () => {
+          const game = newGame();
+          game.units.get(Nation.AH).get("a").armies++;
+          game.units.get(Nation.AH).get("a").fleets++;
+          game.units.get(Nation.IT).get("a").armies++;
+
+          game.tick(
+            Action.fight({
+              province: "a",
+              incumbent: Nation.AH,
+              challenger: Nation.IT,
+              targetType: "army",
+            })
+          );
+
+          expect(game.units.get(Nation.AH).get("a")).toEqual({
+            armies: 0,
+            fleets: 1,
+          });
+          expect(game.units.get(Nation.IT).get("b")).toEqual({
+            armies: 0,
+            fleets: 0,
+          });
+        });
       });
     });
 
