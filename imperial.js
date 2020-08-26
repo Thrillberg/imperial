@@ -494,9 +494,27 @@ export default class Imperial {
             this.availableActions = destinations;
             return;
           case "factory":
-            this.availableActions = new Set(
-              this.buildFactoryAction(action.payload.nation)
-            );
+            // If nation cannot afford to build a factory
+            if (this.nations.get(this.currentNation).treasury < 5) {
+              this.handleAdvancePlayer();
+              return;
+            }
+
+            this.availableActions = new Set();
+            for (const province of this.board.byNation.get(
+              action.payload.nation
+            )) {
+              if (!this.provinces.get(province).factory) {
+                let occupied = false;
+                for (const [nation, _] of this.nations) {
+                  if (this.units.get(nation).get(province).armies > 0)
+                    occupied = true;
+                }
+                if (occupied === false)
+                  this.availableActions.add(Action.buildFactory({ province }));
+              }
+            }
+
             return;
         }
     }
@@ -728,21 +746,6 @@ export default class Imperial {
       out.add(Action.import({ placements: [{ province, unit: "army" }] }));
     }
     return out;
-  }
-
-  buildFactoryAction(nation) {
-    return new Set(
-      nation
-        .when({
-          AH: () => ["trieste", "prague", "lemburg"],
-          IT: () => ["genoa", "venice", "florence"],
-          FR: () => ["brest", "dijon", "marseille"],
-          GB: () => ["dublin", "sheffield", "edinburgh"],
-          GE: () => ["danzig", "munich", "cologne"],
-          RU: () => ["kiev", "st. petersburg", "warsaw"],
-        })
-        .map((province) => Action.buildFactory({ province }))
-    );
   }
 
   unoccupiedFactoryCount(nation) {

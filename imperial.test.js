@@ -339,7 +339,7 @@ describe("imperial", () => {
       describe("slots that cost money", () => {
         const newGame = () => {
           const board = new GameBoard({
-            nodes: [],
+            nodes: [{ name: "a", nation: Nation.AH }],
             edges: [],
           });
 
@@ -1346,6 +1346,81 @@ describe("imperial", () => {
             expect(game.nations.get(Nation.AH).powerPoints).toEqual(25);
             expect(game.log[game.log.length - 1]).toEqual(Action.endGame());
           });
+        });
+      });
+
+      describe("factory", () => {
+        const newGame = () => {
+          const board = new GameBoard({
+            nodes: [
+              { name: "a", nation: Nation.AH },
+              { name: "b", nation: Nation.AH },
+            ],
+            edges: [],
+          });
+
+          const game = new Imperial(board);
+          game.tick(
+            Action.initialize({
+              players: [
+                { id: "player1", nation: Nation.AH },
+                { id: "player2", nation: Nation.IT },
+              ],
+            })
+          );
+          return game;
+        };
+
+        test("nation may choose where to build the factory", () => {
+          const game = newGame();
+
+          game.tick(
+            Action.rondel({ slot: "factory", cost: 0, nation: Nation.AH })
+          );
+
+          expect(game.availableActions).toEqual(
+            new Set([
+              Action.buildFactory({ province: "a" }),
+              Action.buildFactory({ province: "b" }),
+            ])
+          );
+        });
+
+        test("nation may not build a factory where one is already built", () => {
+          const game = newGame();
+          game.provinces.get("a").factory = "armaments";
+
+          game.tick(
+            Action.rondel({ slot: "factory", cost: 0, nation: Nation.AH })
+          );
+
+          expect(game.availableActions).toEqual(
+            new Set([Action.buildFactory({ province: "b" })])
+          );
+        });
+
+        test("nation may not build a factory where a foreign unit is present", () => {
+          const game = newGame();
+          game.units.get(Nation.IT).get("a").armies = 1;
+
+          game.tick(
+            Action.rondel({ slot: "factory", cost: 0, nation: Nation.AH })
+          );
+
+          expect(game.availableActions).toEqual(
+            new Set([Action.buildFactory({ province: "b" })])
+          );
+        });
+
+        test("nation may not build a factory if the nation has less than 5m treasury", () => {
+          const game = newGame();
+          game.nations.get(Nation.AH).treasury = 4;
+
+          game.tick(
+            Action.rondel({ slot: "factory", cost: 0, nation: Nation.AH })
+          );
+
+          expect(game.currentNation).toEqual(Nation.IT);
         });
       });
     });

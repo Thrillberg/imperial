@@ -1465,13 +1465,14 @@ describe("Schnelleinsteig", () => {
             Action.buildFactory({ province })
           )
         );
+
         expect(game.availableActions).toEqual(expected);
       });
 
       describe("GE builds a factory in Cologne", () => {
-        game.tick(Action.buildFactory({ province: "cologne" }));
-
         test("Cologne has a factory", () => {
+          game.tick(Action.buildFactory({ province: "cologne" }));
+
           const factory = game.provinces.get("cologne").factory;
 
           expect(factory).toEqual("armaments");
