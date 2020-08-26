@@ -123,28 +123,6 @@ describe("Schnelleinsteig", () => {
 
   describe("first round", () => {
     describe("1. AH imports", () => {
-      xtest("AH moved to the import slot", () => {
-        const log = mainLog.slice(0, 14);
-        log.push(Action.rondel({ nation: Nation.AH, cost: 0, slot: "import" }));
-        const game = Imperial.fromLog(log);
-        const expectedActions = [
-          "vienna",
-          "budapest",
-          "prague",
-          "lemberg",
-          "trieste",
-        ].map((province) =>
-          Action.import({ placements: [{ province, unit: "army" }] })
-        );
-        expectedActions.push(
-          Action.import({
-            placements: [{ province: "trieste", unit: "fleet" }],
-          })
-        );
-
-        expect(game.availableActions).toEqual(new Set(expectedActions));
-      });
-
       test("AH's treasury is empty and Trieste & Lemberg have AH armies", () => {
         const log = mainLog.slice(0, 15);
         log.push(
@@ -167,7 +145,7 @@ describe("Schnelleinsteig", () => {
         expect(lembergArmyCount).toEqual(1);
       });
 
-      xtest("it is now IT's turn", () => {
+      test("it is now IT's turn", () => {
         const log = mainLog.slice(0, 15);
         log.push(
           Action.import({
@@ -247,7 +225,7 @@ describe("Schnelleinsteig", () => {
         expect(game.availableActions).toEqual(expectedActions);
       });
 
-      xtest("it is still IT's turn", () => {
+      test("it is still IT's turn", () => {
         const log = mainLog.slice(0, 17);
         log.push(
           Action.rondel({ nation: Nation.IT, cost: 0, slot: "investor" })
@@ -735,29 +713,6 @@ describe("Schnelleinsteig", () => {
       const game = Imperial.fromLog(log);
 
       game.tick(Action.rondel({ nation: Nation.RU, cost: 0, slot: "import" }));
-
-      xtest("RU can choose where to import", () => {
-        const actions = game.availableActions;
-        const expected = [
-          "moscow",
-          "stpetersburg",
-          "odessa",
-          "kiev",
-          "warsaw",
-        ].map((province) =>
-          Action.import({ placements: [{ province, unit: "army" }] })
-        );
-        expected.push(
-          Action.import({
-            placements: [{ province: "stpetersburg", unit: "fleet" }],
-          })
-        );
-        expected.push(
-          Action.import({ placements: [{ province: "odessa", unit: "fleet" }] })
-        );
-
-        expect(actions).toEqual(new Set(expected));
-      });
 
       describe("Russia imports 1 in St. Petersburg and 2 in Moscow", () => {
         game.tick(

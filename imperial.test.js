@@ -1977,7 +1977,7 @@ describe("imperial", () => {
         return game;
       };
 
-      xtest("when nobody controls a nation, that nation skips their turn", () => {
+      test("when nobody controls a nation, that nation skips their turn", () => {
         const game = newGame();
         // Remove player2 from controlling Italy
         game.nations.get(Nation.IT).controller = null;
