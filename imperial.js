@@ -13,6 +13,7 @@ export default class Imperial {
   constructor(board) {
     this.board = board || standardGameBoard;
     this.log = [];
+    this.unitsToMove = [];
   }
 
   tick(action) {
@@ -37,7 +38,7 @@ export default class Imperial {
         this.currentPlayerName = this.nations.get(
           this.currentNation
         ).controller;
-        this.availableActions = new Set(this.rondelActions(Nation.AH));
+        this.availableActions = new Set(this.rondelActions(this.currentNation));
         return;
       case "bondPurchase":
         this.purchaseBond(action);
@@ -45,7 +46,7 @@ export default class Imperial {
         this.availableActions = new Set(this.rondelActions(this.currentNation));
         return;
       case "endManeuver":
-        this.currentNation = this.nextNation(this.currentNation);
+        this.handleAdvancePlayer();
         this.availableActions = new Set(this.rondelActions(this.currentNation));
         return;
       case "fight":
@@ -79,6 +80,15 @@ export default class Imperial {
         if (totalChallengerUnitsAtProvince > totalIncumbentUnitsAtProvince) {
           this.provinces.get(action.payload.province).flag =
             action.payload.challenger;
+        }
+
+        if (this.unitsToMove.length === 0) {
+          this.log.push(Action.endManeuver());
+        } else {
+          const lastManeuverRondelAction = this.log
+            .reverse()
+            .find((action) => action.type === "rondel");
+          this.maneuver(lastManeuverRondelAction);
         }
 
         return;
@@ -420,78 +430,7 @@ export default class Imperial {
             return;
           case "maneuver1":
           case "maneuver2":
-            const destinations = new Set([Action.endManeuver()]);
-
-            // Collect all units that are allowed to move on this turn
-            this.unitsToMove = [];
-            for (const [province, units] of this.units.get(
-              action.payload.nation
-            )) {
-              let fleetCount = units.fleets;
-              let armyCount = units.armies;
-              while (fleetCount > 0 || armyCount > 0) {
-                if (fleetCount > 0) {
-                  this.unitsToMove.push([province, "fleet"]);
-                  fleetCount--;
-                } else if (armyCount > 0) {
-                  this.unitsToMove.push([province, "army"]);
-                  armyCount--;
-                }
-              }
-            }
-
-            const provincesWithFleets = new Map();
-            const provincesWithArmies = new Map();
-
-            for (const [province, units] of this.units.get(
-              action.payload.nation
-            )) {
-              if (units.fleets > 0) {
-                provincesWithFleets.set(province, units.fleets);
-              }
-            }
-
-            for (const [origin, count] of provincesWithFleets) {
-              for (const destination of this.board.neighborsFor({
-                origin,
-                nation: action.payload.nation,
-                isFleet: true,
-                friendlyFleets: new Set(),
-              })) {
-                destinations.add(
-                  Action.maneuver({
-                    origin,
-                    destination,
-                  })
-                );
-              }
-            }
-
-            for (const [province, units] of this.units.get(
-              action.payload.nation
-            )) {
-              if (units.armies > 0) {
-                provincesWithArmies.set(province, units.armies);
-              }
-            }
-
-            for (const [origin, count] of provincesWithArmies) {
-              for (const destination of this.board.neighborsFor({
-                origin,
-                nation: action.payload.nation,
-                isFleet: false,
-                friendlyFleets: new Set(),
-              })) {
-                destinations.add(
-                  Action.maneuver({
-                    origin,
-                    destination,
-                  })
-                );
-              }
-            }
-
-            this.availableActions = destinations;
+            this.maneuver(action);
             return;
           case "factory":
             // If nation cannot afford to build a factory
@@ -518,6 +457,75 @@ export default class Imperial {
             return;
         }
     }
+  }
+
+  maneuver(action) {
+    const destinations = new Set([Action.endManeuver()]);
+
+    // Collect all units that are allowed to move on this turn
+    this.unitsToMove = [];
+    for (const [province, units] of this.units.get(action.payload.nation)) {
+      let fleetCount = units.fleets;
+      let armyCount = units.armies;
+      while (fleetCount > 0 || armyCount > 0) {
+        if (fleetCount > 0) {
+          this.unitsToMove.push([province, "fleet"]);
+          fleetCount--;
+        } else if (armyCount > 0) {
+          this.unitsToMove.push([province, "army"]);
+          armyCount--;
+        }
+      }
+    }
+
+    const provincesWithFleets = new Map();
+    const provincesWithArmies = new Map();
+
+    for (const [province, units] of this.units.get(action.payload.nation)) {
+      if (units.fleets > 0) {
+        provincesWithFleets.set(province, units.fleets);
+      }
+    }
+
+    for (const [origin, count] of provincesWithFleets) {
+      for (const destination of this.board.neighborsFor({
+        origin,
+        nation: action.payload.nation,
+        isFleet: true,
+        friendlyFleets: new Set(),
+      })) {
+        destinations.add(
+          Action.maneuver({
+            origin,
+            destination,
+          })
+        );
+      }
+    }
+
+    for (const [province, units] of this.units.get(action.payload.nation)) {
+      if (units.armies > 0) {
+        provincesWithArmies.set(province, units.armies);
+      }
+    }
+
+    for (const [origin, count] of provincesWithArmies) {
+      for (const destination of this.board.neighborsFor({
+        origin,
+        nation: action.payload.nation,
+        isFleet: false,
+        friendlyFleets: new Set(),
+      })) {
+        destinations.add(
+          Action.maneuver({
+            origin,
+            destination,
+          })
+        );
+      }
+    }
+
+    this.availableActions = destinations;
   }
 
   flagCount(nation) {
