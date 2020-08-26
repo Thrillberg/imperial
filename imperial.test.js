@@ -384,16 +384,12 @@ describe("imperial", () => {
       });
 
       describe("import", () => {
-        const newGame = () => {
+        test("nation can import an army in their province", () => {
           const board = new GameBoard({
             nodes: [
               { name: "a", nation: Nation.AH },
-              { name: "b", nation: Nation.AH },
-              { name: "c", nation: Nation.AH },
-              { name: "d", nation: Nation.AH },
-              { name: "e", nation: Nation.AH },
-              { name: "f", nation: null },
-              { name: "g", nation: Nation.IT },
+              { name: "b", nation: null },
+              { name: "c", nation: Nation.IT },
             ],
             edges: [],
           });
@@ -407,44 +403,11 @@ describe("imperial", () => {
               ],
             })
           );
-          return game;
-        };
 
-        test("sets the correct available actions", () => {
-          const game = newGame();
           const availableActions = new Set([Action.import({ placements: [] })]);
-          ["a", "b", "c", "d", "e"].forEach((province) => {
-            availableActions.add(
-              Action.import({ placements: [{ province, type: "army" }] })
-            );
-
-            ["a", "b", "c", "d", "e"].forEach((province2) => {
-              if (province2 === province) return;
-
-              availableActions.add(
-                Action.import({
-                  placements: [
-                    { province, type: "army" },
-                    { province: province2, type: "army" },
-                  ],
-                })
-              );
-
-              ["a", "b", "c", "d", "e"].forEach((province3) => {
-                if (province === province3 || province2 === province3) return;
-
-                availableActions.add(
-                  Action.import({
-                    placements: [
-                      { province, type: "army" },
-                      { province: province2, type: "army" },
-                      { province: province3, type: "army" },
-                    ],
-                  })
-                );
-              });
-            });
-          });
+          availableActions.add(
+            Action.import({ placements: [{ province: "a", type: "army" }] })
+          );
 
           game.tick(
             Action.rondel({ slot: "import", cost: 0, nation: Nation.AH })
@@ -454,7 +417,41 @@ describe("imperial", () => {
           expect(game.nations.get(Nation.AH).rondelPosition).toEqual("import");
         });
 
-        test.todo("fleets");
+        test("nation can import a fleet in their coastal province", () => {
+          const board = new GameBoard({
+            nodes: [
+              { name: "a", nation: Nation.AH, factoryType: "shipyard" },
+              { name: "b", nation: null },
+              { name: "c", nation: Nation.IT },
+            ],
+            edges: [],
+          });
+
+          const game = new Imperial(board);
+          game.tick(
+            Action.initialize({
+              players: [
+                { id: "player1", nation: Nation.AH },
+                { id: "player2", nation: Nation.IT },
+              ],
+            })
+          );
+
+          const availableActions = new Set([Action.import({ placements: [] })]);
+          availableActions.add(
+            Action.import({ placements: [{ province: "a", type: "army" }] })
+          );
+          availableActions.add(
+            Action.import({ placements: [{ province: "a", type: "fleet" }] })
+          );
+
+          game.tick(
+            Action.rondel({ slot: "import", cost: 0, nation: Nation.AH })
+          );
+
+          expect(game.availableActions).toEqual(availableActions);
+          expect(game.nations.get(Nation.AH).rondelPosition).toEqual("import");
+        });
       });
 
       describe("maneuver1 or manuever2", () => {
