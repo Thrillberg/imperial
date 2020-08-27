@@ -46,6 +46,7 @@ export default class Imperial {
         this.availableActions = new Set(this.rondelActions(this.currentNation));
         return;
       case "endManeuver":
+        this.unitsToMove = [];
         this.handleAdvancePlayer();
         this.availableActions = new Set(this.rondelActions(this.currentNation));
         return;
@@ -83,12 +84,68 @@ export default class Imperial {
         }
 
         if (this.unitsToMove.length === 0) {
-          this.log.push(Action.endManeuver());
+          this.tick(Action.endManeuver());
         } else {
           const lastManeuverRondelAction = this.log
             .reverse()
             .find((action) => action.type === "rondel");
           this.maneuver(lastManeuverRondelAction);
+        }
+
+        return;
+      case "coexist":
+        if (this.unitsToMove.length === 0) {
+          this.tick(Action.endManeuver());
+        } else {
+          const lastManeuverRondelAction = this.log
+            .reverse()
+            .find((action) => action.type === "rondel");
+          const destinations = new Set([Action.endManeuver()]);
+          const action = lastManeuverRondelAction;
+          const provincesWithFleets = new Map();
+          const provincesWithArmies = new Map();
+
+          for (const [province, type] of this.unitsToMove) {
+            if (type === "fleet") {
+              provincesWithFleets.set(province, 1);
+            } else {
+              provincesWithArmies.set(province, 1);
+            }
+          }
+
+          for (const [origin, count] of provincesWithFleets) {
+            for (const destination of this.board.neighborsFor({
+              origin,
+              nation: action.payload.nation,
+              isFleet: true,
+              friendlyFleets: new Set(),
+            })) {
+              destinations.add(
+                Action.maneuver({
+                  origin,
+                  destination,
+                })
+              );
+            }
+          }
+
+          for (const [origin, count] of provincesWithArmies) {
+            for (const destination of this.board.neighborsFor({
+              origin,
+              nation: action.payload.nation,
+              isFleet: false,
+              friendlyFleets: new Set(),
+            })) {
+              destinations.add(
+                Action.maneuver({
+                  origin,
+                  destination,
+                })
+              );
+            }
+          }
+
+          this.availableActions = destinations;
         }
 
         return;
@@ -599,7 +656,6 @@ export default class Imperial {
     const destinations = new Set([Action.endManeuver()]);
 
     // Collect all units that are allowed to move on this turn
-    this.unitsToMove = [];
     for (const [province, units] of this.units.get(action.payload.nation)) {
       let fleetCount = units.fleets;
       let armyCount = units.armies;

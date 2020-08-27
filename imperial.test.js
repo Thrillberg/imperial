@@ -104,7 +104,7 @@ describe("imperial", () => {
     describe("endManeuver", () => {
       const newGame = () => {
         const board = new GameBoard({
-          nodes: [],
+          nodes: [{ name: "a" }],
           edges: [],
         });
 
@@ -135,6 +135,7 @@ describe("imperial", () => {
         expected.add(
           Action.rondel({ nation: Nation.IT, cost: 6, slot: "factory" })
         );
+        game.units.get(Nation.AH).get("a").armies = 1;
 
         game.nations.get(Nation.IT).rondelPosition = "maneuver1";
         game.tick(
@@ -143,6 +144,7 @@ describe("imperial", () => {
         game.tick(Action.endManeuver());
 
         expect(game.availableActions).toEqual(expected);
+        expect(game.unitsToMove).toEqual([]);
       });
     });
 
@@ -1955,7 +1957,115 @@ describe("imperial", () => {
     });
 
     describe("coexist", () => {
-      test.todo("todo");
+      const newGame = () => {
+        const board = new GameBoard({
+          nodes: [
+            { name: "a", nation: null },
+            { name: "b", nation: null },
+          ],
+          edges: [["a", "b"]],
+        });
+
+        const game = new Imperial(board);
+        game.tick(
+          Action.initialize({
+            players: [
+              { id: "player1", nation: Nation.AH },
+              { id: "player2", nation: Nation.IT },
+            ],
+          })
+        );
+        return game;
+      };
+
+      test("both units remain", () => {
+        const game = newGame();
+        game.units.get(Nation.AH).get("a").armies++;
+        game.units.get(Nation.IT).get("a").armies++;
+
+        game.tick(
+          Action.coexist({
+            province: "a",
+            incumbent: Nation.AH,
+            challenger: Nation.IT,
+          })
+        );
+
+        expect(game.units.get(Nation.AH).get("a")).toEqual({
+          armies: 1,
+          fleets: 0,
+        });
+        expect(game.units.get(Nation.IT).get("a")).toEqual({
+          armies: 1,
+          fleets: 0,
+        });
+      });
+
+      test("incumbent's flag remains, even if they are outnumbered", () => {
+        const game = newGame();
+        game.provinces.get("a").flag = Nation.AH;
+        game.units.get(Nation.AH).get("a").armies++;
+        game.units.get(Nation.IT).get("a").armies++;
+        game.units.get(Nation.IT).get("a").armies++;
+
+        game.tick(
+          Action.coexist({
+            province: "a",
+            incumbent: Nation.AH,
+            challenger: Nation.IT,
+          })
+        );
+
+        expect(game.provinces.get("a").flag).toEqual(Nation.AH);
+      });
+
+      describe("after coexistence is adjudicated", () => {
+        test("endManeuver is pushed if challenger has no more units to move", () => {
+          const game = newGame();
+          game.units.get(Nation.AH).get("b").armies++;
+          game.units.get(Nation.IT).get("a").armies++;
+
+          game.tick(
+            Action.rondel({ slot: "maneuver1", nation: Nation.AH, cost: 0 })
+          );
+          game.tick(Action.maneuver({ origin: "b", destination: "a" }));
+          game.tick(
+            Action.coexist({
+              province: "a",
+              incumbent: Nation.AH,
+              challenger: Nation.IT,
+            })
+          );
+
+          expect(game.log[game.log.length - 1]).toEqual(Action.endManeuver());
+        });
+
+        test("challenger can maneuver if challenger has more units to move", () => {
+          const game = newGame();
+          game.units.get(Nation.AH).get("b").armies++;
+          game.units.get(Nation.AH).get("b").armies++;
+          game.units.get(Nation.IT).get("a").armies++;
+
+          game.tick(
+            Action.rondel({ slot: "maneuver1", nation: Nation.AH, cost: 0 })
+          );
+          game.tick(Action.maneuver({ origin: "b", destination: "a" }));
+          game.tick(
+            Action.coexist({
+              province: "a",
+              incumbent: Nation.AH,
+              challenger: Nation.IT,
+            })
+          );
+
+          expect(game.availableActions).toEqual(
+            new Set([
+              Action.maneuver({ origin: "b", destination: "a" }),
+              Action.endManeuver(),
+            ])
+          );
+        });
+      });
     });
 
     describe("currentPlayerName on new turn", () => {
