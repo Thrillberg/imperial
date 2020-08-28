@@ -149,7 +149,49 @@ describe("imperial", () => {
     });
 
     describe("endGame", () => {
-      test.todo("todo");
+      const newGame = () => {
+        const board = new GameBoard({
+          nodes: [],
+          edges: [],
+        });
+
+        const game = new Imperial(board);
+        game.tick(
+          Action.initialize({
+            players: [
+              { id: "player1", nation: Nation.AH },
+              { id: "player2", nation: Nation.IT },
+            ],
+          })
+        );
+        return game;
+      };
+
+      test("winner is set", () => {
+        const game = newGame();
+        game.nations.get(Nation.AH).powerPoints = 25;
+        game.nations.get(Nation.IT).powerPoints = 15;
+        game.players["player1"].bonds = new Set([
+          Bond(Nation.AH, 5),
+          Bond(Nation.IT, 2),
+        ]);
+        game.players["player2"].bonds = new Set([
+          Bond(Nation.AH, 2),
+          Bond(Nation.IT, 5),
+        ]);
+        game.players["player1"].cash = 2;
+        game.players["player2"].cash = 10;
+
+        game.tick(Action.endGame());
+
+        // player1 has AH bond 5 * 5 (powerPoints) + IT bond 2 * 3 (powerPoints) + 2 cash
+        // player1 has 33 points
+        // player2 has AH bond 2 * 5 (powerPoints) + IT bond 5 * 3 (powerPoints) + 10 cash
+        // player2 has 35 points
+        expect(game.winner).toEqual("player2");
+      });
+
+      test.todo("it can handle a tie");
     });
 
     describe("buildFactory", () => {

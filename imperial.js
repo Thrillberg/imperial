@@ -50,6 +50,26 @@ export default class Imperial {
         this.handleAdvancePlayer();
         this.availableActions = new Set(this.rondelActions(this.currentNation));
         return;
+      case "endGame":
+        const scores = {};
+        Object.keys(this.players).forEach((player) => {
+          let score = 0;
+          for (const bond of this.players[player].bonds) {
+            const powerPoints = this.nations.get(bond.nation).powerPoints;
+            score += bond.number * parseInt(powerPoints / 5);
+          }
+          score += this.players[player].cash;
+          scores[player] = score;
+        });
+        const winningScore = Math.max(
+          ...Object.keys(scores).map((x) => scores[x])
+        );
+        const winner = Object.keys(scores).filter(
+          (x) => scores[x] === winningScore
+        )[0];
+
+        this.winner = winner;
+        return;
       case "fight":
         const incumbentUnitsAtProvince = this.units
           .get(action.payload.incumbent)
