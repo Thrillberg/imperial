@@ -37,10 +37,20 @@
           ></action>
         </div>
       </div>
-      <div v-else class="buttons">
-        <button v-on:click="startGame">
-          Start Game
-        </button>
+      <div v-else>
+        <input v-model="name" placeholder="name" />
+        <div class="buttons">
+          <ul>
+            <waiting-player
+              v-for="player in waitingPlayers"
+              v-bind:name="player"
+              v-bind:key="player"
+            ></waiting-player>
+          </ul>
+          <button v-on:click="registerPlayer(name)">
+            Start Game
+          </button>
+        </div>
       </div>
     </div>
     <script src="./main.js" type="module"></script>

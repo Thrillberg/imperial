@@ -1,5 +1,11 @@
 import Imperial from "./imperial.js";
-import log from "./schnelleinsteigLog.js";
+import Action from "./action.js";
+import { Nation } from "./constants.js";
+
+Vue.component("waiting-player", {
+  props: ["name"],
+  template: `<li>{{ name }}</li>`,
+});
 
 Vue.component("player", {
   props: ["name", "cash", "bonds", "current_player"],
@@ -48,8 +54,33 @@ var app = new Vue({
     game: {},
     gameStarted: false,
     rondel: "",
+    name: "",
+    waitingPlayers: [],
+    websocket: new WebSocket("ws://localhost:8080/ws"),
   },
   mounted() {
+    this.websocket.onmessage = (message) => {
+      const data = JSON.parse(message.data);
+      if (data["type"] === "registerPlayers") {
+        this.waitingPlayers = data["payload"]["players"];
+      }
+      console.log(data, data["payload"]["players"].length);
+      if (this.waitingPlayers.length === 2) {
+        const init = Action.initialize({
+          players: [
+            { id: data["payload"]["players"][0], nation: Nation.AH },
+            { id: data["payload"]["players"][1], nation: Nation.IT },
+          ],
+        });
+        this.game = Imperial.fromLog([init]);
+        this.gameStarted = true;
+      }
+    };
+
+    this.websocket.onerror = (event) => {
+      console.log("error!", event);
+    };
+
     fetch("rondel.svg")
       .then((response) => response.text())
       .then((text) => {
@@ -57,9 +88,8 @@ var app = new Vue({
       });
   },
   methods: {
-    startGame: function () {
-      this.game = Imperial.fromLog(log.slice(0, 2));
-      this.gameStarted = true;
+    registerPlayer: function () {
+      this.websocket.send(JSON.stringify(this.name));
     },
     flag: function (nation) {
       switch (nation) {
