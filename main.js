@@ -59,12 +59,27 @@ var app = new Vue({
     websocket: new WebSocket("ws://localhost:8080/ws"),
   },
   mounted() {
+    if (localStorage.getItem("imperialName")) {
+      this.name = localStorage.getItem("imperialName");
+    }
+    this.websocket.onopen = (event) => {
+      console.log("opened!");
+      this.websocket.send(
+        JSON.stringify({
+          type: "getWaitingPlayers",
+          payload: { requester: localStorage.getItem("imperialName") },
+        })
+      );
+    };
+    this.websocket.onclose = (event) => {
+      console.log("closed!", event);
+    };
     this.websocket.onmessage = (message) => {
       const data = JSON.parse(message.data);
-      if (data["type"] === "registerPlayers") {
+      if (data["type"] === "registeredPlayers") {
         this.waitingPlayers = data["payload"]["players"];
       }
-      console.log(data, data["payload"]["players"].length);
+      console.log(data);
       if (this.waitingPlayers.length === 2) {
         const init = Action.initialize({
           players: [
@@ -89,7 +104,20 @@ var app = new Vue({
   },
   methods: {
     registerPlayer: function () {
-      this.websocket.send(JSON.stringify(this.name));
+      localStorage.setItem("imperialName", this.name);
+      this.websocket.send(
+        JSON.stringify({ type: "registerPlayer", payload: { name: this.name } })
+      );
+    },
+    unregisterPlayer: function () {
+      localStorage.removeItem("imperialName");
+      this.name = "";
+      this.websocket.send(
+        JSON.stringify({
+          type: "unregisterPlayer",
+          payload: { name: this.name },
+        })
+      );
     },
     flag: function (nation) {
       switch (nation) {
