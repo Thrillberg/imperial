@@ -24,7 +24,7 @@ Vue.component("player", {
             v-for="bond in bonds"
             v-bind:nation="bond.nation.value"
             v-bind:cost="bond.cost"
-            v-bind:key="bond.nation.value"
+            v-bind:key="bond.nation.value + bond.cost"
           ></bond>
         </ul>
       </div>
@@ -53,17 +53,17 @@ var app = new Vue({
   data: {
     game: {},
     gameStarted: false,
+    itIsMyTurn: false,
     rondel: "",
     name: "",
     waitingPlayers: [],
     websocket: new WebSocket("ws://localhost:8080/ws"),
   },
-  mounted() {
+  beforeMount() {
     if (localStorage.getItem("imperialName")) {
       this.name = localStorage.getItem("imperialName");
     }
     this.websocket.onopen = (event) => {
-      console.log("opened!");
       this.websocket.send(
         JSON.stringify({
           type: "getWaitingPlayers",
@@ -71,29 +71,57 @@ var app = new Vue({
         })
       );
     };
-    this.websocket.onclose = (event) => {
-      console.log("closed!", event);
-    };
     this.websocket.onmessage = (message) => {
       const data = JSON.parse(message.data);
       if (data["type"] === "registeredPlayers") {
         this.waitingPlayers = data["payload"]["players"];
       }
-      console.log(data);
-      if (this.waitingPlayers.length === 2) {
+      if (
+        data["type"] === "registeredPlayers" &&
+        this.waitingPlayers.length === 2 &&
+        this.name === data["payload"]["players"][0]
+      ) {
+        console.log("initializing the game");
         const init = Action.initialize({
           players: [
             { id: data["payload"]["players"][0], nation: Nation.AH },
             { id: data["payload"]["players"][1], nation: Nation.IT },
           ],
         });
-        this.game = Imperial.fromLog([init]);
+        this.websocket.send(
+          JSON.stringify({
+            type: "action",
+            payload: { action: JSON.stringify(init) },
+          })
+        );
+      } else if (data["type"] === "gameLog") {
+        const log = data.payload.gameLog.map((action) => {
+          const parsed_action = JSON.parse(action);
+          Object.keys(parsed_action.payload).forEach((key) => {
+            if (Array.isArray(parsed_action.payload[key])) {
+              parsed_action.payload[key].forEach((item) => {
+                if (!!item.nation) {
+                  item.nation = Nation[item.nation.value];
+                }
+              });
+            } else {
+              if (key === "nation") {
+                parsed_action.payload.nation =
+                  Nation[parsed_action.payload.nation.value];
+              }
+            }
+          });
+          return parsed_action;
+        });
+        console.log(log);
+        this.game = Imperial.fromLog(log);
         this.gameStarted = true;
+        if (this.game.currentPlayerName === this.name) {
+          this.itIsMyTurn = true;
+        } else {
+          this.itIsMyTurn = false;
+        }
       }
-    };
-
-    this.websocket.onerror = (event) => {
-      console.log("error!", event);
     };
 
     fetch("rondel.svg")
@@ -137,7 +165,18 @@ var app = new Vue({
     },
     tickWithAction: function (action) {
       this.game.tick(action);
+      if (this.game.currentPlayerName === this.name) {
+        this.itIsMyTurn = true;
+      } else {
+        this.itIsMyTurn = false;
+      }
       this.updateRondel();
+      this.websocket.send(
+        JSON.stringify({
+          type: "action",
+          payload: { action: JSON.stringify(action) },
+        })
+      );
     },
     actionToText: function (action) {
       if (action.type === "rondel") {

@@ -27,7 +27,7 @@
         <div>
           It is {{ game.currentNation.value }}'s turn
         </div>
-        <div class="buttons">
+        <div v-if="itIsMyTurn" class="buttons">
           <action
             v-for="action in game.availableActions"
             v-bind:key="JSON.stringify(action)"
@@ -56,7 +56,7 @@
           <input v-model="name" placeholder="name" />
           <div class="buttons">
             <button v-on:click="registerPlayer(name)">
-              Wait for players
+              Initiate/join a game
             </button>
           </div>
         </div>

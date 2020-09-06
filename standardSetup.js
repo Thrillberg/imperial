@@ -66,7 +66,7 @@ export default ({ players, provinceNames }) => {
         };
       }
 
-      const smallerBondNation = Nation[nation.value].when({
+      const smallerBondNation = nation.when({
         GE: () => Nation.IT,
         RU: () => Nation.FR,
         AH: () => Nation.GE,
