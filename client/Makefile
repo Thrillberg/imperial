@@ -8,3 +8,6 @@ lint/fix:
 
 test:
 	npm test
+
+run:
+	npm start

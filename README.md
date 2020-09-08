@@ -7,9 +7,9 @@ This is an implementation of the board game, [Imperial](<https://en.wikipedia.or
 ## To run locally:
 
 ```
-cd client
-npm install
-npm start
+make ci
+make client/run # in one terminal
+make server/run # in another terminal
 ```
 
 Navigate to `http://localhost:9080` in a web browser.
@@ -17,9 +17,7 @@ Navigate to `http://localhost:9080` in a web browser.
 ## To run tests:
 
 ```
-cd client
-npm install
-npm test
+make ci
 ```
 
 ## To deploy:
