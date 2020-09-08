@@ -8,3 +8,6 @@ lint/fix:
 
 test:
 	go test
+
+run:
+	go run .
