@@ -1,12 +1,12 @@
 package main
 
 import (
-	"math/rand"
-	"log"
+	"encoding/json"
 	"fmt"
 	"github.com/gorilla/websocket"
+	"log"
+	"math/rand"
 	"net/http"
-	"encoding/json"
 )
 
 type PlayerId uint64
@@ -19,7 +19,7 @@ type Envelope struct {
 var connections = map[PlayerId]*websocket.Conn{}
 var players = map[PlayerId]bool{}
 var gameLog = []Action{}
-var upgrader = websocket.Upgrader{CheckOrigin: func(*http.Request) bool {return true}}
+var upgrader = websocket.Upgrader{CheckOrigin: func(*http.Request) bool { return true }}
 
 func main() {
 	http.HandleFunc("/ws", handleWebsocket)
