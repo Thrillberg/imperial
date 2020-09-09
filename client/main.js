@@ -81,8 +81,16 @@ var app = new Vue({
     purchasingBond: false,
     buildingFactory: false,
     playerCounts: [2, 3, 4, 5, 6],
+    webSocket: new WebSocket("ws://localhost:8080/ws"),
   },
   mounted() {
+    this.webSocket.onmessage = (message) => {
+      const envelope = JSON.parse(message.data);
+      switch (envelope.kind) {
+        case "setId":
+          this.setWebsocketId(envelope.data.id);
+      }
+    };
     fetch("rondel.svg")
       .then((response) => response.text())
       .then((text) => {
@@ -95,6 +103,18 @@ var app = new Vue({
       });
   },
   methods: {
+    setWebsocketId: function (newId) {
+      const oldId = localStorage.getItem("imperialId");
+      if (oldId) {
+        this.webSocket.send(
+          JSON.stringify({
+            kind: "updateId",
+            data: { oldId, newId },
+          })
+        );
+      }
+      localStorage.setItem("imperialId", newId);
+    },
     startGame: function (playerCount) {
       const players = this.getPlayers(playerCount);
       this.game = Imperial.fromLog([Action.initialize({ players })]);
