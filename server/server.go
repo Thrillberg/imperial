@@ -14,7 +14,7 @@ import (
 const addr = "localhost:8080"
 
 var connections = map[PlayerId]*Conn{}
-var players = map[PlayerId]bool{}
+var players = map[PlayerId]PlayerName{}
 var gameLog = []Action{}
 var upgrader = websocket.Upgrader{CheckOrigin: func(*http.Request) bool { return true }}
 
@@ -32,6 +32,8 @@ func main() {
 // integer here, but JSON does not support integers. Instead, we
 // generate a pseudorandom, base64-encoded string.
 type PlayerId string
+
+type PlayerName string
 
 // NewPlayerId generates a pseudorandom, base64-encoded PlayerId.
 func NewPlayerId() (PlayerId, error) {
@@ -82,6 +84,12 @@ const (
 	// KindUpdateId is received from clients when they are
 	// restarting from a broken connection.
 	KindUpdateId = Kind("updateId")
+	// KindUpdateName is received from the clients when they
+	// register a player's name.
+	KindUpdateName = Kind("updateName")
+	// KindUpdatePlayers is sent to clients when a player's
+	// name is updated.
+	KindUpdatePlayers = Kind("updatePlayers")
 )
 
 // Conn wraps a websocket.Conn with convenience methods and message
@@ -110,6 +118,20 @@ func (c *Conn) SetId(id PlayerId) error {
 		Kind: KindSetId,
 		Data: map[string]string{
 			"id": string(id),
+		},
+	})
+}
+
+// UpdatePlayers sends a KindUpdatePlayers message to the client.
+func (c *Conn) UpdatePlayers(players map[PlayerId]PlayerName) error {
+	var playersList = []string{}
+	for _, player := range players {
+		playersList = append(playersList, string(player))
+	}
+	return c.write(&Envelope{
+		Kind: KindUpdatePlayers,
+		Data: map[string]string{
+			"players": strings.Join(playersList, ", "),
 		},
 	})
 }
@@ -148,6 +170,7 @@ func handleWebsocket(w http.ResponseWriter, r *http.Request) {
 	}
 	c := NewConn(ws)
 	c.Register(KindUpdateId, onUpdateId)
+	c.Register(KindUpdateName, onUpdateName)
 
 	id, err := NewPlayerId()
 	if err != nil {
@@ -174,5 +197,25 @@ func onUpdateId(c *Conn, data Data) error {
 	log.Printf("%s: %s -> %s\n", KindUpdateId, oldId, newId)
 	connections[newId] = c
 	delete(connections, oldId)
+	return nil
+}
+
+func onUpdateName(c *Conn, data Data) error {
+	if err := data.Validate("name", "id"); err != nil {
+		return err
+	}
+	name := PlayerName(data["name"])
+	id := PlayerId(data["id"])
+	log.Printf("%s: %s(%s)\n", KindUpdateName, name, id)
+	players[id] = name
+
+	// TODO: connections is empty here and I don't know why
+	for _, conn := range connections {
+		if err := conn.UpdatePlayers(players); err != nil {
+			log.Println(players, "UpdatePlayers")
+			return nil
+		}
+	}
+
 	return nil
 }

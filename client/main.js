@@ -56,11 +56,6 @@ Vue.component("action", {
   template: `<button v-on:click="dispatch(action)">{{ text }}</button>`,
 });
 
-Vue.component("player-count", {
-  props: ["count", "start_game"],
-  template: `<button v-on:click="start_game(count)">{{ count }} players</button>`,
-});
-
 var app = new Vue({
   el: "#app",
   data: {
@@ -78,9 +73,9 @@ var app = new Vue({
       endManeuver: Action.endManeuver(),
       origin: "",
     },
+    name: "",
     purchasingBond: false,
     buildingFactory: false,
-    playerCounts: [2, 3, 4, 5, 6],
     webSocket: new WebSocket("ws://localhost:8080/ws"),
   },
   mounted() {
@@ -114,6 +109,14 @@ var app = new Vue({
         );
       }
       localStorage.setItem("imperialId", newId);
+    },
+    registerPlayer: function (name) {
+      this.webSocket.send(
+        JSON.stringify({
+          kind: "updateName",
+          data: { name: this.name, id: localStorage.imperialId },
+        })
+      );
     },
     startGame: function (playerCount) {
       const players = this.getPlayers(playerCount);

@@ -60,13 +60,13 @@
           ></action>
         </div>
       </div>
-      <div v-else class="buttons">
-        <player-count
-          v-for="count in playerCounts"
-          v-bind:key="count"
-          v-bind:count="count"
-          v-bind:start_game="startGame"
-        ></player-count>
+      <div v-else>
+        <input v-model="name" placeholder="name" />
+        <div class="buttons">
+          <button v-on:click="registerPlayer(name)">
+            Play
+          </button>
+        </div>
       </div>
     </div>
     <script src="./main.js" type="module"></script>
