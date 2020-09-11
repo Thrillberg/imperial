@@ -61,11 +61,23 @@
         </div>
       </div>
       <div v-else>
-        <input v-model="name" placeholder="name" />
-        <div class="buttons">
-          <button v-on:click="registerPlayer(name)">
-            Play
-          </button>
+        <ul v-for="player in players">
+          <li v-if="player.name === name">
+            <strong>{{ player.name }}</strong>
+            </li>
+            <li v-else>
+              {{ player.name }}
+            </li>
+          </li>
+        </ul>
+        <div v-if="[...players].map((p) => p.name).includes(name)"></div>
+        <div v-else>
+          <input v-model="name" placeholder="name" />
+          <div class="buttons">
+            <button v-on:click="registerPlayer(name)">
+              Play
+            </button>
+          </div>
         </div>
       </div>
     </div>

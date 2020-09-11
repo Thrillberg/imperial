@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"log"
 	"math/rand"
@@ -124,14 +125,19 @@ func (c *Conn) SetId(id PlayerId) error {
 
 // UpdatePlayers sends a KindUpdatePlayers message to the client.
 func (c *Conn) UpdatePlayers(players map[PlayerId]PlayerName) error {
-	var playersList = []string{}
-	for _, player := range players {
-		playersList = append(playersList, string(player))
+	var playersSlice = []map[string]string{}
+	for key, val := range players {
+		playersSlice = append(playersSlice, map[string]string{"id": string(key), "name": string(val)})
 	}
+	playersList, err := json.Marshal(playersSlice)
+	if err != nil {
+		log.Println("error:", err)
+	}
+
 	return c.write(&Envelope{
 		Kind: KindUpdatePlayers,
 		Data: map[string]string{
-			"players": strings.Join(playersList, ", "),
+			"players": string(playersList),
 		},
 	})
 }
@@ -197,6 +203,19 @@ func onUpdateId(c *Conn, data Data) error {
 	log.Printf("%s: %s -> %s\n", KindUpdateId, oldId, newId)
 	connections[newId] = c
 	delete(connections, oldId)
+
+	if val, ok := players[oldId]; ok {
+		players[newId] = val
+		delete(players, oldId)
+
+		for _, conn := range connections {
+			if err := conn.UpdatePlayers(players); err != nil {
+				log.Println(players, "UpdatePlayers")
+				return nil
+			}
+		}
+	}
+
 	return nil
 }
 
@@ -209,7 +228,6 @@ func onUpdateName(c *Conn, data Data) error {
 	log.Printf("%s: %s(%s)\n", KindUpdateName, name, id)
 	players[id] = name
 
-	// TODO: connections is empty here and I don't know why
 	for _, conn := range connections {
 		if err := conn.UpdatePlayers(players); err != nil {
 			log.Println(players, "UpdatePlayers")

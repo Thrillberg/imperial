@@ -74,6 +74,7 @@ var app = new Vue({
       origin: "",
     },
     name: "",
+    players: new Set(),
     purchasingBond: false,
     buildingFactory: false,
     webSocket: new WebSocket("ws://localhost:8080/ws"),
@@ -84,6 +85,16 @@ var app = new Vue({
       switch (envelope.kind) {
         case "setId":
           this.setWebsocketId(envelope.data.id);
+          break;
+        case "updatePlayers":
+          // TODO: I'm not a fan of JSON.parse after we've already JSON.parsed already
+          this.players = new Set(JSON.parse(envelope.data.players));
+          for (const player of this.players) {
+            if (localStorage.imperialId === player.id) {
+              this.name = player.name;
+            }
+          }
+          break;
       }
     };
     fetch("rondel.svg")
