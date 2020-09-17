@@ -21,9 +21,13 @@
         </ul>
         <board
           v-bind:board="board"
-          v-bind:add_highlights="addHighlightsToRondel"
         ></board>
-        <div class="rondel" v-html="rondel"></div>
+        <rondel
+          v-bind:rondel_slots="rondelSlots"
+          v-bind:available_actions="game.availableActions"
+          v-bind:dispatch="tickWithAction"
+          v-bind:game="game"
+        ></rondel>
         <ul class="nations">
           <nation
             v-for="[nation, data] of game.nations"

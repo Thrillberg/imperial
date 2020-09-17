@@ -3,11 +3,8 @@ import Action from "./action.js";
 import { Nation } from "./constants.js";
 
 Vue.component("board", {
-  props: ["board", "add_highlights"],
+  props: ["board"],
   template: `<div v-html="board"></div>`,
-  mounted() {
-    this.add_highlights();
-  },
 });
 
 Vue.component("player", {
@@ -61,10 +58,78 @@ Vue.component("player-count", {
   template: `<button v-on:click="start_game(count)">{{ count }} players</button>`,
 });
 
+Vue.component("rondel-slot", {
+  props: ["rondel_slot", "index", "on_click"],
+  template: `
+  <g v-bind:transform="'translate(0, ' + 51 * index + ')'">
+    <rect
+      v-bind:id="rondel_slot.type"
+      v-bind:fill="rondel_slot.color"
+      v-on:click="on_click(rondel_slot)"
+      x="0" y="0" width="200" height="50">
+    </rect>
+    <text
+      font-family="Baskerville" font-size="24" font-weight="normal"
+      letter-spacing="0.61714304"
+      fill="#000000"
+      text-align="center"
+    >
+        <tspan x="0" y="25" width="200">{{ rondel_slot.label }}</tspan>
+    </text>
+  </g>
+  `
+});
+
+Vue.component("rondel", {
+  // The rondel is a circle segmented into eight slices, each of which
+  // corresponds to the action a nation can take on a turn. Selecting a segment
+  // triggers an action of type "rondel". Each nation's flag is displayed
+  // on the segment corresponding to the action it last took.
+  props: ["rondel_slots", "available_actions", "dispatch"],
+  methods: {
+    onSlotClick: function (slot) {
+      // Look through the available actions for this particular board state.
+      for (const action of this.available_actions) {
+        // If an action corresponding to the selected slot is available, then
+        // dispatch the available action.
+        if (slot.type === action.payload.slot) {
+          this.dispatch(action);
+        }
+      }
+    }
+  },
+  template: `
+  <svg
+    width="470px" height="456px"
+    viewBox="0 0 470 456"
+    version="1.1"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:xlink="http://www.w3.org/1999/xlink">
+      <rondel-slot
+        v-for="(slot, index) in rondel_slots"
+        v-bind:rondel_slot="slot"
+        v-bind:index="index"
+        v-bind:on_click="onSlotClick"
+      ></rondel-slot>
+  </svg>
+  `,
+})
+
 var app = new Vue({
   el: "#app",
   data: {
+    rondelSlots: [
+      { type: "import", label: "Import", color: "#F39D81" },
+      { type: "production2", label: "Production", color: "#8C8798" },
+      { type: "maneuver2", label: "Maneuver", color: "#7EA850" },
+      { type: "taxation", label: "Taxation", color: "#FFD281" },
+      { type: "factory", label: "Factory", color: "#8DBCFB" },
+      { type: "production1", label: "Production", color: "#8C8798" },
+      { type: "maneuver1", label: "Maneuver", color: "#7EA850" },
+      { type: "investor", label: "Investor", color: "#8EDFFF" },
+    ],
     board: "",
+    buildingFactory: false,
     game: {},
     gameStarted: false,
     rondel: "",
@@ -79,15 +144,9 @@ var app = new Vue({
       origin: "",
     },
     purchasingBond: false,
-    buildingFactory: false,
     playerCounts: [2, 3, 4, 5, 6],
   },
   mounted() {
-    fetch("rondel.svg")
-      .then((response) => response.text())
-      .then((text) => {
-        this.rondel = text;
-      });
     fetch("board.svg")
       .then((response) => response.text())
       .then((text) => {
@@ -174,11 +233,7 @@ var app = new Vue({
       if (action.type === "buildFactory") {
         this.buildingFactory = false;
       }
-      this.removeFlagFromAllRondelSlots();
       this.game.tick(action);
-      this.addFlagToRondel();
-      this.removeHighlightsFromRondel();
-      this.addHighlightsToRondel();
       this.updateUnits();
       if (
         action.type === "rondel" &&
@@ -195,9 +250,7 @@ var app = new Vue({
       }
     },
     actionToText: function (action) {
-      if (action.type === "rondel") {
-        return action.payload.slot;
-      } else if (action.type === "buildFactory") {
+      if (action.type === "buildFactory") {
         return `Build factory in ${action.payload.province}`;
       } else if (action.type === "bondPurchase") {
         return `Purchase a ${action.payload.nation.value} bond for ${action.payload.cost}`;
@@ -259,81 +312,12 @@ var app = new Vue({
         }
       }
     },
-    removeFlagFromAllRondelSlots: function () {
-      for (const [nation, { rondelPosition }] of this.game.nations) {
-        if (rondelPosition === null) continue;
-        this.removeFlagFromRondelSlot(nation.value);
-      }
-    },
-    removeFlagFromRondelSlot: function (nation) {
-      if (document.getElementById(`${nation}_flag`)) {
-        document.getElementById(`${nation}_flag`).remove();
-        this.removeFlagFromRondelSlot(nation);
-      }
-    },
-    addFlagToRondel: function () {
-      for (const [nation, { rondelPosition }] of this.game.nations) {
-        if (rondelPosition === null) continue;
-        const el = document.getElementById(rondelPosition);
-        const bBox = el.getBBox();
-        const flag = document.createElementNS(
-          "http://www.w3.org/2000/svg",
-          "image"
-        );
-        flag.setAttribute("height", "20");
-        flag.setAttribute("id", `${nation.value}_flag`);
-
-        // This is a really rough way to get the center of the SVG path
-        const step = el.getTotalLength() / 100;
-        let totalX = 0;
-        let totalY = 0;
-        for (let dist = 0; dist < el.getTotalLength(); dist += step) {
-          const pt = el.getPointAtLength(dist);
-          totalX += pt.x;
-          totalY += pt.y;
-        }
-
-        flag.setAttribute("x", totalX / 100);
-        flag.setAttribute("y", totalY / 100);
-
-        flag.setAttribute("href", this.flag(nation.value));
-        el.parentNode.append(flag);
-      }
-    },
-    addHighlightsToRondel: function () {
-      for (const action of this.game.availableActions) {
-        if (action.type === "rondel") {
-          const slot = document.getElementById(action.payload.slot);
-          slot.addEventListener("mouseenter", this.darken);
-          slot.addEventListener("mouseleave", (event) => {
-            event.target.removeAttribute("filter");
-          });
-          slot.addEventListener("click", this.tickWithEvent);
-        }
-      }
-    },
     tickWithEvent: function (event) {
       for (const action of this.game.availableActions) {
         if (event.target.id === action.payload.slot) {
           this.tickWithAction(action);
         }
       }
-    },
-    removeHighlightsFromRondel: function () {
-      [
-        "factory",
-        "production1",
-        "maneuver1",
-        "investor",
-        "import",
-        "production2",
-        "maneuver2",
-        "taxation",
-      ].forEach((slot) => {
-        const slotElement = document.getElementById(slot);
-        slotElement.removeEventListener("mouseenter", this.darken);
-        slotElement.removeEventListener("click", this.tickWithEvent);
-      });
     },
     darken: function (event) {
       event.target.setAttribute("filter", "brightness(0.8)");
