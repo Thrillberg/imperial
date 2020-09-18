@@ -13,6 +13,7 @@ Vue.component("player", {
   <li class="player">
     <div v-if="name === current_player" class="current_player">
       🤩
+      <flag v-bind:nation="'Nation.AH'"></flag>
     </div>
     <div class="contents">
       <h3>{{ name }}</h3>
@@ -58,14 +59,27 @@ Vue.component("player-count", {
   template: `<button v-on:click="start_game(count)">{{ count }} players</button>`,
 });
 
+Vue.component("flag", {
+  props: ["nation"],
+  data: function () {
+    return {
+      svg: {
+        [Nation.AH]: `<svg xmlns="http://www.w3.org/2000/svg" width="900" height="600" viewbox="0 0 900 600"><path fill="#fd1" d="M0 0h900v600H0z"/><path d="M0 0h900v300H0z"/></svg>`,
+        [Nation.IT]: `<svg height="1000" width="1500" xmlns="http://www.w3.org/2000/svg"><g stroke-width="500"><path d="m0 0h1500v1000h-1500z" fill="#009246"/><path d="m500 0h1000v1000h-1000z" fill="#fff"/><path d="m1000 0h500v1000h-500z" fill="#ce2b37"/></g><path d="m576.98052 288.08032h346.03959v413.57484h-346.03959z" fill="#d2232c"/><path d="m723.2952 288.08032h53.41024v413.57484h-53.41024z" fill="#fff"/><path d="m923.02011 460.81767v53.41023h-346.03959v-53.41023z" fill="#fff"/><path d="m512.262 245.35213c0 .00001 21.48928 18.68683 21.48928 55.93471v350.62991c0 51.90847 39.00294 80.24047 79.25996 80.24047h105.69385c26.64703 0 31.29506 22.49065 31.29506 22.49078 0-.00007 4.64803-22.49078 31.29506-22.49078h105.69386c40.25702 0 79.25997-28.33193 79.25997-80.24047v-350.62991c0-37.24788 21.48927-55.9347 21.48927-55.93471zm71.39447 49.40447h332.68737v345.41403c-.00006 22.57023-8.76188 40.12017-36.21882 40.1203h-100.29025c-20.66215 0-29.83462 14.68782-29.83462 14.68782s-9.17247-14.68782-29.83462-14.68782h-100.29024c-27.45695-.0002-36.21876-17.55007-36.21882-40.1203z" fill="#4b61d1" fill-rule="evenodd"/></svg>`,
+      }[this.nation],
+    };
+  },
+  template: `<div style="width: 100px; height: 50px" v-html="svg"></div>`,
+});
+
 Vue.component("rondel-slot", {
-  props: ["rondel_slot", "index", "on_click"],
+  props: ["rondel_slot", "index", "select_slot"],
   template: `
   <g v-bind:transform="'translate(0, ' + 51 * index + ')'">
     <rect
       v-bind:id="rondel_slot.type"
       v-bind:fill="rondel_slot.color"
-      v-on:click="on_click(rondel_slot)"
+      v-on:click="select_slot(rondel_slot)"
       x="0" y="0" width="200" height="50">
     </rect>
     <text
@@ -76,8 +90,9 @@ Vue.component("rondel-slot", {
     >
         <tspan x="0" y="25" width="200">{{ rondel_slot.label }}</tspan>
     </text>
+    <flag v-bind:nation="'AH'"></flag>
   </g>
-  `
+  `,
 });
 
 Vue.component("rondel", {
@@ -99,7 +114,7 @@ Vue.component("rondel", {
     ],
   }),
   methods: {
-    onClick: function (slot) {
+    selectSlot: function (slot) {
       // Look through the available actions for this particular board state.
       for (const action of this.game.availableActions) {
         // If an action corresponding to the selected slot is available, then
@@ -108,7 +123,7 @@ Vue.component("rondel", {
           this.dispatch(action);
         }
       }
-    }
+    },
   },
   template: `
   <svg
@@ -121,11 +136,11 @@ Vue.component("rondel", {
         v-for="(slot, index) in rondelSlots"
         v-bind:rondel_slot="slot"
         v-bind:index="index"
-        v-bind:on_click="onClick"
+        v-bind:select_slot="selectSlot"
       ></rondel-slot>
   </svg>
   `,
-})
+});
 
 var app = new Vue({
   el: "#app",
@@ -154,6 +169,8 @@ var app = new Vue({
       .then((text) => {
         this.board = text;
       });
+
+    this.startGame(6); // TEST
   },
   methods: {
     startGame: function (playerCount) {

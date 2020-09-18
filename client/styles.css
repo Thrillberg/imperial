@@ -62,3 +62,9 @@ ul {
 .current_nation {
   box-shadow: 0 0 2rem 0.5rem #ffd700;
 }
+
+svg {
+  /* SVGs should scale to the full width of their container. */
+  width: 100%;
+  height: 100%;
+}
