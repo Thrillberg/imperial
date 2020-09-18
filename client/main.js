@@ -85,11 +85,23 @@ Vue.component("rondel", {
   // corresponds to the action a nation can take on a turn. Selecting a segment
   // triggers an action of type "rondel". Each nation's flag is displayed
   // on the segment corresponding to the action it last took.
-  props: ["rondel_slots", "available_actions", "dispatch"],
+  props: ["game", "dispatch"],
+  data: () => ({
+    rondelSlots: [
+      { type: "import", label: "Import", color: "#F39D81" },
+      { type: "production2", label: "Production", color: "#8C8798" },
+      { type: "maneuver2", label: "Maneuver", color: "#7EA850" },
+      { type: "taxation", label: "Taxation", color: "#FFD281" },
+      { type: "factory", label: "Factory", color: "#8DBCFB" },
+      { type: "production1", label: "Production", color: "#8C8798" },
+      { type: "maneuver1", label: "Maneuver", color: "#7EA850" },
+      { type: "investor", label: "Investor", color: "#8EDFFF" },
+    ],
+  }),
   methods: {
-    onSlotClick: function (slot) {
+    onClick: function (slot) {
       // Look through the available actions for this particular board state.
-      for (const action of this.available_actions) {
+      for (const action of this.game.availableActions) {
         // If an action corresponding to the selected slot is available, then
         // dispatch the available action.
         if (slot.type === action.payload.slot) {
@@ -106,10 +118,10 @@ Vue.component("rondel", {
     xmlns="http://www.w3.org/2000/svg"
     xmlns:xlink="http://www.w3.org/1999/xlink">
       <rondel-slot
-        v-for="(slot, index) in rondel_slots"
+        v-for="(slot, index) in rondelSlots"
         v-bind:rondel_slot="slot"
         v-bind:index="index"
-        v-bind:on_click="onSlotClick"
+        v-bind:on_click="onClick"
       ></rondel-slot>
   </svg>
   `,
@@ -118,16 +130,6 @@ Vue.component("rondel", {
 var app = new Vue({
   el: "#app",
   data: {
-    rondelSlots: [
-      { type: "import", label: "Import", color: "#F39D81" },
-      { type: "production2", label: "Production", color: "#8C8798" },
-      { type: "maneuver2", label: "Maneuver", color: "#7EA850" },
-      { type: "taxation", label: "Taxation", color: "#FFD281" },
-      { type: "factory", label: "Factory", color: "#8DBCFB" },
-      { type: "production1", label: "Production", color: "#8C8798" },
-      { type: "maneuver1", label: "Maneuver", color: "#7EA850" },
-      { type: "investor", label: "Investor", color: "#8EDFFF" },
-    ],
     board: "",
     buildingFactory: false,
     game: {},
