@@ -29,8 +29,17 @@ ul {
   padding: 3rem;
 }
 
-.rondel {
-  text-align: center;
+.rondel .slot {
+  cursor: pointer;
+}
+
+.rondel .slot text {
+  /* Disable text selection. */
+  pointer-events: none;
+}
+
+.rondel .slot:hover text {
+  fill: white;
 }
 
 .current_player {

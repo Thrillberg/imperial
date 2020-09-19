@@ -74,23 +74,58 @@ Vue.component("flag", {
 
 Vue.component("rondel-slot", {
   props: ["rondel_slot", "index", "select_slot"],
+  data: function () {
+    const slotCount = 8;
+    return {
+      // The rotation of the slot relative to the overall rondel.
+      rotation: 360.0 / slotCount * this.index,
+      // The rotation of the text within its slot.
+      textRotation: 360.0 / slotCount / 2.0,
+      svgPathData: [
+        // Start at the top of a circle. Using a unit circle of radius 1
+        // makes the trigonometry below a little easier to do. The path is
+        // scaled up using a transform.
+        "M 0 0",
+        "H 1",
+        // Start an arc with a radius of 1, 1, unrotated, traveling the
+        // shortest path to the target point, and curving away from the center.
+        "A 1 1 0 0 1",
+        // The arc's target is a point 1/8th of the way along a unit circle.
+        Math.cos(2 * Math.PI / slotCount),
+        Math.sin(2 * Math.PI / slotCount),
+        // Finish by closing the path.
+        "Z"
+      ].join(" ")
+    }
+  },
   template: `
-  <g v-bind:transform="'translate(0, ' + 51 * index + ')'">
-    <rect
+  <g
+    class="slot"
+    v-bind:transform="'translate(100, 100) rotate(' + rotation + ')'"
+  >
+    <path
       v-bind:id="rondel_slot.type"
       v-bind:fill="rondel_slot.color"
+      v-bind:d="svgPathData"
       v-on:click="select_slot(rondel_slot)"
-      x="0" y="0" width="200" height="50">
-    </rect>
+      stroke="#000000"
+      vector-effect="non-scaling-stroke"
+      stroke-width="1"
+      transform="scale(100, 100)"
+    ></path>
     <text
-      font-family="Baskerville" font-size="24" font-weight="normal"
+      font-family="Baskerville" font-weight="normal"
+      font-size="14"
       letter-spacing="0.61714304"
       fill="#000000"
       text-align="center"
+      x="60" y="0"
+      text-anchor="middle"
+      alignment-baseline="central"
+      v-bind:transform="'rotate(' + textRotation + ')'"
     >
-        <tspan x="0" y="25" width="200">{{ rondel_slot.label }}</tspan>
+      {{ rondel_slot.label }}
     </text>
-    <flag v-bind:nation="'AH'"></flag>
   </g>
   `,
 });
@@ -103,14 +138,14 @@ Vue.component("rondel", {
   props: ["game", "dispatch"],
   data: () => ({
     rondelSlots: [
+      { type: "production1", label: "Production", color: "#8C8798" },
+      { type: "maneuver1", label: "Maneuver", color: "#7EA850" },
+      { type: "investor", label: "Investor", color: "#8EDFFF" },
       { type: "import", label: "Import", color: "#F39D81" },
       { type: "production2", label: "Production", color: "#8C8798" },
       { type: "maneuver2", label: "Maneuver", color: "#7EA850" },
       { type: "taxation", label: "Taxation", color: "#FFD281" },
       { type: "factory", label: "Factory", color: "#8DBCFB" },
-      { type: "production1", label: "Production", color: "#8C8798" },
-      { type: "maneuver1", label: "Maneuver", color: "#7EA850" },
-      { type: "investor", label: "Investor", color: "#8EDFFF" },
     ],
   }),
   methods: {
@@ -127,8 +162,9 @@ Vue.component("rondel", {
   },
   template: `
   <svg
-    width="470px" height="456px"
-    viewBox="0 0 470 456"
+    class="rondel"
+    width="350px" height="350px"
+    viewBox="-10 -10 220 220"
     version="1.1"
     xmlns="http://www.w3.org/2000/svg"
     xmlns:xlink="http://www.w3.org/1999/xlink">
