@@ -2,10 +2,12 @@
 
 # Imperial
 
-This is an implementation of the board game, [Imperial](https://en.wikipedia.org/wiki/Imperial_(board_game)).
+This is an implementation of the board game, [Imperial](<https://en.wikipedia.org/wiki/Imperial_(board_game)>).
 
 ## To run locally:
+
 ```
+cd client
 npm install
 npm start
 ```
@@ -13,10 +15,21 @@ npm start
 Navigate to `http://localhost:9080` in a web browser.
 
 ## To run tests:
+
 ```
+cd client
 npm install
 npm test
 ```
+
+## To deploy:
+
+```
+cd client
+npm run deploy
+```
+
+_N.B. The deploy command requires a configured [`AWS CLI`](https://aws.amazon.com/cli/)!_
 
 ## What the heck is a _Schnelleinsteig_??
 

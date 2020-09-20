@@ -6,6 +6,7 @@
   },
   "scripts": {
     "board": "node board.js | sfdp -Tsvg > board.svg",
+    "deploy": "aws s3 cp ./ s3://playimperial.club/ --recursive",
     "lint": "prettier -c *.js",
     "lint:fix": "prettier --write *.js",
     "start": "static-server",
