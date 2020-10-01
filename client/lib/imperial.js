@@ -22,7 +22,7 @@ export default class Imperial {
     switch (action.type) {
       case "noop":
         return;
-      case "initialize":
+      case "initialize": {
         const s = setup({
           players: action.payload.players,
           provinceNames: Array.from(this.board.graph.keys()),
@@ -40,17 +40,20 @@ export default class Imperial {
         ).controller;
         this.availableActions = new Set(this.rondelActions(this.currentNation));
         return;
-      case "bondPurchase":
+      }
+      case "bondPurchase": {
         this.purchaseBond(action);
         this.handleAdvancePlayer();
         this.availableActions = new Set(this.rondelActions(this.currentNation));
         return;
-      case "endManeuver":
+      }
+      case "endManeuver": {
         this.unitsToMove = [];
         this.handleAdvancePlayer();
         this.availableActions = new Set(this.rondelActions(this.currentNation));
         return;
-      case "endGame":
+      }
+      case "endGame": {
         const scores = {};
         Object.keys(this.players).forEach((player) => {
           let score = 0;
@@ -70,7 +73,8 @@ export default class Imperial {
 
         this.winner = winner;
         return;
-      case "fight":
+      }
+      case "fight": {
         const incumbentUnitsAtProvince = this.units
           .get(action.payload.incumbent)
           .get(action.payload.province);
@@ -113,7 +117,8 @@ export default class Imperial {
         }
 
         return;
-      case "coexist":
+      }
+      case "coexist": {
         if (this.unitsToMove.length === 0) {
           this.tick(Action.endManeuver());
         } else {
@@ -133,7 +138,7 @@ export default class Imperial {
             }
           }
 
-          for (const [origin, count] of provincesWithFleets) {
+          for (const [origin,] of provincesWithFleets) {
             for (const destination of this.board.neighborsFor({
               origin,
               nation: action.payload.nation,
@@ -149,7 +154,7 @@ export default class Imperial {
             }
           }
 
-          for (const [origin, count] of provincesWithArmies) {
+          for (const [origin,] of provincesWithArmies) {
             for (const destination of this.board.neighborsFor({
               origin,
               nation: action.payload.nation,
@@ -169,7 +174,8 @@ export default class Imperial {
         }
 
         return;
-      case "buildFactory":
+      }
+      case "buildFactory": {
         this.buildFactory(action);
         if (
           this.nations.get(this.currentNation).previousRondelPosition ===
@@ -180,7 +186,8 @@ export default class Imperial {
         this.handleAdvancePlayer();
         this.availableActions = new Set(this.rondelActions(this.currentNation));
         return;
-      case "import":
+      }
+      case "import": {
         action.payload.placements.forEach(({ province, type }) => {
           const nation = this.board.graph.get(province).nation;
           if (type === "army") {
@@ -208,7 +215,8 @@ export default class Imperial {
         this.handleAdvancePlayer();
         this.availableActions = new Set(this.rondelActions(this.currentNation));
         return;
-      case "maneuver":
+      }
+      case "maneuver": {
         const origin = action.payload.origin;
         const destination = action.payload.destination;
         const unitType = this.board.graph.get(destination).isOcean
@@ -226,7 +234,7 @@ export default class Imperial {
 
           // Fleets cannot move after armies!
           this.unitsToMove = this.unitsToMove.filter(
-            ([_, type]) => type === "army"
+            ([, type]) => type === "army"
           );
         }
 
@@ -237,7 +245,7 @@ export default class Imperial {
         this.unitsToMove.splice(i, 1);
 
         // Interrupt manuevers in case of potential conflict!
-        for (const [nation, _] of this.nations) {
+        for (const [nation,] of this.nations) {
           if (
             nation !== this.currentNation &&
             (this.units.get(nation).get(destination).armies > 0 ||
@@ -267,14 +275,14 @@ export default class Imperial {
           const provincesWithFleets = new Map();
           const provincesWithArmies = new Map();
           const out = new Set([Action.endManeuver()]);
-          this.unitsToMove.forEach(([origin, type]) => {
+          this.unitsToMove.forEach(([origin,]) => {
             const units = this.units.get(this.currentNation).get(origin);
             if (units.fleets > 0) {
               provincesWithFleets.set(origin, units.fleets);
             } else if (units.armies > 0) {
               provincesWithArmies.set(origin, units.armies);
             }
-            for (const [origin, count] of provincesWithFleets) {
+            for (const [origin,] of provincesWithFleets) {
               for (const destination of this.board.neighborsFor({
                 origin,
                 nation: this.currentNation,
@@ -292,7 +300,7 @@ export default class Imperial {
                 friendlyFleets.add(province);
               }
             }
-            for (const [origin, count] of provincesWithArmies) {
+            for (const [origin,] of provincesWithArmies) {
               for (const destination of this.board.neighborsFor({
                 origin,
                 nation: this.currentNation,
@@ -328,7 +336,8 @@ export default class Imperial {
         }
 
         return;
-      case "rondel":
+      }
+      case "rondel": {
         this.currentNation = action.payload.nation;
         this.nations.get(
           this.currentNation
@@ -340,7 +349,7 @@ export default class Imperial {
         this.players[this.currentPlayerName].cash -= action.payload.cost;
 
         switch (action.payload.slot) {
-          case "investor":
+          case "investor": {
             // 1. Nation pays bond-holders interest
             for (const player of Object.keys(this.players)) {
               if (player !== this.currentPlayerName) {
@@ -379,7 +388,8 @@ export default class Imperial {
             }
             this.endOfInvestorTurn();
             return;
-          case "import":
+          }
+          case "import": {
             const availableActions = new Set([
               Action.import({ placements: [] }),
             ]);
@@ -523,7 +533,7 @@ export default class Imperial {
                   }
                   if (
                     this.board.graph.get(province2).factoryType ===
-                      "shipyard" &&
+                    "shipyard" &&
                     this.board.graph.get(province3).factoryType === "shipyard"
                   ) {
                     availableActions.add(
@@ -539,7 +549,7 @@ export default class Imperial {
                   if (
                     this.board.graph.get(province).factoryType === "shipyard" &&
                     this.board.graph.get(province2).factoryType ===
-                      "shipyard" &&
+                    "shipyard" &&
                     this.board.graph.get(province3).factoryType === "shipyard"
                   ) {
                     availableActions.add(
@@ -557,8 +567,9 @@ export default class Imperial {
             }
             this.availableActions = availableActions;
             return;
+          }
           case "production1":
-          case "production2":
+          case "production2": {
             Array.from(this.board.byNation.get(action.payload.nation))
               .filter(
                 (province) => this.provinces.get(province).factory !== null
@@ -593,7 +604,8 @@ export default class Imperial {
             );
 
             return;
-          case "taxation":
+          }
+          case "taxation": {
             const nationName = action.payload.nation;
             const nation = this.nations.get(nationName);
             // 1. Tax revenue / success bonus
@@ -641,11 +653,13 @@ export default class Imperial {
               this.endOfInvestorTurn();
             }
             return;
+          }
           case "maneuver1":
-          case "maneuver2":
+          case "maneuver2": {
             this.maneuver(action);
             return;
-          case "factory":
+          }
+          case "factory": {
             // If nation cannot afford to build a factory
             if (this.nations.get(this.currentNation).treasury < 5) {
               this.handleAdvancePlayer();
@@ -658,7 +672,7 @@ export default class Imperial {
             )) {
               if (!this.provinces.get(province).factory) {
                 let occupied = false;
-                for (const [nation, _] of this.nations) {
+                for (const [nation,] of this.nations) {
                   if (this.units.get(nation).get(province).armies > 0)
                     occupied = true;
                 }
@@ -668,7 +682,9 @@ export default class Imperial {
             }
 
             return;
+          }
         }
+      }
     }
   }
 
@@ -699,7 +715,7 @@ export default class Imperial {
       }
     }
 
-    for (const [origin, count] of provincesWithFleets) {
+    for (const [origin,] of provincesWithFleets) {
       for (const destination of this.board.neighborsFor({
         origin,
         nation: action.payload.nation,
@@ -721,7 +737,7 @@ export default class Imperial {
       }
     }
 
-    for (const [origin, count] of provincesWithArmies) {
+    for (const [origin,] of provincesWithArmies) {
       for (const destination of this.board.neighborsFor({
         origin,
         nation: action.payload.nation,
@@ -742,7 +758,7 @@ export default class Imperial {
 
   flagCount(nation) {
     let count = 0;
-    for (const [_, { flag }] of this.provinces) {
+    for (const [, { flag }] of this.provinces) {
       if (flag === nation) {
         count++;
       }
@@ -827,7 +843,7 @@ export default class Imperial {
 
     const newBond = Bond(action.payload.nation, uncost[action.payload.cost]);
     if (!this.availableBonds.has(newBond)) {
-      throw new Error(`${bond} not available`);
+      throw new Error(`${newBond} not available`);
     }
     this.players[action.payload.player].bonds.add(newBond);
     this.availableBonds.delete(newBond);
@@ -860,7 +876,7 @@ export default class Imperial {
   }
 
   advanceInvestorCard() {
-    if (!!this.investorCardHolder) {
+    if (this.investorCardHolder) {
       const index = this.order.indexOf(this.investorCardHolder);
       if (index === 0) {
         this.investorCardHolder = this.order[this.order.length - 1];
@@ -872,7 +888,7 @@ export default class Imperial {
 
   unitCount(nation) {
     let out = 0;
-    for (const [province, units] of this.units.get(nation)) {
+    for (const [, units] of this.units.get(nation)) {
       out += units.armies;
       out += units.fleets;
     }
@@ -972,7 +988,7 @@ export default class Imperial {
     let count = 0;
     for (const province of this.board.byNation.get(nation)) {
       let provinceIsUnoccupied = true;
-      for (const [occupyingNation, _] of this.units) {
+      for (const [occupyingNation,] of this.units) {
         if (occupyingNation !== nation) {
           if (this.units.get(occupyingNation).get(province).armies > 0) {
             provinceIsUnoccupied = false;

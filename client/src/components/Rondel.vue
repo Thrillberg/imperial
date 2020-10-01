@@ -1,0 +1,60 @@
+<template>
+  <svg
+    class="rondel"
+    width="450px"
+    height="450px"
+    viewBox="-20 -20 240 240"
+    version="1.1"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+  >
+    <RondelSlot
+      v-for="(rondel_slot, index) in slots"
+      v-bind:handle_click="select_action"
+      v-bind:index="index"
+      v-bind:is_valid="isValid(rondel_slot.type)"
+      v-bind:nations="nations"
+      v-bind:rondel_slot="rondel_slot"
+      v-bind:key="rondel_slot.type"
+    ></RondelSlot>
+  </svg>
+</template>
+
+<script>
+import RondelSlot from "./RondelSlot.vue";
+
+export default {
+  name: "Rondel",
+  components: {
+    RondelSlot,
+  },
+  props: {
+    nations: Map,
+    select_action: Function,
+    valid_slots: Array,
+  },
+  methods: {
+    isValid(slot) {
+      if (this.valid_slots.includes(slot)) {
+        return true;
+      }
+
+      return false;
+    },
+  },
+  data() {
+    return {
+      slots: [
+        { type: "production1", label: "Production", color: "#8C8798" },
+        { type: "maneuver1", label: "Maneuver", color: "#7EA850" },
+        { type: "investor", label: "Investor", color: "#8EDFFF" },
+        { type: "import", label: "Import", color: "#F39D81" },
+        { type: "production2", label: "Production", color: "#8C8798" },
+        { type: "maneuver2", label: "Maneuver", color: "#7EA850" },
+        { type: "taxation", label: "Taxation", color: "#FFD281" },
+        { type: "factory", label: "Factory", color: "#8DBCFB" },
+      ],
+    };
+  },
+};
+</script>

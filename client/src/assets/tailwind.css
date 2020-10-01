@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 button {
   background: #224f4a;
   border: none;
@@ -7,16 +11,6 @@ button {
   padding: 2rem;
 }
 
-.buttons {
-  display: flex;
-  justify-content: space-around;
-}
-
-.bonds {
-  list-style: none;
-  padding-left: 0;
-}
-
 ul {
   display: flex;
   justify-content: space-around;
@@ -24,29 +18,9 @@ ul {
   padding-left: 0;
 }
 
-.player {
-  background: #9dd7d0;
-  padding: 3rem;
-}
-
-.rondel {
-  text-align: center;
-}
-
-.current_player {
-  font-size: 3rem;
-  margin-top: 0.5rem;
-  padding: 1rem 0;
-  position: absolute;
-  top: -0.2rem;
-}
-
-.sm-flag {
-  height: 1rem;
-}
-
-.md-flag {
-  height: 3rem;
+.buttons {
+  display: flex;
+  justify-content: space-around;
 }
 
 .nations {
@@ -59,6 +33,10 @@ ul {
   font-size: 1.2rem;
 }
 
-.current_nation {
-  box-shadow: 0 0 2rem 0.5rem #ffd700;
+.rondel {
+  margin: 0 auto;
+}
+
+.hoverable:hover {
+  filter: brightness(125%);
 }

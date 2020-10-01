@@ -10,4 +10,4 @@ test:
 	npm test
 
 run:
-	npm run serve
+	npm start
