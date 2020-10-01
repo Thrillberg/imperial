@@ -13,7 +13,7 @@ class Enum {
 
   when(cases) {
     for (const member of this.members) {
-      if (!cases.hasOwnProperty(member)) {
+      if (!Object.prototype.hasOwnProperty.call(cases, member)) {
         throw new Error(`unhandled case ${member}`);
       }
     }
