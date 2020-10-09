@@ -1,10 +1,11 @@
 <template>
   <component
-    v-if="nationData.rondelPosition === rondel_slot"
     v-bind:is="this.flag(nation)"
     v-bind:width="width"
     v-bind:height="height"
     v-bind:transform="transform"
+    v-bind:x="x"
+    v-bind:y="y"
   ></component>
 </template>
 
@@ -21,10 +22,10 @@ export default {
   props: {
     height: String,
     nation: String,
-    nation_data: Object,
-    rondel_slot: String,
     transform: String,
     width: String,
+    x: Number,
+    y: Number,
   },
   data() {
     return {
