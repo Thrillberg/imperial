@@ -30,11 +30,9 @@
       {{ rondel_slot.label }}
     </text>
     <Flag
-      v-for="[nation, data] of nations"
-      v-bind:nation_data="data"
-      v-bind:nation="nation.value"
-      v-bind:key="nation.value"
-      v-bind:rondel_slot="rondel_slot.type"
+      v-for="nation in nations"
+      v-bind:nation="nation"
+      v-bind:key="nation"
       width="15"
       height="10"
       v-bind:transform="
@@ -57,7 +55,7 @@ export default {
     index: Number,
     is_valid: Boolean,
     rondel_slot: Object,
-    nations: Map,
+    nations: Array,
   },
   data: function () {
     const slotCount = 8;

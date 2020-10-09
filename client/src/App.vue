@@ -12,7 +12,11 @@
             v-bind:key="player.name"
           ></Player>
         </ul>
-        <Board v-bind:board="board"></Board>
+        <Board
+          v-bind:select_province="selectProvince"
+          v-bind:units="boardUnits()"
+          v-bind:valid_provinces="validProvinces()"
+        ></Board>
         <Rondel
           v-bind:nations="game.nations"
           v-bind:select_action="selectAction"
@@ -74,7 +78,7 @@ import Action from "../lib/action.js";
 import { Nation } from "../lib/constants.js";
 
 import ActionComponent from "./components/ActionComponent.vue";
-import Board from "./components/Board.vue";
+import Board from "./components/board/Board.vue";
 import CurrentTurn from "./components/CurrentTurn.vue";
 import NationComponent from "./components/NationComponent.vue";
 import Player from "./components/Player.vue";
@@ -94,7 +98,6 @@ export default {
   },
   data: () => {
     return {
-      board: "",
       buildingFactory: false,
       game: {},
       gameStarted: false,
@@ -163,12 +166,58 @@ export default {
       this.game = Imperial.fromLog([Action.initialize({ players })]);
       this.gameStarted = true;
     },
+    selectProvince(province) {
+      // If the game is in a maneuver and an origin is specified,
+      // then the next specified province is the destination
+      if (this.maneuverStatus.active && this.maneuverStatus.origin) {
+        const maneuver = Action.maneuver({
+          origin: this.maneuverStatus.origin,
+          destination: province,
+        });
+        // Reset maneuverStatus
+        this.maneuverStatus.origin = "";
+        this.tickWithAction(maneuver);
+        // If the game is in a maneuver with no origin specified,
+        // then the next specified province is the origin
+      } else if (this.maneuverStatus.active) {
+        this.maneuverStatus.origin = province;
+      }
+    },
     selectAction(_, slot) {
       for (const action of this.game.availableActions) {
         if (action.payload.slot === slot) {
           this.tickWithAction(action);
         }
       }
+    },
+    boardUnits() {
+      // This function returns all units on the board.
+      // TODO: Distinguish between armies and fleets, and numbers of units.
+      let boardUnits = new Map();
+      for (const [nation, allUnits] of this.game.units) {
+        for (const [province, units] of allUnits) {
+          let allUnitsInProvince = new Map();
+          if (units.armies > 0 || units.fleets > 0) {
+            allUnitsInProvince.set(nation.value, units);
+            boardUnits.set(province, allUnitsInProvince);
+          }
+        }
+      }
+      return boardUnits;
+    },
+    validProvinces() {
+      // This function returns all provinces that a unit can move to.
+      let provinces = new Set();
+      for (const action of this.game.availableActions) {
+        if (action.type === "maneuver" && this.maneuverStatus.active) {
+          if (this.maneuverStatus.origin) {
+            provinces.add(action.payload.destination);
+          } else {
+            provinces.add(action.payload.origin);
+          }
+        }
+      }
+      return Array.from(provinces);
     },
     validSlots() {
       let slots = [];
@@ -248,9 +297,10 @@ export default {
       ) {
         this.maneuverStatus.active = true;
       }
-      if (action.type === "maneuver") {
-        const el = document.getElementById(action.payload.origin);
-        el.removeAttribute("filter");
+      for (const action of this.game.availableActions) {
+        if (action.type === "rondel") {
+          this.maneuverStatus.active = false;
+        }
       }
     },
     actionToText: function (action) {

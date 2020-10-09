@@ -13,7 +13,7 @@
       v-bind:handle_click="select_action"
       v-bind:index="index"
       v-bind:is_valid="isValid(rondel_slot.type)"
-      v-bind:nations="nations"
+      v-bind:nations="nationsOnSlot(rondel_slot.type)"
       v-bind:rondel_slot="rondel_slot"
       v-bind:key="rondel_slot.type"
     ></RondelSlot>
@@ -40,6 +40,15 @@ export default {
       }
 
       return false;
+    },
+    nationsOnSlot(slot) {
+      let nations = [];
+      for (const [nation, data] of this.nations) {
+        if (slot === data.rondelPosition) {
+          nations.push(nation.value);
+        }
+      }
+      return nations;
     },
   },
   data() {
