@@ -18,7 +18,8 @@
           v-bind:valid_provinces="validProvinces()"
         ></Board>
         <Rondel
-          v-bind:nations="game.nations"
+          v-bind:game="game"
+          v-bind:name="name"
           v-bind:select_action="selectAction"
           v-bind:valid_slots="validSlots()"
         ></Rondel>
@@ -61,13 +62,26 @@
         ></ActionComponent>
       </div>
     </div>
-    <div v-else class="flex items-center">
-      <PlayerCount
-        v-for="count in playerCounts"
-        v-bind:key="count"
-        v-bind:count="count"
-        v-bind:start_game="startGame"
-      ></PlayerCount>
+    <div v-else>
+      <ul v-for="player in players" v-bind:key="player.name">
+        <li v-if="player.name === name">
+          <strong>{{ player.name }}</strong>
+        </li>
+        <li v-else>
+          {{ player.name }}
+        </li>
+      </ul>
+      <div v-if="alreadyRegistered()">
+        <h3>Waiting for other players...</h3>
+      </div>
+      <div v-else class="flex flex-col">
+        <input
+          class="mx-auto m-6 border-black border-solid border-2 p-3 rounded"
+          v-model="name"
+          placeholder="name"
+        />
+        <button v-on:click="registerPlayer(name)">Play</button>
+      </div>
     </div>
   </div>
 </template>
@@ -82,7 +96,6 @@ import Board from "./components/board/Board.vue";
 import CurrentTurn from "./components/CurrentTurn.vue";
 import NationComponent from "./components/NationComponent.vue";
 import Player from "./components/Player.vue";
-import PlayerCount from "./components/PlayerCount.vue";
 import Rondel from "./components/Rondel.vue";
 
 export default {
@@ -93,7 +106,6 @@ export default {
     CurrentTurn,
     NationComponent,
     Player,
-    PlayerCount,
     Rondel,
   },
   data: () => {
@@ -112,10 +124,10 @@ export default {
         endManeuver: Action.endManeuver(),
         origin: "",
       },
-      playerCounts: [2, 3, 4, 5, 6],
+      name: "",
       players: new Set(),
       purchasingBond: false,
-      webSocket: new WebSocket("ws://localhost:8080/ws"),
+      webSocket: new WebSocket(process.env.VUE_APP_IMPERIAL_WEBSOCKETS_URL),
     };
   },
   mounted() {
@@ -137,6 +149,26 @@ export default {
             this.startGame();
           }
           break;
+        case "updateGameLog": {
+          // TODO: Find a better way to relay the game log between here and the Go server?
+          const rawGameLog = JSON.parse(JSON.parse(envelope.data.gameLog)[0]);
+          // The following map only exists because of our custom Nation type, which
+          // has weirdness when we attempt nation.when() in the setup file.
+          const gameLog = rawGameLog.map((action) => {
+            if (action.type === "initialize") {
+              action.payload.players = action.payload.players.map((player) => {
+                return {
+                  id: player.id,
+                  nation: Nation[player.nation.value],
+                };
+              });
+            } else if (action.type === "rondel") {
+              action.payload.nation = Nation[action.payload.nation.value];
+            }
+            return action;
+          });
+          this.game = Imperial.fromLog(gameLog);
+        }
       }
     };
   },
@@ -161,8 +193,11 @@ export default {
         })
       );
     },
-    startGame: function (playerCount) {
-      const players = this.getPlayers(playerCount);
+    alreadyRegistered: function () {
+      return [...this.players].map((p) => p.name).includes(this.name);
+    },
+    startGame: function () {
+      const players = this.assignNations([...this.players]);
       this.game = Imperial.fromLog([Action.initialize({ players })]);
       this.gameStarted = true;
     },
@@ -184,9 +219,11 @@ export default {
       }
     },
     selectAction(_, slot) {
-      for (const action of this.game.availableActions) {
-        if (action.payload.slot === slot) {
-          this.tickWithAction(action);
+      if (this.game.currentPlayerName === this.name) {
+        for (const action of this.game.availableActions) {
+          if (action.payload.slot === slot) {
+            this.tickWithAction(action);
+          }
         }
       }
     },
@@ -228,45 +265,7 @@ export default {
       }
       return slots;
     },
-    getPlayers: function (playerCount) {
-      switch (playerCount) {
-        case 2:
-          return [
-            { id: "Henry Davison", nation: Nation.AH },
-            { id: "Georg Siemens", nation: Nation.IT },
-          ];
-        case 3:
-          return [
-            { id: "Henry Davison", nation: Nation.AH },
-            { id: "Georg Siemens", nation: Nation.IT },
-            { id: "John Baring", nation: Nation.FR },
-          ];
-        case 4:
-          return [
-            { id: "Henry Davison", nation: Nation.AH },
-            { id: "Georg Siemens", nation: Nation.IT },
-            { id: "John Baring", nation: Nation.FR },
-            { id: "Henri Germain", nation: Nation.GE },
-          ];
-        case 5:
-          return [
-            { id: "Henry Davison", nation: Nation.AH },
-            { id: "Georg Siemens", nation: Nation.IT },
-            { id: "John Baring", nation: Nation.FR },
-            { id: "Henri Germain", nation: Nation.GE },
-            { id: "Johann Heinrich Schröder", nation: Nation.RU },
-          ];
-        case 6:
-          return [
-            { id: "Henry Davison", nation: Nation.AH },
-            { id: "Georg Siemens", nation: Nation.IT },
-            { id: "John Baring", nation: Nation.FR },
-            { id: "Henri Germain", nation: Nation.GE },
-            { id: "Johann Heinrich Schröder", nation: Nation.RU },
-            { id: "Gerson von Bleichröder", nation: Nation.GB },
-          ];
-      }
-    },
+    // TODO: Don't hardcode the nation assignment, figure out how to accept 2-6 players
     assignNations: function (players) {
       return [
         { id: players[0].name, nation: Nation.AH },
@@ -290,6 +289,12 @@ export default {
         this.buildingFactory = false;
       }
       this.game.tick(action);
+      this.webSocket.send(
+        JSON.stringify({
+          kind: "tick",
+          data: { gameLog: JSON.stringify(this.game.log) },
+        })
+      );
       if (
         action.type === "rondel" &&
         (action.payload.slot === "maneuver1" ||

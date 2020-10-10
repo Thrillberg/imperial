@@ -3,4 +3,9 @@ module.exports = {
     removeDeprecatedGapUtilities: true,
     purgeLayersByDefault: true,
   },
+  theme: {
+    container: {
+      center: true
+    }
+  }
 }

@@ -13,6 +13,7 @@ import (
 )
 
 const addr = "localhost:8080"
+const prodAddr = "ec2-34-230-36-11.compute-1.amazonaws.com:8080"
 
 var connections = map[PlayerId]*Conn{}
 var players = map[PlayerId]PlayerName{}
@@ -26,7 +27,10 @@ func init() {
 func main() {
 	http.HandleFunc("/ws", handleWebsocket)
 	log.Println("serving websockets at", addr)
-	http.ListenAndServe(addr, nil)
+	err := http.ListenAndServe(addr, nil)
+	if err != nil {
+		log.Println("connection error", err)
+	}
 }
 
 // PlayerId uniquely identifies a client. We would like to use an
@@ -91,6 +95,12 @@ const (
 	// KindUpdatePlayers is sent to clients when a player's
 	// name is updated.
 	KindUpdatePlayers = Kind("updatePlayers")
+	// KindTick is received from clients when they register a
+	// new entry in the game log.
+	KindTick = Kind("tick")
+	// KindUpdateGameLog is sent to clients when there is a new
+	// entry in the game log.
+	KindUpdateGameLog = Kind("updateGameLog")
 )
 
 // Conn wraps a websocket.Conn with convenience methods and message
@@ -139,6 +149,18 @@ func (c *Conn) UpdatePlayers(players map[PlayerId]PlayerName) error {
 	})
 }
 
+// UpdateGameLog sends a KindUpdateGameLog message to the client.
+func (c *Conn) UpdateGameLog(gameLog []Action) error {
+	gameLogList, _ := json.Marshal(gameLog)
+
+	return c.write(&Envelope{
+		Kind: KindUpdateGameLog,
+		Data: map[string]string{
+			"gameLog": string(gameLogList),
+		},
+	})
+}
+
 // Register is the way to listen for messages from the client. Only
 // one handler is allowed per Kind. Old handlers will be silently
 // overwritten by new ones.
@@ -174,6 +196,7 @@ func handleWebsocket(w http.ResponseWriter, r *http.Request) {
 	c := NewConn(ws)
 	c.Register(KindUpdateId, onUpdateId)
 	c.Register(KindUpdateName, onUpdateName)
+	c.Register(KindTick, onTick)
 
 	id, err := NewPlayerId()
 	if err != nil {
@@ -210,6 +233,10 @@ func onUpdateId(c *Conn, data Data) error {
 				log.Println(players, "UpdatePlayers")
 				return nil
 			}
+			if err := conn.UpdateGameLog(gameLog); err != nil {
+				log.Println(gameLog, "UpdateGameLog")
+				return nil
+			}
 		}
 	}
 
@@ -228,6 +255,20 @@ func onUpdateName(c *Conn, data Data) error {
 	for _, conn := range connections {
 		if err := conn.UpdatePlayers(players); err != nil {
 			log.Println(players, "UpdatePlayers")
+			return nil
+		}
+	}
+
+	return nil
+}
+
+func onTick(c *Conn, data Data) error {
+	gameLog = []Action{data["gameLog"]}
+	log.Printf("%s: %s", KindTick, gameLog)
+
+	for _, conn := range connections {
+		if err := conn.UpdateGameLog(gameLog); err != nil {
+			log.Println(gameLog, "UpdateGameLog")
 			return nil
 		}
 	}

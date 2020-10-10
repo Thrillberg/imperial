@@ -29,13 +29,17 @@ export default {
     RondelSlot,
   },
   props: {
-    nations: Map,
+    game: Object,
+    name: String,
     select_action: Function,
     valid_slots: Array,
   },
   methods: {
     isValid(slot) {
-      if (this.valid_slots.includes(slot)) {
+      if (
+        this.valid_slots.includes(slot) &&
+        this.game.currentPlayerName === this.name
+      ) {
         return true;
       }
 
@@ -43,7 +47,7 @@ export default {
     },
     nationsOnSlot(slot) {
       let nations = [];
-      for (const [nation, data] of this.nations) {
+      for (const [nation, data] of this.game.nations) {
         if (slot === data.rondelPosition) {
           nations.push(nation.value);
         }
