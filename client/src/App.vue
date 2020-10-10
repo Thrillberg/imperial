@@ -18,6 +18,7 @@
           v-bind:valid_provinces="validProvinces()"
         ></Board>
         <Rondel
+          v-bind:soloMode="soloMode"
           v-bind:game="game"
           v-bind:name="name"
           v-bind:select_action="selectAction"
@@ -82,6 +83,17 @@
         />
         <button v-on:click="registerPlayer(name)">Play</button>
       </div>
+
+      <hr class="mt-40" />
+      <p class="text-center">Solo mode</p>
+      <div class="flex">
+        <PlayerCount
+          v-for="count in playerCounts"
+          v-bind:key="count"
+          v-bind:count="count"
+          v-bind:start_game="startGame"
+        ></PlayerCount>
+      </div>
     </div>
   </div>
 </template>
@@ -96,6 +108,7 @@ import Board from "./components/board/Board.vue";
 import CurrentTurn from "./components/CurrentTurn.vue";
 import NationComponent from "./components/NationComponent.vue";
 import Player from "./components/Player.vue";
+import PlayerCount from "./components/PlayerCount.vue";
 import Rondel from "./components/Rondel.vue";
 
 export default {
@@ -106,11 +119,13 @@ export default {
     CurrentTurn,
     NationComponent,
     Player,
+    PlayerCount,
     Rondel,
   },
   data: () => {
     return {
       buildingFactory: false,
+      soloMode: false,
       game: {},
       gameStarted: false,
       importStatus: {
@@ -125,6 +140,7 @@ export default {
         origin: "",
       },
       name: "",
+      playerCounts: [2, 3, 4, 5, 6],
       players: new Set(),
       purchasingBond: false,
       webSocket: new WebSocket(process.env.VUE_APP_IMPERIAL_WEBSOCKETS_URL),
@@ -196,10 +212,16 @@ export default {
     alreadyRegistered: function () {
       return [...this.players].map((p) => p.name).includes(this.name);
     },
-    startGame: function () {
-      const players = this.assignNations([...this.players]);
+    startGame: function (playerCount) {
+      let players;
+      if (playerCount) {
+        players = this.getPlayers(playerCount);
+      } else {
+        players = this.assignNations([...this.players]);
+      }
       this.game = Imperial.fromLog([Action.initialize({ players })]);
       this.gameStarted = true;
+      this.soloMode = true;
     },
     selectProvince(province) {
       // If the game is in a maneuver and an origin is specified,
@@ -219,7 +241,7 @@ export default {
       }
     },
     selectAction(_, slot) {
-      if (this.game.currentPlayerName === this.name) {
+      if (this.game.currentPlayerName === this.name || this.soloMode) {
         for (const action of this.game.availableActions) {
           if (action.payload.slot === slot) {
             this.tickWithAction(action);
@@ -264,6 +286,45 @@ export default {
         }
       }
       return slots;
+    },
+    getPlayers: function (playerCount) {
+      switch (playerCount) {
+        case 2:
+          return [
+            { id: "Henry Davison", nation: Nation.AH },
+            { id: "Georg Siemens", nation: Nation.IT },
+          ];
+        case 3:
+          return [
+            { id: "Henry Davison", nation: Nation.AH },
+            { id: "Georg Siemens", nation: Nation.IT },
+            { id: "John Baring", nation: Nation.FR },
+          ];
+        case 4:
+          return [
+            { id: "Henry Davison", nation: Nation.AH },
+            { id: "Georg Siemens", nation: Nation.IT },
+            { id: "John Baring", nation: Nation.FR },
+            { id: "Henri Germain", nation: Nation.GE },
+          ];
+        case 5:
+          return [
+            { id: "Henry Davison", nation: Nation.AH },
+            { id: "Georg Siemens", nation: Nation.IT },
+            { id: "John Baring", nation: Nation.FR },
+            { id: "Henri Germain", nation: Nation.GE },
+            { id: "Johann Heinrich Schröder", nation: Nation.RU },
+          ];
+        case 6:
+          return [
+            { id: "Henry Davison", nation: Nation.AH },
+            { id: "Georg Siemens", nation: Nation.IT },
+            { id: "John Baring", nation: Nation.FR },
+            { id: "Henri Germain", nation: Nation.GE },
+            { id: "Johann Heinrich Schröder", nation: Nation.RU },
+            { id: "Gerson von Bleichröder", nation: Nation.GB },
+          ];
+      }
     },
     // TODO: Don't hardcode the nation assignment, figure out how to accept 2-6 players
     assignNations: function (players) {

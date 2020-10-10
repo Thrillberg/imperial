@@ -29,6 +29,7 @@ export default {
     RondelSlot,
   },
   props: {
+    soloMode: Boolean,
     game: Object,
     name: String,
     select_action: Function,
@@ -38,7 +39,7 @@ export default {
     isValid(slot) {
       if (
         this.valid_slots.includes(slot) &&
-        this.game.currentPlayerName === this.name
+        (this.game.currentPlayerName === this.name || this.soloMode)
       ) {
         return true;
       }
