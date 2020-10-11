@@ -12,11 +12,14 @@
             v-bind:key="player.name"
           ></Player>
         </ul>
-        <Board
-          v-bind:select_province="selectProvince"
-          v-bind:units="boardUnits()"
-          v-bind:valid_provinces="validProvinces()"
-        ></Board>
+        <div class="relative">
+          <Board
+            v-bind:select_province="selectProvince"
+            v-bind:units="boardUnits()"
+            v-bind:valid_provinces="validProvinces()"
+          ></Board>
+          <TaxChart v-bind:taxes="taxes()"></TaxChart>
+        </div>
         <PowerPointsChart
           v-bind:power_points="powerPoints()"
         ></PowerPointsChart>
@@ -114,6 +117,7 @@ import Player from "./components/Player.vue";
 import PlayerCount from "./components/PlayerCount.vue";
 import PowerPointsChart from "./components/PowerPointsChart.vue";
 import Rondel from "./components/Rondel.vue";
+import TaxChart from "./components/TaxChart.vue";
 
 export default {
   name: "App",
@@ -126,6 +130,7 @@ export default {
     PlayerCount,
     PowerPointsChart,
     Rondel,
+    TaxChart,
   },
   data: () => {
     return {
@@ -291,6 +296,17 @@ export default {
         }
       }
       return slots;
+    },
+    taxes() {
+      return [15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5].map((slot) => {
+        let nations = [];
+        for (const [nation, data] of this.game.nations) {
+          if (data.taxChartPosition === slot) {
+            nations.push(nation.value);
+          }
+        }
+        return { slot, nations };
+      });
     },
     powerPoints() {
       return [...Array(26).keys()].map((slot) => {
