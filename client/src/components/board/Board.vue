@@ -6,10 +6,7 @@
     xmlns:svg="http://www.w3.org/2000/svg"
     xmlns="http://www.w3.org/2000/svg"
     version="1.1"
-    width="100%"
-    height="900px"
     viewBox="0 0 536 430"
-    class="board"
   >
     <g stroke="#000000" stroke-width="0.5">
       <Province

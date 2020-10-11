@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <div v-if="gameStarted">
-      <div class="container mx-auto">
+      <div class="container">
         <ul class="players">
           <Player
             v-for="player in game.players"
@@ -17,6 +17,9 @@
           v-bind:units="boardUnits()"
           v-bind:valid_provinces="validProvinces()"
         ></Board>
+        <PowerPointsChart
+          v-bind:power_points="powerPoints()"
+        ></PowerPointsChart>
         <Rondel
           v-bind:soloMode="soloMode"
           v-bind:game="game"
@@ -109,6 +112,7 @@ import CurrentTurn from "./components/CurrentTurn.vue";
 import NationComponent from "./components/NationComponent.vue";
 import Player from "./components/Player.vue";
 import PlayerCount from "./components/PlayerCount.vue";
+import PowerPointsChart from "./components/PowerPointsChart.vue";
 import Rondel from "./components/Rondel.vue";
 
 export default {
@@ -120,6 +124,7 @@ export default {
     NationComponent,
     Player,
     PlayerCount,
+    PowerPointsChart,
     Rondel,
   },
   data: () => {
@@ -286,6 +291,17 @@ export default {
         }
       }
       return slots;
+    },
+    powerPoints() {
+      return [...Array(26).keys()].map((slot) => {
+        let nations = [];
+        for (const [nation, data] of this.game.nations) {
+          if (data.powerPoints === slot) {
+            nations.push(nation.value);
+          }
+        }
+        return { slot, nations };
+      });
     },
     getPlayers: function (playerCount) {
       switch (playerCount) {
