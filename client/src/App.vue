@@ -42,10 +42,6 @@
           v-bind:key="nation.value"
         ></NationComponent>
       </ul>
-      <CurrentTurn
-        v-bind:type="game.log[game.log.length - 1].type"
-        v-bind:payload="game.log[game.log.length - 1].payload"
-      ></CurrentTurn>
       <div class="buttons">
         <ActionComponent
           v-if="importStatus.active"
@@ -111,7 +107,6 @@ import { Nation } from "../lib/constants.js";
 
 import ActionComponent from "./components/ActionComponent.vue";
 import Board from "./components/board/Board.vue";
-import CurrentTurn from "./components/CurrentTurn.vue";
 import NationComponent from "./components/NationComponent.vue";
 import Player from "./components/Player.vue";
 import PlayerCount from "./components/PlayerCount.vue";
@@ -124,7 +119,6 @@ export default {
   components: {
     ActionComponent,
     Board,
-    CurrentTurn,
     NationComponent,
     Player,
     PlayerCount,
@@ -142,7 +136,6 @@ export default {
         active: false,
         endImport: Action.import({ placements: new Set() }),
         placements: [],
-        targets: [],
       },
       maneuverStatus: {
         active: false,
@@ -226,12 +219,18 @@ export default {
       let players;
       if (playerCount) {
         players = this.getPlayers(playerCount);
+        this.soloMode = true;
       } else {
         players = this.assignNations([...this.players]);
       }
       this.game = Imperial.fromLog([Action.initialize({ players })]);
       this.gameStarted = true;
-      this.soloMode = true;
+      this.webSocket.send(
+        JSON.stringify({
+          kind: "tick",
+          data: { gameLog: JSON.stringify(this.game.log) },
+        })
+      );
     },
     selectProvince(province) {
       // If the game is in a maneuver and an origin is specified,
@@ -248,6 +247,10 @@ export default {
         // then the next specified province is the origin
       } else if (this.maneuverStatus.active) {
         this.maneuverStatus.origin = province;
+        // If the game is in an import, then each specified province
+        // gets added to the placements.
+      } else if (this.importStatus.active) {
+        this.importStatus.placements.push(province);
       }
     },
     selectAction(_, slot) {
@@ -275,7 +278,8 @@ export default {
       return boardUnits;
     },
     validProvinces() {
-      // This function returns all provinces that a unit can move to.
+      // This function returns all provinces that a unit can move
+      // or be imported to.
       let provinces = new Set();
       for (const action of this.game.availableActions) {
         if (action.type === "maneuver" && this.maneuverStatus.active) {
@@ -284,6 +288,10 @@ export default {
           } else {
             provinces.add(action.payload.origin);
           }
+        } else if (action.type === "import" && this.importStatus.active) {
+          action.payload.placements.forEach((placement) => {
+            provinces.add(placement.province);
+          });
         }
       }
       return Array.from(provinces);
@@ -429,19 +437,10 @@ export default {
           this.importStatus.active = false;
           this.tickWithAction(Action.import(payload));
           this.importStatus.placements = [];
-          this.importStatus.targets.forEach((target) => {
-            target.parentNode.children[1].removeAttribute("filter");
-          });
-          this.importStatus.targets = [];
           return;
         }
       }
-
       this.importStatus.placements = [];
-      this.importStatus.targets.forEach((target) => {
-        target.parentNode.children[1].removeAttribute("filter");
-      });
-      this.importStatus.targets = [];
     },
     endManeuver: function (action) {
       this.tickWithAction(action);
