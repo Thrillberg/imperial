@@ -27,11 +27,6 @@ export default {
     x: Number,
     y: Number,
   },
-  data() {
-    return {
-      nationData: this.nation_data,
-    };
-  },
   methods: {
     flag: (nation) => {
       switch (nation) {

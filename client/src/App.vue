@@ -15,7 +15,7 @@
         <div class="relative">
           <Board
             v-bind:select_province="selectProvince"
-            v-bind:units="boardUnits()"
+            v-bind:all_units="boardUnits()"
             v-bind:valid_provinces="validProvinces()"
           ></Board>
           <TaxChart v-bind:taxes="taxes()"></TaxChart>
@@ -422,22 +422,27 @@ export default {
         return `Fight`;
       }
     },
-    // TODO: runImport and endManeuver are no longer meaningful but they remain here so that the game is somewhat playable.
-    // You can import and maneuver but can only submit empty actions for each. Resolve this when we do the full map.
     runImport: function () {
+      // This function looks for a match between the provided provinces from the UI and the validated
+      // provinces from the game logic (this.game.availableActions).
       for (const { payload } of this.game.availableActions) {
         const allowedCombo = payload.placements.map(({ province }) => province);
-        const allPlacementsAreAllowed = allowedCombo.sort().every((item) => {
-          return this.importStatus.placements.includes(item);
-        });
-        if (
-          allowedCombo.length === this.importStatus.placements.length &&
-          allPlacementsAreAllowed
-        ) {
-          this.importStatus.active = false;
-          this.tickWithAction(Action.import(payload));
-          this.importStatus.placements = [];
-          return;
+        // It's not a match if the lengths are different.
+        if (payload.placements.length === this.importStatus.placements.length) {
+          // JavaScript can't directly compare arrays so we test for equality by looping through both arrays.
+          let comboMatches = true;
+          for (let i = 0; i < allowedCombo.length; i++) {
+            if (allowedCombo[i] !== this.importStatus.placements[i]) {
+              comboMatches = false;
+            }
+          }
+
+          if (comboMatches) {
+            this.importStatus.active = false;
+            this.tickWithAction(Action.import(payload));
+            this.importStatus.placements = [];
+            return;
+          }
         }
       }
       this.importStatus.placements = [];

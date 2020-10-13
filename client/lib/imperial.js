@@ -407,8 +407,6 @@ export default class Imperial {
               }
 
               for (const province2 of homeProvinces) {
-                if (province2 === province) continue;
-
                 availableActions.add(
                   Action.import({
                     placements: [
@@ -452,9 +450,6 @@ export default class Imperial {
                 }
 
                 for (const province3 of homeProvinces) {
-                  if (province === province3 || province2 === province3)
-                    continue;
-
                   availableActions.add(
                     Action.import({
                       placements: [

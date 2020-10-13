@@ -5,13 +5,13 @@
     v-on:click="select_province(name)"
   >
     <Flag
-      v-for="nation in nations"
+      v-for="(nation, index) in nations"
       v-bind:nation="nation"
       width="13"
       height="8"
-      v-bind:key="nation"
-      v-bind:x="x()"
-      v-bind:y="y()"
+      v-bind:key="nation + index"
+      v-bind:x="x(index)"
+      v-bind:y="y(index)"
     ></Flag>
   </component>
 </template>
@@ -24,16 +24,19 @@ export default {
   components: { Flag },
   props: {
     is_valid: Boolean,
-    nations: Array,
     name: String,
     province: Object,
     select_province: Function,
+    nations: Array,
   },
   updated() {
     const province = this.$refs.province;
     // Foreground the flag
-    if (this.nations.length > 0 && province.children[0].nodeName === "svg") {
-      province.insertBefore(province.children[1], province.children[0]);
+    if (this.nations && province.children[0].nodeName === "svg") {
+      province.insertBefore(
+        province.children[province.children.length - 1],
+        province.children[0]
+      );
     }
     // Add hoverable effect for maneuvers
     if (this.is_valid) {
@@ -44,14 +47,16 @@ export default {
   },
   methods: {
     // x() and y() approximate the center of a province for flag placement.
-    x() {
+    x(index) {
       return (
+        index * 2.5 +
         this.$refs.province.children[0].getBBox().x +
         this.$refs.province.children[0].getBBox().width / 2
       );
     },
-    y() {
+    y(index) {
       return (
+        index * 2.5 +
         this.$refs.province.children[0].getBBox().y +
         this.$refs.province.children[0].getBBox().height / 2
       );

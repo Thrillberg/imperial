@@ -428,7 +428,7 @@ describe("imperial", () => {
       });
 
       describe("import", () => {
-        test("nation can import an army in their province", () => {
+        test("nation can import armies in their province", () => {
           const board = new GameBoard({
             nodes: [
               { name: "a", nation: Nation.AH },
@@ -452,6 +452,12 @@ describe("imperial", () => {
           availableActions.add(
             Action.import({ placements: [{ province: "a", type: "army" }] })
           );
+          availableActions.add(
+            Action.import({ placements: [{ province: "a", type: "army" }, { province: "a", type: "army" }] })
+          );
+          availableActions.add(
+            Action.import({ placements: [{ province: "a", type: "army" }, { province: "a", type: "army" }, { province: "a", type: "army" }] })
+          );
 
           game.tick(
             Action.rondel({ slot: "import", cost: 0, nation: Nation.AH })
@@ -461,7 +467,7 @@ describe("imperial", () => {
           expect(game.nations.get(Nation.AH).rondelPosition).toEqual("import");
         });
 
-        test("nation can import a fleet in their coastal province", () => {
+        test("nation can import fleets in their coastal province", () => {
           const board = new GameBoard({
             nodes: [
               { name: "a", nation: Nation.AH, factoryType: "shipyard" },
@@ -488,7 +494,42 @@ describe("imperial", () => {
           availableActions.add(
             Action.import({ placements: [{ province: "a", type: "fleet" }] })
           );
-
+          availableActions.add(
+            Action.import({ placements: [{ province: "a", type: "army" }, { province: "a", type: "army" }] })
+          );
+          availableActions.add(
+            Action.import({ placements: [{ province: "a", type: "fleet" }, { province: "a", type: "fleet" }] })
+          );
+          availableActions.add(
+            Action.import({ placements: [{ province: "a", type: "army" }, { province: "a", type: "fleet" }] })
+          );
+          availableActions.add(
+            Action.import({ placements: [{ province: "a", type: "fleet" }, { province: "a", type: "army" }] })
+          );
+          availableActions.add(
+            Action.import({ placements: [{ province: "a", type: "army" }, { province: "a", type: "army" }, { province: "a", type: "army" }] })
+          );
+          availableActions.add(
+            Action.import({ placements: [{ province: "a", type: "army" }, { province: "a", type: "army" }, { province: "a", type: "fleet" }] })
+          );
+          availableActions.add(
+            Action.import({ placements: [{ province: "a", type: "army" }, { province: "a", type: "fleet" }, { province: "a", type: "fleet" }] })
+          );
+          availableActions.add(
+            Action.import({ placements: [{ province: "a", type: "army" }, { province: "a", type: "fleet" }, { province: "a", type: "army" }] })
+          );
+          availableActions.add(
+            Action.import({ placements: [{ province: "a", type: "fleet" }, { province: "a", type: "fleet" }, { province: "a", type: "fleet" }] })
+          );
+          availableActions.add(
+            Action.import({ placements: [{ province: "a", type: "fleet" }, { province: "a", type: "fleet" }, { province: "a", type: "army" }] })
+          );
+          availableActions.add(
+            Action.import({ placements: [{ province: "a", type: "fleet" }, { province: "a", type: "army" }, { province: "a", type: "army" }] })
+          );
+          availableActions.add(
+            Action.import({ placements: [{ province: "a", type: "fleet" }, { province: "a", type: "army" }, { province: "a", type: "fleet" }] })
+          );
           game.tick(
             Action.rondel({ slot: "import", cost: 0, nation: Nation.AH })
           );
