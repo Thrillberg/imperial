@@ -14,6 +14,7 @@
         v-bind:province="province"
         v-bind:name="name"
         v-bind:select_province="select_province"
+        v-bind:nations="nations(name)"
         v-bind:is_valid="isValid(name)"
         v-bind:key="name"
       ></Province>
@@ -95,7 +96,7 @@ export default {
   name: "Board",
   props: {
     select_province: Function,
-    units: Map,
+    all_units: Map,
     valid_provinces: Array,
   },
   methods: {
@@ -108,10 +109,12 @@ export default {
     },
     nations(province) {
       let nations = [];
-      for (const [provinceWithUnits, allUnitsInProvince] of this.units) {
-        for (const [nation] of allUnitsInProvince) {
+      for (const [provinceWithUnits, allUnitsInProvince] of this.all_units) {
+        for (const [nation, provinceUnits] of allUnitsInProvince) {
           if (province.toLowerCase() === provinceWithUnits) {
-            nations.push(nation);
+            for (let i = 0; i < provinceUnits.armies; i++) {
+              nations.push(nation);
+            }
           }
         }
       }
@@ -132,6 +135,8 @@ export default {
         westernmediterraneansea,
       },
       land_provinces: {
+        warsaw,
+        venice,
         algeria,
         belgium,
         berlin,
@@ -176,9 +181,7 @@ export default {
         trieste,
         tunis,
         turkey,
-        venice,
         vienna,
-        warsaw,
         westbalkan,
       },
     };
