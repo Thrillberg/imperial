@@ -4,6 +4,12 @@
     v-bind:is="province"
     v-on:click="select_province(name)"
   >
+    <Factory
+      v-if="factory && this.mounted"
+      v-bind:type="factory"
+      v-bind:x="x(0) - 10"
+      v-bind:y="y(0)"
+    ></Factory>
     <Flag
       v-for="(nation, index) in nations"
       v-bind:nation="nation"
@@ -17,26 +23,33 @@
 </template>
 
 <script>
+import Factory from "../Factory.svg";
 import Flag from "../Flag.vue";
 
 export default {
   name: "Province",
-  components: { Flag },
+  components: { Factory, Flag },
   props: {
+    factory: String,
     is_valid: Boolean,
     name: String,
     province: Object,
     select_province: Function,
     nations: Array,
   },
+  data: () => {
+    return {
+      mounted: false,
+    };
+  },
+  mounted() {
+    this.mounted = true;
+  },
   updated() {
     const province = this.$refs.province;
-    // Foreground the flag
-    if (this.nations && province.children[0].nodeName === "svg") {
-      province.insertBefore(
-        province.children[province.children.length - 1],
-        province.children[0]
-      );
+    // Background the province
+    if (province.children[0].nodeName === "svg") {
+      province.insertBefore(province.children[1], province.children[0]);
     }
     // Add hoverable effect for maneuvers
     if (this.is_valid) {
