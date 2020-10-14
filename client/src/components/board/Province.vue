@@ -9,6 +9,9 @@
       v-bind:type="factory"
       v-bind:x="x(0) - 10"
       v-bind:y="y(0)"
+      v-bind:fill="this.fill(factory)"
+      stroke="white"
+      stroke-width="2px"
     ></Factory>
     <Flag
       v-for="(nation, index) in nations"
@@ -73,6 +76,13 @@ export default {
         this.$refs.province.children[0].getBBox().y +
         this.$refs.province.children[0].getBBox().height / 2
       );
+    },
+    fill(factory) {
+      if (factory === "shipyard") {
+        return "blue";
+      } else {
+        return "black";
+      }
     },
   },
 };
