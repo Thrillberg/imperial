@@ -25,6 +25,7 @@
         v-bind:select_province="select_province"
         v-bind:nations="nations(name)"
         v-bind:is_valid="isValid(name)"
+        v-bind:factory="factory(name)"
         v-bind:key="name"
       ></Province>
     </g>
@@ -95,8 +96,9 @@ import Province from "./Province.vue";
 export default {
   name: "Board",
   props: {
-    select_province: Function,
     all_units: Map,
+    factories: Array,
+    select_province: Function,
     valid_provinces: Array,
   },
   methods: {
@@ -119,6 +121,14 @@ export default {
         }
       }
       return nations;
+    },
+    factory(province) {
+      const factory = this.factories.find((factory) => {
+        return factory.province === province;
+      });
+      if (factory) {
+        return factory.type;
+      }
     },
   },
   data() {

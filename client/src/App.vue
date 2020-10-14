@@ -14,8 +14,9 @@
         </ul>
         <div class="relative">
           <Board
-            v-bind:select_province="selectProvince"
             v-bind:all_units="boardUnits()"
+            v-bind:factories="factories()"
+            v-bind:select_province="selectProvince"
             v-bind:valid_provinces="validProvinces()"
           ></Board>
           <TaxChart v-bind:taxes="taxes()"></TaxChart>
@@ -276,6 +277,16 @@ export default {
         }
       }
       return boardUnits;
+    },
+    factories() {
+      let factories = [];
+      for (let [province, data] of this.game.provinces) {
+        const factory = data.factory;
+        if (factory) {
+          factories.push({ province, type: factory });
+        }
+      }
+      return factories;
     },
     validProvinces() {
       // This function returns all provinces that a unit can move
