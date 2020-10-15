@@ -1,14 +1,16 @@
 <template>
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 9 6"
+    viewBox="0 0 1500 1000"
     v-bind:width="width"
     v-bind:height="height"
     v-bind:transform="transform"
   >
-    <rect fill="#fff" width="9" height="3" />
-    <rect fill="#d52b1e" y="3" width="9" height="3" />
-    <rect fill="#0039a6" y="2" width="9" height="2" />
+    <g v-bind:clip-path="this.fleet ? 'url(#fleetClip)' : ''">
+      <rect fill="#fff" width="1500" height="500" />
+      <rect fill="#d52b1e" y="666" width="1500" height="666" />
+      <rect fill="#0039a6" y="333" width="1500" height="333" />
+    </g>
   </svg>
 </template>
 
@@ -16,6 +18,7 @@
 export default {
   name: "RUFlag",
   props: {
+    fleet: Boolean,
     width: String,
     height: String,
     transform: String,

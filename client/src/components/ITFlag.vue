@@ -6,7 +6,7 @@
     v-bind:transform="transform"
     xmlns="http://www.w3.org/2000/svg"
   >
-    <g>
+    <g v-bind:clip-path="this.fleet ? 'url(#fleetClip)' : ''">
       <path d="m0 0h1500v1000h-1500z" fill="#009246" />
       <path d="m500 0h1000v1000h-1000z" fill="#fff" />
       <path d="m1000 0h500v1000h-500z" fill="#ce2b37" />
@@ -30,6 +30,7 @@ export default {
   name: "ITFlag",
   props: {
     width: String,
+    fleet: Boolean,
     height: String,
     transform: String,
   },

@@ -14,7 +14,17 @@
       stroke-width="2px"
     ></Factory>
     <Flag
-      v-for="(nation, index) in nations"
+      v-for="(nation, index) in fleets"
+      v-bind:nation="nation"
+      width="13"
+      height="8"
+      v-bind:key="nation + index"
+      v-bind:x="x(index)"
+      v-bind:y="y(index)"
+      v-bind:fleet="true"
+    ></Flag>
+    <Flag
+      v-for="(nation, index) in armies"
       v-bind:nation="nation"
       width="13"
       height="8"
@@ -38,7 +48,8 @@ export default {
     name: String,
     province: Object,
     select_province: Function,
-    nations: Array,
+    armies: Array,
+    fleets: Array,
   },
   data: () => {
     return {

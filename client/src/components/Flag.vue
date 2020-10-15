@@ -6,6 +6,7 @@
     v-bind:transform="transform"
     v-bind:x="x"
     v-bind:y="y"
+    v-bind:fleet="this.fleet"
   ></component>
 </template>
 
@@ -20,6 +21,7 @@ import RUFlag from "./RUFlag.vue";
 export default {
   name: "Flag",
   props: {
+    fleet: Boolean,
     height: String,
     nation: String,
     transform: String,
