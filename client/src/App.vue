@@ -16,6 +16,7 @@
           <Board
             v-bind:all_units="boardUnits()"
             v-bind:factories="factories()"
+            v-bind:dots="flags()"
             v-bind:select_province="selectProvince"
             v-bind:valid_provinces="validProvinces()"
           ></Board>
@@ -287,6 +288,16 @@ export default {
         }
       }
       return factories;
+    },
+    flags() {
+      let flags = [];
+      for (const [province, data] of this.game.provinces) {
+        const flag = data.flag;
+        if (flag) {
+          flags.push({ province, flag });
+        }
+      }
+      return flags;
     },
     validProvinces() {
       // This function returns all provinces that a unit can move
