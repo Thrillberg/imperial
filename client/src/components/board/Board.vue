@@ -19,6 +19,7 @@
         v-bind:select_province="select_province"
         v-bind:fleets="fleets(name)"
         v-bind:is_valid="isValid(name)"
+        v-bind:dot="dot(name)"
         v-bind:key="name"
       ></Province>
       <Province
@@ -29,6 +30,7 @@
         v-bind:fleets="fleets(name)"
         v-bind:armies="armies(name)"
         v-bind:is_valid="isValid(name)"
+        v-bind:dot="dot(name)"
         v-bind:factory="factory(name)"
         v-bind:key="name"
       ></Province>
@@ -101,6 +103,7 @@ export default {
   name: "Board",
   props: {
     all_units: Map,
+    dots: Array,
     factories: Array,
     select_province: Function,
     valid_provinces: Array,
@@ -138,6 +141,15 @@ export default {
         }
       }
       return fleets;
+    },
+    dot(province) {
+      let nation;
+      this.dots.forEach((dot) => {
+        if (province === dot.province) {
+          nation = dot.flag.value;
+        }
+      });
+      return nation;
     },
     factory(province) {
       const factory = this.factories.find((factory) => {

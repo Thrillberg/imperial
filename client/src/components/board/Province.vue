@@ -4,6 +4,13 @@
     v-bind:is="province"
     v-on:click="select_province(name)"
   >
+    <circle
+      v-if="dot"
+      v-bind:cx="x(0) + 6"
+      v-bind:cy="y(0) - 5"
+      r="2"
+      v-bind:fill="nationFill(dot)"
+    ></circle>
     <Factory
       v-if="factory && this.mounted"
       v-bind:type="factory"
@@ -43,6 +50,7 @@ export default {
   name: "Province",
   components: { Factory, Flag },
   props: {
+    dot: String,
     factory: String,
     is_valid: Boolean,
     name: String,
@@ -62,9 +70,10 @@ export default {
   updated() {
     const province = this.$refs.province;
     // Background the province
-    if (province.children[0].nodeName === "svg") {
-      province.insertBefore(province.children[1], province.children[0]);
-    }
+    const provincePath = [...province.children].find(
+      (node) => node.nodeName === "path"
+    );
+    province.prepend(provincePath, province.children[0]);
     // Add hoverable effect for maneuvers
     if (this.is_valid) {
       this.$refs.province.children[0].classList.add("hoverable");
@@ -93,6 +102,22 @@ export default {
         return "blue";
       } else {
         return "black";
+      }
+    },
+    nationFill(nation) {
+      switch (nation) {
+        case "AH":
+          return "#ebe084";
+        case "IT":
+          return "#6E8D4E";
+        case "FR":
+          return "#54bff9";
+        case "GB":
+          return "#ef7f72";
+        case "GE":
+          return "silver";
+        case "RU":
+          return "#9c6bae";
       }
     },
   },
