@@ -1,14 +1,16 @@
 <template>
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 900 600"
+    viewBox="0 0 1500 1000"
     v-bind:width="width"
     v-bind:height="height"
     v-bind:transform="transform"
   >
-    <path d="M0 0h900v600H0z" />
-    <path d="M0 200h900v400H0z" fill="#fff" />
-    <path d="M0 400h900v200H0z" fill="#d00" />
+    <g v-bind:clip-path="this.fleet ? 'url(#fleetClip)' : ''">
+      <path d="M0 0h1500v1000H0z" />
+      <path d="M0 333h1500v666H0z" fill="#fff" />
+      <path d="M0 666h1500v333H0z" fill="#d00" />
+    </g>
   </svg>
 </template>
 
@@ -16,6 +18,7 @@
 export default {
   name: "GEFlag",
   props: {
+    fleet: Boolean,
     width: String,
     height: String,
     transform: String,

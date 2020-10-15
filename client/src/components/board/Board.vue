@@ -8,13 +8,16 @@
     version="1.1"
     viewBox="0 0 536 430"
   >
+    <clipPath id="fleetClip">
+      <circle cx="750" cy="500" r="500" />
+    </clipPath>
     <g stroke="#000000" stroke-width="0.5">
       <Province
         v-for="(province, name) in sea_provinces"
         v-bind:province="province"
         v-bind:name="name"
         v-bind:select_province="select_province"
-        v-bind:nations="nations(name)"
+        v-bind:fleets="fleets(name)"
         v-bind:is_valid="isValid(name)"
         v-bind:key="name"
       ></Province>
@@ -23,7 +26,8 @@
         v-bind:province="province"
         v-bind:name="name"
         v-bind:select_province="select_province"
-        v-bind:nations="nations(name)"
+        v-bind:fleets="fleets(name)"
+        v-bind:armies="armies(name)"
         v-bind:is_valid="isValid(name)"
         v-bind:factory="factory(name)"
         v-bind:key="name"
@@ -109,18 +113,31 @@ export default {
 
       return false;
     },
-    nations(province) {
-      let nations = [];
+    armies(province) {
+      let armies = [];
       for (const [provinceWithUnits, allUnitsInProvince] of this.all_units) {
         for (const [nation, provinceUnits] of allUnitsInProvince) {
           if (province.toLowerCase() === provinceWithUnits) {
             for (let i = 0; i < provinceUnits.armies; i++) {
-              nations.push(nation);
+              armies.push(nation);
             }
           }
         }
       }
-      return nations;
+      return armies;
+    },
+    fleets(province) {
+      let fleets = [];
+      for (const [provinceWithUnits, allUnitsInProvince] of this.all_units) {
+        for (const [nation, provinceUnits] of allUnitsInProvince) {
+          if (province.toLowerCase() === provinceWithUnits) {
+            for (let i = 0; i < provinceUnits.fleets; i++) {
+              fleets.push(nation);
+            }
+          }
+        }
+      }
+      return fleets;
     },
     factory(province) {
       const factory = this.factories.find((factory) => {
@@ -150,7 +167,6 @@ export default {
         algeria,
         belgium,
         berlin,
-        bordeaux,
         brest,
         budapest,
         bulgaria,
@@ -193,6 +209,7 @@ export default {
         turkey,
         vienna,
         westbalkan,
+        bordeaux,
       },
     };
   },
