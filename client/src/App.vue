@@ -353,10 +353,10 @@ export default {
           ];
         case 4:
           return [
-            { id: "Henry Davison", nation: Nation.AH },
-            { id: "Georg Siemens", nation: Nation.IT },
-            { id: "John Baring", nation: Nation.FR },
-            { id: "Henri Germain", nation: Nation.GE },
+            { id: "Daniel", nation: Nation.RU },
+            { id: "Claudia", nation: Nation.FR },
+            { id: "Bert", nation: Nation.GB },
+            { id: "Anton", nation: Nation.IT },
           ];
         case 5:
           return [
