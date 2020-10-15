@@ -1,5 +1,4 @@
 import { Nation } from "./constants.js";
-// import render from "./render.js";
 import GameBoard from "./gameBoard.js";
 
 const nodes = [
@@ -347,7 +346,5 @@ const edges = [
   ["balticsea", "northsea"],
   ["balticsea", "sweden"],
 ];
-
-// render({ nodes, edges });
 
 export default new GameBoard({ nodes, edges });
