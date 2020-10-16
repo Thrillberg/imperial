@@ -14,23 +14,21 @@
         </ul>
         <div class="relative">
           <Board
-            v-bind:all_units="boardUnits()"
-            v-bind:factories="factories()"
-            v-bind:dots="flags()"
+            v-bind:all_units="boardUnits"
+            v-bind:factories="factories"
+            v-bind:dots="flags"
             v-bind:select_province="selectProvince"
-            v-bind:valid_provinces="validProvinces()"
+            v-bind:valid_provinces="validProvinces"
           ></Board>
-          <TaxChart v-bind:taxes="taxes()"></TaxChart>
+          <TaxChart v-bind:taxes="taxes"></TaxChart>
         </div>
-        <PowerPointsChart
-          v-bind:power_points="powerPoints()"
-        ></PowerPointsChart>
+        <PowerPointsChart v-bind:power_points="powerPoints"></PowerPointsChart>
         <Rondel
           v-bind:soloMode="soloMode"
           v-bind:game="game"
           v-bind:name="name"
           v-bind:select_action="selectAction"
-          v-bind:valid_slots="validSlots()"
+          v-bind:valid_slots="validSlots"
         ></Rondel>
       </div>
       <ul class="nations">
@@ -139,6 +137,7 @@ export default {
         endImport: Action.import({ placements: new Set() }),
         placements: [],
       },
+      leader: false,
       maneuverStatus: {
         active: false,
         endManeuver: Action.endManeuver(),
@@ -151,7 +150,7 @@ export default {
       webSocket: new WebSocket(process.env.VUE_APP_IMPERIAL_WEBSOCKETS_URL),
     };
   },
-  mounted() {
+  created() {
     this.webSocket.onmessage = (message) => {
       const envelope = JSON.parse(message.data);
       switch (envelope.kind) {
@@ -159,20 +158,19 @@ export default {
           this.setWebsocketId(envelope.data.id);
           break;
         case "updatePlayers":
-          // TODO: I'm not a fan of JSON.parse after we've already JSON.parsed already
           this.players = new Set(JSON.parse(envelope.data.players));
           for (const player of this.players) {
             if (localStorage.imperialId === player.id) {
               this.name = player.name;
             }
           }
-          if (this.players.size == 2) {
-            this.startGame();
-          }
+          break;
+        case "startGame":
+          this.players = new Set(JSON.parse(envelope.data.players));
+          this.startGame();
           break;
         case "updateGameLog": {
-          // TODO: Find a better way to relay the game log between here and the Go server?
-          const rawGameLog = JSON.parse(JSON.parse(envelope.data.gameLog)[0]);
+          const rawGameLog = JSON.parse(envelope.data.gameLog);
           // The following map only exists because of our custom Nation type, which
           // has weirdness when we attempt nation.when() in the setup file.
           const gameLog = rawGameLog.map((action) => {
@@ -189,81 +187,12 @@ export default {
             return action;
           });
           this.game = Imperial.fromLog(gameLog);
+          this.gameStarted = true;
         }
       }
     };
   },
-  methods: {
-    setWebsocketId: function (newId) {
-      const oldId = localStorage.getItem("imperialId");
-      if (oldId) {
-        this.webSocket.send(
-          JSON.stringify({
-            kind: "updateId",
-            data: { oldId, newId },
-          })
-        );
-      }
-      localStorage.setItem("imperialId", newId);
-    },
-    registerPlayer: function () {
-      this.webSocket.send(
-        JSON.stringify({
-          kind: "updateName",
-          data: { name: this.name, id: localStorage.imperialId },
-        })
-      );
-    },
-    alreadyRegistered: function () {
-      return [...this.players].map((p) => p.name).includes(this.name);
-    },
-    startGame: function (playerCount) {
-      let players;
-      if (playerCount) {
-        players = this.getPlayers(playerCount);
-        this.soloMode = true;
-      } else {
-        players = this.assignNations([...this.players]);
-      }
-      this.game = Imperial.fromLog([Action.initialize({ players })]);
-      this.gameStarted = true;
-      this.webSocket.send(
-        JSON.stringify({
-          kind: "tick",
-          data: { gameLog: JSON.stringify(this.game.log) },
-        })
-      );
-    },
-    selectProvince(province) {
-      // If the game is in a maneuver and an origin is specified,
-      // then the next specified province is the destination
-      if (this.maneuverStatus.active && this.maneuverStatus.origin) {
-        const maneuver = Action.maneuver({
-          origin: this.maneuverStatus.origin,
-          destination: province,
-        });
-        // Reset maneuverStatus
-        this.maneuverStatus.origin = "";
-        this.tickWithAction(maneuver);
-        // If the game is in a maneuver with no origin specified,
-        // then the next specified province is the origin
-      } else if (this.maneuverStatus.active) {
-        this.maneuverStatus.origin = province;
-        // If the game is in an import, then each specified province
-        // gets added to the placements.
-      } else if (this.importStatus.active) {
-        this.importStatus.placements.push(province);
-      }
-    },
-    selectAction(_, slot) {
-      if (this.game.currentPlayerName === this.name || this.soloMode) {
-        for (const action of this.game.availableActions) {
-          if (action.payload.slot === slot) {
-            this.tickWithAction(action);
-          }
-        }
-      }
-    },
+  computed: {
     boardUnits() {
       // This function returns all units on the board.
       // TODO: Distinguish between armies and fleets, and numbers of units.
@@ -318,15 +247,6 @@ export default {
       }
       return Array.from(provinces);
     },
-    validSlots() {
-      let slots = [];
-      for (const action of this.game.availableActions) {
-        if (action.type === "rondel") {
-          slots.push(action.payload.slot);
-        }
-      }
-      return slots;
-    },
     taxes() {
       return [15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5].map((slot) => {
         let nations = [];
@@ -348,6 +268,93 @@ export default {
         }
         return { slot, nations };
       });
+    },
+    validSlots() {
+      let slots = [];
+      for (const action of this.game.availableActions) {
+        if (action.type === "rondel") {
+          slots.push(action.payload.slot);
+        }
+      }
+      return slots;
+    },
+  },
+  methods: {
+    setWebsocketId: function (newId) {
+      const oldId = localStorage.getItem("imperialId");
+      if (oldId) {
+        this.webSocket.send(
+          JSON.stringify({
+            kind: "updateId",
+            data: { oldId, newId },
+          })
+        );
+      }
+      localStorage.setItem("imperialId", newId);
+    },
+    registerPlayer: function () {
+      this.webSocket.send(
+        JSON.stringify({
+          kind: "updateName",
+          data: { name: this.name, id: localStorage.imperialId },
+        })
+      );
+      if (this.players.size === 0) {
+        this.leader = true;
+      }
+    },
+    alreadyRegistered: function () {
+      return [...this.players].map((p) => p.name).includes(this.name);
+    },
+    startGame: function (playerCount) {
+      let players;
+      if (playerCount) {
+        players = this.getPlayers(playerCount);
+        this.soloMode = true;
+      } else {
+        players = this.assignNations([...this.players]);
+      }
+      const action = Action.initialize({ players });
+      this.game = Imperial.fromLog([action]);
+      this.gameStarted = true;
+      if (this.leader === true) {
+        this.webSocket.send(
+          JSON.stringify({
+            kind: "tick",
+            data: { action: JSON.stringify(action) },
+          })
+        );
+      }
+    },
+    selectProvince(province) {
+      // If the game is in a maneuver and an origin is specified,
+      // then the next specified province is the destination
+      if (this.maneuverStatus.active && this.maneuverStatus.origin) {
+        const maneuver = Action.maneuver({
+          origin: this.maneuverStatus.origin,
+          destination: province,
+        });
+        // Reset maneuverStatus
+        this.maneuverStatus.origin = "";
+        this.tickWithAction(maneuver);
+        // If the game is in a maneuver with no origin specified,
+        // then the next specified province is the origin
+      } else if (this.maneuverStatus.active) {
+        this.maneuverStatus.origin = province;
+        // If the game is in an import, then each specified province
+        // gets added to the placements.
+      } else if (this.importStatus.active) {
+        this.importStatus.placements.push(province);
+      }
+    },
+    selectAction(_, slot) {
+      if (this.game.currentPlayerName === this.name || this.soloMode) {
+        for (const action of this.game.availableActions) {
+          if (action.payload.slot === slot) {
+            this.tickWithAction(action);
+          }
+        }
+      }
     },
     getPlayers: function (playerCount) {
       switch (playerCount) {
@@ -415,7 +422,7 @@ export default {
       this.webSocket.send(
         JSON.stringify({
           kind: "tick",
-          data: { gameLog: JSON.stringify(this.game.log) },
+          data: { action: JSON.stringify(action) },
         })
       );
       if (

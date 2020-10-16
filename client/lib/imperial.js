@@ -14,6 +14,10 @@ export default class Imperial {
     this.board = board || standardGameBoard;
     this.log = [];
     this.unitsToMove = [];
+    this.units = new Set();
+    this.provinces = new Map();
+    this.nations = new Map();
+    this.availableActions = new Set();
   }
 
   tick(action) {

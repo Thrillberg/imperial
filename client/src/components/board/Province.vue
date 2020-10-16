@@ -5,7 +5,7 @@
     v-on:click="select_province(name)"
   >
     <circle
-      v-if="dot"
+      v-if="dot && this.mounted"
       v-bind:cx="x(0) + 6"
       v-bind:cy="y(0) - 5"
       r="2"
@@ -21,7 +21,7 @@
       stroke-width="2px"
     ></Factory>
     <Flag
-      v-for="(nation, index) in fleets"
+      v-for="(nation, index) in availableFleets()"
       v-bind:nation="nation"
       width="13"
       height="8"
@@ -31,7 +31,7 @@
       v-bind:fleet="true"
     ></Flag>
     <Flag
-      v-for="(nation, index) in armies"
+      v-for="(nation, index) in availableArmies()"
       v-bind:nation="nation"
       width="13"
       height="8"
@@ -82,6 +82,20 @@ export default {
     }
   },
   methods: {
+    availableArmies() {
+      if (this.mounted) {
+        return this.armies;
+      } else {
+        return [];
+      }
+    },
+    availableFleets() {
+      if (this.mounted) {
+        return this.fleets;
+      } else {
+        return [];
+      }
+    },
     // x() and y() approximate the center of a province for flag placement.
     x(index) {
       return (
