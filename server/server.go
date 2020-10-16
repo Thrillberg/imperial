@@ -18,6 +18,8 @@ const prodAddr = "ec2-34-230-36-11.compute-1.amazonaws.com:8080"
 var connections = map[PlayerId]*Conn{}
 var players = map[PlayerId]PlayerName{}
 var gameLog = []Action{}
+var availableActions = []Action{}
+var rawAvailableActions = []string{}
 var upgrader = websocket.Upgrader{CheckOrigin: func(*http.Request) bool { return true }}
 
 func init() {
@@ -95,6 +97,8 @@ const (
 	// KindUpdatePlayers is sent to clients when a player's
 	// name is updated.
 	KindUpdatePlayers = Kind("updatePlayers")
+	// KindStartGame is sent to clients when a game starts.
+	KindStartGame = Kind("startGame")
 	// KindTick is received from clients when they register a
 	// new entry in the game log.
 	KindTick = Kind("tick")
@@ -143,6 +147,22 @@ func (c *Conn) UpdatePlayers(players map[PlayerId]PlayerName) error {
 
 	return c.write(&Envelope{
 		Kind: KindUpdatePlayers,
+		Data: map[string]string{
+			"players": string(playersList),
+		},
+	})
+}
+
+// StartGame sends a KindStartGame message to the client.
+func (c *Conn) StartGame(players map[PlayerId]PlayerName) error {
+	var playersSlice = []map[string]string{}
+	for key, val := range players {
+		playersSlice = append(playersSlice, map[string]string{"id": string(key), "name": string(val)})
+	}
+	playersList, _ := json.Marshal(playersSlice)
+
+	return c.write(&Envelope{
+		Kind: KindStartGame,
 		Data: map[string]string{
 			"players": string(playersList),
 		},
@@ -227,12 +247,14 @@ func onUpdateId(c *Conn, data Data) error {
 	if val, ok := players[oldId]; ok {
 		players[newId] = val
 		delete(players, oldId)
+	}
 
-		for _, conn := range connections {
-			if err := conn.UpdatePlayers(players); err != nil {
-				log.Println(players, "UpdatePlayers")
-				return nil
-			}
+	for _, conn := range connections {
+		if err := conn.UpdatePlayers(players); err != nil {
+			log.Println(players, "UpdatePlayers")
+			return nil
+		}
+		if len(players) == 2 {
 			if err := conn.UpdateGameLog(gameLog); err != nil {
 				log.Println(gameLog, "UpdateGameLog")
 				return nil
@@ -253,9 +275,16 @@ func onUpdateName(c *Conn, data Data) error {
 	players[id] = name
 
 	for _, conn := range connections {
-		if err := conn.UpdatePlayers(players); err != nil {
-			log.Println(players, "UpdatePlayers")
-			return nil
+		if len(players) == 2 {
+			if err := conn.StartGame(players); err != nil {
+				log.Println(players, "StartGame")
+				return nil
+			}
+		} else {
+			if err := conn.UpdatePlayers(players); err != nil {
+				log.Println(players, "UpdatePlayers")
+				return nil
+			}
 		}
 	}
 
@@ -263,7 +292,14 @@ func onUpdateName(c *Conn, data Data) error {
 }
 
 func onTick(c *Conn, data Data) error {
-	gameLog = []Action{data["gameLog"]}
+	var action Action
+	err := json.Unmarshal([]byte(data["action"]), &action)
+	if err != nil {
+		fmt.Println("action error:", err)
+	}
+
+	gameLog = append(gameLog, action)
+
 	log.Printf("%s: %s", KindTick, gameLog)
 
 	for _, conn := range connections {
