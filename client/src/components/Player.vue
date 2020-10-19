@@ -1,6 +1,8 @@
 <template>
-  <li class="player p-12 bg-green-300">
-    <div v-if="name === current_player" class="current_player text-5xl absolute inset-y-0">🤩</div>
+  <li
+    class="player p-12 bg-green-300 font-serif"
+    :class="current_player ? 'font-bold' : ''"
+  >
     <div class="contents">
       <h3>{{ name }}</h3>
       <div>Cash: {{ cash }} million</div>
@@ -15,6 +17,7 @@
           ></Bond>
         </ul>
       </div>
+      <div v-if="investor_card_holder">Investor Card</div>
     </div>
   </li>
 </template>
@@ -30,7 +33,8 @@ export default {
   props: {
     bonds: Set,
     cash: Number,
-    current_player: String,
+    current_player: Boolean,
+    investor_card_holder: Boolean,
     name: String,
   },
 };

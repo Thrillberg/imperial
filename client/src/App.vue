@@ -8,7 +8,10 @@
             v-bind:name="player.name"
             v-bind:cash="player.cash"
             v-bind:bonds="player.bonds"
-            v-bind:current_player="game.currentPlayerName"
+            v-bind:current_player="player.name === game.currentPlayerName"
+            v-bind:investor_card_holder="
+              player.name === game.investorCardHolder
+            "
             v-bind:key="player.name"
           ></Player>
         </ul>
