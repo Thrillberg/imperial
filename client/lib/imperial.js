@@ -27,186 +27,405 @@ export default class Imperial {
       case "noop":
         return;
       case "initialize": {
-        const s = setup({
-          players: action.payload.players,
-          provinceNames: Array.from(this.board.graph.keys()),
-        });
-        this.availableBonds = s.availableBonds;
-        this.currentNation = s.currentNation;
-        this.investorCardHolder = s.investorCardHolder;
-        this.nations = s.nations;
-        this.order = s.order;
-        this.players = s.players;
-        this.provinces = s.provinces;
-        this.units = s.units;
-        this.currentPlayerName = this.nations.get(
-          this.currentNation
-        ).controller;
-        this.availableActions = new Set(this.rondelActions(this.currentNation));
+        this.initialize(action);
         return;
       }
       case "bondPurchase": {
-        this.purchaseBond(action);
-        this.handleAdvancePlayer();
-        this.availableActions = new Set(this.rondelActions(this.currentNation));
+        this.bondPurchase(action);
         return;
       }
       case "endManeuver": {
-        this.unitsToMove = [];
-        this.handleAdvancePlayer();
-        this.availableActions = new Set(this.rondelActions(this.currentNation));
+        this.endManeuver();
         return;
       }
       case "endGame": {
-        const scores = {};
-        Object.keys(this.players).forEach((player) => {
-          let score = 0;
-          for (const bond of this.players[player].bonds) {
-            const powerPoints = this.nations.get(bond.nation).powerPoints;
-            score += bond.number * parseInt(powerPoints / 5);
-          }
-          score += this.players[player].cash;
-          scores[player] = score;
-        });
-        const winningScore = Math.max(
-          ...Object.keys(scores).map((x) => scores[x])
-        );
-        const winner = Object.keys(scores).filter(
-          (x) => scores[x] === winningScore
-        )[0];
-
-        this.winner = winner;
+        this.endGame();
         return;
       }
       case "fight": {
-        const incumbentUnitsAtProvince = this.units
-          .get(action.payload.incumbent)
-          .get(action.payload.province);
-        const challengerUnitsAtProvince = this.units
-          .get(action.payload.challenger)
-          .get(action.payload.province);
-
-        // Remove units at the fight
-        if (incumbentUnitsAtProvince.fleets > 0) {
-          if (action.payload.targetType === "army") {
-            incumbentUnitsAtProvince.armies -= 1;
-            challengerUnitsAtProvince.armies -= 1;
-          } else {
-            incumbentUnitsAtProvince.fleets -= 1;
-            challengerUnitsAtProvince.fleets -= 1;
-          }
-        } else {
-          incumbentUnitsAtProvince.armies -= 1;
-          challengerUnitsAtProvince.armies -= 1;
-        }
-
-        const totalIncumbentUnitsAtProvince =
-          incumbentUnitsAtProvince.armies + incumbentUnitsAtProvince.fleets;
-        const totalChallengerUnitsAtProvince =
-          challengerUnitsAtProvince.armies + challengerUnitsAtProvince.fleets;
-
-        // Change flags, if challenger wins
-        if (totalChallengerUnitsAtProvince > totalIncumbentUnitsAtProvince) {
-          this.provinces.get(action.payload.province).flag =
-            action.payload.challenger;
-        }
-
-        if (this.unitsToMove.length === 0) {
-          this.tick(Action.endManeuver());
-        } else {
-          const lastManeuverRondelAction = this.log
-            .reverse()
-            .find((action) => action.type === "rondel");
-          this.maneuver(lastManeuverRondelAction);
-        }
-
+        this.fight(action);
         return;
       }
       case "coexist": {
-        if (this.unitsToMove.length === 0) {
-          this.tick(Action.endManeuver());
-        } else {
-          const lastManeuverRondelAction = this.log
-            .reverse()
-            .find((action) => action.type === "rondel");
-          const destinations = new Set([Action.endManeuver()]);
-          const action = lastManeuverRondelAction;
-          const provincesWithFleets = new Map();
-          const provincesWithArmies = new Map();
-
-          for (const [province, type] of this.unitsToMove) {
-            if (type === "fleet") {
-              provincesWithFleets.set(province, 1);
-            } else {
-              provincesWithArmies.set(province, 1);
-            }
-          }
-
-          for (const [origin,] of provincesWithFleets) {
-            for (const destination of this.board.neighborsFor({
-              origin,
-              nation: action.payload.nation,
-              isFleet: true,
-              friendlyFleets: new Set(),
-            })) {
-              destinations.add(
-                Action.maneuver({
-                  origin,
-                  destination,
-                })
-              );
-            }
-          }
-
-          for (const [origin,] of provincesWithArmies) {
-            for (const destination of this.board.neighborsFor({
-              origin,
-              nation: action.payload.nation,
-              isFleet: false,
-              friendlyFleets: new Set(),
-            })) {
-              destinations.add(
-                Action.maneuver({
-                  origin,
-                  destination,
-                })
-              );
-            }
-          }
-
-          this.availableActions = destinations;
-        }
-
+        this.coexist();
         return;
       }
       case "buildFactory": {
         this.buildFactory(action);
-        if (
-          this.nations.get(this.currentNation).previousRondelPosition ===
-          "maneuver1"
-        ) {
-          this.endOfInvestorTurn();
-        }
-        this.handleAdvancePlayer();
-        this.availableActions = new Set(this.rondelActions(this.currentNation));
         return;
       }
       case "import": {
-        action.payload.placements.forEach(({ province, type }) => {
-          const nation = this.board.graph.get(province).nation;
-          if (type === "army") {
-            this.units.get(nation).get(province).armies++;
-          } else {
-            this.units.get(nation).get(province).fleets++;
+        this.import(action);
+        return;
+      }
+      case "maneuver": {
+        this.maneuver(action);
+        return;
+      }
+      case "rondel": {
+        this.rondel(action);
+        return;
+      }
+    }
+  }
+
+  initialize(action) {
+    const s = setup({
+      players: action.payload.players,
+      provinceNames: Array.from(this.board.graph.keys()),
+    });
+    this.availableBonds = s.availableBonds;
+    this.currentNation = s.currentNation;
+    this.investorCardHolder = s.investorCardHolder;
+    this.nations = s.nations;
+    this.order = s.order;
+    this.players = s.players;
+    this.provinces = s.provinces;
+    this.units = s.units;
+    this.currentPlayerName = this.nations.get(
+      this.currentNation
+    ).controller;
+    this.availableActions = new Set(this.rondelActions(this.currentNation));
+  }
+
+  bondPurchase(action) {
+    const uncost = {
+      2: 1,
+      4: 2,
+      6: 3,
+      9: 4,
+      12: 5,
+      16: 6,
+      20: 7,
+      25: 8,
+      30: 9,
+    };
+    const bonds = this.players[action.payload.player].bonds;
+    if (action.payload.cost > this.players[action.payload.player].cash) {
+      const tradeIn = [...bonds]
+        .filter(({ nation }) => nation === action.payload.nation)
+        .map(({ cost }) => cost)[0];
+      if (tradeIn === undefined) {
+        throw new Error(
+          `${action.payload.player} does not have any bonds to trade for ${action.payload.nation}`
+        );
+      }
+      const bondToTrade = Bond(action.payload.nation, uncost[tradeIn]);
+      const netCost = action.payload.cost - bondToTrade.cost;
+      this.nations.get(action.payload.nation).treasury += netCost;
+      this.availableBonds.add(bondToTrade);
+      this.players[action.payload.player].cash -= netCost;
+      this.players[action.payload.player].bonds.delete(bondToTrade);
+    } else {
+      this.nations.get(action.payload.nation).treasury += action.payload.cost;
+      this.players[action.payload.player].cash -= action.payload.cost;
+    }
+
+    const newBond = Bond(action.payload.nation, uncost[action.payload.cost]);
+    if (!this.availableBonds.has(newBond)) {
+      throw new Error(`${newBond} not available`);
+    }
+    this.players[action.payload.player].bonds.add(newBond);
+    this.availableBonds.delete(newBond);
+
+    if (this.nations.get(action.payload.nation).controller === null) {
+      this.nations.get(action.payload.nation).controller =
+        action.payload.player;
+    }
+
+    if (
+      this.totalInvestmentInNation(
+        action.payload.player,
+        action.payload.nation
+      ) >
+      this.totalInvestmentInNation(
+        this.nations.get(action.payload.nation).controller,
+        action.payload.nation
+      )
+    ) {
+      this.nations.get(action.payload.nation).controller =
+        action.payload.player;
+    }
+    this.advanceInvestorCard();
+    this.handleAdvancePlayer();
+    this.availableActions = new Set(this.rondelActions(this.currentNation));
+  }
+
+  endManeuver() {
+    this.unitsToMove = [];
+    this.handleAdvancePlayer();
+    this.availableActions = new Set(this.rondelActions(this.currentNation));
+  }
+
+  endGame() {
+    const scores = {};
+    Object.keys(this.players).forEach((player) => {
+      let score = 0;
+      for (const bond of this.players[player].bonds) {
+        const powerPoints = this.nations.get(bond.nation).powerPoints;
+        score += bond.number * parseInt(powerPoints / 5);
+      }
+      score += this.players[player].cash;
+      scores[player] = score;
+    });
+    const winningScore = Math.max(
+      ...Object.keys(scores).map((x) => scores[x])
+    );
+    const winner = Object.keys(scores).filter(
+      (x) => scores[x] === winningScore
+    )[0];
+
+    this.winner = winner;
+  }
+
+  fight(action) {
+    const incumbentUnitsAtProvince = this.units
+      .get(action.payload.incumbent)
+      .get(action.payload.province);
+    const challengerUnitsAtProvince = this.units
+      .get(action.payload.challenger)
+      .get(action.payload.province);
+
+    // Remove units at the fight
+    if (incumbentUnitsAtProvince.fleets > 0) {
+      if (action.payload.targetType === "army") {
+        incumbentUnitsAtProvince.armies -= 1;
+        challengerUnitsAtProvince.armies -= 1;
+      } else {
+        incumbentUnitsAtProvince.fleets -= 1;
+        challengerUnitsAtProvince.fleets -= 1;
+      }
+    } else {
+      incumbentUnitsAtProvince.armies -= 1;
+      challengerUnitsAtProvince.armies -= 1;
+    }
+
+    const totalIncumbentUnitsAtProvince =
+      incumbentUnitsAtProvince.armies + incumbentUnitsAtProvince.fleets;
+    const totalChallengerUnitsAtProvince =
+      challengerUnitsAtProvince.armies + challengerUnitsAtProvince.fleets;
+
+    // Change flags, if challenger wins
+    if (totalChallengerUnitsAtProvince > totalIncumbentUnitsAtProvince) {
+      this.provinces.get(action.payload.province).flag =
+        action.payload.challenger;
+    }
+
+    if (this.unitsToMove.length === 0) {
+      this.tick(Action.endManeuver());
+    } else {
+      const lastManeuverRondelAction = this.log
+        .reverse()
+        .find((action) => action.type === "rondel");
+      this.beginManeuver(lastManeuverRondelAction);
+    }
+  }
+
+  coexist() {
+    if (this.unitsToMove.length === 0) {
+      this.tick(Action.endManeuver());
+    } else {
+      const lastManeuverRondelAction = this.log
+        .reverse()
+        .find((action) => action.type === "rondel");
+      const destinations = new Set([Action.endManeuver()]);
+      const action = lastManeuverRondelAction;
+      const provincesWithFleets = new Map();
+      const provincesWithArmies = new Map();
+
+      for (const [province, type] of this.unitsToMove) {
+        if (type === "fleet") {
+          provincesWithFleets.set(province, 1);
+        } else {
+          provincesWithArmies.set(province, 1);
+        }
+      }
+
+      for (const [origin,] of provincesWithFleets) {
+        for (const destination of this.board.neighborsFor({
+          origin,
+          nation: action.payload.nation,
+          isFleet: true,
+          friendlyFleets: new Set(),
+        })) {
+          destinations.add(
+            Action.maneuver({
+              origin,
+              destination,
+            })
+          );
+        }
+      }
+
+      for (const [origin,] of provincesWithArmies) {
+        for (const destination of this.board.neighborsFor({
+          origin,
+          nation: action.payload.nation,
+          isFleet: false,
+          friendlyFleets: new Set(),
+        })) {
+          destinations.add(
+            Action.maneuver({
+              origin,
+              destination,
+            })
+          );
+        }
+      }
+
+      this.availableActions = destinations;
+    }
+  }
+
+  buildFactory(action) {
+    this.provinces.get(action.payload.province).factory = this.board.graph.get(
+      action.payload.province
+    ).factoryType;
+    this.nations.get(this.currentNation).treasury -= 5;
+    if (
+      this.nations.get(this.currentNation).previousRondelPosition ===
+      "maneuver1"
+    ) {
+      this.endOfInvestorTurn();
+    }
+    this.handleAdvancePlayer();
+    this.availableActions = new Set(this.rondelActions(this.currentNation));
+  }
+
+  import(action) {
+    action.payload.placements.forEach(({ province, type }) => {
+      const nation = this.board.graph.get(province).nation;
+      if (type === "army") {
+        this.units.get(nation).get(province).armies++;
+      } else {
+        this.units.get(nation).get(province).fleets++;
+      }
+      this.nations.get(nation).treasury--;
+    });
+    const potentialPreInvestorSlots = [
+      "maneuver1",
+      "production1",
+      "factory",
+      "taxation",
+      "maneuver2",
+    ];
+    if (
+      potentialPreInvestorSlots.includes(
+        this.nations.get(this.currentNation).previousRondelPosition
+      )
+    ) {
+      this.endOfInvestorTurn();
+      return;
+    } else {
+      this.handleAdvancePlayer();
+      this.availableActions = new Set(this.rondelActions(this.currentNation));
+    }
+  }
+
+  maneuver(action) {
+    const origin = action.payload.origin;
+    const destination = action.payload.destination;
+    const unitType = this.board.graph.get(destination).isOcean
+      ? "fleet"
+      : "army";
+
+    // Execute the unit movement
+    if (unitType === "fleet") {
+      this.units.get(this.currentNation).get(origin).fleets--;
+      this.units.get(this.currentNation).get(destination).fleets++;
+    }
+    if (unitType === "army") {
+      this.units.get(this.currentNation).get(origin).armies--;
+      this.units.get(this.currentNation).get(destination).armies++;
+
+      // Fleets cannot move after armies!
+      this.unitsToMove = this.unitsToMove.filter(
+        ([, type]) => type === "army"
+      );
+    }
+
+    // Remove the unit that just moved from this.unitsToMove
+    const i = this.unitsToMove.findIndex(
+      (arr) => arr[0] === action.payload.origin && arr[1] === unitType
+    );
+    this.unitsToMove.splice(i, 1);
+
+    // Interrupt manuevers in case of potential conflict!
+    for (const [nation,] of this.nations) {
+      if (
+        nation !== this.currentNation &&
+        (this.units.get(nation).get(destination).armies > 0 ||
+          this.units.get(nation).get(destination).fleets > 0)
+      ) {
+        this.availableActions = new Set([
+          Action.coexist({
+            province: destination,
+            incumbent: nation,
+            challenger: this.currentNation,
+          }),
+          Action.fight({
+            province: destination,
+            incumbent: nation,
+            challenger: this.currentNation,
+            targetType: null,
+          }),
+        ]);
+        return;
+      }
+    }
+
+    // Update province flag
+    this.provinces.get(destination).flag = this.currentNation;
+
+    if (this.unitsToMove.length > 0) {
+      const provincesWithFleets = new Map();
+      const provincesWithArmies = new Map();
+      const out = new Set([Action.endManeuver()]);
+      this.unitsToMove.forEach(([origin,]) => {
+        const units = this.units.get(this.currentNation).get(origin);
+        if (units.fleets > 0) {
+          provincesWithFleets.set(origin, units.fleets);
+        } else if (units.armies > 0) {
+          provincesWithArmies.set(origin, units.armies);
+        }
+        for (const [origin,] of provincesWithFleets) {
+          for (const destination of this.board.neighborsFor({
+            origin,
+            nation: this.currentNation,
+            isFleet: true,
+            friendlyFleets: new Set(),
+          })) {
+            out.add(Action.maneuver({ origin, destination }));
           }
-          this.nations.get(nation).treasury--;
-        });
+        }
+        const friendlyFleets = new Set();
+        for (const [province, units] of this.units.get(
+          this.currentNation
+        )) {
+          if (units.fleets > 0) {
+            friendlyFleets.add(province);
+          }
+        }
+        for (const [origin,] of provincesWithArmies) {
+          for (const destination of this.board.neighborsFor({
+            origin,
+            nation: this.currentNation,
+            isFleet: false,
+            friendlyFleets,
+          })) {
+            out.add(Action.maneuver({ origin, destination }));
+          }
+        }
+      });
+      this.availableActions = out;
+    } else {
+      if (
+        this.nations.get(this.currentNation).rondelPosition === "maneuver2"
+      ) {
         const potentialPreInvestorSlots = [
-          "maneuver1",
-          "production1",
           "factory",
-          "taxation",
-          "maneuver2",
+          "production1",
+          "maneuver1",
         ];
         if (
           potentialPreInvestorSlots.includes(
@@ -214,480 +433,361 @@ export default class Imperial {
           )
         ) {
           this.endOfInvestorTurn();
-          return;
         }
-        this.handleAdvancePlayer();
-        this.availableActions = new Set(this.rondelActions(this.currentNation));
-        return;
       }
-      case "maneuver": {
-        const origin = action.payload.origin;
-        const destination = action.payload.destination;
-        const unitType = this.board.graph.get(destination).isOcean
-          ? "fleet"
-          : "army";
+      this.currentNation = this.nextNation(this.currentNation);
+      this.availableActions = new Set(
+        this.rondelActions(this.currentNation)
+      );
+    }
+  }
 
-        // Execute the unit movement
-        if (unitType === "fleet") {
-          this.units.get(this.currentNation).get(origin).fleets--;
-          this.units.get(this.currentNation).get(destination).fleets++;
-        }
-        if (unitType === "army") {
-          this.units.get(this.currentNation).get(origin).armies--;
-          this.units.get(this.currentNation).get(destination).armies++;
+  rondel(action) {
+    this.currentNation = action.payload.nation;
+    this.nations.get(
+      this.currentNation
+    ).previousRondelPosition = this.nations.get(
+      this.currentNation
+    ).rondelPosition;
+    this.nations.get(this.currentNation).rondelPosition =
+      action.payload.slot;
+    this.players[this.currentPlayerName].cash -= action.payload.cost;
 
-          // Fleets cannot move after armies!
-          this.unitsToMove = this.unitsToMove.filter(
-            ([, type]) => type === "army"
-          );
-        }
-
-        // Remove the unit that just moved from this.unitsToMove
-        const i = this.unitsToMove.findIndex(
-          (arr) => arr[0] === action.payload.origin && arr[1] === unitType
-        );
-        this.unitsToMove.splice(i, 1);
-
-        // Interrupt manuevers in case of potential conflict!
-        for (const [nation,] of this.nations) {
-          if (
-            nation !== this.currentNation &&
-            (this.units.get(nation).get(destination).armies > 0 ||
-              this.units.get(nation).get(destination).fleets > 0)
-          ) {
-            this.availableActions = new Set([
-              Action.coexist({
-                province: destination,
-                incumbent: nation,
-                challenger: this.currentNation,
-              }),
-              Action.fight({
-                province: destination,
-                incumbent: nation,
-                challenger: this.currentNation,
-                targetType: null,
-              }),
-            ]);
-            return;
-          }
-        }
-
-        // Update province flag
-        this.provinces.get(destination).flag = this.currentNation;
-
-        if (this.unitsToMove.length > 0) {
-          const provincesWithFleets = new Map();
-          const provincesWithArmies = new Map();
-          const out = new Set([Action.endManeuver()]);
-          this.unitsToMove.forEach(([origin,]) => {
-            const units = this.units.get(this.currentNation).get(origin);
-            if (units.fleets > 0) {
-              provincesWithFleets.set(origin, units.fleets);
-            } else if (units.armies > 0) {
-              provincesWithArmies.set(origin, units.armies);
-            }
-            for (const [origin,] of provincesWithFleets) {
-              for (const destination of this.board.neighborsFor({
-                origin,
-                nation: this.currentNation,
-                isFleet: true,
-                friendlyFleets: new Set(),
-              })) {
-                out.add(Action.maneuver({ origin, destination }));
+    switch (action.payload.slot) {
+      case "investor": {
+        // 1. Nation pays bond-holders interest
+        for (const player of Object.keys(this.players)) {
+          if (player !== this.currentPlayerName) {
+            this.playerBondsOfNation(player, action.payload.nation).forEach(
+              (bond) => {
+                if (
+                  this.nations.get(action.payload.nation).treasury >=
+                  bond.number
+                ) {
+                  this.nations.get(action.payload.nation).treasury -=
+                    bond.number;
+                } else {
+                  this.players[this.currentPlayerName].cash -= bond.number;
+                }
+                this.players[player].cash += bond.number;
               }
-            }
-            const friendlyFleets = new Set();
-            for (const [province, units] of this.units.get(
-              this.currentNation
-            )) {
-              if (units.fleets > 0) {
-                friendlyFleets.add(province);
-              }
-            }
-            for (const [origin,] of provincesWithArmies) {
-              for (const destination of this.board.neighborsFor({
-                origin,
-                nation: this.currentNation,
-                isFleet: false,
-                friendlyFleets,
-              })) {
-                out.add(Action.maneuver({ origin, destination }));
-              }
-            }
-          });
-          this.availableActions = out;
-        } else {
-          if (
-            this.nations.get(this.currentNation).rondelPosition === "maneuver2"
-          ) {
-            const potentialPreInvestorSlots = [
-              "factory",
-              "production1",
-              "maneuver1",
-            ];
-            if (
-              potentialPreInvestorSlots.includes(
-                this.nations.get(this.currentNation).previousRondelPosition
-              )
-            ) {
-              this.endOfInvestorTurn();
-            }
-          }
-          this.currentNation = this.nextNation(this.currentNation);
-          this.availableActions = new Set(
-            this.rondelActions(this.currentNation)
-          );
-        }
-
-        return;
-      }
-      case "rondel": {
-        this.currentNation = action.payload.nation;
-        this.nations.get(
-          this.currentNation
-        ).previousRondelPosition = this.nations.get(
-          this.currentNation
-        ).rondelPosition;
-        this.nations.get(this.currentNation).rondelPosition =
-          action.payload.slot;
-        this.players[this.currentPlayerName].cash -= action.payload.cost;
-
-        switch (action.payload.slot) {
-          case "investor": {
-            // 1. Nation pays bond-holders interest
-            for (const player of Object.keys(this.players)) {
-              if (player !== this.currentPlayerName) {
-                this.playerBondsOfNation(player, action.payload.nation).forEach(
-                  (bond) => {
-                    if (
-                      this.nations.get(action.payload.nation).treasury >=
-                      bond.number
-                    ) {
-                      this.nations.get(action.payload.nation).treasury -=
-                        bond.number;
-                    } else {
-                      this.players[this.currentPlayerName].cash -= bond.number;
-                    }
-                    this.players[player].cash += bond.number;
-                  }
-                );
-              }
-            }
-            // Nation pays its controller interest
-            const amountOwedToController = [
-              ...this.players[this.currentPlayerName].bonds,
-            ]
-              .filter((bond) => bond.nation === action.payload.nation)
-              .reduce((x, y) => x + y.number, 0);
-            if (
-              this.nations.get(action.payload.nation).treasury >
-              amountOwedToController
-            ) {
-              this.players[
-                this.currentPlayerName
-              ].cash += amountOwedToController;
-              this.nations.get(
-                action.payload.nation
-              ).treasury -= amountOwedToController;
-            }
-            this.endOfInvestorTurn();
-            return;
-          }
-          case "import": {
-            const availableActions = new Set([
-              Action.import({ placements: [] }),
-            ]);
-            const homeProvinces = this.board.byNation.get(
-              action.payload.nation
             );
-            for (const province of homeProvinces) {
+          }
+        }
+        // Nation pays its controller interest
+        const amountOwedToController = [
+          ...this.players[this.currentPlayerName].bonds,
+        ]
+          .filter((bond) => bond.nation === action.payload.nation)
+          .reduce((x, y) => x + y.number, 0);
+        if (
+          this.nations.get(action.payload.nation).treasury >
+          amountOwedToController
+        ) {
+          this.players[
+            this.currentPlayerName
+          ].cash += amountOwedToController;
+          this.nations.get(
+            action.payload.nation
+          ).treasury -= amountOwedToController;
+        }
+        this.endOfInvestorTurn();
+        return;
+      }
+      case "import": {
+        const availableActions = new Set([
+          Action.import({ placements: [] }),
+        ]);
+        const homeProvinces = this.board.byNation.get(
+          action.payload.nation
+        );
+        for (const province of homeProvinces) {
+          availableActions.add(
+            Action.import({ placements: [{ province, type: "army" }] })
+          );
+          if (this.board.graph.get(province).factoryType === "shipyard") {
+            availableActions.add(
+              Action.import({ placements: [{ province, type: "fleet" }] })
+            );
+          }
+
+          for (const province2 of homeProvinces) {
+            availableActions.add(
+              Action.import({
+                placements: [
+                  { province, type: "army" },
+                  { province: province2, type: "army" },
+                ],
+              })
+            );
+            if (this.board.graph.get(province).factoryType === "shipyard") {
               availableActions.add(
-                Action.import({ placements: [{ province, type: "army" }] })
+                Action.import({
+                  placements: [
+                    { province, type: "fleet" },
+                    { province: province2, type: "army" },
+                  ],
+                })
               );
-              if (this.board.graph.get(province).factoryType === "shipyard") {
+            }
+            if (
+              this.board.graph.get(province2).factoryType === "shipyard"
+            ) {
+              availableActions.add(
+                Action.import({
+                  placements: [
+                    { province, type: "army" },
+                    { province: province2, type: "fleet" },
+                  ],
+                })
+              );
+            }
+            if (
+              this.board.graph.get(province).factoryType === "shipyard" &&
+              this.board.graph.get(province2).factoryType === "shipyard"
+            ) {
+              availableActions.add(
+                Action.import(
+                  { placements: [{ province, type: "fleet" }] },
+                  { province: province2, type: "fleet" }
+                )
+              );
+            }
+
+            for (const province3 of homeProvinces) {
+              availableActions.add(
+                Action.import({
+                  placements: [
+                    { province, type: "army" },
+                    { province: province2, type: "army" },
+                    { province: province3, type: "army" },
+                  ],
+                })
+              );
+              if (
+                this.board.graph.get(province).factoryType === "shipyard"
+              ) {
                 availableActions.add(
-                  Action.import({ placements: [{ province, type: "fleet" }] })
+                  Action.import({
+                    placements: [
+                      { province, type: "fleet" },
+                      { province: province2, type: "army" },
+                      { province: province3, type: "army" },
+                    ],
+                  })
                 );
               }
-
-              for (const province2 of homeProvinces) {
+              if (
+                this.board.graph.get(province2).factoryType === "shipyard"
+              ) {
+                availableActions.add(
+                  Action.import({
+                    placements: [
+                      { province, type: "army" },
+                      { province: province2, type: "fleet" },
+                      { province: province3, type: "army" },
+                    ],
+                  })
+                );
+              }
+              if (
+                this.board.graph.get(province3).factoryType === "shipyard"
+              ) {
                 availableActions.add(
                   Action.import({
                     placements: [
                       { province, type: "army" },
                       { province: province2, type: "army" },
+                      { province: province3, type: "fleet" },
                     ],
                   })
                 );
-                if (this.board.graph.get(province).factoryType === "shipyard") {
-                  availableActions.add(
-                    Action.import({
-                      placements: [
-                        { province, type: "fleet" },
-                        { province: province2, type: "army" },
-                      ],
-                    })
-                  );
-                }
-                if (
-                  this.board.graph.get(province2).factoryType === "shipyard"
-                ) {
-                  availableActions.add(
-                    Action.import({
-                      placements: [
-                        { province, type: "army" },
-                        { province: province2, type: "fleet" },
-                      ],
-                    })
-                  );
-                }
-                if (
-                  this.board.graph.get(province).factoryType === "shipyard" &&
-                  this.board.graph.get(province2).factoryType === "shipyard"
-                ) {
-                  availableActions.add(
-                    Action.import(
-                      { placements: [{ province, type: "fleet" }] },
-                      { province: province2, type: "fleet" }
-                    )
-                  );
-                }
-
-                for (const province3 of homeProvinces) {
-                  availableActions.add(
-                    Action.import({
-                      placements: [
-                        { province, type: "army" },
-                        { province: province2, type: "army" },
-                        { province: province3, type: "army" },
-                      ],
-                    })
-                  );
-                  if (
-                    this.board.graph.get(province).factoryType === "shipyard"
-                  ) {
-                    availableActions.add(
-                      Action.import({
-                        placements: [
-                          { province, type: "fleet" },
-                          { province: province2, type: "army" },
-                          { province: province3, type: "army" },
-                        ],
-                      })
-                    );
-                  }
-                  if (
-                    this.board.graph.get(province2).factoryType === "shipyard"
-                  ) {
-                    availableActions.add(
-                      Action.import({
-                        placements: [
-                          { province, type: "army" },
-                          { province: province2, type: "fleet" },
-                          { province: province3, type: "army" },
-                        ],
-                      })
-                    );
-                  }
-                  if (
-                    this.board.graph.get(province3).factoryType === "shipyard"
-                  ) {
-                    availableActions.add(
-                      Action.import({
-                        placements: [
-                          { province, type: "army" },
-                          { province: province2, type: "army" },
-                          { province: province3, type: "fleet" },
-                        ],
-                      })
-                    );
-                  }
-                  if (
-                    this.board.graph.get(province).factoryType === "shipyard" &&
-                    this.board.graph.get(province2).factoryType === "shipyard"
-                  ) {
-                    availableActions.add(
-                      Action.import({
-                        placements: [
-                          { province, type: "fleet" },
-                          { province: province2, type: "fleet" },
-                          { province: province3, type: "army" },
-                        ],
-                      })
-                    );
-                  }
-                  if (
-                    this.board.graph.get(province).factoryType === "shipyard" &&
-                    this.board.graph.get(province3).factoryType === "shipyard"
-                  ) {
-                    availableActions.add(
-                      Action.import({
-                        placements: [
-                          { province, type: "fleet" },
-                          { province: province2, type: "army" },
-                          { province: province3, type: "fleet" },
-                        ],
-                      })
-                    );
-                  }
-                  if (
-                    this.board.graph.get(province2).factoryType ===
-                    "shipyard" &&
-                    this.board.graph.get(province3).factoryType === "shipyard"
-                  ) {
-                    availableActions.add(
-                      Action.import({
-                        placements: [
-                          { province, type: "army" },
-                          { province: province2, type: "fleet" },
-                          { province: province3, type: "fleet" },
-                        ],
-                      })
-                    );
-                  }
-                  if (
-                    this.board.graph.get(province).factoryType === "shipyard" &&
-                    this.board.graph.get(province2).factoryType ===
-                    "shipyard" &&
-                    this.board.graph.get(province3).factoryType === "shipyard"
-                  ) {
-                    availableActions.add(
-                      Action.import({
-                        placements: [
-                          { province, type: "fleet" },
-                          { province: province2, type: "fleet" },
-                          { province: province3, type: "fleet" },
-                        ],
-                      })
-                    );
-                  }
-                }
               }
-            }
-            this.availableActions = availableActions;
-            return;
-          }
-          case "production1":
-          case "production2": {
-            Array.from(this.board.byNation.get(action.payload.nation))
-              .filter(
-                (province) => this.provinces.get(province).factory !== null
-              )
-              .forEach((province) => {
-                if (this.provinces.get(province).factory === "shipyard") {
-                  this.units.get(action.payload.nation).get(province).fleets++;
-                } else {
-                  this.units.get(action.payload.nation).get(province).armies++;
-                }
-              });
-            if (action.payload.slot === "production2") {
-              const potentialPreInvestorSlots = [
-                "maneuver1",
-                "production1",
-                "factory",
-                "taxation",
-              ];
               if (
-                potentialPreInvestorSlots.includes(
-                  this.nations.get(this.currentNation).previousRondelPosition
-                )
+                this.board.graph.get(province).factoryType === "shipyard" &&
+                this.board.graph.get(province2).factoryType === "shipyard"
               ) {
-                this.endOfInvestorTurn();
-                this.handleAdvancePlayer();
-                return;
+                availableActions.add(
+                  Action.import({
+                    placements: [
+                      { province, type: "fleet" },
+                      { province: province2, type: "fleet" },
+                      { province: province3, type: "army" },
+                    ],
+                  })
+                );
+              }
+              if (
+                this.board.graph.get(province).factoryType === "shipyard" &&
+                this.board.graph.get(province3).factoryType === "shipyard"
+              ) {
+                availableActions.add(
+                  Action.import({
+                    placements: [
+                      { province, type: "fleet" },
+                      { province: province2, type: "army" },
+                      { province: province3, type: "fleet" },
+                    ],
+                  })
+                );
+              }
+              if (
+                this.board.graph.get(province2).factoryType ===
+                "shipyard" &&
+                this.board.graph.get(province3).factoryType === "shipyard"
+              ) {
+                availableActions.add(
+                  Action.import({
+                    placements: [
+                      { province, type: "army" },
+                      { province: province2, type: "fleet" },
+                      { province: province3, type: "fleet" },
+                    ],
+                  })
+                );
+              }
+              if (
+                this.board.graph.get(province).factoryType === "shipyard" &&
+                this.board.graph.get(province2).factoryType ===
+                "shipyard" &&
+                this.board.graph.get(province3).factoryType === "shipyard"
+              ) {
+                availableActions.add(
+                  Action.import({
+                    placements: [
+                      { province, type: "fleet" },
+                      { province: province2, type: "fleet" },
+                      { province: province3, type: "fleet" },
+                    ],
+                  })
+                );
               }
             }
+          }
+        }
+        this.availableActions = availableActions;
+        return;
+      }
+      case "production1":
+      case "production2": {
+        Array.from(this.board.byNation.get(action.payload.nation))
+          .filter(
+            (province) => this.provinces.get(province).factory !== null
+          )
+          .forEach((province) => {
+            if (this.provinces.get(province).factory === "shipyard") {
+              this.units.get(action.payload.nation).get(province).fleets++;
+            } else {
+              this.units.get(action.payload.nation).get(province).armies++;
+            }
+          });
+        if (action.payload.slot === "production2") {
+          const potentialPreInvestorSlots = [
+            "maneuver1",
+            "production1",
+            "factory",
+            "taxation",
+          ];
+          if (
+            potentialPreInvestorSlots.includes(
+              this.nations.get(this.currentNation).previousRondelPosition
+            )
+          ) {
+            this.endOfInvestorTurn();
             this.handleAdvancePlayer();
-            this.availableActions = new Set(
-              this.rondelActions(this.currentNation)
-            );
-
-            return;
-          }
-          case "taxation": {
-            const nationName = action.payload.nation;
-            const nation = this.nations.get(nationName);
-            // 1. Tax revenue / success bonus
-            let taxes =
-              this.unoccupiedFactoryCount(nationName) * 2 +
-              this.flagCount(nationName);
-            // Taxes cannot exceed 20m
-            if (taxes > 20) taxes = 20;
-            let excessTaxes = taxes - nation.taxChartPosition;
-            // Players can never lose money here and
-            // nations cannot descend in taxChartPosition
-            if (excessTaxes < 0) {
-              excessTaxes = 0;
-            }
-            // Player receives full excess taxes
-            this.players[this.currentPlayerName].cash += excessTaxes;
-            // Nation's taxChartPosition increases to match taxes
-            nation.taxChartPosition += excessTaxes;
-            // The tax chart maxes out at 15
-            if (nation.taxChartPosition > 15) nation.taxChartPosition = 15;
-            // 2. Collecting money
-            let payment = taxes - this.unitCount(nationName);
-            // Nations cannot be paid less than 0m
-            if (payment < 0) payment = 0;
-            nation.treasury += payment;
-            // 3. Adding power points
-            let powerPoints = taxes - 5;
-            if (powerPoints < 0) powerPoints = 0;
-            nation.powerPoints += powerPoints;
-            if (nation.powerPoints + taxes >= 25) {
-              nation.powerPoints = 25;
-              this.tick(Action.endGame());
-              return;
-            }
-
-            this.availableActions = new Set(
-              this.rondelActions(this.nextNation(this.currentNation))
-            );
-            const potentialPreInvestorSlots = ["maneuver1", "production1"];
-            if (
-              potentialPreInvestorSlots.includes(
-                this.nations.get(this.currentNation).previousRondelPosition
-              )
-            ) {
-              this.endOfInvestorTurn();
-            }
-            return;
-          }
-          case "maneuver1":
-          case "maneuver2": {
-            this.maneuver(action);
-            return;
-          }
-          case "factory": {
-            // If nation cannot afford to build a factory
-            if (this.nations.get(this.currentNation).treasury < 5) {
-              this.handleAdvancePlayer();
-              return;
-            }
-
-            this.availableActions = new Set();
-            for (const province of this.board.byNation.get(
-              action.payload.nation
-            )) {
-              if (!this.provinces.get(province).factory) {
-                let occupied = false;
-                for (const [nation,] of this.nations) {
-                  if (this.units.get(nation).get(province).armies > 0)
-                    occupied = true;
-                }
-                if (occupied === false)
-                  this.availableActions.add(Action.buildFactory({ province }));
-              }
-            }
-
             return;
           }
         }
+        this.handleAdvancePlayer();
+        this.availableActions = new Set(
+          this.rondelActions(this.currentNation)
+        );
+
+        return;
+      }
+      case "taxation": {
+        const nationName = action.payload.nation;
+        const nation = this.nations.get(nationName);
+        // 1. Tax revenue / success bonus
+        let taxes =
+          this.unoccupiedFactoryCount(nationName) * 2 +
+          this.flagCount(nationName);
+        // Taxes cannot exceed 20m
+        if (taxes > 20) taxes = 20;
+        let excessTaxes = taxes - nation.taxChartPosition;
+        // Players can never lose money here and
+        // nations cannot descend in taxChartPosition
+        if (excessTaxes < 0) {
+          excessTaxes = 0;
+        }
+        // Player receives full excess taxes
+        this.players[this.currentPlayerName].cash += excessTaxes;
+        // Nation's taxChartPosition increases to match taxes
+        nation.taxChartPosition += excessTaxes;
+        // The tax chart maxes out at 15
+        if (nation.taxChartPosition > 15) nation.taxChartPosition = 15;
+        // 2. Collecting money
+        let payment = taxes - this.unitCount(nationName);
+        // Nations cannot be paid less than 0m
+        if (payment < 0) payment = 0;
+        nation.treasury += payment;
+        // 3. Adding power points
+        let powerPoints = taxes - 5;
+        if (powerPoints < 0) powerPoints = 0;
+        nation.powerPoints += powerPoints;
+        if (nation.powerPoints + taxes >= 25) {
+          nation.powerPoints = 25;
+          this.tick(Action.endGame());
+          return;
+        }
+
+        this.availableActions = new Set(
+          this.rondelActions(this.nextNation(this.currentNation))
+        );
+        const potentialPreInvestorSlots = ["maneuver1", "production1"];
+        if (
+          potentialPreInvestorSlots.includes(
+            this.nations.get(this.currentNation).previousRondelPosition
+          )
+        ) {
+          this.endOfInvestorTurn();
+        }
+        this.handleAdvancePlayer();
+        return;
+      }
+      case "maneuver1":
+      case "maneuver2": {
+        this.beginManeuver(action);
+        return;
+      }
+      case "factory": {
+        // If nation cannot afford to build a factory
+        if (this.nations.get(this.currentNation).treasury < 5) {
+          this.handleAdvancePlayer();
+          return;
+        }
+
+        this.availableActions = new Set();
+        for (const province of this.board.byNation.get(
+          action.payload.nation
+        )) {
+          if (!this.provinces.get(province).factory) {
+            let occupied = false;
+            for (const [nation,] of this.nations) {
+              if (this.units.get(nation).get(province).armies > 0)
+                occupied = true;
+            }
+            if (occupied === false)
+              this.availableActions.add(Action.buildFactory({ province }));
+          }
+        }
+
+        return;
       }
     }
   }
 
-  maneuver(action) {
+  beginManeuver(action) {
     const destinations = new Set([Action.endManeuver()]);
 
     // Collect all units that are allowed to move on this turn
@@ -807,67 +907,6 @@ export default class Imperial {
     this.currentPlayerName = this.nations.get(this.currentNation).controller;
   }
 
-  purchaseBond(action) {
-    const uncost = {
-      2: 1,
-      4: 2,
-      6: 3,
-      9: 4,
-      12: 5,
-      16: 6,
-      20: 7,
-      25: 8,
-      30: 9,
-    };
-    const bonds = this.players[action.payload.player].bonds;
-    if (action.payload.cost > this.players[action.payload.player].cash) {
-      const tradeIn = [...bonds]
-        .filter(({ nation }) => nation === action.payload.nation)
-        .map(({ cost }) => cost)[0];
-      if (tradeIn === undefined) {
-        throw new Error(
-          `${action.payload.player} does not have any bonds to trade for ${action.payload.nation}`
-        );
-      }
-      const bondToTrade = Bond(action.payload.nation, uncost[tradeIn]);
-      const netCost = action.payload.cost - bondToTrade.cost;
-      this.nations.get(action.payload.nation).treasury += netCost;
-      this.availableBonds.add(bondToTrade);
-      this.players[action.payload.player].cash -= netCost;
-      this.players[action.payload.player].bonds.delete(bondToTrade);
-    } else {
-      this.nations.get(action.payload.nation).treasury += action.payload.cost;
-      this.players[action.payload.player].cash -= action.payload.cost;
-    }
-
-    const newBond = Bond(action.payload.nation, uncost[action.payload.cost]);
-    if (!this.availableBonds.has(newBond)) {
-      throw new Error(`${newBond} not available`);
-    }
-    this.players[action.payload.player].bonds.add(newBond);
-    this.availableBonds.delete(newBond);
-
-    if (this.nations.get(action.payload.nation).controller === null) {
-      this.nations.get(action.payload.nation).controller =
-        action.payload.player;
-    }
-
-    if (
-      this.totalInvestmentInNation(
-        action.payload.player,
-        action.payload.nation
-      ) >
-      this.totalInvestmentInNation(
-        this.nations.get(action.payload.nation).controller,
-        action.payload.nation
-      )
-    ) {
-      this.nations.get(action.payload.nation).controller =
-        action.payload.player;
-    }
-    this.advanceInvestorCard();
-  }
-
   totalInvestmentInNation(player, nation) {
     return [...this.players[player].bonds]
       .filter((bond) => bond.nation === nation)
@@ -892,13 +931,6 @@ export default class Imperial {
       out += units.fleets;
     }
     return out;
-  }
-
-  buildFactory(action) {
-    this.provinces.get(action.payload.province).factory = this.board.graph.get(
-      action.payload.province
-    ).factoryType;
-    this.nations.get(this.currentNation).treasury -= 5;
   }
 
   rondelActions(nation) {
