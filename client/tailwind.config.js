@@ -12,10 +12,11 @@ module.exports = {
     container: {
       center: true
     },
-    fontfamily: {
+    fontFamily: {
       'sans': [...defaultTheme.fontFamily.sans],
-      'serif': ["Baskervville", ...defaultTheme.fontFamily.serif],
-      'mono': [...defaultTheme.fontFamily.mono]
+      'serif': ['Baskervville', ...defaultTheme.fontFamily.serif],
+      'mono': [...defaultTheme.fontFamily.mono],
+      'bold': ['"Libre Baskerville"']
     }
   }
 }
