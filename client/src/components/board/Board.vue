@@ -102,23 +102,14 @@ import Province from "./Province.vue";
 export default {
   name: "Board",
   props: {
-    all_units: Map,
-    dots: Array,
-    factories: Array,
+    game: Object,
     select_province: Function,
     valid_provinces: Array,
   },
   methods: {
-    isValid(province) {
-      if (this.valid_provinces.includes(province)) {
-        return true;
-      }
-
-      return false;
-    },
     armies(province) {
       let armies = [];
-      for (const [provinceWithUnits, allUnitsInProvince] of this.all_units) {
+      for (const [provinceWithUnits, allUnitsInProvince] of this.allUnits()) {
         for (const [nation, provinceUnits] of allUnitsInProvince) {
           if (province.toLowerCase() === provinceWithUnits) {
             for (let i = 0; i < provinceUnits.armies; i++) {
@@ -131,7 +122,7 @@ export default {
     },
     fleets(province) {
       let fleets = [];
-      for (const [provinceWithUnits, allUnitsInProvince] of this.all_units) {
+      for (const [provinceWithUnits, allUnitsInProvince] of this.allUnits()) {
         for (const [nation, provinceUnits] of allUnitsInProvince) {
           if (province.toLowerCase() === provinceWithUnits) {
             for (let i = 0; i < provinceUnits.fleets; i++) {
@@ -142,22 +133,63 @@ export default {
       }
       return fleets;
     },
+    factory(province) {
+      const factory = this.factories().find((factory) => {
+        return factory.province === province;
+      });
+      if (factory) {
+        return factory.type;
+      }
+    },
     dot(province) {
       let nation;
-      this.dots.forEach((dot) => {
+      this.dots().forEach((dot) => {
         if (province === dot.province) {
           nation = dot.flag.value;
         }
       });
       return nation;
     },
-    factory(province) {
-      const factory = this.factories.find((factory) => {
-        return factory.province === province;
-      });
-      if (factory) {
-        return factory.type;
+    allUnits() {
+      // This function returns all units on the board.
+      let allUnits = new Map();
+      for (const [nation, unitsByNation] of this.game.units) {
+        for (const [province, units] of unitsByNation) {
+          let allUnitsInProvince = new Map();
+          if (units.armies > 0 || units.fleets > 0) {
+            allUnitsInProvince.set(nation.value, units);
+            allUnits.set(province, allUnitsInProvince);
+          }
+        }
       }
+      return allUnits;
+    },
+    factories() {
+      let factories = [];
+      for (let [province, data] of this.game.provinces) {
+        const factory = data.factory;
+        if (factory) {
+          factories.push({ province, type: factory });
+        }
+      }
+      return factories;
+    },
+    dots() {
+      let flags = [];
+      for (const [province, data] of this.game.provinces) {
+        const flag = data.flag;
+        if (flag) {
+          flags.push({ province, flag });
+        }
+      }
+      return flags;
+    },
+    isValid(province) {
+      if (this.valid_provinces.includes(province)) {
+        return true;
+      }
+
+      return false;
     },
   },
   data() {
