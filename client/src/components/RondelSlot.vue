@@ -7,7 +7,7 @@
       v-bind:id="rondel_slot.type"
       v-bind:fill="rondel_slot.color"
       v-bind:d="svgPathData"
-      v-on:click="handle_click($event, rondel_slot.type)"
+      v-on:click="$emit('slot-clicked')"
       stroke="#000000"
       vector-effect="non-scaling-stroke"
       stroke-width="1"
@@ -51,7 +51,6 @@ export default {
     Flag,
   },
   props: {
-    handle_click: Function,
     index: Number,
     is_valid: Boolean,
     rondel_slot: Object,
