@@ -1,23 +1,23 @@
 <template>
   <li
     class="player p-12 bg-green-300 font-serif"
-    :class="current_player ? 'font-bold' : ''"
+    :class="player.name === game.currentPlayerName ? 'font-bold' : ''"
   >
     <div class="contents">
-      <h3>{{ name }}</h3>
-      <div>Cash: {{ cash }} million</div>
+      <h3>{{ player.name }}</h3>
+      <div>Cash: {{ player.cash }} million</div>
       <div>
         Bonds:
         <ul class="bonds list-none">
           <Bond
-            v-for="bond in bonds"
+            v-for="bond in player.bonds"
             v-bind:nation="bond.nation.value"
             v-bind:cost="bond.cost"
             v-bind:key="bond.nation.value + bond.cost"
           ></Bond>
         </ul>
       </div>
-      <div v-if="investor_card_holder">Investor Card</div>
+      <div v-if="player.name === game.investorCardHolder">Investor Card</div>
     </div>
   </li>
 </template>
@@ -31,10 +31,8 @@ export default {
     Bond,
   },
   props: {
-    bonds: Set,
-    cash: Number,
-    current_player: Boolean,
-    investor_card_holder: Boolean,
+    player: Object,
+    game: Object,
     name: String,
   },
 };

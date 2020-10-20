@@ -5,21 +5,14 @@
         <ul class="players">
           <Player
             v-for="player in game.players"
-            v-bind:name="player.name"
-            v-bind:cash="player.cash"
-            v-bind:bonds="player.bonds"
-            v-bind:current_player="player.name === game.currentPlayerName"
-            v-bind:investor_card_holder="
-              player.name === game.investorCardHolder
-            "
+            v-bind:player="player"
+            v-bind:game="game"
             v-bind:key="player.name"
           ></Player>
         </ul>
         <div class="relative">
           <Board
-            v-bind:all_units="boardUnits()"
-            v-bind:factories="factories()"
-            v-bind:dots="flags()"
+            v-bind:game="game"
             v-bind:select_province="selectProvince"
             v-bind:valid_provinces="validProvinces()"
           ></Board>
@@ -33,7 +26,6 @@
           v-bind:game="game"
           v-bind:name="name"
           v-on:tick-with-action="tickWithAction"
-          v-bind:valid_slots="validSlots()"
         ></Rondel>
       </div>
       <ul class="nations">
@@ -198,41 +190,6 @@ export default {
     };
   },
   methods: {
-    boardUnits() {
-      // This function returns all units on the board.
-      // TODO: Distinguish between armies and fleets, and numbers of units.
-      let boardUnits = new Map();
-      for (const [nation, allUnits] of this.game.units) {
-        for (const [province, units] of allUnits) {
-          let allUnitsInProvince = new Map();
-          if (units.armies > 0 || units.fleets > 0) {
-            allUnitsInProvince.set(nation.value, units);
-            boardUnits.set(province, allUnitsInProvince);
-          }
-        }
-      }
-      return boardUnits;
-    },
-    factories() {
-      let factories = [];
-      for (let [province, data] of this.game.provinces) {
-        const factory = data.factory;
-        if (factory) {
-          factories.push({ province, type: factory });
-        }
-      }
-      return factories;
-    },
-    flags() {
-      let flags = [];
-      for (const [province, data] of this.game.provinces) {
-        const flag = data.flag;
-        if (flag) {
-          flags.push({ province, flag });
-        }
-      }
-      return flags;
-    },
     validProvinces() {
       // This function returns all provinces that a unit can move
       // or be imported to.
@@ -273,15 +230,6 @@ export default {
         }
         return { slot, nations };
       });
-    },
-    validSlots() {
-      let slots = [];
-      for (const action of this.game.availableActions) {
-        if (action.type === "rondel") {
-          slots.push(action.payload.slot);
-        }
-      }
-      return slots;
     },
     setWebsocketId: function (newId) {
       const oldId = localStorage.getItem("imperialId");

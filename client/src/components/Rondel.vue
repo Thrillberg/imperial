@@ -32,12 +32,11 @@ export default {
     soloMode: Boolean,
     game: Object,
     name: String,
-    valid_slots: Array,
   },
   methods: {
     isValid(slot) {
       if (
-        this.valid_slots.includes(slot) &&
+        this.validSlots().includes(slot) &&
         (this.game.currentPlayerName === this.name || this.soloMode)
       ) {
         return true;
@@ -62,6 +61,15 @@ export default {
           }
         }
       }
+    },
+    validSlots() {
+      let slots = [];
+      for (const action of this.game.availableActions) {
+        if (action.type === "rondel") {
+          slots.push(action.payload.slot);
+        }
+      }
+      return slots;
     },
   },
   data() {
