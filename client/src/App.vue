@@ -6,6 +6,7 @@
           <Player
             v-for="player in game.players"
             v-bind:player="player"
+            v-bind:current_player="controllingPlayerName"
             v-bind:game="game"
             v-bind:key="player.name"
           ></Player>
@@ -126,6 +127,7 @@ export default {
   data: () => {
     return {
       buildingFactory: false,
+      controllingPlayerName: "",
       soloMode: false,
       game: {},
       gameStarted: false,
@@ -268,6 +270,7 @@ export default {
       const action = Action.initialize({ players });
       this.game = Imperial.fromLog([action]);
       this.gameStarted = true;
+      this.controllingPlayerName = this.game.currentPlayerName;
       if (this.leader === true) {
         this.webSocket.send(
           JSON.stringify({
@@ -345,11 +348,18 @@ export default {
       ];
     },
     tickWithAction: function (action) {
+      this.game.tick(action);
+      this.controllingPlayerName = this.game.currentPlayerName;
+      if (!this.soloMode) {
+        this.webSocket.send(
+          JSON.stringify({
+            kind: "tick",
+            data: { action: JSON.stringify(action) },
+          })
+        );
+      }
       if (action.type === "rondel" && action.payload.slot === "import") {
         this.importStatus.active = true;
-      }
-      if (action.type === "rondel" && action.payload.slot === "investor") {
-        this.purchasingBond = true;
       }
       if (action.type === "bondPurchase") {
         this.purchasingBond = false;
@@ -360,14 +370,11 @@ export default {
       if (action.type === "buildFactory") {
         this.buildingFactory = false;
       }
-      this.game.tick(action);
-      if (!this.soloMode) {
-        this.webSocket.send(
-          JSON.stringify({
-            kind: "tick",
-            data: { action: JSON.stringify(action) },
-          })
-        );
+      if (action.type === "rondel" && action.payload.slot === "investor") {
+        if (this.game.investorCardActive) {
+          this.controllingPlayerName = this.game.investorCardHolder;
+        }
+        this.purchasingBond = true;
       }
       if (
         action.type === "rondel" &&

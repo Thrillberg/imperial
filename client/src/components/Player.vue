@@ -1,7 +1,7 @@
 <template>
   <li
     class="player p-12 bg-green-300 font-serif"
-    :class="player.name === game.currentPlayerName ? 'font-bold' : ''"
+    :class="player.name === current_player ? 'font-bold' : ''"
   >
     <div class="contents">
       <h3>{{ player.name }}</h3>
@@ -31,6 +31,7 @@ export default {
     Bond,
   },
   props: {
+    current_player: String,
     player: Object,
     game: Object,
     name: String,

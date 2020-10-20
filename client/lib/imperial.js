@@ -146,6 +146,7 @@ export default class Imperial {
       this.nations.get(action.payload.nation).controller =
         action.payload.player;
     }
+    this.investorCardActive = false;
     this.advanceInvestorCard();
     this.handleAdvancePlayer();
     this.availableActions = new Set(this.rondelActions(this.currentNation));
@@ -455,43 +456,7 @@ export default class Imperial {
 
     switch (action.payload.slot) {
       case "investor": {
-        // 1. Nation pays bond-holders interest
-        for (const player of Object.keys(this.players)) {
-          if (player !== this.currentPlayerName) {
-            this.playerBondsOfNation(player, action.payload.nation).forEach(
-              (bond) => {
-                if (
-                  this.nations.get(action.payload.nation).treasury >=
-                  bond.number
-                ) {
-                  this.nations.get(action.payload.nation).treasury -=
-                    bond.number;
-                } else {
-                  this.players[this.currentPlayerName].cash -= bond.number;
-                }
-                this.players[player].cash += bond.number;
-              }
-            );
-          }
-        }
-        // Nation pays its controller interest
-        const amountOwedToController = [
-          ...this.players[this.currentPlayerName].bonds,
-        ]
-          .filter((bond) => bond.nation === action.payload.nation)
-          .reduce((x, y) => x + y.number, 0);
-        if (
-          this.nations.get(action.payload.nation).treasury >
-          amountOwedToController
-        ) {
-          this.players[
-            this.currentPlayerName
-          ].cash += amountOwedToController;
-          this.nations.get(
-            action.payload.nation
-          ).treasury -= amountOwedToController;
-        }
-        this.endOfInvestorTurn();
+        this.investor(action);
         return;
       }
       case "import": {
@@ -785,6 +750,47 @@ export default class Imperial {
         return;
       }
     }
+  }
+
+  investor(action) {
+    // 1. Nation pays bond-holders interest
+    for (const player of Object.keys(this.players)) {
+      if (player !== this.currentPlayerName) {
+        this.playerBondsOfNation(player, action.payload.nation).forEach(
+          (bond) => {
+            if (
+              this.nations.get(action.payload.nation).treasury >=
+              bond.number
+            ) {
+              this.nations.get(action.payload.nation).treasury -=
+                bond.number;
+            } else {
+              this.players[this.currentPlayerName].cash -= bond.number;
+            }
+            this.players[player].cash += bond.number;
+          }
+        );
+      }
+    }
+    // Nation pays its controller interest
+    const amountOwedToController = [
+      ...this.players[this.currentPlayerName].bonds,
+    ]
+      .filter((bond) => bond.nation === action.payload.nation)
+      .reduce((x, y) => x + y.number, 0);
+    if (
+      this.nations.get(action.payload.nation).treasury >
+      amountOwedToController
+    ) {
+      this.players[
+        this.currentPlayerName
+      ].cash += amountOwedToController;
+      this.nations.get(
+        action.payload.nation
+      ).treasury -= amountOwedToController;
+    }
+    this.investorCardActive = true;
+    this.endOfInvestorTurn();
   }
 
   beginManeuver(action) {

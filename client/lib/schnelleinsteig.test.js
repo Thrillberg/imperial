@@ -186,6 +186,16 @@ describe("Schnelleinsteig", () => {
         expect(cash).toEqual(6);
       });
 
+      test("investor card is active", () => {
+        const log = mainLog.slice(0, 17);
+        log.push(
+          Action.rondel({ nation: Nation.IT, cost: 0, slot: "investor" })
+        );
+        const game = Imperial.fromLog(log);
+
+        expect(game.investorCardActive).toEqual(true);
+      });
+
       test("Investor-card holder (Daniel) has 4 million in cash", () => {
         const log = mainLog.slice(0, 17);
         log.push(
@@ -282,6 +292,20 @@ describe("Schnelleinsteig", () => {
 
         expect(game.currentPlayerName).toEqual(currentPlayerName);
       });
+
+      test("investor card is no longer active", () => {
+        const log = mainLog.slice(0, 18);
+        log.push(
+          Action.bondPurchase({
+            nation: Nation.GE,
+            player: "Daniel",
+            cost: 4,
+          })
+        );
+        const game = Imperial.fromLog(log);
+
+        expect(game.investorCardActive).toEqual(false);
+      })
     });
 
     describe("3. FR builds a factory", () => {
