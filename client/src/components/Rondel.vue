@@ -10,7 +10,7 @@
   >
     <RondelSlot
       v-for="(rondel_slot, index) in slots"
-      v-bind:handle_click="select_action"
+      v-on:slot-clicked="slotClicked(rondel_slot.type)"
       v-bind:index="index"
       v-bind:is_valid="isValid(rondel_slot.type)"
       v-bind:nations="nationsOnSlot(rondel_slot.type)"
@@ -32,7 +32,6 @@ export default {
     soloMode: Boolean,
     game: Object,
     name: String,
-    select_action: Function,
     valid_slots: Array,
   },
   methods: {
@@ -54,6 +53,15 @@ export default {
         }
       }
       return nations;
+    },
+    slotClicked: function (slot) {
+      if (this.game.currentPlayerName === this.name || this.soloMode) {
+        for (const action of this.game.availableActions) {
+          if (action.payload.slot === slot) {
+            this.$emit("tick-with-action", action);
+          }
+        }
+      }
     },
   },
   data() {

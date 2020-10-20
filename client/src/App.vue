@@ -17,21 +17,23 @@
         </ul>
         <div class="relative">
           <Board
-            v-bind:all_units="boardUnits"
-            v-bind:factories="factories"
-            v-bind:dots="flags"
+            v-bind:all_units="boardUnits()"
+            v-bind:factories="factories()"
+            v-bind:dots="flags()"
             v-bind:select_province="selectProvince"
-            v-bind:valid_provinces="validProvinces"
+            v-bind:valid_provinces="validProvinces()"
           ></Board>
-          <TaxChart v-bind:taxes="taxes"></TaxChart>
+          <TaxChart v-bind:taxes="taxes()"></TaxChart>
         </div>
-        <PowerPointsChart v-bind:power_points="powerPoints"></PowerPointsChart>
+        <PowerPointsChart
+          v-bind:power_points="powerPoints()"
+        ></PowerPointsChart>
         <Rondel
           v-bind:soloMode="soloMode"
           v-bind:game="game"
           v-bind:name="name"
-          v-bind:select_action="selectAction"
-          v-bind:valid_slots="validSlots"
+          v-on:tick-with-action="tickWithAction"
+          v-bind:valid_slots="validSlots()"
         ></Rondel>
       </div>
       <ul class="nations">
@@ -195,7 +197,7 @@ export default {
       }
     };
   },
-  computed: {
+  methods: {
     boardUnits() {
       // This function returns all units on the board.
       // TODO: Distinguish between armies and fleets, and numbers of units.
@@ -281,8 +283,6 @@ export default {
       }
       return slots;
     },
-  },
-  methods: {
     setWebsocketId: function (newId) {
       const oldId = localStorage.getItem("imperialId");
       if (oldId) {
@@ -350,15 +350,6 @@ export default {
         this.importStatus.placements.push(province);
       }
     },
-    selectAction(_, slot) {
-      if (this.game.currentPlayerName === this.name || this.soloMode) {
-        for (const action of this.game.availableActions) {
-          if (action.payload.slot === slot) {
-            this.tickWithAction(action);
-          }
-        }
-      }
-    },
     getPlayers: function (playerCount) {
       switch (playerCount) {
         case 2:
@@ -422,12 +413,14 @@ export default {
         this.buildingFactory = false;
       }
       this.game.tick(action);
-      this.webSocket.send(
-        JSON.stringify({
-          kind: "tick",
-          data: { action: JSON.stringify(action) },
-        })
-      );
+      if (!this.soloMode) {
+        this.webSocket.send(
+          JSON.stringify({
+            kind: "tick",
+            data: { action: JSON.stringify(action) },
+          })
+        );
+      }
       if (
         action.type === "rondel" &&
         (action.payload.slot === "maneuver1" ||
