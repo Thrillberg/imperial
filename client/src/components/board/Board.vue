@@ -16,7 +16,7 @@
         v-for="(province, name) in sea_provinces"
         v-bind:province="province"
         v-bind:name="name"
-        v-bind:select_province="select_province"
+        v-bind:select_province="selectProvince"
         v-bind:fleets="fleets(name)"
         v-bind:is_valid="isValid(name)"
         v-bind:dot="dot(name)"
@@ -26,7 +26,7 @@
         v-for="(province, name) in land_provinces"
         v-bind:province="province"
         v-bind:name="name"
-        v-bind:select_province="select_province"
+        v-bind:select_province="selectProvince"
         v-bind:fleets="fleets(name)"
         v-bind:armies="armies(name)"
         v-bind:is_valid="isValid(name)"
@@ -39,6 +39,8 @@
 </template>
 
 <script>
+import Action from "../../../lib/action.js";
+
 import algeria from "./algeria.svg";
 import balticsea from "./balticsea.svg";
 import bayofbiscay from "./bay_of_biscay.svg";
@@ -103,8 +105,7 @@ export default {
   name: "Board",
   props: {
     game: Object,
-    select_province: Function,
-    valid_provinces: Array,
+    maneuverActive: Boolean,
   },
   methods: {
     armies(province) {
@@ -150,6 +151,46 @@ export default {
       });
       return nation;
     },
+    validProvinces() {
+      // This function returns all provinces that a unit can move
+      // or be imported to.
+      let provinces = new Set();
+      for (const action of this.game.availableActions) {
+        if (action.type === "maneuver" && this.maneuverActive) {
+          if (this.maneuverStatus.origin) {
+            provinces.add(action.payload.destination);
+          } else {
+            provinces.add(action.payload.origin);
+          }
+          // } else if (action.type === "import" && this.importStatus.active) {
+          //   action.payload.placements.forEach((placement) => {
+          //     provinces.add(placement.province);
+          //   });
+        }
+      }
+      return Array.from(provinces);
+    },
+    selectProvince(province) {
+      // If the game is in a maneuver and an origin is specified,
+      // then the next specified province is the destination
+      if (this.maneuverActive && this.maneuverStatus.origin) {
+        const maneuver = Action.maneuver({
+          origin: this.maneuverStatus.origin,
+          destination: province,
+        });
+        // Reset maneuverStatus
+        this.maneuverStatus.origin = "";
+        this.tickWithAction(maneuver);
+        // If the game is in a maneuver with no origin specified,
+        // then the next specified province is the origin
+      } else if (this.maneuverStatus.active) {
+        this.maneuverStatus.origin = province;
+        // If the game is in an import, then each specified province
+        // gets added to the placements.
+        // } else if (this.importStatus.active) {
+        //   this.importStatus.placements.push(province);
+      }
+    },
     allUnits() {
       // This function returns all units on the board.
       let allUnits = new Map();
@@ -185,7 +226,7 @@ export default {
       return flags;
     },
     isValid(province) {
-      if (this.valid_provinces.includes(province)) {
+      if (this.validProvinces().includes(province)) {
         return true;
       }
 
@@ -194,6 +235,11 @@ export default {
   },
   data() {
     return {
+      maneuverStatus: {
+        active: false,
+        endManeuver: Action.endManeuver(),
+        origin: "",
+      },
       sea_provinces: {
         balticsea,
         bayofbiscay,

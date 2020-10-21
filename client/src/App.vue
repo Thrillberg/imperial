@@ -14,8 +14,7 @@
         <div class="relative">
           <Board
             v-bind:game="game"
-            v-bind:select_province="selectProvince"
-            v-bind:valid_provinces="validProvinces()"
+            v-bind:maneuverActive="maneuverActive"
           ></Board>
           <TaxChart v-bind:taxes="taxes()"></TaxChart>
         </div>
@@ -46,12 +45,6 @@
           v-bind:action="importStatus.endImport"
           v-bind:text="'End import'"
           v-bind:dispatch="runImport"
-        ></ActionComponent>
-        <ActionComponent
-          v-else-if="maneuverStatus.active"
-          v-bind:action="maneuverStatus.endManeuver"
-          v-bind:text="'End maneuver'"
-          v-bind:dispatch="endManeuver"
         ></ActionComponent>
         <ActionComponent
           v-else-if="purchasingBond || buildingFactory"
@@ -137,11 +130,7 @@ export default {
         placements: [],
       },
       leader: false,
-      maneuverStatus: {
-        active: false,
-        endManeuver: Action.endManeuver(),
-        origin: "",
-      },
+      maneuverActive: false,
       name: "",
       playerCounts: [2, 3, 4, 5, 6],
       players: new Set(),
@@ -192,25 +181,6 @@ export default {
     };
   },
   methods: {
-    validProvinces() {
-      // This function returns all provinces that a unit can move
-      // or be imported to.
-      let provinces = new Set();
-      for (const action of this.game.availableActions) {
-        if (action.type === "maneuver" && this.maneuverStatus.active) {
-          if (this.maneuverStatus.origin) {
-            provinces.add(action.payload.destination);
-          } else {
-            provinces.add(action.payload.origin);
-          }
-        } else if (action.type === "import" && this.importStatus.active) {
-          action.payload.placements.forEach((placement) => {
-            provinces.add(placement.province);
-          });
-        }
-      }
-      return Array.from(provinces);
-    },
     taxes() {
       return [15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5].map((slot) => {
         let nations = [];
@@ -278,27 +248,6 @@ export default {
             data: { action: JSON.stringify(action) },
           })
         );
-      }
-    },
-    selectProvince(province) {
-      // If the game is in a maneuver and an origin is specified,
-      // then the next specified province is the destination
-      if (this.maneuverStatus.active && this.maneuverStatus.origin) {
-        const maneuver = Action.maneuver({
-          origin: this.maneuverStatus.origin,
-          destination: province,
-        });
-        // Reset maneuverStatus
-        this.maneuverStatus.origin = "";
-        this.tickWithAction(maneuver);
-        // If the game is in a maneuver with no origin specified,
-        // then the next specified province is the origin
-      } else if (this.maneuverStatus.active) {
-        this.maneuverStatus.origin = province;
-        // If the game is in an import, then each specified province
-        // gets added to the placements.
-      } else if (this.importStatus.active) {
-        this.importStatus.placements.push(province);
       }
     },
     getPlayers: function (playerCount) {
@@ -381,11 +330,11 @@ export default {
         (action.payload.slot === "maneuver1" ||
           action.payload.slot === "maneuver2")
       ) {
-        this.maneuverStatus.active = true;
+        this.maneuverActive = true;
       }
       for (const action of this.game.availableActions) {
         if (action.type === "rondel") {
-          this.maneuverStatus.active = false;
+          this.maneuverActive = false;
         }
       }
     },
@@ -427,11 +376,11 @@ export default {
       }
       this.importStatus.placements = [];
     },
-    endManeuver: function (action) {
-      this.tickWithAction(action);
-      this.maneuverStatus.active = false;
-      this.maneuverStatus.origin = "";
-    },
+    // endManeuver: function (action) {
+    //   this.tickWithAction(action);
+    //   this.maneuverStatus.active = false;
+    //   this.maneuverStatus.origin = "";
+    // },
   },
 };
 </script>
