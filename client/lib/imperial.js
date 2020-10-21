@@ -436,7 +436,7 @@ export default class Imperial {
           this.endOfInvestorTurn();
         }
       }
-      this.currentNation = this.nextNation(this.currentNation);
+      this.handleAdvancePlayer();
       this.availableActions = new Set(
         this.rondelActions(this.currentNation)
       );
