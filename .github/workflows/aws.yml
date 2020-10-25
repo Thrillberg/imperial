@@ -76,5 +76,5 @@ jobs:
       with:
         task-definition: ${{ steps.task-def.outputs.task-definition }}
         service: imperial-service
-        cluster: default
+        cluster: imperial
         wait-for-service-stability: true
