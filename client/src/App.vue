@@ -64,7 +64,7 @@
       </div>
     </div>
     <div v-else>
-      <ul v-for="player in players" v-bind:key="player.name">
+      <ul v-for="game in games" v-bind:key="game.gameId">
         <li v-if="player.name === name">
           <strong>{{ player.name }}</strong>
         </li>
@@ -130,6 +130,8 @@ export default {
       controllingPlayerName: "",
       soloMode: false,
       game: {},
+      gameId: "",
+      games: new Set(),
       gameStarted: false,
       importStatus: {
         active: false,
@@ -164,9 +166,19 @@ export default {
             }
           }
           break;
+        case "openGame":
+          this.games.add({
+            gameId: envelope.data.gameId,
+            host: envelope.data.host,
+          })
+          break;
         case "startGame":
           this.players = new Set(JSON.parse(envelope.data.players));
+          this.gameId = envelope.data.gameId
           this.startGame();
+          break;
+        case "updateGamesList":
+          this.games = new Set(JSON.parse(envelope.data.games))
           break;
         case "updateGameLog": {
           const rawGameLog = JSON.parse(envelope.data.gameLog);
@@ -275,7 +287,7 @@ export default {
         this.webSocket.send(
           JSON.stringify({
             kind: "tick",
-            data: { action: JSON.stringify(action) },
+            data: { action: JSON.stringify(action), gameId: JSON.stringify(this.gameId) },
           })
         );
       }
@@ -354,7 +366,7 @@ export default {
         this.webSocket.send(
           JSON.stringify({
             kind: "tick",
-            data: { action: JSON.stringify(action) },
+            data: { action: JSON.stringify(action), gameId: JSON.stringify(this.gameId) },
           })
         );
       }

@@ -10,7 +10,7 @@ test:
 	go test
 
 run:
-	go run .
+	go run . :8080
 
 build:
 	GOOS=linux GOARCH=amd64 go build -o Imperial

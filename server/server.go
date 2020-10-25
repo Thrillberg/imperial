@@ -7,18 +7,18 @@ import (
 	"log"
 	"math/rand"
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/gorilla/websocket"
 )
 
-const addr = ":80"
-
 var connections = map[PlayerId]*Conn{}
 var players = map[PlayerId]PlayerName{}
+//var gamelessPlayers = map[PlayerId]PlayerName{}
+var games = map[GameId]*Game{}
+
 var gameLog = []Action{}
-var availableActions = []Action{}
-var rawAvailableActions = []string{}
 var upgrader = websocket.Upgrader{CheckOrigin: func(*http.Request) bool { return true }}
 
 func init() {
@@ -26,6 +26,10 @@ func init() {
 }
 
 func main() {
+  var addr = ":80"
+  if len(os.Args) == 2 {
+    addr = os.Args[1]
+  }
 	http.HandleFunc("/ws", handleWebsocket)
 	log.Println("serving websockets at", addr)
 	err := http.ListenAndServe(addr, nil)
@@ -41,6 +45,19 @@ type PlayerId string
 
 type PlayerName string
 
+type GameId string
+
+type Game struct {
+  Log []Action
+  Players map[PlayerId]PlayerName
+  Host PlayerName
+}
+
+type ListedGame struct {
+  Id GameId
+  Host PlayerName
+}
+
 // NewPlayerId generates a pseudorandom, base64-encoded PlayerId.
 func NewPlayerId() (PlayerId, error) {
 	// go doc math/rand.Read
@@ -55,6 +72,22 @@ func NewPlayerId() (PlayerId, error) {
 		return PlayerId(""), err
 	}
 	return PlayerId(builder.String()), nil
+}
+
+// NewGameId generates a pseudorandom, base64-encoded GameId.
+func NewGameId() (GameId, error) {
+	// go doc math/rand.Read
+	//
+	// > It always returns len(p) and a nil error.
+	buf := make([]byte, 8)
+	rand.Read(buf)
+
+	builder := strings.Builder{}
+	encoder := base64.NewEncoder(base64.StdEncoding, &builder)
+	if _, err := encoder.Write(buf); err != nil {
+		return GameId(""), err
+	}
+	return GameId(builder.String()), nil
 }
 
 type Action interface{}
@@ -98,12 +131,16 @@ const (
 	KindUpdatePlayers = Kind("updatePlayers")
 	// KindStartGame is sent to clients when a game starts.
 	KindStartGame = Kind("startGame")
+  // KindOpenGame is sent to clients when a game has been requested.
+  KindOpenGame = Kind("openGame")
 	// KindTick is received from clients when they register a
 	// new entry in the game log.
 	KindTick = Kind("tick")
 	// KindUpdateGameLog is sent to clients when there is a new
 	// entry in the game log.
 	KindUpdateGameLog = Kind("updateGameLog")
+  // KindUpdateGamesList is sent to clients when a client re-connects.
+  KindUpdateGamesList = Kind("updateGamesList")
 )
 
 // Conn wraps a websocket.Conn with convenience methods and message
@@ -153,7 +190,7 @@ func (c *Conn) UpdatePlayers(players map[PlayerId]PlayerName) error {
 }
 
 // StartGame sends a KindStartGame message to the client.
-func (c *Conn) StartGame(players map[PlayerId]PlayerName) error {
+func (c *Conn) StartGame(players map[PlayerId]PlayerName, gameId GameId) error {
 	var playersSlice = []map[string]string{}
 	for key, val := range players {
 		playersSlice = append(playersSlice, map[string]string{"id": string(key), "name": string(val)})
@@ -164,8 +201,20 @@ func (c *Conn) StartGame(players map[PlayerId]PlayerName) error {
 		Kind: KindStartGame,
 		Data: map[string]string{
 			"players": string(playersList),
+			"gameId":  string(gameId),
 		},
 	})
+}
+
+// OpenGame sends a KindOpenGame message to the client.
+func (c *Conn) OpenGame(host PlayerName, gameId GameId) error {
+  return c.write(&Envelope{
+    Kind: KindOpenGame,
+    Data: map[string]string{
+      "host": string(host),
+      "gameId": string(gameId),
+    },
+  })
 }
 
 // UpdateGameLog sends a KindUpdateGameLog message to the client.
@@ -178,6 +227,19 @@ func (c *Conn) UpdateGameLog(gameLog []Action) error {
 			"gameLog": string(gameLogList),
 		},
 	})
+}
+
+// UpdateGamesList sends a KindUpdateGamesList message to the client.
+func (c *Conn) UpdateGamesList(listedGames []ListedGame) error {
+  gamesList, _ := json.Marshal(listedGames)
+  log.Println("updating games list", listedGames)
+
+  return c.write(&Envelope{
+    Kind: KindUpdateGamesList,
+    Data: map[string]string{
+      "games": string(gamesList),
+    },
+  })
 }
 
 // Register is the way to listen for messages from the client. Only
@@ -243,23 +305,46 @@ func onUpdateId(c *Conn, data Data) error {
 	connections[newId] = c
 	delete(connections, oldId)
 
-	if val, ok := players[oldId]; ok {
-		players[newId] = val
-		delete(players, oldId)
-	}
+  // Re-connect a player to their game.
+  for gameId, game := range games {
+    for playerId, playerName := range game.Players {
+      if oldId == playerId {
+        for connPlayerId, conn := range connections {
+          if newId == connPlayerId {
+            players := game.Players
+            players[newId] = playerName
+            delete(players, oldId)
+            games[gameId] = &Game{game.Log, players, game.Host}
 
-	for _, conn := range connections {
-		if err := conn.UpdatePlayers(players); err != nil {
-			log.Println(players, "UpdatePlayers")
-			return nil
-		}
-		if len(players) == 2 {
-			if err := conn.UpdateGameLog(gameLog); err != nil {
-				log.Println(gameLog, "UpdateGameLog")
-				return nil
-			}
-		}
-	}
+            if err := conn.UpdatePlayers(players); err != nil {
+              log.Println(players, "UpdatePlayers")
+              return nil
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Inform all connections of all games.
+  var gamesList = []ListedGame{}
+  for gameId, game := range games {
+    gamesList = append(gamesList, ListedGame{gameId, game.Host})
+  }
+  for _, conn := range connections {
+    if err := conn.UpdateGamesList(gamesList); err != nil {
+      log.Println(games, "UpdateGamesList")
+      return nil
+    }
+  }
+
+  //if len(players) == 2 {
+    //games[id] = gameLog
+    //if err := conn.UpdateGameLog(gameLog); err != nil {
+      //log.Println(gameLog, "UpdateGameLog")
+      //return nil
+    //}
+  //}
 
 	return nil
 }
@@ -273,17 +358,26 @@ func onUpdateName(c *Conn, data Data) error {
 	log.Printf("%s: %s(%s)\n", KindUpdateName, name, id)
 	players[id] = name
 
+  gameId, err := NewGameId()
+  if err != nil {
+    log.Println("NewGameId", err)
+    return (err)
+  }
+  game := &Game{[]Action{}, players, name}
+
 	for _, conn := range connections {
 		if len(players) == 2 {
-			if err := conn.StartGame(players); err != nil {
+			if err := conn.StartGame(players, gameId); err != nil {
 				log.Println(players, "StartGame")
 				return nil
 			}
 		} else {
-			if err := conn.UpdatePlayers(players); err != nil {
-				log.Println(players, "UpdatePlayers")
-				return nil
-			}
+      game.Host = name
+      games[gameId] = game
+      if err := conn.OpenGame(name, gameId); err != nil {
+        log.Println(gameId, "OpenGame")
+        return nil
+      }
 		}
 	}
 
@@ -292,18 +386,29 @@ func onUpdateName(c *Conn, data Data) error {
 
 func onTick(c *Conn, data Data) error {
 	var action Action
-	err := json.Unmarshal([]byte(data["action"]), &action)
-	if err != nil {
-		fmt.Println("action error:", err)
+	actionErr := json.Unmarshal([]byte(data["action"]), &action)
+	if actionErr != nil {
+		fmt.Println("action error:", actionErr)
 	}
 
-	gameLog = append(gameLog, action)
+	var gameId GameId
+	gameIdErr := json.Unmarshal([]byte(data["gameId"]), &gameId)
+	if gameIdErr != nil {
+		fmt.Println("gameId error:", gameIdErr)
+	}
 
-	log.Printf("%s: %s", KindTick, gameLog)
+  fmt.Println("beforeGameylawg!", games)
+  var game = games[gameId]
+  fmt.Println("gameylawg!", game)
+  //var gameLog = append(game.Log, action)
+
+	games[gameId] = &Game{gameLog, players, game.Host}
+
+	log.Printf("%s: %s", KindTick, games[gameId])
 
 	for _, conn := range connections {
-		if err := conn.UpdateGameLog(gameLog); err != nil {
-			log.Println(gameLog, "UpdateGameLog")
+		if err := conn.UpdateGameLog(games[gameId].Log); err != nil {
+			log.Println(games[gameId].Log, "UpdateGameLog")
 			return nil
 		}
 	}
