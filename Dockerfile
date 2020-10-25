@@ -1,5 +1,6 @@
-FROM ubuntu:18.04
-RUN make server/build
-COPY /server/Imperial /server/Imperial
+FROM golang:latest
+COPY /server /server
+WORKDIR /server
+RUN GOOS=linux GOARCH=amd64 go build -o Imperial
 EXPOSE 80
 CMD /server/Imperial
