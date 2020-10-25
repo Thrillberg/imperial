@@ -12,8 +12,7 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-const addr = "localhost:8080"
-const prodAddr = "ec2-34-230-36-11.compute-1.amazonaws.com:8080"
+const addr = ":80"
 
 var connections = map[PlayerId]*Conn{}
 var players = map[PlayerId]PlayerName{}
