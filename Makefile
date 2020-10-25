@@ -9,6 +9,9 @@ lint/fix:
 test:
 	make -C client test
 	make -C server test
+	
+server/build:
+	make -C server build
 
 server/run:
 	make -C server run
