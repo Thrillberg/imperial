@@ -207,7 +207,7 @@ func (c *Conn) Listen() {
 }
 
 func handleHealth(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
+	log.Println("health ping", w)
 	io.WriteString(w, "Healthy!")
 }
 
