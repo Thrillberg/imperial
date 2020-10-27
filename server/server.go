@@ -13,7 +13,7 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-const addr = ":8080"
+const addr = ":80"
 
 var connections = map[PlayerId]*Conn{}
 var players = map[PlayerId]PlayerName{}
