@@ -9,5 +9,8 @@ lint/fix:
 test:
 	npm test
 
+deploy:
+	npm run deploy
+
 run:
 	npm run serve

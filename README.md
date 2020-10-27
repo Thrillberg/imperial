@@ -16,7 +16,7 @@ make client/run # in one terminal
 make server/run # in another terminal
 ```
 
-Navigate to `http://localhost:9080` in a web browser.
+Navigate to `http://localhost:8081` in a web browser.
 
 ## To run tests:
 
@@ -27,23 +27,10 @@ make ci
 ## To deploy the client side code:
 
 ```
-cd client
-npm run deploy
+make client/deploy
 ```
 
 _N.B. The above deploy command requires a configured [`AWS CLI`](https://aws.amazon.com/cli/)!_
-
-## To deploy the server side code:
-
-```
-make server/build
-scp Imperial ec2-user@ec2-34-230-36-11.compute-1.amazonaws.com:~
-ssh ec2-user@ec2-34-230-36-11.compute-1.amazonaws.com
-(inside of the EC2 instance)
-./Imperial
-```
-
-_N.B. The above deploy command requires permission to copy the Imperial program to the EC2 server!_
 
 ## What the heck is a _Schnelleinsteig_??
 
