@@ -64,7 +64,7 @@
     "EC2",
     "FARGATE"
   ],
-  "taskDefinitionArn": "arn:aws:ecs:us-east-1:723548248552:task-definition/imperial-server:3",
+  "taskDefinitionArn": "arn:aws:ecs:us-east-1:723548248552:task-definition/imperial-server",
   "family": "imperial-server",
   "requiresAttributes": [
     {
