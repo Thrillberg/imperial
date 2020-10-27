@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"math/rand"
 	"net/http"
@@ -12,7 +13,7 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-const addr = ":80"
+const addr = ":8080"
 
 var connections = map[PlayerId]*Conn{}
 var players = map[PlayerId]PlayerName{}
@@ -26,6 +27,7 @@ func init() {
 }
 
 func main() {
+	http.HandleFunc("/health", handleHealth)
 	http.HandleFunc("/ws", handleWebsocket)
 	log.Println("serving websockets at", addr)
 	err := http.ListenAndServe(addr, nil)
@@ -202,6 +204,11 @@ func (c *Conn) Listen() {
 		}
 		log.Println("handling", e.Kind, h(c, e.Data))
 	}
+}
+
+func handleHealth(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	io.WriteString(w, "Healthy!")
 }
 
 func handleWebsocket(w http.ResponseWriter, r *http.Request) {
