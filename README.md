@@ -1,8 +1,12 @@
+[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg)](code_of_conduct.md) 
 ![](https://github.com/Thrillberg/imperial/workflows/Node.js%20CI/badge.svg)
 
 # Imperial
 
 This is an implementation of the board game, [Imperial](<https://en.wikipedia.org/wiki/Imperial_(board_game)>).
+
+_Please note that this project is released with a Contributor Code of Conduct.
+By participating in this project you agree to abide by its terms._
 
 ## To run locally:
 
