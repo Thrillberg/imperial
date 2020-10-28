@@ -1,125 +1,92 @@
 <template>
-  <div id="app">
-    <div v-if="gameStarted">
-      <div class="container">
-        <ul class="players">
-          <Player
-            v-for="player in game.players"
-            v-bind:player="player"
-            v-bind:current_player="controllingPlayerName"
-            v-bind:game="game"
-            v-bind:key="player.name"
-          ></Player>
-        </ul>
-        <div class="relative">
-          <Board
-            v-bind:game="game"
-            v-bind:select_province="selectProvince"
-            v-bind:valid_provinces="validProvinces()"
-          ></Board>
-          <TaxChart v-bind:taxes="taxes()"></TaxChart>
-        </div>
-        <PowerPointsChart
-          v-bind:power_points="powerPoints()"
-        ></PowerPointsChart>
-        <Rondel
-          v-bind:soloMode="soloMode"
+  <div v-if="gameStarted">
+    <div class="container">
+      <ul class="players">
+        <Player
+          v-for="player in game.players"
+          v-bind:player="player"
+          v-bind:current_player="controllingPlayerName"
           v-bind:game="game"
-          v-bind:name="name"
-          v-on:tick-with-action="tickWithAction"
-        ></Rondel>
-      </div>
-      <ul class="nations">
-        <NationComponent
-          v-for="[nation] of game.nations"
-          v-bind:current_nation="
-            game.currentNation === nation ? 'current_nation' : ''
-          "
-          v-bind:nation="nation.value"
-          v-bind:treasury="game.nations.get(nation).treasury"
-          v-bind:key="nation.value"
-        ></NationComponent>
+          v-bind:key="player.name"
+        ></Player>
       </ul>
-      <div class="buttons">
-        <ActionComponent
-          v-if="importStatus.active"
-          v-bind:action="importStatus.endImport"
-          v-bind:text="'End import'"
-          v-bind:dispatch="runImport"
-        ></ActionComponent>
-        <ActionComponent
-          v-else-if="maneuverStatus.active"
-          v-bind:action="maneuverStatus.endManeuver"
-          v-bind:text="'End maneuver'"
-          v-bind:dispatch="endManeuver"
-        ></ActionComponent>
-        <ActionComponent
-          v-else-if="purchasingBond || buildingFactory"
-          v-for="action in game.availableActions"
-          v-bind:key="JSON.stringify(action)"
-          v-bind:action="action"
-          v-bind:text="actionToText(action)"
-          v-bind:dispatch="tickWithAction"
-        ></ActionComponent>
+      <div class="relative">
+        <Board
+          v-bind:game="game"
+          v-bind:select_province="selectProvince"
+          v-bind:valid_provinces="validProvinces()"
+        ></Board>
+        <TaxChart v-bind:taxes="taxes()"></TaxChart>
       </div>
+      <PowerPointsChart
+        v-bind:power_points="powerPoints()"
+      ></PowerPointsChart>
+      <Rondel
+        v-bind:soloMode="soloMode"
+        v-bind:game="game"
+        v-bind:name="name"
+        v-on:tick-with-action="tickWithAction"
+      ></Rondel>
     </div>
-    <div v-else>
-      <ul v-for="player in players" v-bind:key="player.name">
-        <li v-if="player.name === name">
-          <strong>{{ player.name }}</strong>
-        </li>
-        <li v-else>
-          {{ player.name }}
-        </li>
-      </ul>
-      <div v-if="alreadyRegistered()">
-        <h3>Waiting for other players...</h3>
-      </div>
-      <div v-else class="flex flex-col">
-        <input
-          class="mx-auto m-6 border-black border-solid border-2 p-3 rounded"
-          v-model="name"
-          placeholder="name"
-        />
-        <button v-on:click="registerPlayer(name)">Play</button>
-      </div>
-
-      <hr class="mt-40" />
-      <p class="text-center">Solo mode</p>
-      <div class="flex">
-        <PlayerCount
-          v-for="count in playerCounts"
-          v-bind:key="count"
-          v-bind:count="count"
-          v-bind:start_game="startGame"
-        ></PlayerCount>
-      </div>
+    <ul class="nations">
+      <NationComponent
+        v-for="[nation] of game.nations"
+        v-bind:current_nation="
+          game.currentNation === nation ? 'current_nation' : ''
+        "
+        v-bind:nation="nation.value"
+        v-bind:treasury="game.nations.get(nation).treasury"
+        v-bind:key="nation.value"
+      ></NationComponent>
+    </ul>
+    <div class="buttons">
+      <ActionComponent
+        v-if="importStatus.active"
+        v-bind:action="importStatus.endImport"
+        v-bind:text="'End import'"
+        v-bind:dispatch="runImport"
+      ></ActionComponent>
+      <ActionComponent
+        v-else-if="maneuverStatus.active"
+        v-bind:action="maneuverStatus.endManeuver"
+        v-bind:text="'End maneuver'"
+        v-bind:dispatch="endManeuver"
+      ></ActionComponent>
+      <ActionComponent
+        v-else-if="purchasingBond || buildingFactory"
+        v-for="action in game.availableActions"
+        v-bind:key="JSON.stringify(action)"
+        v-bind:action="action"
+        v-bind:text="actionToText(action)"
+        v-bind:dispatch="tickWithAction"
+      ></ActionComponent>
     </div>
+  </div>
+  <div v-else>
+    <h3>Waiting for other players...</h3>
   </div>
 </template>
 
 <script>
-import Imperial from "../lib/imperial.js";
-import Action from "../lib/action.js";
-import { Nation } from "../lib/constants.js";
+import Imperial from "../../lib/imperial.js";
+import Action from "../../lib/action.js";
+import { Nation } from "../../lib/constants.js";
 
-import ActionComponent from "./components/ActionComponent.vue";
-import Board from "./components/board/Board.vue";
-import NationComponent from "./components/NationComponent.vue";
-import Player from "./components/Player.vue";
-import PlayerCount from "./components/PlayerCount.vue";
-import PowerPointsChart from "./components/PowerPointsChart.vue";
-import Rondel from "./components/Rondel.vue";
-import TaxChart from "./components/TaxChart.vue";
+import ActionComponent from "./ActionComponent.vue";
+import Board from "./board/Board.vue";
+import NationComponent from "./NationComponent.vue";
+import Player from "./Player.vue";
+import PowerPointsChart from "./PowerPointsChart.vue";
+import Rondel from "./Rondel.vue";
+import TaxChart from "./TaxChart.vue";
 
 export default {
-  name: "App",
+  name: "Game",
   components: {
     ActionComponent,
     Board,
     NationComponent,
     Player,
-    PlayerCount,
     PowerPointsChart,
     Rondel,
     TaxChart,
@@ -435,5 +402,3 @@ export default {
   },
 };
 </script>
-
-<style src="./assets/tailwind.css">
