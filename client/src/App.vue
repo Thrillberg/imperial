@@ -64,12 +64,9 @@
       </div>
     </div>
     <div v-else>
-      <ul v-for="game in games" v-bind:key="game.gameId">
-        <li v-if="player.name === name">
-          <strong>{{ player.name }}</strong>
-        </li>
-        <li v-else>
-          {{ player.name }}
+      <ul v-for="(game, id) in games" v-bind:key="id">
+        <li>
+          {{ game.host }} wants to play! ({{ id }})
         </li>
       </ul>
       <div v-if="alreadyRegistered()">
@@ -178,7 +175,7 @@ export default {
           this.startGame();
           break;
         case "updateGamesList":
-          this.games = new Set(JSON.parse(envelope.data.games))
+          this.games = JSON.parse(envelope.data.games)
           break;
         case "updateGameLog": {
           const rawGameLog = JSON.parse(envelope.data.gameLog);
@@ -260,7 +257,7 @@ export default {
     registerPlayer: function () {
       this.webSocket.send(
         JSON.stringify({
-          kind: "updateName",
+          kind: "openGame",
           data: { name: this.name, id: localStorage.imperialId },
         })
       );
@@ -269,7 +266,17 @@ export default {
       }
     },
     alreadyRegistered: function () {
-      return [...this.players].map((p) => p.name).includes(this.name);
+      let out = false
+      Object.values(this.games).forEach((game) => {
+        Object.keys(game.players).forEach((id) => {
+          if (id === localStorage.getItem("imperialId")) {
+            console.log('here')
+            out = true
+          }
+        })
+      })
+
+      return out
     },
     startGame: function (playerCount) {
       let players;
