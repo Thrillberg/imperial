@@ -43,7 +43,7 @@
 </template>
 
 <script>
-import Flag from "./Flag.vue";
+import Flag from "./flags/Flag.vue";
 
 export default {
   name: "RondelSlot",
