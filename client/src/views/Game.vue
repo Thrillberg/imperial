@@ -64,6 +64,7 @@
   </div>
   <div v-else>
     <h3>Waiting for other players...</h3>
+    <router-link to="/" class="bg-green-300 p-2">Home</router-link>
   </div>
 </template>
 
@@ -72,13 +73,13 @@ import Imperial from "../../lib/imperial.js";
 import Action from "../../lib/action.js";
 import { Nation } from "../../lib/constants.js";
 
-import ActionComponent from "./ActionComponent.vue";
-import Board from "./board/Board.vue";
-import NationComponent from "./NationComponent.vue";
-import Player from "./Player.vue";
-import PowerPointsChart from "./PowerPointsChart.vue";
-import Rondel from "./Rondel.vue";
-import TaxChart from "./TaxChart.vue";
+import ActionComponent from "@/components/ActionComponent.vue";
+import Board from "@/components/board/Board.vue";
+import NationComponent from "@/components/NationComponent.vue";
+import Player from "@/components/Player.vue";
+import PowerPointsChart from "@/components/PowerPointsChart.vue";
+import Rondel from "@/components/Rondel.vue";
+import TaxChart from "@/components/TaxChart.vue";
 
 export default {
   name: "Game",

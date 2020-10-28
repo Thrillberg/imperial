@@ -14,9 +14,8 @@ module.exports = {
     },
     fontFamily: {
       'sans': [...defaultTheme.fontFamily.sans],
-      'serif': ['Baskervville', ...defaultTheme.fontFamily.serif],
+      'serif': ['Petrona', ...defaultTheme.fontFamily.serif],
       'mono': [...defaultTheme.fontFamily.mono],
-      'bold': ['"Libre Baskerville"']
     }
   }
 }
