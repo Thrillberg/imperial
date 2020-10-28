@@ -43,8 +43,8 @@
 </template>
 
 <script>
-import Factory from "../Factory.svg";
-import Flag from "../Flag.vue";
+import Factory from "./Factory.svg";
+import Flag from "../flags/Flag.vue";
 
 export default {
   name: "Province",

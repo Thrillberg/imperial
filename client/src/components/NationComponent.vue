@@ -10,12 +10,12 @@
 </template>
 
 <script>
-import AHFlag from "./AHFlag.vue";
-import ITFlag from "./ITFlag.vue";
-import FRFlag from "./FRFlag.vue";
-import GBFlag from "./GBFlag.vue";
-import GEFlag from "./GEFlag.vue";
-import RUFlag from "./RUFlag.vue";
+import AHFlag from "./flags/AHFlag.vue";
+import ITFlag from "./flags/ITFlag.vue";
+import FRFlag from "./flags/FRFlag.vue";
+import GBFlag from "./flags/GBFlag.vue";
+import GEFlag from "./flags/GEFlag.vue";
+import RUFlag from "./flags/RUFlag.vue";
 
 export default {
   name: "NationComponent",
