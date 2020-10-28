@@ -3,21 +3,23 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "board": "node board.js | sfdp -Tsvg > board.svg",
-    "build": "vue-cli-service build",
-    "deploy": "npm run build && aws s3 cp ./dist s3://playimperial.club/ --recursive",
-    "lint": "vue-cli-service lint",
     "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint",
+    "deploy": "npm run build && aws s3 cp ./dist s3://playimperial.club/ --recursive",
+    "board": "node board.js | sfdp -Tsvg > board.svg",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
   "dependencies": {
     "core-js": "^3.6.5",
     "tailwindcss": "^1.8.10",
-    "vue": "^2.6.11"
+    "vue": "^2.6.11",
+    "vue-router": "^3.2.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",
     "@vue/cli-plugin-eslint": "~4.5.0",
+    "@vue/cli-plugin-router": "~4.5.0",
     "@vue/cli-service": "~4.5.0",
     "babel-eslint": "^10.1.0",
     "eslint": "^6.7.2",
