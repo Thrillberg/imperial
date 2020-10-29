@@ -64,16 +64,16 @@
       </div>
     </div>
     <div v-else>
-      <ul v-for="player in players" v-bind:key="player.name">
-        <li v-if="player.name === name">
-          <strong>{{ player.name }}</strong>
+      <ul v-for="user in users" v-bind:key="user.id">
+        <li v-if="user.name === name">
+          <strong>{{ user.name }}</strong>
         </li>
         <li v-else>
-          {{ player.name }}
+          {{ user.name }}
         </li>
       </ul>
       <div v-if="alreadyRegistered()">
-        <h3>Waiting for other players...</h3>
+        <button v-on:click="openGame()">Play</button>
       </div>
       <div v-else class="flex flex-col">
         <input
@@ -81,7 +81,7 @@
           v-model="name"
           placeholder="name"
         />
-        <button v-on:click="registerPlayer(name)">Play</button>
+        <button v-on:click="registerUser(name)">Register</button>
       </div>
 
       <hr class="mt-40" />
@@ -146,6 +146,7 @@ export default {
       playerCounts: [2, 3, 4, 5, 6],
       players: new Set(),
       purchasingBond: false,
+      users: new Set(),
       webSocket: new WebSocket(process.env.VUE_APP_IMPERIAL_WEBSOCKETS_URL)
     };
   },
@@ -156,6 +157,15 @@ export default {
         case "setId":
           this.setWebsocketId(envelope.data.id);
           break;
+        case "userRegistered": {
+          this.users = new Set(JSON.parse(envelope.data.users));
+          for (const user of this.users) {
+            if (localStorage.imperialId === user.id) {
+              this.name = user.name;
+            }
+          }
+          break;
+        }
         case "updatePlayers":
           this.players = new Set(JSON.parse(envelope.data.players));
           for (const player of this.players) {
@@ -245,19 +255,16 @@ export default {
       }
       localStorage.setItem("imperialId", newId);
     },
-    registerPlayer: function() {
+    registerUser: function() {
       this.webSocket.send(
         JSON.stringify({
-          kind: "updateName",
+          kind: "registerUser",
           data: { name: this.name, id: localStorage.imperialId }
         })
       );
-      if (this.players.size === 0) {
-        this.leader = true;
-      }
     },
     alreadyRegistered: function() {
-      return [...this.players].map(p => p.name).includes(this.name);
+      return [...this.users].map(x => x.name).includes(this.name);
     },
     startGame: function(playerCount) {
       let players;
