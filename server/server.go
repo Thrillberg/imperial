@@ -8,18 +8,15 @@ import (
 	"log"
 	"math/rand"
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/gorilla/websocket"
 )
 
-const addr = ":80"
-
 var connections = map[PlayerId]*Conn{}
 var players = map[PlayerId]PlayerName{}
 var gameLog = []Action{}
-var availableActions = []Action{}
-var rawAvailableActions = []string{}
 var upgrader = websocket.Upgrader{CheckOrigin: func(*http.Request) bool { return true }}
 
 func init() {
@@ -27,6 +24,10 @@ func init() {
 }
 
 func main() {
+	var addr = ":80"
+	if len(os.Args) == 2 {
+		addr = os.Args[1]
+	}
 	http.HandleFunc("/health", handleHealth)
 	http.HandleFunc("/ws", handleWebsocket)
 	log.Println("serving websockets at", addr)
