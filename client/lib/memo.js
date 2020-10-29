@@ -59,7 +59,7 @@ class Trie {
   }
 }
 
-const memoize = (fn) => {
+const memoize = fn => {
   const memory = new Trie(NO_VALUE);
 
   return (...args) => memory.getOrInsert(args, fn, args);

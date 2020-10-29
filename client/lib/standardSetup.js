@@ -1,6 +1,6 @@
 import { AllBonds, Bond, Nation } from "./constants.js";
 
-const error = (want) => (x) => {
+const error = want => x => {
   throw new Error(`got=${x.value}, want=${want}`);
 };
 
@@ -11,46 +11,46 @@ export default ({ players, provinceNames }) => {
         AH: () => [
           { id, nation: Nation.AH },
           { id, nation: Nation.FR },
-          { id, nation: Nation.GE },
+          { id, nation: Nation.GE }
         ],
         IT: () => [
           { id, nation: Nation.IT },
           { id, nation: Nation.RU },
-          { id, nation: Nation.GB },
+          { id, nation: Nation.GB }
         ],
         FR: error("AH|IT"),
         GB: error("AH|IT"),
         RU: error("AH|IT"),
-        GE: error("AH|IT"),
+        GE: error("AH|IT")
       }),
     3: ({ id, nation }) =>
       nation.when({
         AH: () => [
           { id, nation: Nation.AH },
-          { id, nation: Nation.GB },
+          { id, nation: Nation.GB }
         ],
         IT: () => [
           { id, nation: Nation.IT },
-          { id, nation: Nation.RU },
+          { id, nation: Nation.RU }
         ],
         FR: () => [
           { id, nation: Nation.FR },
-          { id, nation: Nation.GE },
+          { id, nation: Nation.GE }
         ],
         GB: error("AH|IT|FR"),
         RU: error("AH|IT|FR"),
-        GE: error("AH|IT|FR"),
+        GE: error("AH|IT|FR")
       }),
-    4: (x) => [x],
-    5: (x) => [x],
-    6: (x) => [x],
+    4: x => [x],
+    5: x => [x],
+    6: x => [x]
   };
 
   const out = {
     availableBonds: AllBonds(),
     nations: new Map(),
-    order: players.map((p) => p.id),
-    players: {},
+    order: players.map(p => p.id),
+    players: {}
   };
 
   /* From the initial nation assignments, distribute bonds to the players. */
@@ -62,7 +62,7 @@ export default ({ players, provinceNames }) => {
         out.players[id] = {
           name: id,
           cash: 2,
-          bonds: new Set(),
+          bonds: new Set()
         };
       }
 
@@ -72,7 +72,7 @@ export default ({ players, provinceNames }) => {
         AH: () => Nation.GE,
         IT: () => Nation.GB,
         FR: () => Nation.AH,
-        GB: () => Nation.RU,
+        GB: () => Nation.RU
       });
 
       out.availableBonds.delete(Bond(nation, 4));
@@ -91,7 +91,7 @@ export default ({ players, provinceNames }) => {
    */
 
   const purchasedBonds = new Set();
-  Object.keys(out.players).forEach((id) => {
+  Object.keys(out.players).forEach(id => {
     for (const bond of out.players[id].bonds) {
       purchasedBonds.add(bond);
     }
@@ -101,7 +101,7 @@ export default ({ players, provinceNames }) => {
   for (const n of Nation) {
     /* Find bonds for the given nation, sorted by descending cost */
     const forNation = [...purchasedBonds]
-      .filter((b) => b.nation === n)
+      .filter(b => b.nation === n)
       .sort(({ cost: aCost }, { cost: bCost }) =>
         aCost < bCost ? 1 : aCost > bCost ? -1 : 0
       );
@@ -122,7 +122,7 @@ export default ({ players, provinceNames }) => {
 
     const highestBond = forNation[0];
     const highestBondOwner =
-      Object.keys(out.players).find((id) =>
+      Object.keys(out.players).find(id =>
         out.players[id].bonds.has(highestBond)
       ) || null;
 
@@ -134,7 +134,7 @@ export default ({ players, provinceNames }) => {
       rondelPosition: null,
       flagCount: 0,
       powerPoints: 0,
-      taxChartPosition: 5,
+      taxChartPosition: 5
     });
 
     const AHPlayer = out.nations.get(Nation.AH).controller;
@@ -156,7 +156,7 @@ export default ({ players, provinceNames }) => {
 
   const units = new Map();
   [Nation.AH, Nation.IT, Nation.FR, Nation.GB, Nation.GE, Nation.RU].map(
-    (nation) => {
+    nation => {
       units.set(nation, emptyProvinces());
     }
   );
@@ -170,7 +170,7 @@ export default ({ players, provinceNames }) => {
     "liverpool",
     "hamburg",
     "naples",
-    "odessa",
+    "odessa"
   ];
   for (const province of provinceNames) {
     let factory = null;

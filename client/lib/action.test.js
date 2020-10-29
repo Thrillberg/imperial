@@ -6,12 +6,12 @@ describe("Action.rondel", () => {
     const first = Action.rondel({
       nation: Nation.AH,
       cost: 42,
-      slot: "maneuver1",
+      slot: "maneuver1"
     });
     const second = Action.rondel({
       nation: Nation.AH,
       cost: 42,
-      slot: "maneuver1",
+      slot: "maneuver1"
     });
 
     expect(first).toBe(second);
@@ -28,7 +28,7 @@ describe("Action.rondel", () => {
           nation: Nation.AH,
           cost: 42,
           slot: "maneuver1",
-          blimport: true,
+          blimport: true
         })
       ).toThrowError();
     });

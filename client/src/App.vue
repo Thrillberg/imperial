@@ -122,7 +122,7 @@ export default {
     PlayerCount,
     PowerPointsChart,
     Rondel,
-    TaxChart,
+    TaxChart
   },
   data: () => {
     return {
@@ -134,23 +134,23 @@ export default {
       importStatus: {
         active: false,
         endImport: Action.import({ placements: new Set() }),
-        placements: [],
+        placements: []
       },
       leader: false,
       maneuverStatus: {
         active: false,
         endManeuver: Action.endManeuver(),
-        origin: "",
+        origin: ""
       },
       name: "",
       playerCounts: [2, 3, 4, 5, 6],
       players: new Set(),
       purchasingBond: false,
-      webSocket: new WebSocket(process.env.VUE_APP_IMPERIAL_WEBSOCKETS_URL),
+      webSocket: new WebSocket(process.env.VUE_APP_IMPERIAL_WEBSOCKETS_URL)
     };
   },
   created() {
-    this.webSocket.onmessage = (message) => {
+    this.webSocket.onmessage = message => {
       const envelope = JSON.parse(message.data);
       switch (envelope.kind) {
         case "setId":
@@ -172,12 +172,12 @@ export default {
           const rawGameLog = JSON.parse(envelope.data.gameLog);
           // The following map only exists because of our custom Nation type, which
           // has weirdness when we attempt nation.when() in the setup file.
-          const gameLog = rawGameLog.map((action) => {
+          const gameLog = rawGameLog.map(action => {
             if (action.type === "initialize") {
-              action.payload.players = action.payload.players.map((player) => {
+              action.payload.players = action.payload.players.map(player => {
                 return {
                   id: player.id,
-                  nation: Nation[player.nation.value],
+                  nation: Nation[player.nation.value]
                 };
               });
             } else if (action.type === "rondel") {
@@ -204,7 +204,7 @@ export default {
             provinces.add(action.payload.origin);
           }
         } else if (action.type === "import" && this.importStatus.active) {
-          action.payload.placements.forEach((placement) => {
+          action.payload.placements.forEach(placement => {
             provinces.add(placement.province);
           });
         }
@@ -212,7 +212,7 @@ export default {
       return Array.from(provinces);
     },
     taxes() {
-      return [15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5].map((slot) => {
+      return [15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5].map(slot => {
         let nations = [];
         for (const [nation, data] of this.game.nations) {
           if (data.taxChartPosition === slot) {
@@ -223,7 +223,7 @@ export default {
       });
     },
     powerPoints() {
-      return [...Array(26).keys()].map((slot) => {
+      return [...Array(26).keys()].map(slot => {
         let nations = [];
         for (const [nation, data] of this.game.nations) {
           if (data.powerPoints === slot) {
@@ -233,33 +233,33 @@ export default {
         return { slot, nations };
       });
     },
-    setWebsocketId: function (newId) {
+    setWebsocketId: function(newId) {
       const oldId = localStorage.getItem("imperialId");
       if (oldId) {
         this.webSocket.send(
           JSON.stringify({
             kind: "updateId",
-            data: { oldId, newId },
+            data: { oldId, newId }
           })
         );
       }
       localStorage.setItem("imperialId", newId);
     },
-    registerPlayer: function () {
+    registerPlayer: function() {
       this.webSocket.send(
         JSON.stringify({
           kind: "updateName",
-          data: { name: this.name, id: localStorage.imperialId },
+          data: { name: this.name, id: localStorage.imperialId }
         })
       );
       if (this.players.size === 0) {
         this.leader = true;
       }
     },
-    alreadyRegistered: function () {
-      return [...this.players].map((p) => p.name).includes(this.name);
+    alreadyRegistered: function() {
+      return [...this.players].map(p => p.name).includes(this.name);
     },
-    startGame: function (playerCount) {
+    startGame: function(playerCount) {
       let players;
       if (playerCount) {
         players = this.getPlayers(playerCount);
@@ -275,7 +275,7 @@ export default {
         this.webSocket.send(
           JSON.stringify({
             kind: "tick",
-            data: { action: JSON.stringify(action) },
+            data: { action: JSON.stringify(action) }
           })
         );
       }
@@ -286,7 +286,7 @@ export default {
       if (this.maneuverStatus.active && this.maneuverStatus.origin) {
         const maneuver = Action.maneuver({
           origin: this.maneuverStatus.origin,
-          destination: province,
+          destination: province
         });
         // Reset maneuverStatus
         this.maneuverStatus.origin = "";
@@ -301,25 +301,25 @@ export default {
         this.importStatus.placements.push(province);
       }
     },
-    getPlayers: function (playerCount) {
+    getPlayers: function(playerCount) {
       switch (playerCount) {
         case 2:
           return [
             { id: "Henry Davison", nation: Nation.AH },
-            { id: "Georg Siemens", nation: Nation.IT },
+            { id: "Georg Siemens", nation: Nation.IT }
           ];
         case 3:
           return [
             { id: "Henry Davison", nation: Nation.AH },
             { id: "Georg Siemens", nation: Nation.IT },
-            { id: "John Baring", nation: Nation.FR },
+            { id: "John Baring", nation: Nation.FR }
           ];
         case 4:
           return [
             { id: "Daniel", nation: Nation.RU },
             { id: "Claudia", nation: Nation.FR },
             { id: "Bert", nation: Nation.GB },
-            { id: "Anton", nation: Nation.IT },
+            { id: "Anton", nation: Nation.IT }
           ];
         case 5:
           return [
@@ -327,7 +327,7 @@ export default {
             { id: "Georg Siemens", nation: Nation.IT },
             { id: "John Baring", nation: Nation.FR },
             { id: "Henri Germain", nation: Nation.GE },
-            { id: "Johann Heinrich Schröder", nation: Nation.RU },
+            { id: "Johann Heinrich Schröder", nation: Nation.RU }
           ];
         case 6:
           return [
@@ -336,25 +336,25 @@ export default {
             { id: "John Baring", nation: Nation.FR },
             { id: "Henri Germain", nation: Nation.GE },
             { id: "Johann Heinrich Schröder", nation: Nation.RU },
-            { id: "Gerson von Bleichröder", nation: Nation.GB },
+            { id: "Gerson von Bleichröder", nation: Nation.GB }
           ];
       }
     },
     // TODO: Don't hardcode the nation assignment, figure out how to accept 2-6 players
-    assignNations: function (players) {
+    assignNations: function(players) {
       return [
         { id: players[0].name, nation: Nation.AH },
-        { id: players[1].name, nation: Nation.IT },
+        { id: players[1].name, nation: Nation.IT }
       ];
     },
-    tickWithAction: function (action) {
+    tickWithAction: function(action) {
       this.game.tick(action);
       this.controllingPlayerName = this.game.currentPlayerName;
       if (!this.soloMode) {
         this.webSocket.send(
           JSON.stringify({
             kind: "tick",
-            data: { action: JSON.stringify(action) },
+            data: { action: JSON.stringify(action) }
           })
         );
       }
@@ -389,7 +389,7 @@ export default {
         }
       }
     },
-    actionToText: function (action) {
+    actionToText: function(action) {
       if (action.type === "buildFactory") {
         return `Build factory in ${action.payload.province}`;
       } else if (action.type === "bondPurchase") {
@@ -402,7 +402,7 @@ export default {
         return `Fight`;
       }
     },
-    runImport: function () {
+    runImport: function() {
       // This function looks for a match between the provided provinces from the UI and the validated
       // provinces from the game logic (this.game.availableActions).
       for (const { payload } of this.game.availableActions) {
@@ -427,13 +427,13 @@ export default {
       }
       this.importStatus.placements = [];
     },
-    endManeuver: function (action) {
+    endManeuver: function(action) {
       this.tickWithAction(action);
       this.maneuverStatus.active = false;
       this.maneuverStatus.origin = "";
-    },
-  },
+    }
+  }
 };
 </script>
 
-<style src="./assets/tailwind.css">
+<style src="./assets/tailwind.css" />

@@ -5,7 +5,7 @@ class Enum {
     Object.defineProperties(this, {
       value: { value: value, enumerable: true },
       members: { value: members, enumerable: false },
-      label: { value: label, enumerable: true },
+      label: { value: label, enumerable: true }
     });
 
     Object.freeze(this);
@@ -37,7 +37,7 @@ class Enum {
       label = "<anonymous>";
     }
 
-    ary.forEach((element) => {
+    ary.forEach(element => {
       store.set(element, new Enum(element, members, label));
     });
 
@@ -64,7 +64,7 @@ class Enum {
       },
       set() {
         throw new Error(`Enum ${label} cannot be mutated`);
-      },
+      }
     });
   }
 }

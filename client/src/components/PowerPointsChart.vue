@@ -15,10 +15,10 @@ import PowerPointSlot from "./PowerPointSlot.vue";
 export default {
   name: "PowerPointsChart",
   props: {
-    power_points: Array,
+    power_points: Array
   },
   components: {
-    PowerPointSlot,
-  },
+    PowerPointSlot
+  }
 };
 </script>

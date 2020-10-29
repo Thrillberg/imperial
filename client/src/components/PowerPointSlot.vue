@@ -22,20 +22,20 @@ import Flag from "./Flag.vue";
 export default {
   name: "PowerPointSlot",
   components: {
-    Flag,
+    Flag
   },
   props: {
     nations: Array,
-    powerPointSlot: Number,
+    powerPointSlot: Number
   },
   methods: {
-    display: function () {
+    display: function() {
       if (this.powerPointSlot % 5 === 0) {
         return "shadow";
       }
 
       return "";
-    },
-  },
+    }
+  }
 };
 </script>

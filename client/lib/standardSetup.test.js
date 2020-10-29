@@ -11,9 +11,9 @@ describe("Imperial", () => {
           { id: "c", nation: Nation.GB },
           { id: "d", nation: Nation.AH },
           { id: "e", nation: Nation.IT },
-          { id: "f", nation: Nation.GE },
+          { id: "f", nation: Nation.GE }
         ],
-        provinceNames: new Set(["1", "2"]),
+        provinceNames: new Set(["1", "2"])
       };
       const actual = setup(payload);
 
@@ -26,33 +26,33 @@ describe("Imperial", () => {
           a: {
             name: "a",
             cash: 2,
-            bonds: new Set([Bond(Nation.RU, 4), Bond(Nation.FR, 1)]),
+            bonds: new Set([Bond(Nation.RU, 4), Bond(Nation.FR, 1)])
           },
           b: {
             name: "b",
             cash: 2,
-            bonds: new Set([Bond(Nation.FR, 4), Bond(Nation.AH, 1)]),
+            bonds: new Set([Bond(Nation.FR, 4), Bond(Nation.AH, 1)])
           },
           c: {
             name: "c",
             cash: 2,
-            bonds: new Set([Bond(Nation.GB, 4), Bond(Nation.RU, 1)]),
+            bonds: new Set([Bond(Nation.GB, 4), Bond(Nation.RU, 1)])
           },
           d: {
             name: "d",
             cash: 2,
-            bonds: new Set([Bond(Nation.AH, 4), Bond(Nation.GE, 1)]),
+            bonds: new Set([Bond(Nation.AH, 4), Bond(Nation.GE, 1)])
           },
           e: {
             name: "e",
             cash: 2,
-            bonds: new Set([Bond(Nation.IT, 4), Bond(Nation.GB, 1)]),
+            bonds: new Set([Bond(Nation.IT, 4), Bond(Nation.GB, 1)])
           },
           f: {
             name: "f",
             cash: 2,
-            bonds: new Set([Bond(Nation.GE, 4), Bond(Nation.IT, 1)]),
-          },
+            bonds: new Set([Bond(Nation.GE, 4), Bond(Nation.IT, 1)])
+          }
         });
       });
 
@@ -64,7 +64,7 @@ describe("Imperial", () => {
             [Nation.GB, "c"],
             [Nation.AH, "d"],
             [Nation.IT, "e"],
-            [Nation.GE, "f"],
+            [Nation.GE, "f"]
           ].map(([k, v]) => [
             k,
             {
@@ -73,8 +73,8 @@ describe("Imperial", () => {
               rondelPosition: null,
               taxChartPosition: 5,
               flagCount: 0,
-              powerPoints: 0,
-            },
+              powerPoints: 0
+            }
           ])
         );
         expect(actual.nations).toEqual(expected);
@@ -111,7 +111,7 @@ describe("Imperial", () => {
             RU: () => {
               expected.delete(Bond(n, 1));
               expected.delete(Bond(n, 4));
-            },
+            }
           });
         }
         expect(actual.availableBonds).toEqual(expected);
@@ -125,9 +125,9 @@ describe("Imperial", () => {
           { id: "b", nation: Nation.FR },
           { id: "c", nation: Nation.GB },
           { id: "d", nation: Nation.GE },
-          { id: "e", nation: Nation.IT },
+          { id: "e", nation: Nation.IT }
         ],
-        provinceNames: new Set(["1", "2"]),
+        provinceNames: new Set(["1", "2"])
       };
       const actual = setup(payload);
 
@@ -140,28 +140,28 @@ describe("Imperial", () => {
           a: {
             name: "a",
             cash: 2,
-            bonds: new Set([Bond(Nation.RU, 4), Bond(Nation.FR, 1)]),
+            bonds: new Set([Bond(Nation.RU, 4), Bond(Nation.FR, 1)])
           },
           b: {
             name: "b",
             cash: 2,
-            bonds: new Set([Bond(Nation.FR, 4), Bond(Nation.AH, 1)]),
+            bonds: new Set([Bond(Nation.FR, 4), Bond(Nation.AH, 1)])
           },
           c: {
             name: "c",
             cash: 2,
-            bonds: new Set([Bond(Nation.GB, 4), Bond(Nation.RU, 1)]),
+            bonds: new Set([Bond(Nation.GB, 4), Bond(Nation.RU, 1)])
           },
           d: {
             name: "d",
             cash: 2,
-            bonds: new Set([Bond(Nation.GE, 4), Bond(Nation.IT, 1)]),
+            bonds: new Set([Bond(Nation.GE, 4), Bond(Nation.IT, 1)])
           },
           e: {
             name: "e",
             cash: 2,
-            bonds: new Set([Bond(Nation.IT, 4), Bond(Nation.GB, 1)]),
-          },
+            bonds: new Set([Bond(Nation.IT, 4), Bond(Nation.GB, 1)])
+          }
         });
       });
 
@@ -173,7 +173,7 @@ describe("Imperial", () => {
             [Nation.GB, "c", 11],
             [Nation.GE, "d", 9], // Nobody bought GE 2
             [Nation.IT, "e", 11],
-            [Nation.AH, "b", 2], // FR controller bought AH 2
+            [Nation.AH, "b", 2] // FR controller bought AH 2
           ].map(([nation, controller, treasury]) => [
             nation,
             {
@@ -182,8 +182,8 @@ describe("Imperial", () => {
               rondelPosition: null,
               flagCount: 0,
               powerPoints: 0,
-              taxChartPosition: 5,
-            },
+              taxChartPosition: 5
+            }
           ])
         );
         expect(actual.nations).toEqual(expected);
@@ -220,7 +220,7 @@ describe("Imperial", () => {
             RU: () => {
               expected.delete(Bond(n, 1));
               expected.delete(Bond(n, 4));
-            },
+            }
           });
         }
         expect(actual.availableBonds).toEqual(expected);
@@ -233,9 +233,9 @@ describe("Imperial", () => {
           { id: "a", nation: Nation.IT },
           { id: "b", nation: Nation.FR },
           { id: "c", nation: Nation.AH },
-          { id: "d", nation: Nation.GE },
+          { id: "d", nation: Nation.GE }
         ],
-        provinceNames: new Set(["1", "2"]),
+        provinceNames: new Set(["1", "2"])
       };
       const actual = setup(payload);
 
@@ -248,23 +248,23 @@ describe("Imperial", () => {
           a: {
             name: "a",
             cash: 2,
-            bonds: new Set([Bond(Nation.IT, 4), Bond(Nation.GB, 1)]),
+            bonds: new Set([Bond(Nation.IT, 4), Bond(Nation.GB, 1)])
           },
           b: {
             name: "b",
             cash: 2,
-            bonds: new Set([Bond(Nation.FR, 4), Bond(Nation.AH, 1)]),
+            bonds: new Set([Bond(Nation.FR, 4), Bond(Nation.AH, 1)])
           },
           c: {
             name: "c",
             cash: 2,
-            bonds: new Set([Bond(Nation.AH, 4), Bond(Nation.GE, 1)]),
+            bonds: new Set([Bond(Nation.AH, 4), Bond(Nation.GE, 1)])
           },
           d: {
             name: "d",
             cash: 2,
-            bonds: new Set([Bond(Nation.GE, 4), Bond(Nation.IT, 1)]),
-          },
+            bonds: new Set([Bond(Nation.GE, 4), Bond(Nation.IT, 1)])
+          }
         });
       });
 
@@ -276,7 +276,7 @@ describe("Imperial", () => {
             [Nation.AH, "c", 11],
             [Nation.GE, "d", 11],
             [Nation.GB, "a", 2], // IT controller bought GB 2
-            [Nation.RU, null, 0], // Nobody bought RU 2 or RU 9
+            [Nation.RU, null, 0] // Nobody bought RU 2 or RU 9
           ].map(([nation, controller, treasury]) => [
             nation,
             {
@@ -285,8 +285,8 @@ describe("Imperial", () => {
               rondelPosition: null,
               flagCount: 0,
               powerPoints: 0,
-              taxChartPosition: 5,
-            },
+              taxChartPosition: 5
+            }
           ])
         );
         expect(actual.nations).toEqual(expected);
@@ -323,7 +323,7 @@ describe("Imperial", () => {
             RU: () => {
               // Nobody bought RU 2
               // Nobody bought RU 9
-            },
+            }
           });
         }
         expect(actual.availableBonds).toEqual(expected);
@@ -335,9 +335,9 @@ describe("Imperial", () => {
         players: [
           { id: "a", nation: Nation.IT },
           { id: "b", nation: Nation.FR },
-          { id: "c", nation: Nation.AH },
+          { id: "c", nation: Nation.AH }
         ],
-        provinceNames: new Set(["1", "2"]),
+        provinceNames: new Set(["1", "2"])
       };
       const actual = setup(payload);
 
@@ -354,8 +354,8 @@ describe("Imperial", () => {
               Bond(Nation.IT, 4),
               Bond(Nation.GB, 1),
               Bond(Nation.RU, 4),
-              Bond(Nation.FR, 1),
-            ]),
+              Bond(Nation.FR, 1)
+            ])
           },
           b: {
             name: "b",
@@ -364,8 +364,8 @@ describe("Imperial", () => {
               Bond(Nation.FR, 4),
               Bond(Nation.AH, 1),
               Bond(Nation.GE, 4),
-              Bond(Nation.IT, 1),
-            ]),
+              Bond(Nation.IT, 1)
+            ])
           },
           c: {
             name: "c",
@@ -374,9 +374,9 @@ describe("Imperial", () => {
               Bond(Nation.AH, 4),
               Bond(Nation.GE, 1),
               Bond(Nation.GB, 4),
-              Bond(Nation.RU, 1),
-            ]),
-          },
+              Bond(Nation.RU, 1)
+            ])
+          }
         });
       });
 
@@ -391,7 +391,7 @@ describe("Imperial", () => {
             [Nation.AH, "c", 11],
             [Nation.RU, "a", 11],
             [Nation.GE, "b", 11],
-            [Nation.GB, "c", 11],
+            [Nation.GB, "c", 11]
           ].map(([nation, controller, treasury]) => [
             nation,
             {
@@ -400,8 +400,8 @@ describe("Imperial", () => {
               rondelPosition: null,
               flagCount: 0,
               powerPoints: 0,
-              taxChartPosition: 5,
-            },
+              taxChartPosition: 5
+            }
           ])
         );
         expect(actual.nations).toEqual(expected);
@@ -438,7 +438,7 @@ describe("Imperial", () => {
             RU: () => {
               expected.delete(Bond(n, 1));
               expected.delete(Bond(n, 4));
-            },
+            }
           });
         }
         expect(actual.availableBonds).toEqual(expected);
@@ -449,9 +449,9 @@ describe("Imperial", () => {
       const payload = {
         players: [
           { id: "b", nation: Nation.AH },
-          { id: "a", nation: Nation.IT },
+          { id: "a", nation: Nation.IT }
         ],
-        provinceNames: new Set(["1", "2"]),
+        provinceNames: new Set(["1", "2"])
       };
       const actual = setup(payload);
 
@@ -470,8 +470,8 @@ describe("Imperial", () => {
               Bond(Nation.RU, 4),
               Bond(Nation.FR, 1),
               Bond(Nation.GB, 4),
-              Bond(Nation.RU, 1),
-            ]),
+              Bond(Nation.RU, 1)
+            ])
           },
           b: {
             name: "b",
@@ -482,9 +482,9 @@ describe("Imperial", () => {
               Bond(Nation.FR, 4),
               Bond(Nation.AH, 1),
               Bond(Nation.GE, 4),
-              Bond(Nation.IT, 1),
-            ]),
-          },
+              Bond(Nation.IT, 1)
+            ])
+          }
         });
       });
 
@@ -498,7 +498,7 @@ describe("Imperial", () => {
             [Nation.GB, "a", 11],
             [Nation.AH, "b", 11],
             [Nation.FR, "b", 11],
-            [Nation.GE, "b", 11],
+            [Nation.GE, "b", 11]
           ].map(([nation, controller, treasury]) => [
             nation,
             {
@@ -507,8 +507,8 @@ describe("Imperial", () => {
               rondelPosition: null,
               flagCount: 0,
               powerPoints: 0,
-              taxChartPosition: 5,
-            },
+              taxChartPosition: 5
+            }
           ])
         );
         expect(actual.nations).toEqual(expected);
@@ -545,7 +545,7 @@ describe("Imperial", () => {
             RU: () => {
               expected.delete(Bond(n, 1));
               expected.delete(Bond(n, 4));
-            },
+            }
           });
         }
         expect(actual.availableBonds).toEqual(expected);

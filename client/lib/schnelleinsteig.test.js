@@ -11,7 +11,7 @@ const rondelSlots = [
   "import",
   "production2",
   "maneuver2",
-  "taxation",
+  "taxation"
 ];
 
 describe("Schnelleinsteig", () => {
@@ -23,23 +23,23 @@ describe("Schnelleinsteig", () => {
         Daniel: {
           name: "Daniel",
           bonds: new Set([Bond(Nation.RU, 4), Bond(Nation.FR, 1)]),
-          cash: 2,
+          cash: 2
         },
         Claudia: {
           name: "Claudia",
           bonds: new Set([Bond(Nation.FR, 4), Bond(Nation.AH, 1)]),
-          cash: 2,
+          cash: 2
         },
         Bert: {
           name: "Bert",
           bonds: new Set([Bond(Nation.GB, 4), Bond(Nation.RU, 1)]),
-          cash: 2,
+          cash: 2
         },
         Anton: {
           name: "Anton",
           bonds: new Set([Bond(Nation.IT, 4), Bond(Nation.GB, 1)]),
-          cash: 2,
-        },
+          cash: 2
+        }
       });
     });
 
@@ -58,8 +58,8 @@ describe("Schnelleinsteig", () => {
               taxChartPosition: 5,
               controller: "Claudia",
               rondelPosition: null,
-              treasury: 2,
-            },
+              treasury: 2
+            }
           ],
           [
             Nation.FR,
@@ -69,8 +69,8 @@ describe("Schnelleinsteig", () => {
               taxChartPosition: 5,
               controller: "Claudia",
               rondelPosition: null,
-              treasury: 11,
-            },
+              treasury: 11
+            }
           ],
           [
             Nation.GB,
@@ -80,8 +80,8 @@ describe("Schnelleinsteig", () => {
               taxChartPosition: 5,
               controller: "Bert",
               rondelPosition: null,
-              treasury: 11,
-            },
+              treasury: 11
+            }
           ],
           [
             Nation.GE,
@@ -91,8 +91,8 @@ describe("Schnelleinsteig", () => {
               taxChartPosition: 5,
               controller: null,
               rondelPosition: null,
-              treasury: 0,
-            },
+              treasury: 0
+            }
           ],
           [
             Nation.IT,
@@ -102,8 +102,8 @@ describe("Schnelleinsteig", () => {
               taxChartPosition: 5,
               controller: "Anton",
               rondelPosition: null,
-              treasury: 9,
-            },
+              treasury: 9
+            }
           ],
           [
             Nation.RU,
@@ -113,9 +113,9 @@ describe("Schnelleinsteig", () => {
               taxChartPosition: 5,
               controller: "Daniel",
               rondelPosition: null,
-              treasury: 11,
-            },
-          ],
+              treasury: 11
+            }
+          ]
         ])
       );
     });
@@ -129,8 +129,8 @@ describe("Schnelleinsteig", () => {
           Action.import({
             placements: [
               { province: "trieste", type: "fleet" },
-              { province: "lemberg", type: "army" },
-            ],
+              { province: "lemberg", type: "army" }
+            ]
           })
         );
         const game = Imperial.fromLog(log);
@@ -151,8 +151,8 @@ describe("Schnelleinsteig", () => {
           Action.import({
             placements: [
               { province: "trieste", type: "fleet" },
-              { province: "lemberg", type: "army" },
-            ],
+              { province: "lemberg", type: "army" }
+            ]
           })
         );
         const game = Imperial.fromLog(log);
@@ -228,8 +228,8 @@ describe("Schnelleinsteig", () => {
           Action.bondPurchase({
             nation: Nation.RU,
             player: "Daniel",
-            cost: 12,
-          }),
+            cost: 12
+          })
         ]);
 
         expect(game.availableActions).toEqual(expectedActions);
@@ -253,7 +253,7 @@ describe("Schnelleinsteig", () => {
             Action.bondPurchase({
               nation: Nation.GE,
               player: "Daniel",
-              cost: 4,
+              cost: 4
             })
           );
           const game = Imperial.fromLog(log);
@@ -268,7 +268,7 @@ describe("Schnelleinsteig", () => {
             Action.bondPurchase({
               nation: Nation.GE,
               player: "Daniel",
-              cost: 4,
+              cost: 4
             })
           );
           const game = Imperial.fromLog(log);
@@ -284,7 +284,7 @@ describe("Schnelleinsteig", () => {
           Action.bondPurchase({
             nation: Nation.GE,
             player: "Daniel",
-            cost: 4,
+            cost: 4
           })
         );
         const game = Imperial.fromLog(log);
@@ -299,13 +299,13 @@ describe("Schnelleinsteig", () => {
           Action.bondPurchase({
             nation: Nation.GE,
             player: "Daniel",
-            cost: 4,
+            cost: 4
           })
         );
         const game = Imperial.fromLog(log);
 
         expect(game.investorCardActive).toEqual(false);
-      })
+      });
     });
 
     describe("3. FR builds a factory", () => {
@@ -318,7 +318,7 @@ describe("Schnelleinsteig", () => {
         const expectedActions = [
           Action.buildFactory({ province: "brest" }),
           Action.buildFactory({ province: "dijon" }),
-          Action.buildFactory({ province: "marseille" }),
+          Action.buildFactory({ province: "marseille" })
         ];
 
         expect(game.availableActions).toEqual(new Set(expectedActions));
@@ -492,7 +492,7 @@ describe("Schnelleinsteig", () => {
           Action.bondPurchase({ nation: Nation.GE, player: "Anton", cost: 2 }),
           Action.bondPurchase({ nation: Nation.GE, player: "Anton", cost: 6 }),
           Action.bondPurchase({ nation: Nation.RU, player: "Anton", cost: 4 }),
-          Action.bondPurchase({ nation: Nation.RU, player: "Anton", cost: 6 }),
+          Action.bondPurchase({ nation: Nation.RU, player: "Anton", cost: 6 })
         ]);
 
         expect(game.availableActions).toEqual(expectedActions);
@@ -505,7 +505,7 @@ describe("Schnelleinsteig", () => {
             Action.bondPurchase({
               nation: Nation.GE,
               player: "Anton",
-              cost: 6,
+              cost: 6
             })
           );
           const game = Imperial.fromLog(log);
@@ -520,7 +520,7 @@ describe("Schnelleinsteig", () => {
             Action.bondPurchase({
               nation: Nation.GE,
               player: "Anton",
-              cost: 6,
+              cost: 6
             })
           );
           const game = Imperial.fromLog(log);
@@ -535,7 +535,7 @@ describe("Schnelleinsteig", () => {
             Action.bondPurchase({
               nation: Nation.GE,
               player: "Anton",
-              cost: 6,
+              cost: 6
             })
           );
           const game = Imperial.fromLog(log);
@@ -552,7 +552,7 @@ describe("Schnelleinsteig", () => {
         Action.bondPurchase({
           nation: Nation.GE,
           player: "Anton",
-          cost: 6,
+          cost: 6
         })
       );
       const game = Imperial.fromLog(log);
@@ -634,11 +634,11 @@ describe("Schnelleinsteig", () => {
           Action.endManeuver(),
           Action.maneuver({
             origin: "liverpool",
-            destination: "northatlantic",
+            destination: "northatlantic"
           }),
           Action.maneuver({ origin: "london", destination: "englishchannel" }),
           Action.maneuver({ origin: "london", destination: "northsea" }),
-          Action.maneuver({ origin: "london", destination: "northatlantic" }),
+          Action.maneuver({ origin: "london", destination: "northatlantic" })
         ]);
 
         expect(game.availableActions).toEqual(availableActions);
@@ -648,7 +648,7 @@ describe("Schnelleinsteig", () => {
         game.tick(
           Action.maneuver({
             origin: "liverpool",
-            destination: "northatlantic",
+            destination: "northatlantic"
           })
         );
         game.tick(
@@ -688,8 +688,8 @@ describe("Schnelleinsteig", () => {
             Action.maneuver({ origin: "berlin", destination: "warsaw" }),
             Action.maneuver({
               origin: "berlin",
-              destination: "stpetersburg",
-            }),
+              destination: "stpetersburg"
+            })
           ])
         );
       });
@@ -716,7 +716,7 @@ describe("Schnelleinsteig", () => {
           Action.maneuver({ origin: "berlin", destination: "london" }),
           Action.maneuver({ origin: "berlin", destination: "stpetersburg" }),
           Action.maneuver({ origin: "berlin", destination: "warsaw" }),
-          Action.maneuver({ origin: "berlin", destination: "vienna" }),
+          Action.maneuver({ origin: "berlin", destination: "vienna" })
         ]);
 
         expect(game.availableActions).toEqual(availableActions);
@@ -744,8 +744,8 @@ describe("Schnelleinsteig", () => {
             placements: [
               { province: "stpetersburg", type: "fleet" },
               { province: "moscow", type: "army" },
-              { province: "moscow", type: "army" },
-            ],
+              { province: "moscow", type: "army" }
+            ]
           })
         );
 
@@ -779,7 +779,7 @@ describe("Schnelleinsteig", () => {
       test("AH's available fleet maneuver is trieste", () => {
         const availableActions = new Set([
           Action.endManeuver(),
-          Action.maneuver({ origin: "trieste", destination: "ioniansea" }),
+          Action.maneuver({ origin: "trieste", destination: "ioniansea" })
         ]);
         const landDestinations = [
           "warsaw",
@@ -792,9 +792,9 @@ describe("Schnelleinsteig", () => {
           "venice",
           "berlin",
           "trieste",
-          "westbalkan",
+          "westbalkan"
         ];
-        landDestinations.map((province) => {
+        landDestinations.map(province => {
           availableActions.add(
             Action.maneuver({ origin: "lemberg", destination: province })
           );
@@ -847,9 +847,9 @@ describe("Schnelleinsteig", () => {
           "rome",
           "naples",
           "greece",
-          "tunis",
+          "tunis"
         ];
-        landDestinations.map((province) => {
+        landDestinations.map(province => {
           availableActions.add(
             Action.maneuver({ origin: "lemberg", destination: province })
           );
@@ -915,12 +915,12 @@ describe("Schnelleinsteig", () => {
           Action.endManeuver(),
           Action.maneuver({
             origin: "naples",
-            destination: "westernmediterraneansea",
+            destination: "westernmediterraneansea"
           }),
           Action.maneuver({
             origin: "naples",
-            destination: "ioniansea",
-          }),
+            destination: "ioniansea"
+          })
         ]);
         const landDestinations = [
           "naples",
@@ -929,9 +929,9 @@ describe("Schnelleinsteig", () => {
           "venice",
           "marseille",
           "vienna",
-          "trieste",
+          "trieste"
         ];
-        landDestinations.map((province) => {
+        landDestinations.map(province => {
           availableActions.add(
             Action.maneuver({ origin: "rome", destination: province })
           );
@@ -945,7 +945,7 @@ describe("Schnelleinsteig", () => {
         game.tick(
           Action.maneuver({
             origin: "naples",
-            destination: "westernmediterraneansea",
+            destination: "westernmediterraneansea"
           })
         );
         const availableActions = new Set([Action.endManeuver()]);
@@ -959,9 +959,9 @@ describe("Schnelleinsteig", () => {
           "florence",
           "venice",
           "vienna",
-          "trieste",
+          "trieste"
         ];
-        landDestinations.map((province) => {
+        landDestinations.map(province => {
           availableActions.add(
             Action.maneuver({ origin: "rome", destination: province })
           );
@@ -994,12 +994,12 @@ describe("Schnelleinsteig", () => {
           Action.endManeuver(),
           Action.maneuver({
             origin: "bordeaux",
-            destination: "bayofbiscay",
+            destination: "bayofbiscay"
           }),
           Action.maneuver({
             origin: "marseille",
-            destination: "westernmediterraneansea",
-          }),
+            destination: "westernmediterraneansea"
+          })
         ]);
         const landDestinations = [
           "brest",
@@ -1009,9 +1009,9 @@ describe("Schnelleinsteig", () => {
           "belgium",
           "genoa",
           "munich",
-          "spain",
+          "spain"
         ];
-        landDestinations.map((province) => {
+        landDestinations.map(province => {
           availableActions.add(
             Action.maneuver({ origin: "paris", destination: province })
           );
@@ -1024,21 +1024,21 @@ describe("Schnelleinsteig", () => {
         game.tick(
           Action.maneuver({
             origin: "marseille",
-            destination: "westernmediterraneansea",
+            destination: "westernmediterraneansea"
           })
         );
         const expectedActions = [
           Action.coexist({
             province: "westernmediterraneansea",
             incumbent: Nation.IT,
-            challenger: Nation.FR,
+            challenger: Nation.FR
           }),
           Action.fight({
             province: "westernmediterraneansea",
             incumbent: Nation.IT,
             challenger: Nation.FR,
-            targetType: null,
-          }),
+            targetType: null
+          })
         ];
 
         expect(game.availableActions).toEqual(new Set(expectedActions));
@@ -1050,7 +1050,7 @@ describe("Schnelleinsteig", () => {
             province: "westernmediterraneansea",
             incumbent: Nation.IT,
             challenger: Nation.FR,
-            targetType: null,
+            targetType: null
           })
         );
         const westernMed = game.provinces.get("westernmediterraneansea");
@@ -1068,7 +1068,7 @@ describe("Schnelleinsteig", () => {
         game.tick(
           Action.maneuver({
             origin: "bordeaux",
-            destination: "bayofbiscay",
+            destination: "bayofbiscay"
           })
         );
         const landDestinations = [
@@ -1081,10 +1081,10 @@ describe("Schnelleinsteig", () => {
           "genoa",
           "spain",
           "portugal",
-          "morocco",
+          "morocco"
         ];
         const availableActions = new Set([Action.endManeuver()]);
-        landDestinations.map((province) => {
+        landDestinations.map(province => {
           availableActions.add(
             Action.maneuver({ origin: "paris", destination: province })
           );
@@ -1097,7 +1097,7 @@ describe("Schnelleinsteig", () => {
         game.tick(
           Action.maneuver({
             origin: "paris",
-            destination: "morocco",
+            destination: "morocco"
           })
         );
 
@@ -1146,7 +1146,7 @@ describe("Schnelleinsteig", () => {
           Action.bondPurchase({ nation: Nation.GE, player: "Bert", cost: 2 }),
           Action.bondPurchase({ nation: Nation.GE, player: "Bert", cost: 9 }),
           Action.bondPurchase({ nation: Nation.RU, player: "Bert", cost: 4 }),
-          Action.bondPurchase({ nation: Nation.RU, player: "Bert", cost: 6 }),
+          Action.bondPurchase({ nation: Nation.RU, player: "Bert", cost: 6 })
         ];
 
         expect(game.availableActions).toEqual(new Set(expectedActions));
@@ -1304,78 +1304,78 @@ describe("Schnelleinsteig", () => {
             Action.bondPurchase({
               nation: Nation.AH,
               player: "Claudia",
-              cost: 4,
+              cost: 4
             }),
             Action.bondPurchase({
               nation: Nation.AH,
               player: "Claudia",
-              cost: 9,
+              cost: 9
             }),
             Action.bondPurchase({
               nation: Nation.AH,
               player: "Claudia",
-              cost: 6,
+              cost: 6
             }),
             Action.bondPurchase({
               nation: Nation.FR,
               player: "Claudia",
-              cost: 6,
+              cost: 6
             }),
             Action.bondPurchase({
               nation: Nation.FR,
               player: "Claudia",
-              cost: 12,
+              cost: 12
             }),
             Action.bondPurchase({
               nation: Nation.FR,
               player: "Claudia",
-              cost: 16,
+              cost: 16
             }),
             Action.bondPurchase({
               nation: Nation.IT,
               player: "Claudia",
-              cost: 2,
+              cost: 2
             }),
             Action.bondPurchase({
               nation: Nation.IT,
               player: "Claudia",
-              cost: 4,
+              cost: 4
             }),
             Action.bondPurchase({
               nation: Nation.IT,
               player: "Claudia",
-              cost: 6,
+              cost: 6
             }),
             Action.bondPurchase({
               nation: Nation.FR,
               player: "Claudia",
-              cost: 4,
+              cost: 4
             }),
             Action.bondPurchase({
               nation: Nation.FR,
               player: "Claudia",
-              cost: 6,
+              cost: 6
             }),
             Action.bondPurchase({
               nation: Nation.GB,
               player: "Claudia",
-              cost: 4,
+              cost: 4
             }),
             Action.bondPurchase({
               nation: Nation.GB,
               player: "Claudia",
-              cost: 6,
+              cost: 6
             }),
             Action.bondPurchase({
               nation: Nation.GE,
               player: "Claudia",
-              cost: 2,
+              cost: 2
             }),
             Action.bondPurchase({
               nation: Nation.RU,
               player: "Claudia",
-              cost: 4,
-            }),
+              cost: 4
+            })
           ]);
           expect(game.availableActions).toEqual(expectedActions);
         });
@@ -1386,7 +1386,7 @@ describe("Schnelleinsteig", () => {
               Action.bondPurchase({
                 nation: Nation.AH,
                 player: "Claudia",
-                cost: 6,
+                cost: 6
               })
             );
             const cash = game.players["Claudia"].cash;
@@ -1401,7 +1401,7 @@ describe("Schnelleinsteig", () => {
               new Set([
                 Bond(Nation.AH, 1),
                 Bond(Nation.FR, 4),
-                Bond(Nation.AH, 3),
+                Bond(Nation.AH, 3)
               ])
             );
           });
@@ -1440,7 +1440,7 @@ describe("Schnelleinsteig", () => {
         );
 
         const expected = new Set(
-          ["danzig", "munich", "cologne"].map((province) =>
+          ["danzig", "munich", "cologne"].map(province =>
             Action.buildFactory({ province })
           )
         );
@@ -1477,12 +1477,12 @@ describe("Schnelleinsteig", () => {
           Action.endManeuver(),
           Action.maneuver({
             origin: "stpetersburg",
-            destination: "balticsea",
+            destination: "balticsea"
           }),
           Action.maneuver({
             origin: "odessa",
-            destination: "blacksea",
-          }),
+            destination: "blacksea"
+          })
         ]);
         const landDestinations = [
           "warsaw",
@@ -1492,9 +1492,9 @@ describe("Schnelleinsteig", () => {
           "danzig",
           "prague",
           "lemberg",
-          "romania",
+          "romania"
         ];
-        landDestinations.map((province) => {
+        landDestinations.map(province => {
           availableActions.add(
             Action.maneuver({ origin: "moscow", destination: province })
           );
@@ -1507,13 +1507,13 @@ describe("Schnelleinsteig", () => {
         game.tick(
           Action.maneuver({
             origin: "stpetersburg",
-            destination: "balticsea",
+            destination: "balticsea"
           })
         );
         game.tick(
           Action.maneuver({
             origin: "odessa",
-            destination: "blacksea",
+            destination: "blacksea"
           })
         );
         const availableActions = new Set([Action.endManeuver()]);
@@ -1532,9 +1532,9 @@ describe("Schnelleinsteig", () => {
           "berlin",
           "hamburg",
           "denmark",
-          "norway",
+          "norway"
         ];
-        landDestinations.map((province) => {
+        landDestinations.map(province => {
           availableActions.add(
             Action.maneuver({ origin: "moscow", destination: province })
           );
@@ -1547,19 +1547,19 @@ describe("Schnelleinsteig", () => {
         game.tick(
           Action.maneuver({
             origin: "moscow",
-            destination: "sweden",
+            destination: "sweden"
           })
         );
         game.tick(
           Action.maneuver({
             origin: "moscow",
-            destination: "turkey",
+            destination: "turkey"
           })
         );
         game.tick(
           Action.maneuver({
             origin: "moscow",
-            destination: "lemberg",
+            destination: "lemberg"
           })
         );
         const balticSeaFlag = game.provinces.get("balticsea").flag;
@@ -1588,12 +1588,12 @@ describe("Schnelleinsteig", () => {
           Action.endManeuver(),
           Action.maneuver({
             origin: "ioniansea",
-            destination: "westernmediterraneansea",
+            destination: "westernmediterraneansea"
           }),
           Action.maneuver({
             origin: "ioniansea",
-            destination: "easternmediterraneansea",
-          }),
+            destination: "easternmediterraneansea"
+          })
         ]);
         const romaniaDestinations = [
           "odessa",
@@ -1601,9 +1601,9 @@ describe("Schnelleinsteig", () => {
           "lemberg",
           "budapest",
           "bulgaria",
-          "westbalkan",
+          "westbalkan"
         ];
-        romaniaDestinations.map((province) => {
+        romaniaDestinations.map(province => {
           availableActions.add(
             Action.maneuver({ origin: "romania", destination: province })
           );
@@ -1613,9 +1613,9 @@ describe("Schnelleinsteig", () => {
           "bulgaria",
           "romania",
           "trieste",
-          "budapest",
+          "budapest"
         ];
-        westBalkanDestinations.map((province) => {
+        westBalkanDestinations.map(province => {
           availableActions.add(
             Action.maneuver({ origin: "westbalkan", destination: province })
           );
@@ -1632,7 +1632,7 @@ describe("Schnelleinsteig", () => {
         game.tick(
           Action.maneuver({
             origin: "ioniansea",
-            destination: "westernmediterraneansea",
+            destination: "westernmediterraneansea"
           })
         );
         const availableActions = new Set([Action.endManeuver()]);
@@ -1642,9 +1642,9 @@ describe("Schnelleinsteig", () => {
           "westbalkan",
           "budapest",
           "lemberg",
-          "kiev",
+          "kiev"
         ];
-        romaniaDestinations.map((province) => {
+        romaniaDestinations.map(province => {
           availableActions.add(
             Action.maneuver({ origin: "romania", destination: province })
           );
@@ -1654,9 +1654,9 @@ describe("Schnelleinsteig", () => {
           "bulgaria",
           "romania",
           "trieste",
-          "budapest",
+          "budapest"
         ];
-        westBalkanDestinations.map((province) => {
+        westBalkanDestinations.map(province => {
           availableActions.add(
             Action.maneuver({ origin: "westbalkan", destination: province })
           );
@@ -1668,9 +1668,9 @@ describe("Schnelleinsteig", () => {
           "naples",
           "genoa",
           "marseille",
-          "spain",
+          "spain"
         ];
-        tunisDestinations.map((province) => {
+        tunisDestinations.map(province => {
           availableActions.add(
             Action.maneuver({ origin: "tunis", destination: province })
           );
@@ -1731,63 +1731,63 @@ describe("Schnelleinsteig", () => {
             Action.bondPurchase({
               nation: Nation.AH,
               player: "Daniel",
-              cost: 4,
+              cost: 4
             }),
             Action.bondPurchase({
               nation: Nation.IT,
               player: "Daniel",
-              cost: 2,
+              cost: 2
             }),
             Action.bondPurchase({
               nation: Nation.IT,
               player: "Daniel",
-              cost: 4,
+              cost: 4
             }),
             Action.bondPurchase({
               nation: Nation.IT,
               player: "Daniel",
-              cost: 6,
+              cost: 6
             }),
             Action.bondPurchase({
               nation: Nation.FR,
               player: "Daniel",
-              cost: 4,
+              cost: 4
             }),
             Action.bondPurchase({
               nation: Nation.FR,
               player: "Daniel",
-              cost: 6,
+              cost: 6
             }),
             Action.bondPurchase({
               nation: Nation.GB,
               player: "Daniel",
-              cost: 4,
+              cost: 4
             }),
             Action.bondPurchase({
               nation: Nation.GB,
               player: "Daniel",
-              cost: 6,
+              cost: 6
             }),
             Action.bondPurchase({
               nation: Nation.GE,
               player: "Daniel",
-              cost: 2,
+              cost: 2
             }),
             Action.bondPurchase({
               nation: Nation.GE,
               player: "Daniel",
-              cost: 9,
+              cost: 9
             }),
             Action.bondPurchase({
               nation: Nation.RU,
               player: "Daniel",
-              cost: 4,
+              cost: 4
             }),
             Action.bondPurchase({
               nation: Nation.RU,
               player: "Daniel",
-              cost: 12,
-            }),
+              cost: 12
+            })
           ]);
 
           expect(game.availableActions).toEqual(expectedActions);
@@ -1798,13 +1798,13 @@ describe("Schnelleinsteig", () => {
             Action.bondPurchase({
               nation: Nation.GE,
               player: "Daniel",
-              cost: 9,
+              cost: 9
             })
           );
           const expectedBonds = new Set([
             Bond(Nation.FR, 1),
             Bond(Nation.RU, 4),
-            Bond(Nation.GE, 4),
+            Bond(Nation.GE, 4)
           ]);
 
           expect(game.players["Daniel"].bonds).toEqual(expectedBonds);
