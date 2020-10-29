@@ -14,8 +14,8 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-var connections = map[PlayerId]*Conn{}
-var players = map[PlayerId]PlayerName{}
+var connections = map[UserId]*Conn{}
+var users = map[UserId]UserName{}
 var gameLog = []Action{}
 var upgrader = websocket.Upgrader{CheckOrigin: func(*http.Request) bool { return true }}
 
@@ -37,15 +37,15 @@ func main() {
 	}
 }
 
-// PlayerId uniquely identifies a client. We would like to use an
+// UserId uniquely identifies a client. We would like to use an
 // integer here, but JSON does not support integers. Instead, we
 // generate a pseudorandom, base64-encoded string.
-type PlayerId string
+type UserId string
 
-type PlayerName string
+type UserName string
 
-// NewPlayerId generates a pseudorandom, base64-encoded PlayerId.
-func NewPlayerId() (PlayerId, error) {
+// NewUserId generates a pseudorandom, base64-encoded UserId.
+func NewUserId() (UserId, error) {
 	// go doc math/rand.Read
 	//
 	// > It always returns len(p) and a nil error.
@@ -55,9 +55,9 @@ func NewPlayerId() (PlayerId, error) {
 	builder := strings.Builder{}
 	encoder := base64.NewEncoder(base64.StdEncoding, &builder)
 	if _, err := encoder.Write(buf); err != nil {
-		return PlayerId(""), err
+		return UserId(""), err
 	}
-	return PlayerId(builder.String()), nil
+	return UserId(builder.String()), nil
 }
 
 type Action interface{}
@@ -93,9 +93,12 @@ const (
 	// KindUpdateId is received from clients when they are
 	// restarting from a broken connection.
 	KindUpdateId = Kind("updateId")
-	// KindUpdateName is received from the clients when they
-	// register a player's name.
-	KindUpdateName = Kind("updateName")
+	// KindRegisterUser is received from clients when they register
+	// a name.
+	KindRegisterUser = Kind("registerUser")
+	// KindUserRegistered is sent to clients when a user register a
+	// name.
+	KindUserRegistered = Kind("userRegistered")
 	// KindUpdatePlayers is sent to clients when a player's
 	// name is updated.
 	KindUpdatePlayers = Kind("updatePlayers")
@@ -130,7 +133,7 @@ func (c *Conn) write(v interface{}) error {
 }
 
 // SetId sends a KindSetId message to the client.
-func (c *Conn) SetId(id PlayerId) error {
+func (c *Conn) SetId(id UserId) error {
 	return c.write(&Envelope{
 		Kind: KindSetId,
 		Data: map[string]string{
@@ -139,8 +142,24 @@ func (c *Conn) SetId(id PlayerId) error {
 	})
 }
 
+// UserRegistered sends a KindUserRegistered message to the client.
+func (c *Conn) UserRegistered(users map[UserId]UserName) error {
+	var usersSlice = []map[string]string{}
+	for key, val := range users {
+		usersSlice = append(usersSlice, map[string]string{"id": string(key), "name": string(val)})
+	}
+	usersList, _ := json.Marshal(usersSlice)
+
+	return c.write(&Envelope{
+		Kind: KindUserRegistered,
+		Data: map[string]string{
+			"users": string(usersList),
+		},
+	})
+}
+
 // UpdatePlayers sends a KindUpdatePlayers message to the client.
-func (c *Conn) UpdatePlayers(players map[PlayerId]PlayerName) error {
+func (c *Conn) UpdatePlayers(players map[UserId]UserName) error {
 	var playersSlice = []map[string]string{}
 	for key, val := range players {
 		playersSlice = append(playersSlice, map[string]string{"id": string(key), "name": string(val)})
@@ -156,7 +175,7 @@ func (c *Conn) UpdatePlayers(players map[PlayerId]PlayerName) error {
 }
 
 // StartGame sends a KindStartGame message to the client.
-func (c *Conn) StartGame(players map[PlayerId]PlayerName) error {
+func (c *Conn) StartGame(players map[UserId]UserName) error {
 	var playersSlice = []map[string]string{}
 	for key, val := range players {
 		playersSlice = append(playersSlice, map[string]string{"id": string(key), "name": string(val)})
@@ -221,10 +240,10 @@ func handleWebsocket(w http.ResponseWriter, r *http.Request) {
 	}
 	c := NewConn(ws)
 	c.Register(KindUpdateId, onUpdateId)
-	c.Register(KindUpdateName, onUpdateName)
+	c.Register(KindRegisterUser, onRegisterUser)
 	c.Register(KindTick, onTick)
 
-	id, err := NewPlayerId()
+	id, err := NewUserId()
 	if err != nil {
 		log.Println("NewPlayerId", err)
 		return
@@ -244,23 +263,23 @@ func onUpdateId(c *Conn, data Data) error {
 	if err := data.Validate("oldId", "newId"); err != nil {
 		return err
 	}
-	oldId := PlayerId(data["oldId"])
-	newId := PlayerId(data["newId"])
+	oldId := UserId(data["oldId"])
+	newId := UserId(data["newId"])
 	log.Printf("%s: %s -> %s\n", KindUpdateId, oldId, newId)
 	connections[newId] = c
 	delete(connections, oldId)
 
-	if val, ok := players[oldId]; ok {
-		players[newId] = val
-		delete(players, oldId)
+	if val, ok := users[oldId]; ok {
+		users[newId] = val
+		delete(users, oldId)
 	}
 
 	for _, conn := range connections {
-		if err := conn.UpdatePlayers(players); err != nil {
-			log.Println(players, "UpdatePlayers")
+		if err := conn.UserRegistered(users); err != nil {
+			log.Println(users, "UserRegistered")
 			return nil
 		}
-		if len(players) == 2 {
+		if len(users) == 2 {
 			if err := conn.UpdateGameLog(gameLog); err != nil {
 				log.Println(gameLog, "UpdateGameLog")
 				return nil
@@ -271,26 +290,19 @@ func onUpdateId(c *Conn, data Data) error {
 	return nil
 }
 
-func onUpdateName(c *Conn, data Data) error {
+func onRegisterUser(c *Conn, data Data) error {
 	if err := data.Validate("name", "id"); err != nil {
 		return err
 	}
-	name := PlayerName(data["name"])
-	id := PlayerId(data["id"])
-	log.Printf("%s: %s(%s)\n", KindUpdateName, name, id)
-	players[id] = name
+	name := UserName(data["name"])
+	id := UserId(data["id"])
+	log.Printf("%s: %s(%s)\n", KindRegisterUser, name, id)
+	users[id] = name
 
 	for _, conn := range connections {
-		if len(players) == 2 {
-			if err := conn.StartGame(players); err != nil {
-				log.Println(players, "StartGame")
-				return nil
-			}
-		} else {
-			if err := conn.UpdatePlayers(players); err != nil {
-				log.Println(players, "UpdatePlayers")
-				return nil
-			}
+		if err := conn.UserRegistered(users); err != nil {
+			log.Println(users, "UserRegistered")
+			return nil
 		}
 	}
 
