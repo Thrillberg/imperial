@@ -64,6 +64,7 @@
       </div>
     </div>
     <div v-else>
+      Users:
       <ul v-for="user in users" v-bind:key="user.id">
         <li v-if="user.name === name">
           <strong>{{ user.name }}</strong>
@@ -71,6 +72,10 @@
         <li v-else>
           {{ user.name }}
         </li>
+      </ul>
+      Games:
+      <ul v-for="game in games" v-bind:key="game.id">
+        <li>Hosted by {{ game.host }}</li>
       </ul>
       <div v-if="alreadyRegistered()">
         <button v-on:click="openGame()">Play</button>
@@ -130,6 +135,7 @@ export default {
       controllingPlayerName: "",
       soloMode: false,
       game: {},
+      games: new Set(),
       gameStarted: false,
       importStatus: {
         active: false,
@@ -164,6 +170,20 @@ export default {
               this.name = user.name;
             }
           }
+          break;
+        }
+        case "gameOpened": {
+          const games = JSON.parse(envelope.data.games);
+          const finalGames = games.map(game => {
+            const parsedGame = JSON.parse(game.game);
+            return {
+              host: parsedGame.host,
+              log: parsedGame.log,
+              players: parsedGame.players,
+              id: game.id
+            };
+          });
+          this.games = finalGames;
           break;
         }
         case "updatePlayers":
@@ -265,6 +285,14 @@ export default {
     },
     alreadyRegistered: function() {
       return [...this.users].map(x => x.name).includes(this.name);
+    },
+    openGame: function() {
+      this.webSocket.send(
+        JSON.stringify({
+          kind: "openGame",
+          data: { host: this.name, id: localStorage.imperialId }
+        })
+      );
     },
     startGame: function(playerCount) {
       let players;

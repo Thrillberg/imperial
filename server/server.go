@@ -17,6 +17,7 @@ import (
 var connections = map[UserId]*Conn{}
 var users = map[UserId]UserName{}
 var gameLog = []Action{}
+var games = map[GameId]*Game{}
 var upgrader = websocket.Upgrader{CheckOrigin: func(*http.Request) bool { return true }}
 
 func init() {
@@ -44,6 +45,14 @@ type UserId string
 
 type UserName string
 
+type GameId string
+
+type Game struct {
+	Log     []Action            `json:"log"`
+	Players map[UserId]UserName `json:"players"`
+	Host    UserName            `json:"host"`
+}
+
 // NewUserId generates a pseudorandom, base64-encoded UserId.
 func NewUserId() (UserId, error) {
 	// go doc math/rand.Read
@@ -58,6 +67,22 @@ func NewUserId() (UserId, error) {
 		return UserId(""), err
 	}
 	return UserId(builder.String()), nil
+}
+
+// NewGameId generates a pseudorandom, base64-encoded GameId.
+func NewGameId() (GameId, error) {
+	// go doc math/rand.Read
+	//
+	// > It always returns len(p) and a nil error.
+	buf := make([]byte, 8)
+	rand.Read(buf)
+
+	builder := strings.Builder{}
+	encoder := base64.NewEncoder(base64.StdEncoding, &builder)
+	if _, err := encoder.Write(buf); err != nil {
+		return GameId(""), err
+	}
+	return GameId(builder.String()), nil
 }
 
 type Action interface{}
@@ -96,9 +121,13 @@ const (
 	// KindRegisterUser is received from clients when they register
 	// a name.
 	KindRegisterUser = Kind("registerUser")
-	// KindUserRegistered is sent to clients when a user register a
+	// KindUserRegistered is sent to clients when a user registers a
 	// name.
 	KindUserRegistered = Kind("userRegistered")
+	// KindOpenGame is received from clients when they open a new game.
+	KindOpenGame = Kind("openGame")
+	// KindGameOpened is sent to the clients when a user opens a new game.
+	KindGameOpened = Kind("gameOpened")
 	// KindUpdatePlayers is sent to clients when a player's
 	// name is updated.
 	KindUpdatePlayers = Kind("updatePlayers")
@@ -154,6 +183,23 @@ func (c *Conn) UserRegistered(users map[UserId]UserName) error {
 		Kind: KindUserRegistered,
 		Data: map[string]string{
 			"users": string(usersList),
+		},
+	})
+}
+
+// GameOpened sends a KindGameOpened message to the client.
+func (c *Conn) GameOpened(games map[GameId]*Game) error {
+	var gamesSlice = []map[string]string{}
+	for key, val := range games {
+		parsedVal, _ := json.Marshal(val)
+		gamesSlice = append(gamesSlice, map[string]string{"id": string(key), "game": string(parsedVal)})
+	}
+	gamesList, _ := json.Marshal(gamesSlice)
+
+	return c.write(&Envelope{
+		Kind: KindGameOpened,
+		Data: map[string]string{
+			"games": string(gamesList),
 		},
 	})
 }
@@ -241,6 +287,7 @@ func handleWebsocket(w http.ResponseWriter, r *http.Request) {
 	c := NewConn(ws)
 	c.Register(KindUpdateId, onUpdateId)
 	c.Register(KindRegisterUser, onRegisterUser)
+	c.Register(KindOpenGame, onOpenGame)
 	c.Register(KindTick, onTick)
 
 	id, err := NewUserId()
@@ -302,6 +349,30 @@ func onRegisterUser(c *Conn, data Data) error {
 	for _, conn := range connections {
 		if err := conn.UserRegistered(users); err != nil {
 			log.Println(users, "UserRegistered")
+			return nil
+		}
+	}
+
+	return nil
+}
+
+func onOpenGame(c *Conn, data Data) error {
+	if err := data.Validate("host", "id"); err != nil {
+		return err
+	}
+	name := UserName(data["host"])
+	id := UserId(data["id"])
+	log.Printf("%s: %s(%s) is opening a game\n", KindOpenGame, name, id)
+	gameId, err := NewGameId()
+	if err != nil {
+		log.Println("NewGameId", err)
+		return nil
+	}
+
+	games[gameId] = &Game{[]Action{}, map[UserId]UserName{id: name}, name}
+
+	for _, conn := range connections {
+		if err := conn.GameOpened(games); err != nil {
 			return nil
 		}
 	}
