@@ -12,20 +12,18 @@ const cost = {
   6: 16,
   7: 20,
   8: 25,
-  9: 30,
+  9: 30
 };
 export const Bond = memoize((nation, number) => ({
   nation,
   number,
-  cost: cost[number],
+  cost: cost[number]
 }));
 export const AllBonds = () =>
   new Set(
     ["AH", "IT", "FR", "GB", "GE", "RU"]
-      .map((nation) =>
-        Object.keys(cost).map((number) =>
-          Bond(Nation[nation], parseInt(number))
-        )
+      .map(nation =>
+        Object.keys(cost).map(number => Bond(Nation[nation], parseInt(number)))
       )
       .flat()
   );

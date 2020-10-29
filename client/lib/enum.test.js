@@ -67,17 +67,17 @@ describe("Enum", () => {
     test("exhaustiveness", () => {
       expect(() =>
         MyEnum.HUHU.when({
-          HUHU: () => {},
+          HUHU: () => {}
         })
       ).toThrowError(/BEBE/);
     });
 
     test("return value", () => {
-      const fn = (e) => `value:${e.value}`;
+      const fn = e => `value:${e.value}`;
       expect(
         MyEnum.HUHU.when({
           HUHU: fn,
-          BEBE: fn,
+          BEBE: fn
         })
       ).toBe("value:HUHU");
     });

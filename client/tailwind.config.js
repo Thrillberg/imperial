@@ -1,22 +1,22 @@
-const defaultTheme = require('tailwindcss/defaultTheme')
+const defaultTheme = require("tailwindcss/defaultTheme");
 
 module.exports = {
   future: {
     removeDeprecatedGapUtilities: true,
-    purgeLayersByDefault: true,
+    purgeLayersByDefault: true
   },
   theme: {
     boxShadow: {
-      default: 'inset 0 0 1rem 0.3rem #ffd700',
+      default: "inset 0 0 1rem 0.3rem #ffd700"
     },
     container: {
       center: true
     },
     fontFamily: {
-      'sans': [...defaultTheme.fontFamily.sans],
-      'serif': ['Baskervville', ...defaultTheme.fontFamily.serif],
-      'mono': [...defaultTheme.fontFamily.mono],
-      'bold': ['"Libre Baskerville"']
+      sans: [...defaultTheme.fontFamily.sans],
+      serif: ["Baskervville", ...defaultTheme.fontFamily.serif],
+      mono: [...defaultTheme.fontFamily.mono],
+      bold: ['"Libre Baskerville"']
     }
   }
-}
+};

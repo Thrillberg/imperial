@@ -42,7 +42,7 @@ const nodes = [
     nation: Nation.GB,
     factoryType: "shipyard",
     name: "liverpool",
-    isHome: true,
+    isHome: true
   },
   { nation: Nation.GB, factoryType: "armaments", name: "sheffield" },
   { nation: Nation.GB, factoryType: "shipyard", name: "london", isHome: true },
@@ -53,7 +53,7 @@ const nodes = [
     nation: Nation.FR,
     factoryType: "shipyard",
     name: "bordeaux",
-    isHome: true,
+    isHome: true
   },
   { nation: Nation.FR, factoryType: "shipyard", name: "brest" },
   { nation: Nation.IT, factoryType: "shipyard", name: "genoa" },
@@ -67,10 +67,10 @@ const nodes = [
     nation: Nation.AH,
     factoryType: "armaments",
     name: "budapest",
-    isHome: true,
+    isHome: true
   },
   { nation: Nation.AH, factoryType: "armaments", name: "prague" },
-  { nation: Nation.AH, factoryType: "armaments", name: "lemberg" },
+  { nation: Nation.AH, factoryType: "armaments", name: "lemberg" }
 ];
 
 const edges = [
@@ -344,7 +344,7 @@ const edges = [
   ["balticsea", "hamburg"],
   ["balticsea", "denmark"],
   ["balticsea", "northsea"],
-  ["balticsea", "sweden"],
+  ["balticsea", "sweden"]
 ];
 
 export default new GameBoard({ nodes, edges });

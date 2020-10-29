@@ -27,10 +27,10 @@ export default {
     transform: String,
     width: String,
     x: Number,
-    y: Number,
+    y: Number
   },
   methods: {
-    flag: (nation) => {
+    flag: nation => {
       switch (nation) {
         case "AH":
           return AHFlag;
@@ -45,7 +45,7 @@ export default {
         case "RU":
           return RUFlag;
       }
-    },
-  },
+    }
+  }
 };
 </script>

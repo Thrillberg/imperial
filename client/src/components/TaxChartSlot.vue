@@ -20,11 +20,11 @@ import Flag from "./Flag.vue";
 export default {
   name: "TaxChartSlot",
   components: {
-    Flag,
+    Flag
   },
   props: {
     taxSlot: Number,
-    nations: Array,
-  },
+    nations: Array
+  }
 };
 </script>

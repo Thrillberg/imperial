@@ -57,11 +57,11 @@ export default {
     province: Object,
     select_province: Function,
     armies: Array,
-    fleets: Array,
+    fleets: Array
   },
   data: () => {
     return {
-      mounted: false,
+      mounted: false
     };
   },
   mounted() {
@@ -71,7 +71,7 @@ export default {
     const province = this.$refs.province;
     // Background the province
     const provincePath = [...province.children].find(
-      (node) => node.nodeName === "path"
+      node => node.nodeName === "path"
     );
     province.prepend(provincePath, province.children[0]);
     // Add hoverable effect for maneuvers
@@ -133,7 +133,7 @@ export default {
         case "RU":
           return "#9c6bae";
       }
-    },
-  },
+    }
+  }
 };
 </script>

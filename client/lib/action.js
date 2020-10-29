@@ -28,7 +28,7 @@ const membership = (a, b) => {
 
 const makeAction = (type, payloadKeys) => {
   const expected = new Set(payloadKeys);
-  return memoize((payload) => {
+  return memoize(payload => {
     // lightly validate the payload keys
     const [l, b, r] = membership(expected, new Set(Object.keys(payload || {})));
     if (l.size > 0 || r.size > 0) {
@@ -37,7 +37,7 @@ const makeAction = (type, payloadKeys) => {
           expected: [...l],
           unexpected: [...r],
           ok: [...b],
-          type: type,
+          type: type
         })
       );
     }
@@ -59,10 +59,10 @@ export default {
     "province",
     "incumbent",
     "challenger",
-    "targetType",
+    "targetType"
   ]),
   import: makeAction("import", ["placements"]), // placement : { province: string, type: "army"|"fleet" }
   maneuver: makeAction("maneuver", ["origin", "destination"]),
   production: makeAction("production", ["province"]),
-  rondel: makeAction("rondel", ["nation", "cost", "slot"]),
+  rondel: makeAction("rondel", ["nation", "cost", "slot"])
 };

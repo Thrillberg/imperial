@@ -4,7 +4,7 @@ ci:
 	npm run lint
 
 lint/fix:
-	npm run lint:fix
+	npm run lint
 
 test:
 	npm test

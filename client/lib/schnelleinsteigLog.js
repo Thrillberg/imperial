@@ -8,8 +8,8 @@ export default [
       { id: "Daniel", nation: Nation.RU },
       { id: "Claudia", nation: Nation.FR },
       { id: "Bert", nation: Nation.GB },
-      { id: "Anton", nation: Nation.IT },
-    ],
+      { id: "Anton", nation: Nation.IT }
+    ]
   }),
   Action.noop,
   Action.noop,
@@ -29,8 +29,8 @@ export default [
   Action.import({
     placements: [
       { province: "trieste", type: "fleet" },
-      { province: "lemberg", type: "army" },
-    ],
+      { province: "lemberg", type: "army" }
+    ]
   }),
   Action.noop,
   Action.rondel({ nation: Nation.IT, cost: 0, slot: "investor" }),
@@ -56,8 +56,8 @@ export default [
     placements: [
       { province: "stpetersburg", type: "fleet" },
       { province: "moscow", type: "army" },
-      { province: "moscow", type: "army" },
-    ],
+      { province: "moscow", type: "army" }
+    ]
   }),
   Action.noop,
   Action.noop,
@@ -70,27 +70,27 @@ export default [
   Action.rondel({ nation: Nation.IT, cost: 0, slot: "maneuver2" }),
   Action.maneuver({
     origin: "naples",
-    destination: "westernmediterraneansea",
+    destination: "westernmediterraneansea"
   }),
   Action.maneuver({ origin: "rome", destination: "spain" }),
   Action.rondel({ nation: Nation.FR, cost: 0, slot: "maneuver1" }),
   Action.maneuver({
     origin: "marseille",
-    destination: "westernmediterraneansea",
+    destination: "westernmediterraneansea"
   }),
   Action.fight({
     province: "westernmediterraneansea",
     incumbent: Nation.IT,
     challenger: Nation.FR,
-    targetType: null,
+    targetType: null
   }),
   Action.maneuver({
     origin: "bordeaux",
-    destination: "bayofbiscay",
+    destination: "bayofbiscay"
   }),
   Action.maneuver({
     origin: "paris",
-    destination: "morocco",
+    destination: "morocco"
   }),
   Action.rondel({ nation: Nation.GB, cost: 0, slot: "investor" }),
   Action.bondPurchase({ nation: Nation.RU, player: "Bert", cost: 6 }),
@@ -107,22 +107,22 @@ export default [
   Action.rondel({ nation: Nation.RU, cost: 0, slot: "maneuver2" }),
   Action.maneuver({
     origin: "stpetersburg",
-    destination: "balticsea",
+    destination: "balticsea"
   }),
   Action.maneuver({
     origin: "odessa",
-    destination: "blacksea",
+    destination: "blacksea"
   }),
   Action.maneuver({
     origin: "moscow",
-    destination: "sweden",
+    destination: "sweden"
   }),
   Action.maneuver({
     origin: "moscow",
-    destination: "turkey",
+    destination: "turkey"
   }),
   Action.maneuver({
     origin: "moscow",
-    destination: "lemberg",
-  }),
+    destination: "lemberg"
+  })
 ];

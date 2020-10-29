@@ -13,7 +13,7 @@ export default class GameBoard {
         nation,
         neighbors: new Set(),
         isOcean,
-        factoryType,
+        factoryType
       });
 
       if (!this.byNation.has(nation)) {
@@ -81,7 +81,7 @@ export default class GameBoard {
     if (!this.graph.has(origin))
       throw new Error(
         `province ${origin} not found. Available provinces are: ${[
-          ...this.graph.keys(),
+          ...this.graph.keys()
         ]}`
       );
   }

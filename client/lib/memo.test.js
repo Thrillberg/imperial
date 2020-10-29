@@ -4,7 +4,7 @@ describe("memoize()", () => {
   test("one simple argument", () => {
     let callCount = 0;
 
-    const fn = memoize((arg) => {
+    const fn = memoize(arg => {
       callCount++;
       return arg + 1;
     });
@@ -52,7 +52,7 @@ describe("memoize()", () => {
   test("arrays", () => {
     let callCount = 0;
 
-    const fn = memoize((ary) => {
+    const fn = memoize(ary => {
       callCount++;
       return [...ary, 42];
     });
@@ -68,7 +68,7 @@ describe("memoize()", () => {
   test("sets", () => {
     let callCount = 0;
 
-    const fn = memoize((s) => {
+    const fn = memoize(s => {
       callCount++;
       return new Set([...s, 42]);
     });
@@ -84,7 +84,7 @@ describe("memoize()", () => {
   test("maps", () => {
     let callCount = 0;
 
-    const fn = memoize((s) => {
+    const fn = memoize(s => {
       callCount++;
       return new Map([...s.entries(), ["the answer", 42]]);
     });
@@ -95,7 +95,7 @@ describe("memoize()", () => {
     expect(out).toEqual(
       new Map([
         ["the question", 2],
-        ["the answer", 42],
+        ["the answer", 42]
       ])
     );
     expect(fn(new Map([["the question", 2]]))).toBe(out);
@@ -107,20 +107,20 @@ describe("memoize()", () => {
 
     const input1 = new Map([
       ["evens", [true, new Set([2, 4, 6])]],
-      ["odds", [false, new Set([1, 3])]],
+      ["odds", [false, new Set([1, 3])]]
     ]);
 
     const input2 = new Map([
       ["odds", [false, new Set([3, 1])]],
-      ["evens", [true, new Set([6, 2, 4])]],
+      ["evens", [true, new Set([6, 2, 4])]]
     ]);
 
     const expected = new Map([
       ["odds", new Set([3])],
-      ["evens", new Set([4, 6])],
+      ["evens", new Set([4, 6])]
     ]);
 
-    const fn = memoize((m) => {
+    const fn = memoize(m => {
       callCount++;
       const out = new Map();
       for (const [k, [_, v]] of m) {

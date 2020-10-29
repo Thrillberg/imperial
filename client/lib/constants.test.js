@@ -18,13 +18,13 @@ describe("Bond", () => {
       { number: 6, cost: 16 },
       { number: 7, cost: 20 },
       { number: 8, cost: 25 },
-      { number: 9, cost: 30 },
+      { number: 9, cost: 30 }
     ].forEach(({ number, cost }) => {
       test(`#${number} bond`, () => {
         expect(Bond(Nation.FR, number)).toStrictEqual({
           nation: Nation.FR,
           number,
-          cost,
+          cost
         });
       });
     });

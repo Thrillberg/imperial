@@ -4,13 +4,13 @@ describe("GameBoard", () => {
   test("empty", () => {
     const gameBoard = new GameBoard({
       nodes: new Map(),
-      edges: [],
+      edges: []
     });
     expect(() =>
       gameBoard.neighborsFor({
         origin: "oops",
         nation: "big oops",
-        friendlyFleets: new Set(),
+        friendlyFleets: new Set()
       })
     ).toThrowError("not found");
   });
@@ -19,9 +19,9 @@ describe("GameBoard", () => {
     const gameBoard = new GameBoard({
       nodes: [
         { name: "p1", nation: "n1", isOcean: false },
-        { name: "p2", nation: "n1", isOcean: false },
+        { name: "p2", nation: "n1", isOcean: false }
       ],
-      edges: [["p1", "p2"]],
+      edges: [["p1", "p2"]]
     });
 
     expect(
@@ -29,7 +29,7 @@ describe("GameBoard", () => {
         origin: "p1",
         nation: "n1",
         isFleet: false,
-        friendlyFleets: new Set(),
+        friendlyFleets: new Set()
       })
     ).toEqual(new Set(["p2"]));
     expect(
@@ -37,7 +37,7 @@ describe("GameBoard", () => {
         origin: "p2",
         nation: "n1",
         isFleet: false,
-        friendlyFleets: new Set(),
+        friendlyFleets: new Set()
       })
     ).toEqual(new Set(["p1"]));
   });
@@ -49,14 +49,14 @@ describe("GameBoard", () => {
         { name: "2", nation: "a", isOcean: false },
         { name: "3", nation: "a", isOcean: false },
         { name: "4", nation: "b", isOcean: false },
-        { name: "5", nation: "b", isOcean: false },
+        { name: "5", nation: "b", isOcean: false }
       ],
       edges: [
         ["1", "2"],
         ["2", "3"],
         ["3", "4"],
-        ["4", "5"],
-      ],
+        ["4", "5"]
+      ]
     });
 
     test("home unit can use railroads", () => {
@@ -65,7 +65,7 @@ describe("GameBoard", () => {
           origin: "1",
           nation: "a",
           isFleet: false,
-          friendlyFleets: new Set(),
+          friendlyFleets: new Set()
         })
       ).toEqual(new Set(["2", "3", "4"]));
     });
@@ -76,7 +76,7 @@ describe("GameBoard", () => {
           origin: "1",
           nation: "b",
           isFleet: false,
-          friendlyFleets: new Set(),
+          friendlyFleets: new Set()
         })
       ).toEqual(new Set(["2"]));
     });
@@ -87,7 +87,7 @@ describe("GameBoard", () => {
           origin: "3",
           nation: "a",
           isFleet: false,
-          friendlyFleets: new Set(),
+          friendlyFleets: new Set()
         })
       ).toEqual(new Set(["1", "2", "4"]));
     });
@@ -98,7 +98,7 @@ describe("GameBoard", () => {
           origin: "3",
           nation: "b",
           isFleet: false,
-          friendlyFleets: new Set(),
+          friendlyFleets: new Set()
         })
       ).toEqual(new Set(["2", "4"]));
     });
@@ -109,12 +109,12 @@ describe("GameBoard", () => {
       nodes: [
         { name: "1", nation: "a", isOcean: false },
         { name: "2", nation: null, isOcean: true },
-        { name: "3", nation: "a", isOcean: false },
+        { name: "3", nation: "a", isOcean: false }
       ],
       edges: [
         ["1", "2"],
-        ["1", "3"],
-      ],
+        ["1", "3"]
+      ]
     });
 
     test("fleet can move from land to sea", () => {
@@ -123,7 +123,7 @@ describe("GameBoard", () => {
           origin: "1",
           nation: "a",
           isFleet: true,
-          friendlyFleets: new Set(),
+          friendlyFleets: new Set()
         })
       ).toEqual(new Set(["2"]));
     });
@@ -134,7 +134,7 @@ describe("GameBoard", () => {
           origin: "3",
           nation: "a",
           isFleet: true,
-          friendlyFleets: new Set(),
+          friendlyFleets: new Set()
         })
       ).toEqual(new Set());
     });
@@ -145,7 +145,7 @@ describe("GameBoard", () => {
           origin: "1",
           nation: "a",
           isFleet: false,
-          friendlyFleets: new Set(),
+          friendlyFleets: new Set()
         })
       ).toEqual(new Set(["3"]));
     });
@@ -156,7 +156,7 @@ describe("GameBoard", () => {
           origin: "2",
           nation: "a",
           isFleet: true,
-          friendlyFleets: new Set(),
+          friendlyFleets: new Set()
         })
       ).toEqual(new Set());
     });
@@ -169,20 +169,20 @@ describe("GameBoard", () => {
         {
           name: "2",
           nation: null,
-          isOcean: true,
+          isOcean: true
         },
         {
           name: "3",
           nation: null,
-          isOcean: true,
+          isOcean: true
         },
-        { name: "4", nation: "b", isOcean: false },
+        { name: "4", nation: "b", isOcean: false }
       ],
       edges: [
         ["1", "2"],
         ["2", "3"],
-        ["3", "4"],
-      ],
+        ["3", "4"]
+      ]
     });
 
     test("army can move across multiple ocean provinces if friendly fleets are there", () => {
@@ -191,7 +191,7 @@ describe("GameBoard", () => {
           origin: "1",
           nation: "a",
           isFleet: false,
-          friendlyFleets: new Set(["2", "3"]),
+          friendlyFleets: new Set(["2", "3"])
         })
       ).toEqual(new Set(["4"]));
     });
@@ -203,7 +203,7 @@ describe("GameBoard", () => {
             origin: "1",
             nation: "b",
             isFleet: false,
-            friendlyFleets: new Set(),
+            friendlyFleets: new Set()
           },
           new Set()
         )
