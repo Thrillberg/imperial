@@ -143,6 +143,24 @@ func (c *Conn) write(v interface{}) error {
 	return c.conn.WriteJSON(v)
 }
 
+// UpdateState sends userId, registered users, and open games to the client.
+func (c *Conn) UpdateState(id UserId) error {
+	if err := c.SetId(id); err != nil {
+		log.Println(id, "SetId")
+		return nil
+	}
+	if err := c.UserRegistered(users); err != nil {
+		log.Println(users, "UserRegistered")
+		return nil
+	}
+	if err := c.GameOpened(games); err != nil {
+		log.Println(games, "GameOpened")
+		return nil
+	}
+
+	return nil
+}
+
 // SetId sends a KindSetId message to the client.
 func (c *Conn) SetId(id UserId) error {
 	return c.write(&Envelope{
@@ -298,8 +316,8 @@ func handleWebsocket(w http.ResponseWriter, r *http.Request) {
 		log.Println("NewPlayerId", err)
 		return
 	}
-	if err := c.SetId(id); err != nil {
-		log.Println(id, "SetId")
+	if err := c.UpdateState(id); err != nil {
+		log.Println(id, "UpdateState")
 		return
 	}
 
@@ -323,14 +341,9 @@ func onUpdateId(c *Conn, data Data) error {
 		users[newId] = val
 		delete(users, oldId)
 	}
-
 	for _, conn := range connections {
 		if err := conn.UserRegistered(users); err != nil {
 			log.Println(users, "UserRegistered")
-			return nil
-		}
-		if err := conn.GameOpened(games); err != nil {
-			log.Println(games, "GameOpened")
 			return nil
 		}
 	}
