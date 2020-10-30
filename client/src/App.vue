@@ -1,3 +1,5 @@
 <template>
-  <router-view class="font-serif" />
+  <div id="app">
+    <router-view class="font-serif" />
+  </div>
 </template>
