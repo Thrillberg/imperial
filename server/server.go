@@ -105,6 +105,11 @@ const (
 	KindOpenGame = Kind("openGame")
 	// KindGameOpened is sent to the clients when a user opens a new game.
 	KindGameOpened = Kind("gameOpened")
+	// KindJoinGame is received from clients when they join a game.
+	KindJoinGame = Kind("joinGame")
+	// KindGameStarted is sent to the clients when a second user joins
+	// a game and the game starts.
+	KindGameStarted = Kind("gameStarted")
 	// KindUpdatePlayers is sent to clients when a player's
 	// name is updated.
 	KindUpdatePlayers = Kind("updatePlayers")
@@ -179,6 +184,26 @@ func (c *Conn) GameOpened(games map[GameId]*Game) error {
 			"games": string(gamesList),
 		},
 	})
+}
+
+// GameStarted sends a KindGameStarted message to the client.
+func (c *Conn) GameStarted(gameId GameId) error {
+	players := games[gameId].Players
+	var playersSlice = []map[string]string{}
+	for key, val := range players {
+		playersSlice = append(playersSlice, map[string]string{"id": string(key), "name": string(val)})
+	}
+	playersList, _ := json.Marshal(playersSlice)
+
+	return c.write(&Envelope{
+		Kind: KindGameStarted,
+		Data: map[string]string{
+			"gameId":  string(gameId),
+			"players": string(playersList),
+		},
+	})
+
+	return nil
 }
 
 // UpdatePlayers sends a KindUpdatePlayers message to the client.
@@ -265,6 +290,7 @@ func handleWebsocket(w http.ResponseWriter, r *http.Request) {
 	c.Register(KindUpdateId, onUpdateId)
 	c.Register(KindRegisterUser, onRegisterUser)
 	c.Register(KindOpenGame, onOpenGame)
+	c.Register(KindJoinGame, onJoinGame)
 	c.Register(KindTick, onTick)
 
 	id, err := NewUserId()
@@ -348,6 +374,26 @@ func onOpenGame(c *Conn, data Data) error {
 
 	for _, conn := range connections {
 		if err := conn.GameOpened(games); err != nil {
+			return nil
+		}
+	}
+
+	return nil
+}
+
+func onJoinGame(c *Conn, data Data) error {
+	if err := data.Validate("userName", "userId", "gameId"); err != nil {
+		return err
+	}
+	userName := UserName(data["userName"])
+	userId := UserId(data["userId"])
+	gameId := GameId(data["gameId"])
+	log.Printf("%s: %s(%s) is joining a game(%s)\n", KindJoinGame, userName, userId, gameId)
+
+	games[gameId].Players[userId] = userName
+
+	for _, conn := range connections {
+		if err := conn.GameStarted(gameId); err != nil {
 			return nil
 		}
 	}
