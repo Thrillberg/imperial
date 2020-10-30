@@ -326,11 +326,9 @@ func onUpdateId(c *Conn, data Data) error {
 			log.Println(users, "UserRegistered")
 			return nil
 		}
-		if len(users) == 2 {
-			if err := conn.UpdateGameLog(gameLog); err != nil {
-				log.Println(gameLog, "UpdateGameLog")
-				return nil
-			}
+		if err := conn.GameOpened(games); err != nil {
+			log.Println(games, "GameOpened")
+			return nil
 		}
 	}
 
