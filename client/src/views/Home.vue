@@ -15,6 +15,13 @@
         <router-link :to="{ path: '/game/' + game.id }">
           Hosted by {{ game.host }}
         </router-link>
+        <router-link
+          :to="{ path: '/game/' + game.id }"
+          v-if="notMyGame(game.id)"
+          v-on:click.native="joinGame(game.id)"
+        >
+          Join Game
+        </router-link>
       </li>
     </ul>
     <div v-if="alreadyRegistered()">
@@ -137,6 +144,22 @@ export default {
         JSON.stringify({
           kind: "openGame",
           data: { host: this.name, id: localStorage.imperialId }
+        })
+      );
+    },
+    notMyGame: function(gameId) {
+      return this.games.find(game => game.id === gameId).host !== this.name;
+    },
+    joinGame: function(gameId) {
+      console.log("sending join game");
+      this.webSocket.send(
+        JSON.stringify({
+          kind: "joinGame",
+          data: {
+            userName: this.name,
+            userId: localStorage.imperialId,
+            gameId
+          }
         })
       );
     },

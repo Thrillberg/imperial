@@ -193,6 +193,11 @@ export default {
         case "setId":
           this.setWebsocketId(envelope.data.id);
           break;
+        case "gameStarted":
+          if (this.$route.params.id === envelope.data.gameId) {
+            this.players = new Set(JSON.parse(envelope.data.players));
+          }
+          break;
         case "updatePlayers":
           this.players = new Set(JSON.parse(envelope.data.players));
           for (const player of this.players) {
