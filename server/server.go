@@ -1,16 +1,15 @@
 package main
 
 import (
-	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
 	"log"
-	"math/rand"
 	"net/http"
 	"os"
 	"strings"
 
+	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 )
 
@@ -53,36 +52,14 @@ type Game struct {
 	Host    UserName            `json:"host"`
 }
 
-// NewUserId generates a pseudorandom, base64-encoded UserId.
+// NewUserId generates a string from a UUID.
 func NewUserId() (UserId, error) {
-	// go doc math/rand.Read
-	//
-	// > It always returns len(p) and a nil error.
-	buf := make([]byte, 8)
-	rand.Read(buf)
-
-	builder := strings.Builder{}
-	encoder := base64.NewEncoder(base64.StdEncoding, &builder)
-	if _, err := encoder.Write(buf); err != nil {
-		return UserId(""), err
-	}
-	return UserId(builder.String()), nil
+	return UserId(uuid.New().String()), nil
 }
 
-// NewGameId generates a pseudorandom, base64-encoded GameId.
+// NewGameId generates a string from a UUID.
 func NewGameId() (GameId, error) {
-	// go doc math/rand.Read
-	//
-	// > It always returns len(p) and a nil error.
-	buf := make([]byte, 8)
-	rand.Read(buf)
-
-	builder := strings.Builder{}
-	encoder := base64.NewEncoder(base64.StdEncoding, &builder)
-	if _, err := encoder.Write(buf); err != nil {
-		return GameId(""), err
-	}
-	return GameId(builder.String()), nil
+	return GameId(uuid.New().String()), nil
 }
 
 type Action interface{}
