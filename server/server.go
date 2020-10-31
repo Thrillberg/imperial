@@ -15,7 +15,6 @@ import (
 
 var connections = map[UserId]*Conn{}
 var users = map[UserId]UserName{}
-var gameLog = []Action{}
 var games = map[GameId]*Game{}
 var upgrader = websocket.Upgrader{CheckOrigin: func(*http.Request) bool { return true }}
 
@@ -206,18 +205,14 @@ func (c *Conn) GameOpened(games map[GameId]*Game) error {
 
 // GameStarted sends a KindGameStarted message to the client.
 func (c *Conn) GameStarted(gameId GameId) error {
-	players := games[gameId].Players
-	var playersSlice = []map[string]string{}
-	for key, val := range players {
-		playersSlice = append(playersSlice, map[string]string{"id": string(key), "name": string(val)})
-	}
-	playersList, _ := json.Marshal(playersSlice)
+	game := games[gameId]
+	parsedGame, _ := json.Marshal(game)
 
 	return c.write(&Envelope{
 		Kind: KindGameStarted,
 		Data: map[string]string{
-			"gameId":  string(gameId),
-			"players": string(playersList),
+			"game": string(parsedGame),
+			"id":   string(gameId),
 		},
 	})
 
@@ -257,13 +252,14 @@ func (c *Conn) StartGame(players map[UserId]UserName) error {
 }
 
 // UpdateGameLog sends a KindUpdateGameLog message to the client.
-func (c *Conn) UpdateGameLog(gameLog []Action) error {
-	gameLogList, _ := json.Marshal(gameLog)
+func (c *Conn) UpdateGameLog(gameId GameId, log []Action) error {
+	logList, _ := json.Marshal(log)
 
 	return c.write(&Envelope{
 		Kind: KindUpdateGameLog,
 		Data: map[string]string{
-			"gameLog": string(gameLogList),
+			"gameId": string(gameId),
+			"log":    string(logList),
 		},
 	})
 }
@@ -311,6 +307,9 @@ func handleWebsocket(w http.ResponseWriter, r *http.Request) {
 	c.Register(KindJoinGame, onJoinGame)
 	c.Register(KindTick, onTick)
 
+	// interrogate r's headers for cookies (r.headers, look for key with a name
+	// like userId)
+	// If no userId, then w.headers should set the cookie with a userId
 	id, err := NewUserId()
 	if err != nil {
 		log.Println("NewPlayerId", err)
@@ -416,18 +415,24 @@ func onJoinGame(c *Conn, data Data) error {
 
 func onTick(c *Conn, data Data) error {
 	var action Action
-	err := json.Unmarshal([]byte(data["action"]), &action)
-	if err != nil {
-		fmt.Println("action error:", err)
+	actionErr := json.Unmarshal([]byte(data["action"]), &action)
+	if actionErr != nil {
+		fmt.Println("action error:", actionErr)
 	}
 
-	gameLog = append(gameLog, action)
+	var gameId GameId
+	gameIdErr := json.Unmarshal([]byte(data["gameId"]), &gameId)
+	if gameIdErr != nil {
+		fmt.Println("gameId error:", gameIdErr)
+	}
 
-	log.Printf("%s: %s", KindTick, gameLog)
+	games[gameId].Log = append(games[gameId].Log, action)
+
+	log.Printf("%s: %s", KindTick, games[gameId].Log)
 
 	for _, conn := range connections {
-		if err := conn.UpdateGameLog(gameLog); err != nil {
-			log.Println(gameLog, "UpdateGameLog")
+		if err := conn.UpdateGameLog(gameId, games[gameId].Log); err != nil {
+			log.Println(games[gameId].Log, "UpdateGameLog")
 			return nil
 		}
 	}
