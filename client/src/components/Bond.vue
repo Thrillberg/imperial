@@ -7,7 +7,7 @@ export default {
   name: "Bond",
   props: {
     cost: Number,
-    nation: String
-  }
+    nation: String,
+  },
 };
 </script>

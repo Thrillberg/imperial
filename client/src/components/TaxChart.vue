@@ -25,10 +25,10 @@ import TaxChartSlot from "./TaxChartSlot.vue";
 export default {
   name: "TaxChart",
   components: {
-    TaxChartSlot
+    TaxChartSlot,
   },
   props: {
-    taxes: Array
-  }
+    taxes: Array,
+  },
 };
 </script>

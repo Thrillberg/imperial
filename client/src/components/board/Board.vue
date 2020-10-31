@@ -104,7 +104,7 @@ export default {
   props: {
     game: Object,
     select_province: Function,
-    valid_provinces: Array
+    valid_provinces: Array,
   },
   methods: {
     armies(province) {
@@ -134,7 +134,7 @@ export default {
       return fleets;
     },
     factory(province) {
-      const factory = this.factories().find(factory => {
+      const factory = this.factories().find((factory) => {
         return factory.province === province;
       });
       if (factory) {
@@ -143,7 +143,7 @@ export default {
     },
     dot(province) {
       let nation;
-      this.dots().forEach(dot => {
+      this.dots().forEach((dot) => {
         if (province === dot.province) {
           nation = dot.flag.value;
         }
@@ -190,7 +190,7 @@ export default {
       }
 
       return false;
-    }
+    },
   },
   data() {
     return {
@@ -203,7 +203,7 @@ export default {
         ioniansea,
         northatlantic,
         northsea,
-        westernmediterraneansea
+        westernmediterraneansea,
       },
       land_provinces: {
         warsaw,
@@ -253,12 +253,12 @@ export default {
         turkey,
         vienna,
         westbalkan,
-        bordeaux
-      }
+        bordeaux,
+      },
     };
   },
   components: {
-    Province
-  }
+    Province,
+  },
 };
 </script>

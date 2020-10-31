@@ -69,11 +69,11 @@ export default {
       playerCounts: [2, 3, 4, 5, 6],
       players: new Set(),
       users: new Set(),
-      webSocket: new WebSocket(process.env.VUE_APP_IMPERIAL_WEBSOCKETS_URL)
+      webSocket: new WebSocket(process.env.VUE_APP_IMPERIAL_WEBSOCKETS_URL),
     };
   },
   created() {
-    this.webSocket.onmessage = message => {
+    this.webSocket.onmessage = (message) => {
       const envelope = JSON.parse(message.data);
       switch (envelope.kind) {
         case "setId":
@@ -90,13 +90,13 @@ export default {
         }
         case "gameOpened": {
           const games = JSON.parse(envelope.data.games);
-          const finalGames = games.map(game => {
+          const finalGames = games.map((game) => {
             const parsedGame = JSON.parse(game.game);
             return {
               host: parsedGame.host,
               log: parsedGame.log,
               players: parsedGame.players,
-              id: game.id
+              id: game.id,
             };
           });
           this.games = finalGames;
@@ -108,7 +108,9 @@ export default {
           break;
         }
         case "updateGameLog": {
-          let game = this.games.find(game => game.id === envelope.data.gameId);
+          let game = this.games.find(
+            (game) => game.id === envelope.data.gameId
+          );
           game.log = JSON.parse(envelope.data.log);
           break;
         }
@@ -116,60 +118,60 @@ export default {
     };
   },
   methods: {
-    startGame: function() {},
-    setWebsocketId: function(newId) {
+    startGame: function () {},
+    setWebsocketId: function (newId) {
       const oldId = localStorage.getItem("imperialId");
       if (oldId) {
         this.webSocket.send(
           JSON.stringify({
             kind: "updateId",
-            data: { oldId, newId }
+            data: { oldId, newId },
           })
         );
       }
       localStorage.setItem("imperialId", newId);
     },
-    registerUser: function() {
+    registerUser: function () {
       this.webSocket.send(
         JSON.stringify({
           kind: "registerUser",
-          data: { name: this.name, id: localStorage.imperialId }
+          data: { name: this.name, id: localStorage.imperialId },
         })
       );
     },
-    alreadyRegistered: function() {
-      return [...this.users].map(x => x.name).includes(this.name);
+    alreadyRegistered: function () {
+      return [...this.users].map((x) => x.name).includes(this.name);
     },
-    openGame: function() {
+    openGame: function () {
       this.webSocket.send(
         JSON.stringify({
           kind: "openGame",
-          data: { host: this.name, id: localStorage.imperialId }
+          data: { host: this.name, id: localStorage.imperialId },
         })
       );
     },
-    gameStarted: function(gameId) {
-      if (this.games.find(game => game.id === gameId).log.length > 0) {
+    gameStarted: function (gameId) {
+      if (this.games.find((game) => game.id === gameId).log.length > 0) {
         return true;
       } else {
         return false;
       }
     },
-    notMyGame: function(gameId) {
-      return this.games.find(game => game.id === gameId).host !== this.name;
+    notMyGame: function (gameId) {
+      return this.games.find((game) => game.id === gameId).host !== this.name;
     },
-    joinGame: function(gameId) {
+    joinGame: function (gameId) {
       this.webSocket.send(
         JSON.stringify({
           kind: "joinGame",
           data: {
             userName: this.name,
             userId: localStorage.imperialId,
-            gameId
-          }
+            gameId,
+          },
         })
       );
-      let host = this.games.find(game => game.id === gameId).host;
+      let host = this.games.find((game) => game.id === gameId).host;
       let players = this.assignNations([host, this.name]);
       const action = Action.initialize({ players });
       this.game = Imperial.fromLog([action]);
@@ -178,30 +180,30 @@ export default {
           kind: "tick",
           data: {
             gameId: JSON.stringify(gameId),
-            action: JSON.stringify(action)
-          }
+            action: JSON.stringify(action),
+          },
         })
       );
     },
-    getPlayers: function(playerCount) {
+    getPlayers: function (playerCount) {
       switch (playerCount) {
         case 2:
           return [
             { id: "Henry Davison", nation: Nation.AH },
-            { id: "Georg Siemens", nation: Nation.IT }
+            { id: "Georg Siemens", nation: Nation.IT },
           ];
         case 3:
           return [
             { id: "Henry Davison", nation: Nation.AH },
             { id: "Georg Siemens", nation: Nation.IT },
-            { id: "John Baring", nation: Nation.FR }
+            { id: "John Baring", nation: Nation.FR },
           ];
         case 4:
           return [
             { id: "Daniel", nation: Nation.RU },
             { id: "Claudia", nation: Nation.FR },
             { id: "Bert", nation: Nation.GB },
-            { id: "Anton", nation: Nation.IT }
+            { id: "Anton", nation: Nation.IT },
           ];
         case 5:
           return [
@@ -209,7 +211,7 @@ export default {
             { id: "Georg Siemens", nation: Nation.IT },
             { id: "John Baring", nation: Nation.FR },
             { id: "Henri Germain", nation: Nation.GE },
-            { id: "Johann Heinrich Schröder", nation: Nation.RU }
+            { id: "Johann Heinrich Schröder", nation: Nation.RU },
           ];
         case 6:
           return [
@@ -218,18 +220,18 @@ export default {
             { id: "John Baring", nation: Nation.FR },
             { id: "Henri Germain", nation: Nation.GE },
             { id: "Johann Heinrich Schröder", nation: Nation.RU },
-            { id: "Gerson von Bleichröder", nation: Nation.GB }
+            { id: "Gerson von Bleichröder", nation: Nation.GB },
           ];
       }
     },
     // TODO: Don't hardcode the nation assignment, figure out how to accept 2-6 players
-    assignNations: function(players) {
+    assignNations: function (players) {
       return [
         { id: players[0], nation: Nation.AH },
-        { id: players[1], nation: Nation.IT }
+        { id: players[1], nation: Nation.IT },
       ];
-    }
-  }
+    },
+  },
 };
 </script>
 
