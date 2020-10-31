@@ -90,6 +90,7 @@ export default {
   data: () => {
     const unstartedGame = {
       availableActions: new Set(),
+      name: "",
       nations: new Map([
         [
           Nation.AH,
@@ -166,7 +167,6 @@ export default {
       controllingPlayerName: "",
       soloMode: false,
       game: unstartedGame,
-      games: new Set(),
       gameStarted: false,
       importStatus: {
         active: false,
@@ -182,7 +182,6 @@ export default {
       name: "",
       players: new Set(),
       purchasingBond: false,
-      users: new Set(),
       webSocket: new WebSocket(process.env.VUE_APP_IMPERIAL_WEBSOCKETS_URL)
     };
   },
@@ -192,6 +191,14 @@ export default {
       switch (envelope.kind) {
         case "setId":
           this.setWebsocketId(envelope.data.id);
+          break;
+        case "userRegistered":
+          this.users = new Set(JSON.parse(envelope.data.users));
+          for (const user of this.users) {
+            if (localStorage.imperialId === user.id) {
+              this.name = user.name;
+            }
+          }
           break;
         case "gameOpened": {
           const game = JSON.parse(
@@ -203,26 +210,9 @@ export default {
             return { id: key, name: game.players[key] };
           });
           this.players = new Set(players);
-          break;
-        }
-        case "gameStarted":
-          if (this.$route.params.id === envelope.data.gameId) {
-            this.players = new Set(JSON.parse(envelope.data.players));
-          }
-          break;
-        case "updatePlayers":
-          this.players = new Set(JSON.parse(envelope.data.players));
-          for (const player of this.players) {
-            if (localStorage.imperialId === player.id) {
-              this.name = player.name;
-            }
-          }
-          break;
-        case "updateGameLog": {
-          const rawGameLog = JSON.parse(envelope.data.gameLog);
           // The following map only exists because of our custom Nation type, which
           // has weirdness when we attempt nation.when() in the setup file.
-          const gameLog = rawGameLog.map(action => {
+          const gameLog = game.log.map(action => {
             if (action.type === "initialize") {
               action.payload.players = action.payload.players.map(player => {
                 return {
@@ -237,7 +227,15 @@ export default {
           });
           this.game = Imperial.fromLog(gameLog);
           this.gameStarted = true;
+          this.controllingPlayerName = [...this.players][0].name;
+          break;
         }
+        case "updateGameLog":
+          if (envelope.data.gameId === this.$route.params.id) {
+            this.game = Imperial.fromLog(JSON.parse(envelope.data.log));
+            this.gameStarted = true;
+          }
+          break;
       }
     };
   },
@@ -323,7 +321,10 @@ export default {
         this.webSocket.send(
           JSON.stringify({
             kind: "tick",
-            data: { action: JSON.stringify(action) }
+            data: {
+              gameId: JSON.stringify(this.$router.id),
+              action: JSON.stringify(action)
+            }
           })
         );
       }

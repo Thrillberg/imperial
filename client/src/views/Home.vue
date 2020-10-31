@@ -15,6 +15,7 @@
         <router-link :to="{ path: '/game/' + game.id }">
           Hosted by {{ game.host }}
         </router-link>
+        <span v-if="gameStarted(game.id)">Game Started!</span>
         <router-link
           :to="{ path: '/game/' + game.id }"
           v-if="notMyGame(game.id)"
@@ -62,6 +63,7 @@ export default {
   data: () => {
     return {
       soloMode: false,
+      activeGames: new Set(),
       games: new Set(),
       name: "",
       playerCounts: [2, 3, 4, 5, 6],
@@ -100,22 +102,21 @@ export default {
           this.games = finalGames;
           break;
         }
-        case "updatePlayers":
-          this.players = new Set(JSON.parse(envelope.data.players));
-          for (const player of this.players) {
-            if (localStorage.imperialId === player.id) {
-              this.name = player.name;
-            }
-          }
+        case "gameStarted": {
+          const game = JSON.parse(envelope.data.game);
+          this.activeGames.add(game);
           break;
-        case "startGame":
-          this.players = new Set(JSON.parse(envelope.data.players));
-          this.startGame();
+        }
+        case "updateGameLog": {
+          let game = this.games.find(game => game.id === envelope.data.gameId);
+          game.log = JSON.parse(envelope.data.log);
           break;
+        }
       }
     };
   },
   methods: {
+    startGame: function() {},
     setWebsocketId: function(newId) {
       const oldId = localStorage.getItem("imperialId");
       if (oldId) {
@@ -147,11 +148,17 @@ export default {
         })
       );
     },
+    gameStarted: function(gameId) {
+      if (this.games.find(game => game.id === gameId).log.length > 0) {
+        return true;
+      } else {
+        return false;
+      }
+    },
     notMyGame: function(gameId) {
       return this.games.find(game => game.id === gameId).host !== this.name;
     },
     joinGame: function(gameId) {
-      console.log("sending join game");
       this.webSocket.send(
         JSON.stringify({
           kind: "joinGame",
@@ -162,27 +169,19 @@ export default {
           }
         })
       );
-    },
-    startGame: function(playerCount) {
-      let players;
-      if (playerCount) {
-        players = this.getPlayers(playerCount);
-        this.soloMode = true;
-      } else {
-        players = this.assignNations([...this.players]);
-      }
+      let host = this.games.find(game => game.id === gameId).host;
+      let players = this.assignNations([host, this.name]);
       const action = Action.initialize({ players });
       this.game = Imperial.fromLog([action]);
-      this.gameStarted = true;
-      this.controllingPlayerName = this.game.currentPlayerName;
-      if (this.leader === true) {
-        this.webSocket.send(
-          JSON.stringify({
-            kind: "tick",
-            data: { action: JSON.stringify(action) }
-          })
-        );
-      }
+      this.webSocket.send(
+        JSON.stringify({
+          kind: "tick",
+          data: {
+            gameId: JSON.stringify(gameId),
+            action: JSON.stringify(action)
+          }
+        })
+      );
     },
     getPlayers: function(playerCount) {
       switch (playerCount) {
@@ -226,8 +225,8 @@ export default {
     // TODO: Don't hardcode the nation assignment, figure out how to accept 2-6 players
     assignNations: function(players) {
       return [
-        { id: players[0].name, nation: Nation.AH },
-        { id: players[1].name, nation: Nation.IT }
+        { id: players[0], nation: Nation.AH },
+        { id: players[1], nation: Nation.IT }
       ];
     }
   }
