@@ -48,15 +48,15 @@ import Flag from "./flags/Flag.vue";
 export default {
   name: "RondelSlot",
   components: {
-    Flag
+    Flag,
   },
   props: {
     index: Number,
     is_valid: Boolean,
     rondel_slot: Object,
-    nations: Array
+    nations: Array,
   },
-  data: function() {
+  data: function () {
     const slotCount = 8;
     return {
       // The rotation of the slot relative to the overall rondel.
@@ -77,18 +77,18 @@ export default {
         Math.cos((2 * Math.PI) / slotCount),
         Math.sin((2 * Math.PI) / slotCount),
         // Finish by closing the path.
-        "Z"
-      ].join(" ")
+        "Z",
+      ].join(" "),
     };
   },
   methods: {
-    hoverable: is_valid => {
+    hoverable: (is_valid) => {
       if (is_valid) {
         return "hoverable";
       } else {
         return "";
       }
-    }
-  }
+    },
+  },
 };
 </script>

@@ -26,12 +26,12 @@ import RondelSlot from "./RondelSlot.vue";
 export default {
   name: "Rondel",
   components: {
-    RondelSlot
+    RondelSlot,
   },
   props: {
     soloMode: Boolean,
     game: Object,
-    name: String
+    name: String,
   },
   methods: {
     isValid(slot) {
@@ -53,7 +53,7 @@ export default {
       }
       return nations;
     },
-    slotClicked: function(slot) {
+    slotClicked: function (slot) {
       if (this.game.currentPlayerName === this.name || this.soloMode) {
         for (const action of this.game.availableActions) {
           if (action.payload.slot === slot) {
@@ -70,7 +70,7 @@ export default {
         }
       }
       return slots;
-    }
+    },
   },
   data() {
     return {
@@ -82,9 +82,9 @@ export default {
         { type: "production2", label: "Production", color: "#8C8798" },
         { type: "maneuver2", label: "Maneuver", color: "#7EA850" },
         { type: "taxation", label: "Taxation", color: "#FFD281" },
-        { type: "factory", label: "Factory", color: "#8DBCFB" }
-      ]
+        { type: "factory", label: "Factory", color: "#8DBCFB" },
+      ],
     };
-  }
+  },
 };
 </script>

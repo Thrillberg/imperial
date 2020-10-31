@@ -21,7 +21,7 @@ export default {
     fleet: Boolean,
     width: String,
     height: String,
-    transform: String
-  }
+    transform: String,
+  },
 };
 </script>

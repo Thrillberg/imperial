@@ -28,13 +28,13 @@ import Bond from "./Bond.vue";
 export default {
   name: "Player",
   components: {
-    Bond
+    Bond,
   },
   props: {
     current_player: String,
     player: Object,
     game: Object,
-    name: String
-  }
+    name: String,
+  },
 };
 </script>

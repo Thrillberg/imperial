@@ -7,7 +7,7 @@ export default {
   name: "Bond",
   props: {
     count: Number,
-    start_game: Function
-  }
+    start_game: Function,
+  },
 };
 </script>

@@ -85,7 +85,7 @@ export default {
     Player,
     PowerPointsChart,
     Rondel,
-    TaxChart
+    TaxChart,
   },
   data: () => {
     const unstartedGame = {
@@ -100,8 +100,8 @@ export default {
             rondelPosition: null,
             flagCount: 0,
             powerPoints: 0,
-            taxChartPosition: 5
-          }
+            taxChartPosition: 5,
+          },
         ],
         [
           Nation.IT,
@@ -111,8 +111,8 @@ export default {
             rondelPosition: null,
             flagCount: 0,
             powerPoints: 0,
-            taxChartPosition: 5
-          }
+            taxChartPosition: 5,
+          },
         ],
         [
           Nation.FR,
@@ -122,8 +122,8 @@ export default {
             rondelPosition: null,
             flagCount: 0,
             powerPoints: 0,
-            taxChartPosition: 5
-          }
+            taxChartPosition: 5,
+          },
         ],
         [
           Nation.GE,
@@ -133,8 +133,8 @@ export default {
             rondelPosition: null,
             flagCount: 0,
             powerPoints: 0,
-            taxChartPosition: 5
-          }
+            taxChartPosition: 5,
+          },
         ],
         [
           Nation.GB,
@@ -144,8 +144,8 @@ export default {
             rondelPosition: null,
             flagCount: 0,
             powerPoints: 0,
-            taxChartPosition: 5
-          }
+            taxChartPosition: 5,
+          },
         ],
         [
           Nation.RU,
@@ -155,12 +155,12 @@ export default {
             rondelPosition: null,
             flagCount: 0,
             powerPoints: 0,
-            taxChartPosition: 5
-          }
-        ]
+            taxChartPosition: 5,
+          },
+        ],
       ]),
       units: new Map(),
-      provinces: new Map()
+      provinces: new Map(),
     };
     return {
       buildingFactory: false,
@@ -171,22 +171,22 @@ export default {
       importStatus: {
         active: false,
         endImport: Action.import({ placements: new Set() }),
-        placements: []
+        placements: [],
       },
       leader: false,
       maneuverStatus: {
         active: false,
         endManeuver: Action.endManeuver(),
-        origin: ""
+        origin: "",
       },
       name: "",
       players: new Set(),
       purchasingBond: false,
-      webSocket: new WebSocket(process.env.VUE_APP_IMPERIAL_WEBSOCKETS_URL)
+      webSocket: new WebSocket(process.env.VUE_APP_IMPERIAL_WEBSOCKETS_URL),
     };
   },
   created() {
-    this.webSocket.onmessage = message => {
+    this.webSocket.onmessage = (message) => {
       const envelope = JSON.parse(message.data);
       switch (envelope.kind) {
         case "setId":
@@ -203,21 +203,21 @@ export default {
         case "gameOpened": {
           const game = JSON.parse(
             JSON.parse(envelope.data.games).find(
-              game => game.id === this.$route.params.id
+              (game) => game.id === this.$route.params.id
             ).game
           );
-          const players = Object.keys(game.players).map(key => {
+          const players = Object.keys(game.players).map((key) => {
             return { id: key, name: game.players[key] };
           });
           this.players = new Set(players);
           // The following map only exists because of our custom Nation type, which
           // has weirdness when we attempt nation.when() in the setup file.
-          const gameLog = game.log.map(action => {
+          const gameLog = game.log.map((action) => {
             if (action.type === "initialize") {
-              action.payload.players = action.payload.players.map(player => {
+              action.payload.players = action.payload.players.map((player) => {
                 return {
                   id: player.id,
-                  nation: Nation[player.nation.value]
+                  nation: Nation[player.nation.value],
                 };
               });
             } else if (action.type === "rondel") {
@@ -240,13 +240,13 @@ export default {
     };
   },
   methods: {
-    setWebsocketId: function(newId) {
+    setWebsocketId: function (newId) {
       const oldId = localStorage.getItem("imperialId");
       if (oldId) {
         this.webSocket.send(
           JSON.stringify({
             kind: "updateId",
-            data: { oldId, newId }
+            data: { oldId, newId },
           })
         );
       }
@@ -264,7 +264,7 @@ export default {
             provinces.add(action.payload.origin);
           }
         } else if (action.type === "import" && this.importStatus.active) {
-          action.payload.placements.forEach(placement => {
+          action.payload.placements.forEach((placement) => {
             provinces.add(placement.province);
           });
         }
@@ -272,7 +272,7 @@ export default {
       return Array.from(provinces);
     },
     taxes() {
-      return [15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5].map(slot => {
+      return [15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5].map((slot) => {
         let nations = [];
         for (const [nation, data] of this.game.nations) {
           if (data.taxChartPosition === slot) {
@@ -283,7 +283,7 @@ export default {
       });
     },
     powerPoints() {
-      return [...Array(26).keys()].map(slot => {
+      return [...Array(26).keys()].map((slot) => {
         let nations = [];
         for (const [nation, data] of this.game.nations) {
           if (data.powerPoints === slot) {
@@ -299,7 +299,7 @@ export default {
       if (this.maneuverStatus.active && this.maneuverStatus.origin) {
         const maneuver = Action.maneuver({
           origin: this.maneuverStatus.origin,
-          destination: province
+          destination: province,
         });
         // Reset maneuverStatus
         this.maneuverStatus.origin = "";
@@ -314,7 +314,7 @@ export default {
         this.importStatus.placements.push(province);
       }
     },
-    tickWithAction: function(action) {
+    tickWithAction: function (action) {
       this.game.tick(action);
       this.controllingPlayerName = this.game.currentPlayerName;
       if (!this.soloMode) {
@@ -323,8 +323,8 @@ export default {
             kind: "tick",
             data: {
               gameId: JSON.stringify(this.$router.id),
-              action: JSON.stringify(action)
-            }
+              action: JSON.stringify(action),
+            },
           })
         );
       }
@@ -359,7 +359,7 @@ export default {
         }
       }
     },
-    actionToText: function(action) {
+    actionToText: function (action) {
       if (action.type === "buildFactory") {
         return `Build factory in ${action.payload.province}`;
       } else if (action.type === "bondPurchase") {
@@ -372,7 +372,7 @@ export default {
         return `Fight`;
       }
     },
-    runImport: function() {
+    runImport: function () {
       // This function looks for a match between the provided provinces from the UI and the validated
       // provinces from the game logic (this.game.availableActions).
       for (const { payload } of this.game.availableActions) {
@@ -397,11 +397,11 @@ export default {
       }
       this.importStatus.placements = [];
     },
-    endManeuver: function(action) {
+    endManeuver: function (action) {
       this.tickWithAction(action);
       this.maneuverStatus.active = false;
       this.maneuverStatus.origin = "";
-    }
-  }
+    },
+  },
 };
 </script>

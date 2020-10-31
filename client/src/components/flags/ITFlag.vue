@@ -32,7 +32,7 @@ export default {
     width: String,
     fleet: Boolean,
     height: String,
-    transform: String
-  }
+    transform: String,
+  },
 };
 </script>
