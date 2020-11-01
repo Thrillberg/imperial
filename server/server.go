@@ -373,6 +373,9 @@ func onJoinGame(c *Conn, data Data) error {
 }
 
 func onTick(c *Conn, data Data) error {
+	if err := data.Validate("gameId", "action"); err != nil {
+		return err
+	}
 	var action Action
 	actionErr := json.Unmarshal([]byte(data["action"]), &action)
 	if actionErr != nil {
