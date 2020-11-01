@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"strings"
 
@@ -293,7 +294,14 @@ func handleHealth(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleWebsocket(w http.ResponseWriter, r *http.Request) {
-	ws, err := upgrader.Upgrade(w, r, nil)
+	var responseHeader http.Header
+	userId := getUserIdFromCookie(r)
+
+	if c := connections[userId]; c == nil {
+		responseHeader = setUserIdToCookie(w)
+	}
+
+	ws, err := upgrader.Upgrade(w, r, responseHeader)
 	if err != nil {
 		w.WriteHeader(500)
 		fmt.Fprintf(w, "error: %s", err)
@@ -307,23 +315,37 @@ func handleWebsocket(w http.ResponseWriter, r *http.Request) {
 	c.Register(KindJoinGame, onJoinGame)
 	c.Register(KindTick, onTick)
 
-	// interrogate r's headers for cookies (r.headers, look for key with a name
-	// like userId)
-	// If no userId, then w.headers should set the cookie with a userId
-	id, err := NewUserId()
-	if err != nil {
-		log.Println("NewPlayerId", err)
-		return
-	}
-	if err := c.UpdateState(id); err != nil {
-		log.Println(id, "UpdateState")
+	if err := c.UpdateState(userId); err != nil {
+		log.Println(userId, "UpdateState")
 		return
 	}
 
-	log.Println(id, "storing connection")
-	connections[id] = c
+	log.Println(userId, "storing connection")
+	connections[userId] = c
 
 	c.Listen()
+}
+
+func getUserIdFromCookie(r *http.Request) UserId {
+	cookie := r.Header.Get("Cookie")
+	parsedCookie, cookieErr := url.ParseQuery(cookie)
+	if cookieErr != nil {
+		log.Println("Cookie", cookieErr)
+	}
+
+	return UserId(parsedCookie.Get("userId"))
+}
+
+func setUserIdToCookie(w http.ResponseWriter) http.Header {
+	newUserId, err := NewUserId()
+	if err != nil {
+		log.Println("NewUserId", err)
+		return http.Header{}
+	}
+	newCookie := http.Cookie{Name: "userId", Value: string(newUserId), SameSite: 2}
+	http.SetCookie(w, &newCookie)
+
+	return w.Header()
 }
 
 func onUpdateId(c *Conn, data Data) error {

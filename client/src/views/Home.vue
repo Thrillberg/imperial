@@ -82,7 +82,7 @@ export default {
         case "userRegistered": {
           this.users = new Set(JSON.parse(envelope.data.users));
           for (const user of this.users) {
-            if (localStorage.imperialId === user.id) {
+            if (this.$cookies.get("userId") === user.id) {
               this.name = user.name;
             }
           }
@@ -120,6 +120,7 @@ export default {
   methods: {
     startGame: function () {},
     setWebsocketId: function (newId) {
+      // TODO: Remove localStorage reference here
       const oldId = localStorage.getItem("imperialId");
       if (oldId) {
         this.webSocket.send(
