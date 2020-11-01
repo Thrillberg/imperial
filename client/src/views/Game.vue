@@ -195,7 +195,7 @@ export default {
         case "userRegistered":
           this.users = new Set(JSON.parse(envelope.data.users));
           for (const user of this.users) {
-            if (localStorage.imperialId === user.id) {
+            if (this.$cookies.get("userId") === user.id) {
               this.name = user.name;
             }
           }
@@ -232,7 +232,25 @@ export default {
         }
         case "updateGameLog":
           if (envelope.data.gameId === this.$route.params.id) {
-            this.game = Imperial.fromLog(JSON.parse(envelope.data.log));
+            const rawLog = JSON.parse(envelope.data.log);
+            // The following map only exists because of our custom Nation type, which
+            // has weirdness when we attempt nation.when() in the setup file.
+            const gameLog = rawLog.map((action) => {
+              if (action.type === "initialize") {
+                action.payload.players = action.payload.players.map(
+                  (player) => {
+                    return {
+                      id: player.id,
+                      nation: Nation[player.nation.value],
+                    };
+                  }
+                );
+              } else if (action.type === "rondel") {
+                action.payload.nation = Nation[action.payload.nation.value];
+              }
+              return action;
+            });
+            this.game = Imperial.fromLog(gameLog);
             this.gameStarted = true;
           }
           break;
@@ -310,7 +328,7 @@ export default {
           JSON.stringify({
             kind: "tick",
             data: {
-              gameId: JSON.stringify(this.$router.id),
+              gameId: JSON.stringify(this.$route.params.id),
               action: JSON.stringify(action),
             },
           })
