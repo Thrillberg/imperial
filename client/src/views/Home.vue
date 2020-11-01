@@ -76,9 +76,6 @@ export default {
     this.webSocket.onmessage = (message) => {
       const envelope = JSON.parse(message.data);
       switch (envelope.kind) {
-        case "setId":
-          this.setWebsocketId(envelope.data.id);
-          break;
         case "userRegistered": {
           this.users = new Set(JSON.parse(envelope.data.users));
           for (const user of this.users) {
@@ -119,24 +116,11 @@ export default {
   },
   methods: {
     startGame: function () {},
-    setWebsocketId: function (newId) {
-      // TODO: Remove localStorage reference here
-      const oldId = localStorage.getItem("imperialId");
-      if (oldId) {
-        this.webSocket.send(
-          JSON.stringify({
-            kind: "updateId",
-            data: { oldId, newId },
-          })
-        );
-      }
-      localStorage.setItem("imperialId", newId);
-    },
     registerUser: function () {
       this.webSocket.send(
         JSON.stringify({
           kind: "registerUser",
-          data: { name: this.name, id: localStorage.imperialId },
+          data: { name: this.name },
         })
       );
     },
@@ -147,7 +131,7 @@ export default {
       this.webSocket.send(
         JSON.stringify({
           kind: "openGame",
-          data: { host: this.name, id: localStorage.imperialId },
+          data: { host: this.name },
         })
       );
     },

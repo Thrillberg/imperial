@@ -240,18 +240,6 @@ export default {
     };
   },
   methods: {
-    setWebsocketId: function (newId) {
-      const oldId = localStorage.getItem("imperialId");
-      if (oldId) {
-        this.webSocket.send(
-          JSON.stringify({
-            kind: "updateId",
-            data: { oldId, newId },
-          })
-        );
-      }
-      localStorage.setItem("imperialId", newId);
-    },
     validProvinces() {
       // This function returns all provinces that a unit can move
       // or be imported to.

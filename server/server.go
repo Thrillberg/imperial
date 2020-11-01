@@ -37,9 +37,8 @@ func main() {
 	}
 }
 
-// UserId uniquely identifies a client. We would like to use an
-// integer here, but JSON does not support integers. Instead, we
-// generate a pseudorandom, base64-encoded string.
+// UserId uniquely identifies a client and is a UUID stored in a cookie
+// on the browser.
 type UserId string
 
 type UserName string
@@ -89,12 +88,6 @@ func (d Data) Validate(key ...string) error {
 }
 
 const (
-	// KindSetId is sent to clients when a connection is first
-	// established.
-	KindSetId = Kind("setId")
-	// KindUpdateId is received from clients when they are
-	// restarting from a broken connection.
-	KindUpdateId = Kind("updateId")
 	// KindRegisterUser is received from clients when they register
 	// a name.
 	KindRegisterUser = Kind("registerUser")
@@ -110,9 +103,6 @@ const (
 	// KindGameStarted is sent to the clients when a second user joins
 	// a game and the game starts.
 	KindGameStarted = Kind("gameStarted")
-	// KindUpdatePlayers is sent to clients when a player's
-	// name is updated.
-	KindUpdatePlayers = Kind("updatePlayers")
 	// KindStartGame is sent to clients when a game starts.
 	KindStartGame = Kind("startGame")
 	// KindTick is received from clients when they register a
@@ -128,13 +118,15 @@ const (
 type Conn struct {
 	conn     *websocket.Conn
 	handlers map[Kind]func(*Conn, Data) error
+	userId   UserId
 }
 
 // NewConn allocates and initializes a new Conn.
-func NewConn(ws *websocket.Conn) *Conn {
+func NewConn(ws *websocket.Conn, userId UserId) *Conn {
 	return &Conn{
 		conn:     ws,
 		handlers: map[Kind]func(*Conn, Data) error{},
+		userId:   userId,
 	}
 }
 
@@ -143,12 +135,8 @@ func (c *Conn) write(v interface{}) error {
 	return c.conn.WriteJSON(v)
 }
 
-// UpdateState sends userId, registered users, and open games to the client.
+// UpdateState sends registered users and open games to the client.
 func (c *Conn) UpdateState(id UserId) error {
-	if err := c.SetId(id); err != nil {
-		log.Println(id, "SetId")
-		return nil
-	}
 	if err := c.UserRegistered(users); err != nil {
 		log.Println(users, "UserRegistered")
 		return nil
@@ -159,16 +147,6 @@ func (c *Conn) UpdateState(id UserId) error {
 	}
 
 	return nil
-}
-
-// SetId sends a KindSetId message to the client.
-func (c *Conn) SetId(id UserId) error {
-	return c.write(&Envelope{
-		Kind: KindSetId,
-		Data: map[string]string{
-			"id": string(id),
-		},
-	})
 }
 
 // UserRegistered sends a KindUserRegistered message to the client.
@@ -218,22 +196,6 @@ func (c *Conn) GameStarted(gameId GameId) error {
 	})
 
 	return nil
-}
-
-// UpdatePlayers sends a KindUpdatePlayers message to the client.
-func (c *Conn) UpdatePlayers(players map[UserId]UserName) error {
-	var playersSlice = []map[string]string{}
-	for key, val := range players {
-		playersSlice = append(playersSlice, map[string]string{"id": string(key), "name": string(val)})
-	}
-	playersList, _ := json.Marshal(playersSlice)
-
-	return c.write(&Envelope{
-		Kind: KindUpdatePlayers,
-		Data: map[string]string{
-			"players": string(playersList),
-		},
-	})
 }
 
 // StartGame sends a KindStartGame message to the client.
@@ -297,7 +259,7 @@ func handleWebsocket(w http.ResponseWriter, r *http.Request) {
 	var responseHeader http.Header
 	userId := getUserIdFromCookie(r)
 
-	if c := connections[userId]; c == nil {
+	if len(userId) == 0 {
 		responseHeader = setUserIdToCookie(w)
 	}
 
@@ -308,8 +270,7 @@ func handleWebsocket(w http.ResponseWriter, r *http.Request) {
 		log.Println("establishing websocket connection", err)
 		return
 	}
-	c := NewConn(ws)
-	c.Register(KindUpdateId, onUpdateId)
+	c := NewConn(ws, userId)
 	c.Register(KindRegisterUser, onRegisterUser)
 	c.Register(KindOpenGame, onOpenGame)
 	c.Register(KindJoinGame, onJoinGame)
@@ -348,38 +309,14 @@ func setUserIdToCookie(w http.ResponseWriter) http.Header {
 	return w.Header()
 }
 
-func onUpdateId(c *Conn, data Data) error {
-	if err := data.Validate("oldId", "newId"); err != nil {
-		return err
-	}
-	oldId := UserId(data["oldId"])
-	newId := UserId(data["newId"])
-	log.Printf("%s: %s -> %s\n", KindUpdateId, oldId, newId)
-	connections[newId] = c
-	delete(connections, oldId)
-
-	if val, ok := users[oldId]; ok {
-		users[newId] = val
-		delete(users, oldId)
-	}
-	for _, conn := range connections {
-		if err := conn.UserRegistered(users); err != nil {
-			log.Println(users, "UserRegistered")
-			return nil
-		}
-	}
-
-	return nil
-}
-
 func onRegisterUser(c *Conn, data Data) error {
-	if err := data.Validate("name", "id"); err != nil {
+	if err := data.Validate("name"); err != nil {
 		return err
 	}
 	name := UserName(data["name"])
-	id := UserId(data["id"])
-	log.Printf("%s: %s(%s)\n", KindRegisterUser, name, id)
-	users[id] = name
+	userId := c.userId
+	log.Printf("%s: %s(%s)\n", KindRegisterUser, name, userId)
+	users[userId] = name
 
 	for _, conn := range connections {
 		if err := conn.UserRegistered(users); err != nil {
@@ -392,19 +329,19 @@ func onRegisterUser(c *Conn, data Data) error {
 }
 
 func onOpenGame(c *Conn, data Data) error {
-	if err := data.Validate("host", "id"); err != nil {
+	if err := data.Validate("host"); err != nil {
 		return err
 	}
 	name := UserName(data["host"])
-	id := UserId(data["id"])
-	log.Printf("%s: %s(%s) is opening a game\n", KindOpenGame, name, id)
+	userId := c.userId
+	log.Printf("%s: %s(%s) is opening a game\n", KindOpenGame, name, userId)
 	gameId, err := NewGameId()
 	if err != nil {
 		log.Println("NewGameId", err)
 		return nil
 	}
 
-	games[gameId] = &Game{[]Action{}, map[UserId]UserName{id: name}, name}
+	games[gameId] = &Game{[]Action{}, map[UserId]UserName{userId: name}, name}
 
 	for _, conn := range connections {
 		if err := conn.GameOpened(games); err != nil {
