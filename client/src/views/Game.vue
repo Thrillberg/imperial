@@ -173,7 +173,6 @@ export default {
         endImport: Action.import({ placements: new Set() }),
         placements: [],
       },
-      leader: false,
       maneuverStatus: {
         active: false,
         endManeuver: Action.endManeuver(),
@@ -189,9 +188,6 @@ export default {
     this.webSocket.onmessage = (message) => {
       const envelope = JSON.parse(message.data);
       switch (envelope.kind) {
-        case "setId":
-          this.setWebsocketId(envelope.data.id);
-          break;
         case "userRegistered":
           this.users = new Set(JSON.parse(envelope.data.users));
           for (const user of this.users) {
@@ -226,7 +222,6 @@ export default {
             return action;
           });
           this.game = Imperial.fromLog(gameLog);
-          this.gameStarted = true;
           this.controllingPlayerName = [...this.players][0].name;
           break;
         }
