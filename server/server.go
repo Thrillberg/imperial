@@ -26,7 +26,7 @@ func init() {
 func main() {
 	var addr = ":80"
 	if len(os.Args) == 2 {
-		addr = os.Args[1]
+		addr = ":8080"
 	}
 	http.HandleFunc("/health", handleHealth)
 	http.HandleFunc("/ws", handleWebsocket)
@@ -52,13 +52,13 @@ type Game struct {
 }
 
 // NewUserId generates a string from a UUID.
-func NewUserId() (UserId, error) {
-	return UserId(uuid.New().String()), nil
+func NewUserId() UserId {
+	return UserId(uuid.New().String())
 }
 
 // NewGameId generates a string from a UUID.
-func NewGameId() (GameId, error) {
-	return GameId(uuid.New().String()), nil
+func NewGameId() GameId {
+	return GameId(uuid.New().String())
 }
 
 type Action interface{}
@@ -100,11 +100,6 @@ const (
 	KindGameOpened = Kind("gameOpened")
 	// KindJoinGame is received from clients when they join a game.
 	KindJoinGame = Kind("joinGame")
-	// KindGameStarted is sent to the clients when a second user joins
-	// a game and the game starts.
-	KindGameStarted = Kind("gameStarted")
-	// KindStartGame is sent to clients when a game starts.
-	KindStartGame = Kind("startGame")
 	// KindTick is received from clients when they register a
 	// new entry in the game log.
 	KindTick = Kind("tick")
@@ -182,38 +177,6 @@ func (c *Conn) GameOpened(games map[GameId]*Game) error {
 	})
 }
 
-// GameStarted sends a KindGameStarted message to the client.
-func (c *Conn) GameStarted(gameId GameId) error {
-	game := games[gameId]
-	parsedGame, _ := json.Marshal(game)
-
-	return c.write(&Envelope{
-		Kind: KindGameStarted,
-		Data: map[string]string{
-			"game": string(parsedGame),
-			"id":   string(gameId),
-		},
-	})
-
-	return nil
-}
-
-// StartGame sends a KindStartGame message to the client.
-func (c *Conn) StartGame(players map[UserId]UserName) error {
-	var playersSlice = []map[string]string{}
-	for key, val := range players {
-		playersSlice = append(playersSlice, map[string]string{"id": string(key), "name": string(val)})
-	}
-	playersList, _ := json.Marshal(playersSlice)
-
-	return c.write(&Envelope{
-		Kind: KindStartGame,
-		Data: map[string]string{
-			"players": string(playersList),
-		},
-	})
-}
-
 // UpdateGameLog sends a KindUpdateGameLog message to the client.
 func (c *Conn) UpdateGameLog(gameId GameId, log []Action) error {
 	logList, _ := json.Marshal(log)
@@ -256,11 +219,12 @@ func handleHealth(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleWebsocket(w http.ResponseWriter, r *http.Request) {
-	var responseHeader http.Header
 	userId := getUserIdFromCookie(r)
+	responseHeader := setUserIdToCookie(w, userId)
 
 	if len(userId) == 0 {
-		responseHeader = setUserIdToCookie(w)
+		userId = NewUserId()
+		responseHeader = setUserIdToCookie(w, userId)
 	}
 
 	ws, err := upgrader.Upgrade(w, r, responseHeader)
@@ -297,13 +261,11 @@ func getUserIdFromCookie(r *http.Request) UserId {
 	return UserId(parsedCookie.Get("userId"))
 }
 
-func setUserIdToCookie(w http.ResponseWriter) http.Header {
-	newUserId, err := NewUserId()
-	if err != nil {
-		log.Println("NewUserId", err)
-		return http.Header{}
+func setUserIdToCookie(w http.ResponseWriter, userId UserId) http.Header {
+	newCookie := http.Cookie{Name: "userId", Value: string(userId), Domain: "playimperial.club", Secure: true, MaxAge: 86400, SameSite: 2}
+	if len(os.Args) == 2 {
+		newCookie = http.Cookie{Name: "userId", Value: string(userId), MaxAge: 86400, SameSite: 2}
 	}
-	newCookie := http.Cookie{Name: "userId", Value: string(newUserId), SameSite: 2}
 	http.SetCookie(w, &newCookie)
 
 	return w.Header()
@@ -320,7 +282,7 @@ func onRegisterUser(c *Conn, data Data) error {
 
 	for _, conn := range connections {
 		if err := conn.UserRegistered(users); err != nil {
-			log.Println(users, "UserRegistered")
+			log.Println(err, users, "UserRegistered")
 			return nil
 		}
 	}
@@ -335,12 +297,8 @@ func onOpenGame(c *Conn, data Data) error {
 	name := UserName(data["host"])
 	userId := c.userId
 	log.Printf("%s: %s(%s) is opening a game\n", KindOpenGame, name, userId)
-	gameId, err := NewGameId()
-	if err != nil {
-		log.Println("NewGameId", err)
-		return nil
-	}
 
+	gameId := NewGameId()
 	games[gameId] = &Game{[]Action{}, map[UserId]UserName{userId: name}, name}
 
 	for _, conn := range connections {
@@ -364,7 +322,7 @@ func onJoinGame(c *Conn, data Data) error {
 	games[gameId].Players[userId] = userName
 
 	for _, conn := range connections {
-		if err := conn.GameStarted(gameId); err != nil {
+		if err := conn.GameOpened(games); err != nil {
 			return nil
 		}
 	}

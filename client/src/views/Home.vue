@@ -4,7 +4,7 @@
       <div>
         <div class="underline">Users:</div>
         <ul v-for="user in users" v-bind:key="user.id">
-          <li v-if="user.name === name">
+          <li v-if="isMe(user)">
             <strong>{{ user.name }}</strong>
           </li>
           <li v-else>
@@ -56,38 +56,29 @@
         Register
       </span>
     </div>
-
-    <hr class="mt-40" />
-    <p class="text-center">Solo mode</p>
-    <div class="flex">
-      <PlayerCount
-        v-for="count in playerCounts"
-        v-bind:key="count"
-        v-bind:count="count"
-        v-bind:start_game="startGame"
-      ></PlayerCount>
+    <div class="text-center mt-40">
+      <span
+        v-on:click="startGame"
+        class="rounded p-2 m-1 bg-green-800 text-white"
+      >
+        Solo Mode Game
+      </span>
     </div>
   </div>
 </template>
 
 <script>
-import PlayerCount from "@/components/PlayerCount.vue";
-
 import Action from "../../lib/action.js";
 import Imperial from "../../lib/imperial.js";
 import { Nation } from "../../lib/constants.js";
 
 export default {
   name: "Home",
-  components: { PlayerCount },
   data: () => {
     return {
-      soloMode: false,
       activeGames: new Set(),
       games: new Set(),
       name: "",
-      playerCounts: [2, 3, 4, 5, 6],
-      players: new Set(),
       users: new Set(),
       webSocket: new WebSocket(process.env.VUE_APP_IMPERIAL_WEBSOCKETS_URL),
     };
@@ -119,11 +110,6 @@ export default {
           this.games = finalGames;
           break;
         }
-        case "gameStarted": {
-          const game = JSON.parse(envelope.data.game);
-          this.activeGames.add(game);
-          break;
-        }
         case "updateGameLog": {
           let game = this.games.find(
             (game) => game.id === envelope.data.gameId
@@ -135,7 +121,17 @@ export default {
     };
   },
   methods: {
-    startGame: function () {},
+    startGame: function () {
+      this.webSocket.send(
+        JSON.stringify({
+          kind: "openGame",
+          data: { host: "test" },
+        })
+      );
+    },
+    isMe: function (user) {
+      return user.name === this.name && user.id === this.$cookies.get("userId");
+    },
     registerUser: function () {
       this.webSocket.send(
         JSON.stringify({
@@ -145,7 +141,10 @@ export default {
       );
     },
     alreadyRegistered: function () {
-      return [...this.users].map((x) => x.name).includes(this.name);
+      return (
+        [...this.users].map((x) => x.name).includes(this.name) &&
+        [...this.users].map((x) => x.id).includes(this.$cookies.get("userId"))
+      );
     },
     openGame: function () {
       this.webSocket.send(
@@ -173,7 +172,7 @@ export default {
           kind: "joinGame",
           data: {
             userName: this.name,
-            userId: localStorage.imperialId,
+            userId: this.$cookies.get("userId"),
             gameId,
           },
         })
@@ -191,45 +190,6 @@ export default {
           },
         })
       );
-    },
-    getPlayers: function (playerCount) {
-      switch (playerCount) {
-        case 2:
-          return [
-            { id: "Henry Davison", nation: Nation.AH },
-            { id: "Georg Siemens", nation: Nation.IT },
-          ];
-        case 3:
-          return [
-            { id: "Henry Davison", nation: Nation.AH },
-            { id: "Georg Siemens", nation: Nation.IT },
-            { id: "John Baring", nation: Nation.FR },
-          ];
-        case 4:
-          return [
-            { id: "Daniel", nation: Nation.RU },
-            { id: "Claudia", nation: Nation.FR },
-            { id: "Bert", nation: Nation.GB },
-            { id: "Anton", nation: Nation.IT },
-          ];
-        case 5:
-          return [
-            { id: "Henry Davison", nation: Nation.AH },
-            { id: "Georg Siemens", nation: Nation.IT },
-            { id: "John Baring", nation: Nation.FR },
-            { id: "Henri Germain", nation: Nation.GE },
-            { id: "Johann Heinrich Schröder", nation: Nation.RU },
-          ];
-        case 6:
-          return [
-            { id: "Henry Davison", nation: Nation.AH },
-            { id: "Georg Siemens", nation: Nation.IT },
-            { id: "John Baring", nation: Nation.FR },
-            { id: "Henri Germain", nation: Nation.GE },
-            { id: "Johann Heinrich Schröder", nation: Nation.RU },
-            { id: "Gerson von Bleichröder", nation: Nation.GB },
-          ];
-      }
     },
     // TODO: Don't hardcode the nation assignment, figure out how to accept 2-6 players
     assignNations: function (players) {

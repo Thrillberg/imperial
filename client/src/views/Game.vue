@@ -202,6 +202,21 @@ export default {
               (game) => game.id === this.$route.params.id
             ).game
           );
+          if (game.host === "test") {
+            let players = [
+              { id: "Henry Davison", nation: Nation.AH },
+              { id: "Georg Siemens", nation: Nation.IT },
+              { id: "John Baring", nation: Nation.FR },
+              { id: "Henri Germain", nation: Nation.GE },
+              { id: "Johann Heinrich Schröder", nation: Nation.RU },
+              { id: "Gerson von Bleichröder", nation: Nation.GB },
+            ];
+            this.soloMode = true;
+            const action = Action.initialize({ players });
+            this.game = Imperial.fromLog([action]);
+            this.controllingPlayerName = [...this.players][0].name;
+            break;
+          }
           const players = Object.keys(game.players).map((key) => {
             return { id: key, name: game.players[key] };
           });
