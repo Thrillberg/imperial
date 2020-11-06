@@ -20,8 +20,22 @@ Navigate to `http://localhost:8081` in a web browser.
 
 ## To run tests:
 
+All tests:
+
 ```
 make ci
+```
+
+Unit tests:
+
+```
+make client/test/unit
+```
+
+Integration tests:
+
+```
+make client/test/integration
 ```
 
 ## To deploy the client side code:
@@ -31,6 +45,10 @@ make client/deploy
 ```
 
 _N.B. The above deploy command requires a configured [`AWS CLI`](https://aws.amazon.com/cli/)!_
+
+## To deploy the server side code:
+
+Server deploys happen automatically (with a GitHub Action) upon pushing to `main`.
 
 ## What the heck is a _Schnelleinsteig_??
 

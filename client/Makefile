@@ -8,6 +8,13 @@ lint/fix:
 
 test:
 	npm test
+	npm test:e2e
+
+test/unit:
+	npm test
+
+test/integration:
+	npx cypress run
 
 deploy:
 	npm run deploy
