@@ -80,11 +80,11 @@ export default {
       games: new Set(),
       name: "",
       users: new Set(),
-      webSocket: new WebSocket(process.env.VUE_APP_IMPERIAL_WEBSOCKETS_URL),
+      webSocket: new WebSocket(process.env.VUE_APP_IMPERIAL_WEBSOCKETS_URL)
     };
   },
   created() {
-    this.webSocket.onmessage = (message) => {
+    this.webSocket.onmessage = message => {
       const envelope = JSON.parse(message.data);
       switch (envelope.kind) {
         case "userRegistered": {
@@ -98,22 +98,20 @@ export default {
         }
         case "gameOpened": {
           const games = JSON.parse(envelope.data.games);
-          const finalGames = games.map((game) => {
+          const finalGames = games.map(game => {
             const parsedGame = JSON.parse(game.game);
             return {
               host: parsedGame.host,
               log: parsedGame.log,
               players: parsedGame.players,
-              id: game.id,
+              id: game.id
             };
           });
           this.games = finalGames;
           break;
         }
         case "updateGameLog": {
-          let game = this.games.find(
-            (game) => game.id === envelope.data.gameId
-          );
+          let game = this.games.find(game => game.id === envelope.data.gameId);
           game.log = JSON.parse(envelope.data.log);
           break;
         }
@@ -121,63 +119,63 @@ export default {
     };
   },
   methods: {
-    startGame: function () {
+    startGame: function() {
       this.webSocket.send(
         JSON.stringify({
           kind: "openGame",
-          data: { host: "test" },
+          data: { host: "test" }
         })
       );
     },
-    isMe: function (user) {
+    isMe: function(user) {
       return user.name === this.name && user.id === this.$cookies.get("userId");
     },
-    registerUser: function () {
+    registerUser: function() {
       this.webSocket.send(
         JSON.stringify({
           kind: "registerUser",
-          data: { name: this.name },
+          data: { name: this.name }
         })
       );
     },
-    alreadyRegistered: function () {
+    alreadyRegistered: function() {
       return (
-        [...this.users].map((x) => x.name).includes(this.name) &&
-        [...this.users].map((x) => x.id).includes(this.$cookies.get("userId"))
+        [...this.users].map(x => x.name).includes(this.name) &&
+        [...this.users].map(x => x.id).includes(this.$cookies.get("userId"))
       );
     },
-    openGame: function () {
+    openGame: function() {
       this.webSocket.send(
         JSON.stringify({
           kind: "openGame",
-          data: { host: this.name },
+          data: { host: this.name }
         })
       );
     },
-    gameStarted: function (gameId) {
-      if (this.games.find((game) => game.id === gameId).log.length > 0) {
+    gameStarted: function(gameId) {
+      if (this.games.find(game => game.id === gameId).log.length > 0) {
         return true;
       } else {
         return false;
       }
     },
-    joinable: function (gameId) {
+    joinable: function(gameId) {
       let notMyGame =
-        this.games.find((game) => game.id === gameId).host !== this.name;
+        this.games.find(game => game.id === gameId).host !== this.name;
       return notMyGame && this.alreadyRegistered() && !this.gameStarted(gameId);
     },
-    joinGame: function (gameId) {
+    joinGame: function(gameId) {
       this.webSocket.send(
         JSON.stringify({
           kind: "joinGame",
           data: {
             userName: this.name,
             userId: this.$cookies.get("userId"),
-            gameId,
-          },
+            gameId
+          }
         })
       );
-      let host = this.games.find((game) => game.id === gameId).host;
+      let host = this.games.find(game => game.id === gameId).host;
       let players = this.assignNations([host, this.name]);
       const action = Action.initialize({ players });
       this.game = Imperial.fromLog([action]);
@@ -186,19 +184,19 @@ export default {
           kind: "tick",
           data: {
             gameId: JSON.stringify(gameId),
-            action: JSON.stringify(action),
-          },
+            action: JSON.stringify(action)
+          }
         })
       );
     },
     // TODO: Don't hardcode the nation assignment, figure out how to accept 2-6 players
-    assignNations: function (players) {
+    assignNations: function(players) {
       return [
         { id: players[0], nation: Nation.AH },
-        { id: players[1], nation: Nation.IT },
+        { id: players[1], nation: Nation.IT }
       ];
-    },
-  },
+    }
+  }
 };
 </script>
 

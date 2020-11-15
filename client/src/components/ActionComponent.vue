@@ -8,7 +8,7 @@ export default {
   props: {
     action: Object,
     dispatch: Function,
-    text: String,
-  },
+    text: String
+  }
 };
 </script>
