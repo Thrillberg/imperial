@@ -10,6 +10,18 @@ By participating in this project you agree to abide by its terms._
 
 ## To run locally:
 
+### Prerequisites:
+
+Imperial requires [npm](https://www.npmjs.com/).
+
+```
+npm i -g npm
+```
+
+Imperial requires [Go](https://golang.org/). It can be downloaded [here](https://golang.org/doc/install).
+
+### Running client and server:
+
 ```
 make ci
 make client/run # in one terminal
