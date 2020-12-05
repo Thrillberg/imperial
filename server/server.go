@@ -9,14 +9,28 @@ import (
 	"net/url"
 	"os"
 	"strings"
+	"sync"
 
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 )
 
-var connections = map[UserId]*Conn{}
-var users = map[UserId]UserName{}
-var games = map[GameId]*Game{}
+type globalState struct {
+	*sync.Mutex
+	connections map[UserId]*Conn
+	users       map[UserId]UserName
+	games       map[GameId]*Game
+}
+
+// state is this server's global state. It is coarsely locked by
+// the embedded mutex.
+var state = globalState{
+	Mutex:       &sync.Mutex{},
+	connections: map[UserId]*Conn{},
+	users:       map[UserId]UserName{},
+	games:       map[GameId]*Game{},
+}
+
 var upgrader = websocket.Upgrader{CheckOrigin: func(*http.Request) bool { return true }}
 
 func init() {
@@ -132,12 +146,14 @@ func (c *Conn) write(v interface{}) error {
 
 // UpdateState sends registered users and open games to the client.
 func (c *Conn) UpdateState(id UserId) error {
-	if err := c.UserRegistered(users); err != nil {
-		log.Println(users, "UserRegistered")
+	state.Lock()
+	defer state.Unlock()
+	if err := c.UserRegistered(state.users); err != nil {
+		log.Println(state.users, "UserRegistered")
 		return nil
 	}
-	if err := c.GameOpened(games); err != nil {
-		log.Println(games, "GameOpened")
+	if err := c.GameOpened(state.games); err != nil {
+		log.Println(state.games, "GameOpened")
 		return nil
 	}
 
@@ -246,7 +262,11 @@ func handleWebsocket(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Println(userId, "storing connection")
-	connections[userId] = c
+	func() {
+		state.Lock()
+		defer state.Unlock()
+		state.connections[userId] = c
+	}()
 
 	c.Listen()
 }
@@ -278,11 +298,14 @@ func onRegisterUser(c *Conn, data Data) error {
 	name := UserName(data["name"])
 	userId := c.userId
 	log.Printf("%s: %s(%s)\n", KindRegisterUser, name, userId)
-	users[userId] = name
 
-	for _, conn := range connections {
-		if err := conn.UserRegistered(users); err != nil {
-			log.Println(err, users, "UserRegistered")
+	state.Lock()
+	defer state.Unlock()
+	state.users[userId] = name
+
+	for _, conn := range state.connections {
+		if err := conn.UserRegistered(state.users); err != nil {
+			log.Println(err, state.users, "UserRegistered")
 			return nil
 		}
 	}
@@ -299,10 +322,12 @@ func onOpenGame(c *Conn, data Data) error {
 	log.Printf("%s: %s(%s) is opening a game\n", KindOpenGame, name, userId)
 
 	gameId := NewGameId()
-	games[gameId] = &Game{[]Action{}, map[UserId]UserName{userId: name}, name}
+	state.Lock()
+	defer state.Unlock()
+	state.games[gameId] = &Game{[]Action{}, map[UserId]UserName{userId: name}, name}
 
-	for _, conn := range connections {
-		if err := conn.GameOpened(games); err != nil {
+	for _, conn := range state.connections {
+		if err := conn.GameOpened(state.games); err != nil {
 			return nil
 		}
 	}
@@ -319,10 +344,12 @@ func onJoinGame(c *Conn, data Data) error {
 	gameId := GameId(data["gameId"])
 	log.Printf("%s: %s(%s) is joining a game(%s)\n", KindJoinGame, userName, userId, gameId)
 
-	games[gameId].Players[userId] = userName
+	state.Lock()
+	defer state.Unlock()
+	state.games[gameId].Players[userId] = userName
 
-	for _, conn := range connections {
-		if err := conn.GameOpened(games); err != nil {
+	for _, conn := range state.connections {
+		if err := conn.GameOpened(state.games); err != nil {
 			return nil
 		}
 	}
@@ -346,13 +373,15 @@ func onTick(c *Conn, data Data) error {
 		fmt.Println("gameId error:", gameIdErr)
 	}
 
-	games[gameId].Log = append(games[gameId].Log, action)
+	state.Lock()
+	defer state.Unlock()
+	state.games[gameId].Log = append(state.games[gameId].Log, action)
 
-	log.Printf("%s: %s", KindTick, games[gameId].Log)
+	log.Printf("%s: %s", KindTick, state.games[gameId].Log)
 
-	for _, conn := range connections {
-		if err := conn.UpdateGameLog(gameId, games[gameId].Log); err != nil {
-			log.Println(games[gameId].Log, "UpdateGameLog")
+	for _, conn := range state.connections {
+		if err := conn.UpdateGameLog(gameId, state.games[gameId].Log); err != nil {
+			log.Println(state.games[gameId].Log, "UpdateGameLog")
 			return nil
 		}
 	}
