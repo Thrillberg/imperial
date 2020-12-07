@@ -6,7 +6,6 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"net/url"
 	"os"
 	"strings"
 	"sync"
@@ -32,6 +31,8 @@ var state = globalState{
 }
 
 var upgrader = websocket.Upgrader{CheckOrigin: func(*http.Request) bool { return true }}
+
+const cookiename = "userId"
 
 func init() {
 	log.SetFlags(log.Lshortfile | log.Ldate | log.Ltime)
@@ -235,15 +236,13 @@ func handleHealth(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleWebsocket(w http.ResponseWriter, r *http.Request) {
-	userId := getUserIdFromCookie(r)
-	responseHeader := setUserIdToCookie(w, userId)
-
-	if len(userId) == 0 {
-		userId = NewUserId()
-		responseHeader = setUserIdToCookie(w, userId)
+	userId := NewUserId()
+	if cookie, err := r.Cookie(cookiename); err == nil {
+		userId = UserId(cookie.Value)
 	}
+	http.SetCookie(w, mintCookie(userId))
 
-	ws, err := upgrader.Upgrade(w, r, responseHeader)
+	ws, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		w.WriteHeader(500)
 		fmt.Fprintf(w, "error: %s", err)
@@ -271,24 +270,18 @@ func handleWebsocket(w http.ResponseWriter, r *http.Request) {
 	c.Listen()
 }
 
-func getUserIdFromCookie(r *http.Request) UserId {
-	cookie := r.Header.Get("Cookie")
-	parsedCookie, cookieErr := url.ParseQuery(cookie)
-	if cookieErr != nil {
-		log.Println("Cookie", cookieErr)
+func mintCookie(userId UserId) *http.Cookie {
+	c := &http.Cookie{
+		Name:     cookiename,
+		Value:    string(userId),
+		MaxAge:   86400,
+		SameSite: http.SameSiteLaxMode,
 	}
-
-	return UserId(parsedCookie.Get("userId"))
-}
-
-func setUserIdToCookie(w http.ResponseWriter, userId UserId) http.Header {
-	newCookie := http.Cookie{Name: "userId", Value: string(userId), Domain: "playimperial.club", Secure: true, MaxAge: 86400, SameSite: 2}
-	if len(os.Args) == 2 {
-		newCookie = http.Cookie{Name: "userId", Value: string(userId), MaxAge: 86400, SameSite: 2}
+	if len(os.Args) != 2 { // the server is running on the internet
+		c.Domain = "playimperial.club"
+		c.Secure = true
 	}
-	http.SetCookie(w, &newCookie)
-
-	return w.Header()
+	return c
 }
 
 func onRegisterUser(c *Conn, data Data) error {
