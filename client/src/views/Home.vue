@@ -71,6 +71,7 @@
 import Action from "../../lib/action.js";
 import Imperial from "../../lib/imperial.js";
 import { Nation } from "../../lib/constants.js";
+import { apiClient } from "../router/index.js";
 
 export default {
   name: "Home",
@@ -79,64 +80,44 @@ export default {
       activeGames: new Set(),
       games: new Set(),
       name: "",
-      users: new Set(),
-      webSocket: new WebSocket(process.env.VUE_APP_IMPERIAL_WEBSOCKETS_URL)
+      users: new Set()
     };
   },
   created() {
-    this.webSocket.onmessage = message => {
-      const envelope = JSON.parse(message.data);
-      switch (envelope.kind) {
-        case "userRegistered": {
-          this.users = new Set(JSON.parse(envelope.data.users));
-          for (const user of this.users) {
-            if (this.$cookies.get("userId") === user.id) {
-              this.name = user.name;
-            }
-          }
-          break;
-        }
-        case "gameOpened": {
-          const games = JSON.parse(envelope.data.games);
-          const finalGames = games.map(game => {
-            const parsedGame = JSON.parse(game.game);
-            return {
-              host: parsedGame.host,
-              log: parsedGame.log,
-              players: parsedGame.players,
-              id: game.id
-            };
-          });
-          this.games = finalGames;
-          break;
-        }
-        case "updateGameLog": {
-          let game = this.games.find(game => game.id === envelope.data.gameId);
-          game.log = JSON.parse(envelope.data.log);
-          break;
+    apiClient.onUserRegistered(({ users }) => {
+      this.users = new Set(JSON.parse(users));
+      for (const user of this.users) {
+        if (this.$cookies.get("userId") === user.id) {
+          this.name = user.name;
         }
       }
-    };
+    });
+    apiClient.onGameOpened(({ games }) => {
+      const parsedGames = JSON.parse(games);
+      this.games = parsedGames.map(game => {
+        const parsedGame = JSON.parse(game.game);
+        return {
+          host: parsedGame.host,
+          log: parsedGame.log,
+          players: parsedGame.players,
+          id: game.id
+        };
+      });
+    });
+    apiClient.onUpdateGameLog(({ gameId, log }) => {
+      const game = this.games.find(game => game.id === gameId);
+      game.log = JSON.parse(log);
+    });
+  },
+  destroyed: () => {
+    apiClient.clearHandlers();
   },
   methods: {
-    startGame: function() {
-      this.webSocket.send(
-        JSON.stringify({
-          kind: "openGame",
-          data: { host: "test" }
-        })
-      );
-    },
     isMe: function(user) {
       return user.name === this.name && user.id === this.$cookies.get("userId");
     },
     registerUser: function() {
-      this.webSocket.send(
-        JSON.stringify({
-          kind: "registerUser",
-          data: { name: this.name }
-        })
-      );
+      apiClient.registerUser(this.name);
     },
     alreadyRegistered: function() {
       return (
@@ -145,12 +126,7 @@ export default {
       );
     },
     openGame: function() {
-      this.webSocket.send(
-        JSON.stringify({
-          kind: "openGame",
-          data: { host: this.name }
-        })
-      );
+      apiClient.openGame(this.name);
     },
     gameStarted: function(gameId) {
       if (this.games.find(game => game.id === gameId).log.length > 0) {
@@ -165,29 +141,14 @@ export default {
       return notMyGame && this.alreadyRegistered() && !this.gameStarted(gameId);
     },
     joinGame: function(gameId) {
-      this.webSocket.send(
-        JSON.stringify({
-          kind: "joinGame",
-          data: {
-            userName: this.name,
-            userId: this.$cookies.get("userId"),
-            gameId
-          }
-        })
-      );
+      apiClient.joinGame(this.$cookies.get("userId"), gameId, this.name);
+
       let host = this.games.find(game => game.id === gameId).host;
       let players = this.assignNations([host, this.name]);
       const action = Action.initialize({ players });
       this.game = Imperial.fromLog([action]);
-      this.webSocket.send(
-        JSON.stringify({
-          kind: "tick",
-          data: {
-            gameId: JSON.stringify(gameId),
-            action: JSON.stringify(action)
-          }
-        })
-      );
+
+      apiClient.tick(gameId, action);
     },
     // TODO: Don't hardcode the nation assignment, figure out how to accept 2-6 players
     assignNations: function(players) {
