@@ -76,7 +76,7 @@ import PowerPointsChart from "@/components/PowerPointsChart.vue";
 import Rondel from "@/components/Rondel.vue";
 import TaxChart from "@/components/TaxChart.vue";
 
-export default {
+export default () => ({
   name: "Game",
   components: {
     ActionComponent,
@@ -417,5 +417,5 @@ export default {
       this.maneuverStatus.origin = "";
     }
   }
-};
+});
 </script>

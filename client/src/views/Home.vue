@@ -72,7 +72,7 @@ import Action from "../../lib/action.js";
 import Imperial from "../../lib/imperial.js";
 import { Nation } from "../../lib/constants.js";
 
-export default {
+export default client => ({
   name: "Home",
   data: () => {
     return {
@@ -84,6 +84,14 @@ export default {
     };
   },
   created() {
+    client.onUserRegistered(({ users }) => {
+      this.users = new Set(JSON.parse(users));
+      for (const user of this.users) {
+        if (this.$cookies.get("userId") === user.id) {
+          this.name = user.name;
+        }
+      }
+    });
     this.webSocket.onmessage = message => {
       const envelope = JSON.parse(message.data);
       switch (envelope.kind) {
@@ -117,6 +125,9 @@ export default {
         }
       }
     };
+  },
+  destroyed: () => {
+    client.clearHandlers();
   },
   methods: {
     startGame: function() {
@@ -165,16 +176,8 @@ export default {
       return notMyGame && this.alreadyRegistered() && !this.gameStarted(gameId);
     },
     joinGame: function(gameId) {
-      this.webSocket.send(
-        JSON.stringify({
-          kind: "joinGame",
-          data: {
-            userName: this.name,
-            userId: this.$cookies.get("userId"),
-            gameId
-          }
-        })
-      );
+      client.joinGame(this.$cookies.get("userId"), gameId, this.name);
+
       let host = this.games.find(game => game.id === gameId).host;
       let players = this.assignNations([host, this.name]);
       const action = Action.initialize({ players });
@@ -197,7 +200,7 @@ export default {
       ];
     }
   }
-};
+});
 </script>
 
 <style src="../assets/tailwind.css" />
