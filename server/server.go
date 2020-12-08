@@ -242,7 +242,7 @@ func handleWebsocket(w http.ResponseWriter, r *http.Request) {
 	}
 	http.SetCookie(w, mintCookie(userId))
 
-	ws, err := upgrader.Upgrade(w, r, nil)
+	ws, err := upgrader.Upgrade(w, r, w.Header())
 	if err != nil {
 		w.WriteHeader(500)
 		fmt.Fprintf(w, "error: %s", err)
