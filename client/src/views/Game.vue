@@ -67,6 +67,7 @@
 import Action from "../../lib/action.js";
 import Imperial from "../../lib/imperial.js";
 import { Nation } from "../../lib/constants.js";
+import { apiClient } from "../router/index.js";
 
 import ActionComponent from "@/components/ActionComponent.vue";
 import Board from "@/components/board/Board.vue";
@@ -180,90 +181,67 @@ export default {
       },
       name: "",
       players: new Set(),
-      purchasingBond: false,
-      webSocket: new WebSocket(process.env.VUE_APP_IMPERIAL_WEBSOCKETS_URL)
+      purchasingBond: false
     };
   },
   created() {
-    this.webSocket.onmessage = message => {
-      const envelope = JSON.parse(message.data);
-      switch (envelope.kind) {
-        case "userRegistered":
-          this.users = new Set(JSON.parse(envelope.data.users));
-          for (const user of this.users) {
-            if (this.$cookies.get("userId") === user.id) {
-              this.name = user.name;
-            }
-          }
-          break;
-        case "gameOpened": {
-          const game = JSON.parse(
-            JSON.parse(envelope.data.games).find(
-              game => game.id === this.$route.params.id
-            ).game
-          );
-          if (game.host === "test") {
-            let players = [
-              { id: "Henry Davison", nation: Nation.AH },
-              { id: "Georg Siemens", nation: Nation.IT },
-              { id: "John Baring", nation: Nation.FR },
-              { id: "Henri Germain", nation: Nation.GE },
-              { id: "Johann Heinrich Schröder", nation: Nation.RU },
-              { id: "Gerson von Bleichröder", nation: Nation.GB }
-            ];
-            this.soloMode = true;
-            const action = Action.initialize({ players });
-            this.game = Imperial.fromLog([action]);
-            this.controllingPlayerName = [...this.players][0].name;
-            break;
-          }
-          const players = Object.keys(game.players).map(key => {
-            return { id: key, name: game.players[key] };
-          });
-          this.players = new Set(players);
-          // The following map only exists because of our custom Nation type, which
-          // has weirdness when we attempt nation.when() in the setup file.
-          const gameLog = game.log.map(action => {
-            if (action.type === "initialize") {
-              action.payload.players = action.payload.players.map(player => {
-                return {
-                  id: player.id,
-                  nation: Nation[player.nation.value]
-                };
-              });
-            } else if (action.type === "rondel") {
-              action.payload.nation = Nation[action.payload.nation.value];
-            }
-            return action;
-          });
-          this.game = Imperial.fromLog(gameLog);
-          this.controllingPlayerName = [...this.players][0].name;
-          break;
+    apiClient.onUserRegistered(({ users }) => {
+      this.users = new Set(JSON.parse(users));
+      for (const user of this.users) {
+        if (this.$cookies.get("userId") === user.id) {
+          this.name = user.name;
         }
-        case "updateGameLog":
-          if (envelope.data.gameId === this.$route.params.id) {
-            const rawLog = JSON.parse(envelope.data.log);
-            // The following map only exists because of our custom Nation type, which
-            // has weirdness when we attempt nation.when() in the setup file.
-            const gameLog = rawLog.map(action => {
-              if (action.type === "initialize") {
-                action.payload.players = action.payload.players.map(player => {
-                  return {
-                    id: player.id,
-                    nation: Nation[player.nation.value]
-                  };
-                });
-              } else if (action.type === "rondel") {
-                action.payload.nation = Nation[action.payload.nation.value];
-              }
-              return action;
-            });
-            this.game = Imperial.fromLog(gameLog);
-            this.gameStarted = true;
-          }
-          break;
       }
-    };
+    });
+    apiClient.onGameOpened(({ games }) => {
+      const parsedGames = JSON.parse(games);
+      const game = JSON.parse(
+        parsedGames.find(game => game.id === this.$route.params.id).game
+      );
+      const players = Object.keys(game.players).map(key => {
+        return { id: key, name: game.players[key] };
+      });
+      this.players = new Set(players);
+      // The following map only exists because of our custom Nation type, which
+      // has weirdness when we attempt nation.when() in the setup file.
+      const gameLog = game.log.map(action => {
+        if (action.type === "initialize") {
+          action.payload.players = action.payload.players.map(player => {
+            return {
+              id: player.id,
+              nation: Nation[player.nation.value]
+            };
+          });
+        } else if (action.type === "rondel") {
+          action.payload.nation = Nation[action.payload.nation.value];
+        }
+        return action;
+      });
+      this.game = Imperial.fromLog(gameLog);
+      this.controllingPlayerName = [...this.players][0].name;
+    });
+    apiClient.onUpdateGameLog(({ gameId, log }) => {
+      if (gameId === this.$route.params.id) {
+        const rawLog = JSON.parse(log);
+        // The following map only exists because of our custom Nation type, which
+        // has weirdness when we attempt nation.when() in the setup file.
+        const gameLog = rawLog.map(action => {
+          if (action.type === "initialize") {
+            action.payload.players = action.payload.players.map(player => {
+              return {
+                id: player.id,
+                nation: Nation[player.nation.value]
+              };
+            });
+          } else if (action.type === "rondel") {
+            action.payload.nation = Nation[action.payload.nation.value];
+          }
+          return action;
+        });
+        this.game = Imperial.fromLog(gameLog);
+        this.gameStarted = true;
+      }
+    });
   },
   methods: {
     validProvinces() {

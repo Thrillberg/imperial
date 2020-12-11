@@ -85,7 +85,7 @@ class APIClient {
   tick(gameId, action) {
     return this.send({
       kind: "tick",
-      data: { gameId, action }
+      data: { gameId: JSON.stringify(gameId), action: JSON.stringify(action) }
     });
   }
 }
