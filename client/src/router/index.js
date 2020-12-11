@@ -70,7 +70,7 @@ class APIClient {
 
   openGame(host) {
     return this.send({
-      kind: "registerUser",
+      kind: "openGame",
       data: { host }
     });
   }

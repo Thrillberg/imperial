@@ -57,10 +57,7 @@
       </span>
     </div>
     <div class="text-center mt-40">
-      <span
-        v-on:click="startGame"
-        class="rounded p-2 m-1 bg-green-800 text-white"
-      >
+      <span class="rounded p-2 m-1 bg-green-800 text-white">
         Solo Mode Game
       </span>
     </div>
