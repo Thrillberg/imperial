@@ -129,6 +129,7 @@ type Conn struct {
 	conn     *websocket.Conn
 	handlers map[Kind]func(*Conn, Data) error
 	userId   UserId
+	purple   *purple
 }
 
 // NewConn allocates and initializes a new Conn.
@@ -137,7 +138,24 @@ func NewConn(ws *websocket.Conn, userId UserId) *Conn {
 		conn:     ws,
 		handlers: map[Kind]func(*Conn, Data) error{},
 		userId:   userId,
+		purple: &purple{
+			registerUser:   make(chan UserName),
+			userRegistered: make(chan map[UserId]UserName),
+		},
 	}
+}
+
+type purple struct {
+	registerUser   chan UserName
+	userRegistered chan map[UserId]UserName
+}
+
+func (p *purple) RegisterUser() <-chan UserName {
+	return p.registerUser
+}
+
+func (p *purple) UserRegistered() chan<- map[UserId]UserName {
+	return p.userRegistered
 }
 
 // write wraps websocket.Conn.WriteJSON
@@ -222,12 +240,16 @@ func (c *Conn) Listen() {
 			log.Println("read error", err)
 			return
 		}
-		h, ok := c.handlers[e.Kind]
-		if !ok {
-			log.Println("skipping handler", c, e.Kind)
-			continue
+		if e.Kind == KindRegisterUser {
+			c.purple.registerUser <- UserName(e.Data["name"])
+		} else {
+			h, ok := c.handlers[e.Kind]
+			if !ok {
+				log.Println("skipping handler", c, e.Kind)
+				continue
+			}
+			log.Println("handling", e.Kind, h(c, e.Data))
 		}
-		log.Println("handling", e.Kind, h(c, e.Data))
 	}
 }
 
@@ -250,7 +272,22 @@ func handleWebsocket(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	c := NewConn(ws, userId)
-	c.Register(KindRegisterUser, onRegisterUser)
+	go func() {
+		for {
+			select {
+			case userName := <-c.purple.RegisterUser():
+				onRegisterUser(userId, userName)
+			case users := <-c.purple.userRegistered:
+				if err := c.UserRegistered(users); err != nil {
+					log.Printf("UserRegistered: %v", err)
+				}
+			case <-r.Context().Done():
+				log.Println("request closed")
+				return
+			}
+		}
+	}()
+	//c.Register(KindRegisterUser, onRegisterUser)
 	c.Register(KindOpenGame, onOpenGame)
 	c.Register(KindJoinGame, onJoinGame)
 	c.Register(KindTick, onTick)
@@ -284,12 +321,7 @@ func mintCookie(userId UserId) *http.Cookie {
 	return c
 }
 
-func onRegisterUser(c *Conn, data Data) error {
-	if err := data.Validate("name"); err != nil {
-		return err
-	}
-	name := UserName(data["name"])
-	userId := c.userId
+func onRegisterUser(userId UserId, name UserName) error {
 	log.Printf("%s: %s(%s)\n", KindRegisterUser, name, userId)
 
 	state.Lock()
@@ -297,10 +329,11 @@ func onRegisterUser(c *Conn, data Data) error {
 	state.users[userId] = name
 
 	for _, conn := range state.connections {
-		if err := conn.UserRegistered(state.users); err != nil {
-			log.Println(err, state.users, "UserRegistered")
-			return nil
-		}
+		conn.purple.UserRegistered() <- state.users
+		//if err := conn.UserRegistered(state.users); err != nil {
+		//	log.Println(err, state.users, "UserRegistered")
+		//	return nil
+		//}
 	}
 
 	return nil
