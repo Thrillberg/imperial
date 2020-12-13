@@ -113,7 +113,7 @@ const (
 type Conn struct {
 	conn   *websocket.Conn
 	userId UserId
-	purple *purple
+	channels *channels
 }
 
 // NewConn allocates and initializes a new Conn.
@@ -121,7 +121,7 @@ func NewConn(ws *websocket.Conn, userId UserId) *Conn {
 	return &Conn{
 		conn:   ws,
 		userId: userId,
-		purple: &purple{
+		channels: &channels{
 			registerUser:   make(chan UserName),
 			userRegistered: make(chan map[UserId]UserName, 1),
 			openGame:       make(chan UserName),
@@ -132,7 +132,7 @@ func NewConn(ws *websocket.Conn, userId UserId) *Conn {
 	}
 }
 
-type purple struct {
+type channels struct {
 	registerUser   chan UserName
 	userRegistered chan map[UserId]UserName
 	openGame       chan UserName
@@ -141,27 +141,27 @@ type purple struct {
 	tick           chan TickPayload
 }
 
-func (p *purple) RegisterUser() <-chan UserName {
+func (p *channels) RegisterUser() <-chan UserName {
 	return p.registerUser
 }
 
-func (p *purple) UserRegistered() chan<- map[UserId]UserName {
+func (p *channels) UserRegistered() chan<- map[UserId]UserName {
 	return p.userRegistered
 }
 
-func (p *purple) OpenGame() <-chan UserName {
+func (p *channels) OpenGame() <-chan UserName {
 	return p.openGame
 }
 
-func (p *purple) GameOpened() chan<- map[GameId]*Game {
+func (p *channels) GameOpened() chan<- map[GameId]*Game {
 	return p.gameOpened
 }
 
-func (p *purple) JoinGame() <-chan JoinGamePayload {
+func (p *channels) JoinGame() <-chan JoinGamePayload {
 	return p.joinGame
 }
 
-func (p *purple) Tick() <-chan TickPayload {
+func (p *channels) Tick() <-chan TickPayload {
 	return p.tick
 }
 
@@ -252,17 +252,17 @@ func (c *Conn) Listen() {
 			return
 		}
 		if e.Kind == KindRegisterUser {
-			c.purple.registerUser <- UserName(e.Data["name"])
+			c.channels.registerUser <- UserName(e.Data["name"])
 		} else if e.Kind == KindOpenGame {
-			c.purple.openGame <- UserName(e.Data["host"])
+			c.channels.openGame <- UserName(e.Data["host"])
 		} else if e.Kind == KindJoinGame {
-			c.purple.joinGame <- JoinGamePayload{
+			c.channels.joinGame <- JoinGamePayload{
 				UserId(e.Data["userId"]),
 				UserName(e.Data["userName"]),
 				GameId(e.Data["gameId"]),
 			}
 		} else if e.Kind == KindTick {
-			c.purple.tick <- TickPayload{
+			c.channels.tick <- TickPayload{
 				GameId(e.Data["gameId"]),
 				Action(e.Data["action"]),
 			}
@@ -292,25 +292,25 @@ func handleWebsocket(w http.ResponseWriter, r *http.Request) {
 	go func() {
 		for {
 			select {
-			case userName := <-c.purple.RegisterUser():
+			case userName := <-c.channels.RegisterUser():
 				onRegisterUser(userId, userName)
-			case users := <-c.purple.userRegistered:
+			case users := <-c.channels.userRegistered:
 				if err := c.UserRegistered(users); err != nil {
 					log.Printf("UserRegistered: %v", err)
 				}
-			case host := <-c.purple.OpenGame():
+			case host := <-c.channels.OpenGame():
 				onOpenGame(userId, host)
-			case games := <-c.purple.gameOpened:
+			case games := <-c.channels.gameOpened:
 				if err := c.GameOpened(games); err != nil {
 					log.Printf("GameOpeend: %v", err)
 				}
-			case joinGamePayload := <-c.purple.JoinGame():
+			case joinGamePayload := <-c.channels.JoinGame():
 				onJoinGame(
 					joinGamePayload.userId,
 					joinGamePayload.userName,
 					joinGamePayload.gameId,
 				)
-			case tickPayload := <-c.purple.Tick():
+			case tickPayload := <-c.channels.Tick():
 				onTick(tickPayload.gameId, tickPayload.action)
 			case <-r.Context().Done():
 				log.Println("request closed")
@@ -356,7 +356,7 @@ func onRegisterUser(userId UserId, name UserName) error {
 	state.users[userId] = name
 
 	for _, conn := range state.connections {
-		conn.purple.userRegistered <- state.users
+		conn.channels.userRegistered <- state.users
 	}
 
 	return nil
@@ -371,7 +371,7 @@ func onOpenGame(userId UserId, name UserName) error {
 	state.games[gameId] = &Game{[]Action{}, map[UserId]UserName{userId: name}, name}
 
 	for _, conn := range state.connections {
-		conn.purple.gameOpened <- state.games
+		conn.channels.gameOpened <- state.games
 	}
 
 	return nil
@@ -385,7 +385,7 @@ func onJoinGame(userId UserId, userName UserName, gameId GameId) error {
 	state.games[gameId].Players[userId] = userName
 
 	for _, conn := range state.connections {
-		conn.purple.gameOpened <- state.games
+		conn.channels.gameOpened <- state.games
 	}
 
 	return nil
