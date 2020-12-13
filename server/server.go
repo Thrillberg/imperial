@@ -111,8 +111,8 @@ const (
 // Conn wraps a websocket.Conn with convenience methods and message
 // receipt handlers.
 type Conn struct {
-	conn   *websocket.Conn
-	userId UserId
+	conn     *websocket.Conn
+	userId   UserId
 	channels *channels
 }
 
