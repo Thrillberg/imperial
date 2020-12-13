@@ -140,7 +140,10 @@ func NewConn(ws *websocket.Conn, userId UserId) *Conn {
 		userId:   userId,
 		purple: &purple{
 			registerUser:   make(chan UserName),
-			userRegistered: make(chan map[UserId]UserName),
+			userRegistered: make(chan map[UserId]UserName, 1),
+			openGame:       make(chan UserName),
+			gameOpened:     make(chan map[GameId]*Game, 1),
+			joinGame:       make(chan JoinGamePayload),
 		},
 	}
 }
@@ -148,6 +151,9 @@ func NewConn(ws *websocket.Conn, userId UserId) *Conn {
 type purple struct {
 	registerUser   chan UserName
 	userRegistered chan map[UserId]UserName
+	openGame       chan UserName
+	gameOpened     chan map[GameId]*Game
+	joinGame       chan JoinGamePayload
 }
 
 func (p *purple) RegisterUser() <-chan UserName {
@@ -156,6 +162,24 @@ func (p *purple) RegisterUser() <-chan UserName {
 
 func (p *purple) UserRegistered() chan<- map[UserId]UserName {
 	return p.userRegistered
+}
+
+func (p *purple) OpenGame() <-chan UserName {
+	return p.openGame
+}
+
+func (p *purple) GameOpened() chan<- map[GameId]*Game {
+	return p.gameOpened
+}
+
+func (p *purple) JoinGame() <-chan JoinGamePayload {
+	return p.joinGame
+}
+
+type JoinGamePayload struct {
+	userId   UserId
+	userName UserName
+	gameId   GameId
 }
 
 // write wraps websocket.Conn.WriteJSON
@@ -242,6 +266,14 @@ func (c *Conn) Listen() {
 		}
 		if e.Kind == KindRegisterUser {
 			c.purple.registerUser <- UserName(e.Data["name"])
+		} else if e.Kind == KindOpenGame {
+			c.purple.openGame <- UserName(e.Data["host"])
+		} else if e.Kind == KindJoinGame {
+			c.purple.joinGame <- JoinGamePayload{
+				UserId(e.Data["userId"]),
+				UserName(e.Data["userName"]),
+				GameId(e.Data["gameId"]),
+			}
 		} else {
 			h, ok := c.handlers[e.Kind]
 			if !ok {
@@ -281,6 +313,18 @@ func handleWebsocket(w http.ResponseWriter, r *http.Request) {
 				if err := c.UserRegistered(users); err != nil {
 					log.Printf("UserRegistered: %v", err)
 				}
+			case host := <-c.purple.OpenGame():
+				onOpenGame(userId, host)
+			case games := <-c.purple.gameOpened:
+				if err := c.GameOpened(games); err != nil {
+					log.Printf("GameOpeend: %v", err)
+				}
+			case joinGamePayload := <-c.purple.JoinGame():
+				onJoinGame(
+					joinGamePayload.userId,
+					joinGamePayload.userName,
+					joinGamePayload.gameId,
+				)
 			case <-r.Context().Done():
 				log.Println("request closed")
 				return
@@ -288,8 +332,8 @@ func handleWebsocket(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 	//c.Register(KindRegisterUser, onRegisterUser)
-	c.Register(KindOpenGame, onOpenGame)
-	c.Register(KindJoinGame, onJoinGame)
+	//c.Register(KindOpenGame, onOpenGame)
+	//c.Register(KindJoinGame, onJoinGame)
 	c.Register(KindTick, onTick)
 
 	if err := c.UpdateState(userId); err != nil {
@@ -329,22 +373,13 @@ func onRegisterUser(userId UserId, name UserName) error {
 	state.users[userId] = name
 
 	for _, conn := range state.connections {
-		conn.purple.UserRegistered() <- state.users
-		//if err := conn.UserRegistered(state.users); err != nil {
-		//	log.Println(err, state.users, "UserRegistered")
-		//	return nil
-		//}
+		conn.purple.userRegistered <- state.users
 	}
 
 	return nil
 }
 
-func onOpenGame(c *Conn, data Data) error {
-	if err := data.Validate("host"); err != nil {
-		return err
-	}
-	name := UserName(data["host"])
-	userId := c.userId
+func onOpenGame(userId UserId, name UserName) error {
 	log.Printf("%s: %s(%s) is opening a game\n", KindOpenGame, name, userId)
 
 	gameId := NewGameId()
@@ -353,21 +388,13 @@ func onOpenGame(c *Conn, data Data) error {
 	state.games[gameId] = &Game{[]Action{}, map[UserId]UserName{userId: name}, name}
 
 	for _, conn := range state.connections {
-		if err := conn.GameOpened(state.games); err != nil {
-			return nil
-		}
+		conn.purple.gameOpened <- state.games
 	}
 
 	return nil
 }
 
-func onJoinGame(c *Conn, data Data) error {
-	if err := data.Validate("userName", "userId", "gameId"); err != nil {
-		return err
-	}
-	userName := UserName(data["userName"])
-	userId := UserId(data["userId"])
-	gameId := GameId(data["gameId"])
+func onJoinGame(userId UserId, userName UserName, gameId GameId) error {
 	log.Printf("%s: %s(%s) is joining a game(%s)\n", KindJoinGame, userName, userId, gameId)
 
 	state.Lock()
@@ -375,9 +402,7 @@ func onJoinGame(c *Conn, data Data) error {
 	state.games[gameId].Players[userId] = userName
 
 	for _, conn := range state.connections {
-		if err := conn.GameOpened(state.games); err != nil {
-			return nil
-		}
+		conn.purple.gameOpened <- state.games
 	}
 
 	return nil
