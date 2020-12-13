@@ -92,12 +92,12 @@ const (
 	// a name.
 	KindRegisterUser = Kind("registerUser")
 	// KindUpdateUsers is sent to clients upon WebSockets connection and
-  // when a user registers a name.
+	// when a user registers a name.
 	KindUpdateUsers = Kind("updateUsers")
 	// KindOpenGame is received from clients when they open a new game.
 	KindOpenGame = Kind("openGame")
 	// KindUpdateGames is sent to the clients upon WebSockets connection and
-  // when a user opens a new game.
+	// when a user opens a new game.
 	KindUpdateGames = Kind("updateGames")
 	// KindJoinGame is received from clients when they join a game.
 	KindJoinGame = Kind("joinGame")
@@ -128,6 +128,7 @@ func NewConn(ws *websocket.Conn, userId UserId) *Conn {
 			openGame:       make(chan UserName),
 			gameOpened:     make(chan map[GameId]*Game, 1),
 			joinGame:       make(chan JoinGamePayload),
+			gameJoined:     make(chan map[GameId]*Game, 1),
 			tick:           make(chan TickPayload),
 		},
 	}
@@ -139,6 +140,7 @@ type channels struct {
 	openGame       chan UserName
 	gameOpened     chan map[GameId]*Game
 	joinGame       chan JoinGamePayload
+	gameJoined     chan map[GameId]*Game
 	tick           chan TickPayload
 }
 
@@ -160,6 +162,10 @@ func (p *channels) GameOpened() chan<- map[GameId]*Game {
 
 func (p *channels) JoinGame() <-chan JoinGamePayload {
 	return p.joinGame
+}
+
+func (p *channels) GameJoined() chan<- map[GameId]*Game {
+	return p.gameJoined
 }
 
 func (p *channels) Tick() <-chan TickPayload {
@@ -311,6 +317,10 @@ func handleWebsocket(w http.ResponseWriter, r *http.Request) {
 					joinGamePayload.userName,
 					joinGamePayload.gameId,
 				)
+			case games := <-c.channels.gameJoined:
+				if err := c.UpdateGames(games); err != nil {
+					log.Printf("UpdateGames: %v", err)
+				}
 			case tickPayload := <-c.channels.Tick():
 				onTick(tickPayload.gameId, tickPayload.action)
 			case <-r.Context().Done():
@@ -386,7 +396,7 @@ func onJoinGame(userId UserId, userName UserName, gameId GameId) error {
 	state.games[gameId].Players[userId] = userName
 
 	for _, conn := range state.connections {
-		conn.channels.gameOpened <- state.games
+		conn.channels.gameJoined <- state.games
 	}
 
 	return nil

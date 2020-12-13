@@ -185,7 +185,7 @@ export default {
     };
   },
   created() {
-    apiClient.onUserRegistered(({ users }) => {
+    apiClient.onUpdateUsers(({ users }) => {
       this.users = new Set(JSON.parse(users));
       for (const user of this.users) {
         if (this.$cookies.get("userId") === user.id) {
@@ -193,7 +193,7 @@ export default {
         }
       }
     });
-    apiClient.onGameOpened(({ games }) => {
+    apiClient.onUpdateGames(({ games }) => {
       const parsedGames = JSON.parse(games);
       const game = JSON.parse(
         parsedGames.find(game => game.id === this.$route.params.id).game
