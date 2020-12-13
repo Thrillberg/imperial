@@ -96,8 +96,9 @@ const (
 	KindUpdateUsers = Kind("updateUsers")
 	// KindOpenGame is received from clients when they open a new game.
 	KindOpenGame = Kind("openGame")
-	// KindGameOpened is sent to the clients when a user opens a new game.
-	KindGameOpened = Kind("gameOpened")
+	// KindUpdateGames is sent to the clients upon WebSockets connection and
+  // when a user opens a new game.
+	KindUpdateGames = Kind("updateGames")
 	// KindJoinGame is received from clients when they join a game.
 	KindJoinGame = Kind("joinGame")
 	// KindTick is received from clients when they register a
@@ -189,8 +190,8 @@ func (c *Conn) UpdateState(id UserId) error {
 		log.Println(state.users, "UpdateUsers")
 		return nil
 	}
-	if err := c.GameOpened(state.games); err != nil {
-		log.Println(state.games, "GameOpened")
+	if err := c.UpdateGames(state.games); err != nil {
+		log.Println(state.games, "UpdateGames")
 		return nil
 	}
 
@@ -213,8 +214,8 @@ func (c *Conn) UpdateUsers(users map[UserId]UserName) error {
 	})
 }
 
-// GameOpened sends a KindGameOpened message to the client.
-func (c *Conn) GameOpened(games map[GameId]*Game) error {
+// UpdateGames sends a KindUpdateGames message to the client.
+func (c *Conn) UpdateGames(games map[GameId]*Game) error {
 	var gamesSlice = []map[string]string{}
 	for key, val := range games {
 		parsedVal, _ := json.Marshal(val)
@@ -223,7 +224,7 @@ func (c *Conn) GameOpened(games map[GameId]*Game) error {
 	gamesList, _ := json.Marshal(gamesSlice)
 
 	return c.write(&Envelope{
-		Kind: KindGameOpened,
+		Kind: KindUpdateGames,
 		Data: map[string]string{
 			"games": string(gamesList),
 		},
@@ -301,8 +302,8 @@ func handleWebsocket(w http.ResponseWriter, r *http.Request) {
 			case host := <-c.channels.OpenGame():
 				onOpenGame(userId, host)
 			case games := <-c.channels.gameOpened:
-				if err := c.GameOpened(games); err != nil {
-					log.Printf("GameOpeend: %v", err)
+				if err := c.UpdateGames(games); err != nil {
+					log.Printf("UpdateGames: %v", err)
 				}
 			case joinGamePayload := <-c.channels.JoinGame():
 				onJoinGame(

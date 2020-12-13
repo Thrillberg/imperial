@@ -89,7 +89,7 @@ export default {
         }
       }
     });
-    apiClient.onGameOpened(({ games }) => {
+    apiClient.onUpdateGames(({ games }) => {
       const parsedGames = JSON.parse(games);
       this.games = parsedGames.map(game => {
         const parsedGame = JSON.parse(game.game);
