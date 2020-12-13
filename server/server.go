@@ -144,6 +144,7 @@ func NewConn(ws *websocket.Conn, userId UserId) *Conn {
 			openGame:       make(chan UserName),
 			gameOpened:     make(chan map[GameId]*Game, 1),
 			joinGame:       make(chan JoinGamePayload),
+			tick:           make(chan TickPayload),
 		},
 	}
 }
@@ -154,6 +155,7 @@ type purple struct {
 	openGame       chan UserName
 	gameOpened     chan map[GameId]*Game
 	joinGame       chan JoinGamePayload
+	tick           chan TickPayload
 }
 
 func (p *purple) RegisterUser() <-chan UserName {
@@ -176,10 +178,19 @@ func (p *purple) JoinGame() <-chan JoinGamePayload {
 	return p.joinGame
 }
 
+func (p *purple) Tick() <-chan TickPayload {
+	return p.tick
+}
+
 type JoinGamePayload struct {
 	userId   UserId
 	userName UserName
 	gameId   GameId
+}
+
+type TickPayload struct {
+	gameId GameId
+	action Action
 }
 
 // write wraps websocket.Conn.WriteJSON
@@ -274,6 +285,11 @@ func (c *Conn) Listen() {
 				UserName(e.Data["userName"]),
 				GameId(e.Data["gameId"]),
 			}
+		} else if e.Kind == KindTick {
+			c.purple.tick <- TickPayload{
+				GameId(e.Data["gameId"]),
+				Action(e.Data["action"]),
+			}
 		} else {
 			h, ok := c.handlers[e.Kind]
 			if !ok {
@@ -325,16 +341,16 @@ func handleWebsocket(w http.ResponseWriter, r *http.Request) {
 					joinGamePayload.userName,
 					joinGamePayload.gameId,
 				)
+			case tickPayload := <-c.purple.Tick():
+				var gameId GameId
+				json.Unmarshal([]byte(tickPayload.gameId), &gameId)
+				onTick(gameId, tickPayload.action)
 			case <-r.Context().Done():
 				log.Println("request closed")
 				return
 			}
 		}
 	}()
-	//c.Register(KindRegisterUser, onRegisterUser)
-	//c.Register(KindOpenGame, onOpenGame)
-	//c.Register(KindJoinGame, onJoinGame)
-	c.Register(KindTick, onTick)
 
 	if err := c.UpdateState(userId); err != nil {
 		log.Println(userId, "UpdateState")
@@ -408,26 +424,11 @@ func onJoinGame(userId UserId, userName UserName, gameId GameId) error {
 	return nil
 }
 
-func onTick(c *Conn, data Data) error {
-	if err := data.Validate("gameId", "action"); err != nil {
-		return err
-	}
-	var action Action
-	actionErr := json.Unmarshal([]byte(data["action"]), &action)
-	if actionErr != nil {
-		fmt.Println("action error:", actionErr)
-	}
-
-	var gameId GameId
-	gameIdErr := json.Unmarshal([]byte(data["gameId"]), &gameId)
-	if gameIdErr != nil {
-		fmt.Println("gameId error:", gameIdErr)
-	}
-
+func onTick(gameId GameId, action Action) error {
 	state.Lock()
 	defer state.Unlock()
-	state.games[gameId].Log = append(state.games[gameId].Log, action)
 
+	state.games[gameId].Log = append(state.games[gameId].Log, action)
 	log.Printf("%s: %s", KindTick, state.games[gameId].Log)
 
 	for _, conn := range state.connections {
