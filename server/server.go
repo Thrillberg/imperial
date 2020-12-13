@@ -7,7 +7,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strings"
 	"sync"
 
 	"github.com/google/uuid"
@@ -88,20 +87,6 @@ type Kind string
 
 type Data map[string]string
 
-// Validate checks a Data map for presence of the given keys.
-func (d Data) Validate(key ...string) error {
-	missing := []string{}
-	for _, k := range key {
-		if _, ok := d[k]; !ok {
-			missing = append(missing, k)
-		}
-	}
-	if len(missing) > 0 {
-		return fmt.Errorf("missing keys: %s (%v)", strings.Join(missing, ", "), d)
-	}
-	return nil
-}
-
 const (
 	// KindRegisterUser is received from clients when they register
 	// a name.
@@ -126,18 +111,16 @@ const (
 // Conn wraps a websocket.Conn with convenience methods and message
 // receipt handlers.
 type Conn struct {
-	conn     *websocket.Conn
-	handlers map[Kind]func(*Conn, Data) error
-	userId   UserId
-	purple   *purple
+	conn   *websocket.Conn
+	userId UserId
+	purple *purple
 }
 
 // NewConn allocates and initializes a new Conn.
 func NewConn(ws *websocket.Conn, userId UserId) *Conn {
 	return &Conn{
-		conn:     ws,
-		handlers: map[Kind]func(*Conn, Data) error{},
-		userId:   userId,
+		conn:   ws,
+		userId: userId,
 		purple: &purple{
 			registerUser:   make(chan UserName),
 			userRegistered: make(chan map[UserId]UserName, 1),
@@ -260,13 +243,6 @@ func (c *Conn) UpdateGameLog(gameId GameId, log []Action) error {
 	})
 }
 
-// Register is the way to listen for messages from the client. Only
-// one handler is allowed per Kind. Old handlers will be silently
-// overwritten by new ones.
-func (c *Conn) Register(k Kind, h func(*Conn, Data) error) {
-	c.handlers[k] = h
-}
-
 // Listen starts an infinite loop of reading messages from the client.
 func (c *Conn) Listen() {
 	for {
@@ -290,13 +266,6 @@ func (c *Conn) Listen() {
 				GameId(e.Data["gameId"]),
 				Action(e.Data["action"]),
 			}
-		} else {
-			h, ok := c.handlers[e.Kind]
-			if !ok {
-				log.Println("skipping handler", c, e.Kind)
-				continue
-			}
-			log.Println("handling", e.Kind, h(c, e.Data))
 		}
 	}
 }
