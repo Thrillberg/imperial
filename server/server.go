@@ -311,9 +311,7 @@ func handleWebsocket(w http.ResponseWriter, r *http.Request) {
 					joinGamePayload.gameId,
 				)
 			case tickPayload := <-c.purple.Tick():
-				var gameId GameId
-				json.Unmarshal([]byte(tickPayload.gameId), &gameId)
-				onTick(gameId, tickPayload.action)
+				onTick(tickPayload.gameId, tickPayload.action)
 			case <-r.Context().Done():
 				log.Println("request closed")
 				return
