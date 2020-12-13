@@ -7,7 +7,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strings"
 	"sync"
 
 	"github.com/google/uuid"
@@ -88,20 +87,6 @@ type Kind string
 
 type Data map[string]string
 
-// Validate checks a Data map for presence of the given keys.
-func (d Data) Validate(key ...string) error {
-	missing := []string{}
-	for _, k := range key {
-		if _, ok := d[k]; !ok {
-			missing = append(missing, k)
-		}
-	}
-	if len(missing) > 0 {
-		return fmt.Errorf("missing keys: %s (%v)", strings.Join(missing, ", "), d)
-	}
-	return nil
-}
-
 const (
 	// KindRegisterUser is received from clients when they register
 	// a name.
@@ -127,17 +112,68 @@ const (
 // receipt handlers.
 type Conn struct {
 	conn     *websocket.Conn
-	handlers map[Kind]func(*Conn, Data) error
 	userId   UserId
+	channels *channels
 }
 
 // NewConn allocates and initializes a new Conn.
 func NewConn(ws *websocket.Conn, userId UserId) *Conn {
 	return &Conn{
-		conn:     ws,
-		handlers: map[Kind]func(*Conn, Data) error{},
-		userId:   userId,
+		conn:   ws,
+		userId: userId,
+		channels: &channels{
+			registerUser:   make(chan UserName),
+			userRegistered: make(chan map[UserId]UserName, 1),
+			openGame:       make(chan UserName),
+			gameOpened:     make(chan map[GameId]*Game, 1),
+			joinGame:       make(chan JoinGamePayload),
+			tick:           make(chan TickPayload),
+		},
 	}
+}
+
+type channels struct {
+	registerUser   chan UserName
+	userRegistered chan map[UserId]UserName
+	openGame       chan UserName
+	gameOpened     chan map[GameId]*Game
+	joinGame       chan JoinGamePayload
+	tick           chan TickPayload
+}
+
+func (p *channels) RegisterUser() <-chan UserName {
+	return p.registerUser
+}
+
+func (p *channels) UserRegistered() chan<- map[UserId]UserName {
+	return p.userRegistered
+}
+
+func (p *channels) OpenGame() <-chan UserName {
+	return p.openGame
+}
+
+func (p *channels) GameOpened() chan<- map[GameId]*Game {
+	return p.gameOpened
+}
+
+func (p *channels) JoinGame() <-chan JoinGamePayload {
+	return p.joinGame
+}
+
+func (p *channels) Tick() <-chan TickPayload {
+	return p.tick
+}
+
+type JoinGamePayload struct {
+	userId   UserId
+	userName UserName
+	gameId   GameId
+}
+
+type TickPayload struct {
+	gameId GameId
+	action Action
 }
 
 // write wraps websocket.Conn.WriteJSON
@@ -207,13 +243,6 @@ func (c *Conn) UpdateGameLog(gameId GameId, log []Action) error {
 	})
 }
 
-// Register is the way to listen for messages from the client. Only
-// one handler is allowed per Kind. Old handlers will be silently
-// overwritten by new ones.
-func (c *Conn) Register(k Kind, h func(*Conn, Data) error) {
-	c.handlers[k] = h
-}
-
 // Listen starts an infinite loop of reading messages from the client.
 func (c *Conn) Listen() {
 	for {
@@ -222,12 +251,22 @@ func (c *Conn) Listen() {
 			log.Println("read error", err)
 			return
 		}
-		h, ok := c.handlers[e.Kind]
-		if !ok {
-			log.Println("skipping handler", c, e.Kind)
-			continue
+		if e.Kind == KindRegisterUser {
+			c.channels.registerUser <- UserName(e.Data["name"])
+		} else if e.Kind == KindOpenGame {
+			c.channels.openGame <- UserName(e.Data["host"])
+		} else if e.Kind == KindJoinGame {
+			c.channels.joinGame <- JoinGamePayload{
+				UserId(e.Data["userId"]),
+				UserName(e.Data["userName"]),
+				GameId(e.Data["gameId"]),
+			}
+		} else if e.Kind == KindTick {
+			c.channels.tick <- TickPayload{
+				GameId(e.Data["gameId"]),
+				Action(e.Data["action"]),
+			}
 		}
-		log.Println("handling", e.Kind, h(c, e.Data))
 	}
 }
 
@@ -250,10 +289,35 @@ func handleWebsocket(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	c := NewConn(ws, userId)
-	c.Register(KindRegisterUser, onRegisterUser)
-	c.Register(KindOpenGame, onOpenGame)
-	c.Register(KindJoinGame, onJoinGame)
-	c.Register(KindTick, onTick)
+	go func() {
+		for {
+			select {
+			case userName := <-c.channels.RegisterUser():
+				onRegisterUser(userId, userName)
+			case users := <-c.channels.userRegistered:
+				if err := c.UserRegistered(users); err != nil {
+					log.Printf("UserRegistered: %v", err)
+				}
+			case host := <-c.channels.OpenGame():
+				onOpenGame(userId, host)
+			case games := <-c.channels.gameOpened:
+				if err := c.GameOpened(games); err != nil {
+					log.Printf("GameOpeend: %v", err)
+				}
+			case joinGamePayload := <-c.channels.JoinGame():
+				onJoinGame(
+					joinGamePayload.userId,
+					joinGamePayload.userName,
+					joinGamePayload.gameId,
+				)
+			case tickPayload := <-c.channels.Tick():
+				onTick(tickPayload.gameId, tickPayload.action)
+			case <-r.Context().Done():
+				log.Println("request closed")
+				return
+			}
+		}
+	}()
 
 	if err := c.UpdateState(userId); err != nil {
 		log.Println(userId, "UpdateState")
@@ -284,12 +348,7 @@ func mintCookie(userId UserId) *http.Cookie {
 	return c
 }
 
-func onRegisterUser(c *Conn, data Data) error {
-	if err := data.Validate("name"); err != nil {
-		return err
-	}
-	name := UserName(data["name"])
-	userId := c.userId
+func onRegisterUser(userId UserId, name UserName) error {
 	log.Printf("%s: %s(%s)\n", KindRegisterUser, name, userId)
 
 	state.Lock()
@@ -297,21 +356,13 @@ func onRegisterUser(c *Conn, data Data) error {
 	state.users[userId] = name
 
 	for _, conn := range state.connections {
-		if err := conn.UserRegistered(state.users); err != nil {
-			log.Println(err, state.users, "UserRegistered")
-			return nil
-		}
+		conn.channels.userRegistered <- state.users
 	}
 
 	return nil
 }
 
-func onOpenGame(c *Conn, data Data) error {
-	if err := data.Validate("host"); err != nil {
-		return err
-	}
-	name := UserName(data["host"])
-	userId := c.userId
+func onOpenGame(userId UserId, name UserName) error {
 	log.Printf("%s: %s(%s) is opening a game\n", KindOpenGame, name, userId)
 
 	gameId := NewGameId()
@@ -320,21 +371,13 @@ func onOpenGame(c *Conn, data Data) error {
 	state.games[gameId] = &Game{[]Action{}, map[UserId]UserName{userId: name}, name}
 
 	for _, conn := range state.connections {
-		if err := conn.GameOpened(state.games); err != nil {
-			return nil
-		}
+		conn.channels.gameOpened <- state.games
 	}
 
 	return nil
 }
 
-func onJoinGame(c *Conn, data Data) error {
-	if err := data.Validate("userName", "userId", "gameId"); err != nil {
-		return err
-	}
-	userName := UserName(data["userName"])
-	userId := UserId(data["userId"])
-	gameId := GameId(data["gameId"])
+func onJoinGame(userId UserId, userName UserName, gameId GameId) error {
 	log.Printf("%s: %s(%s) is joining a game(%s)\n", KindJoinGame, userName, userId, gameId)
 
 	state.Lock()
@@ -342,34 +385,17 @@ func onJoinGame(c *Conn, data Data) error {
 	state.games[gameId].Players[userId] = userName
 
 	for _, conn := range state.connections {
-		if err := conn.GameOpened(state.games); err != nil {
-			return nil
-		}
+		conn.channels.gameOpened <- state.games
 	}
 
 	return nil
 }
 
-func onTick(c *Conn, data Data) error {
-	if err := data.Validate("gameId", "action"); err != nil {
-		return err
-	}
-	var action Action
-	actionErr := json.Unmarshal([]byte(data["action"]), &action)
-	if actionErr != nil {
-		fmt.Println("action error:", actionErr)
-	}
-
-	var gameId GameId
-	gameIdErr := json.Unmarshal([]byte(data["gameId"]), &gameId)
-	if gameIdErr != nil {
-		fmt.Println("gameId error:", gameIdErr)
-	}
-
+func onTick(gameId GameId, action Action) error {
 	state.Lock()
 	defer state.Unlock()
-	state.games[gameId].Log = append(state.games[gameId].Log, action)
 
+	state.games[gameId].Log = append(state.games[gameId].Log, action)
 	log.Printf("%s: %s", KindTick, state.games[gameId].Log)
 
 	for _, conn := range state.connections {
