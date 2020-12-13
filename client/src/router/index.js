@@ -40,11 +40,11 @@ class APIClient {
     this.handlers = {};
   }
 
-  onUserRegistered(cb) {
-    if (this.handlers["userRegistered"] !== undefined) {
+  onUpdateUsers(cb) {
+    if (this.handlers["updateUsers"] !== undefined) {
       throw new Error("there is already a handler defined");
     }
-    this.handlers["userRegistered"] = cb;
+    this.handlers["updateUsers"] = cb;
   }
 
   onGameOpened(cb) {

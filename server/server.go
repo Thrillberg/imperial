@@ -91,9 +91,9 @@ const (
 	// KindRegisterUser is received from clients when they register
 	// a name.
 	KindRegisterUser = Kind("registerUser")
-	// KindUserRegistered is sent to clients when a user registers a
-	// name.
-	KindUserRegistered = Kind("userRegistered")
+	// KindUpdateUsers is sent to clients upon WebSockets connection and
+  // when a user registers a name.
+	KindUpdateUsers = Kind("updateUsers")
 	// KindOpenGame is received from clients when they open a new game.
 	KindOpenGame = Kind("openGame")
 	// KindGameOpened is sent to the clients when a user opens a new game.
@@ -185,8 +185,8 @@ func (c *Conn) write(v interface{}) error {
 func (c *Conn) UpdateState(id UserId) error {
 	state.Lock()
 	defer state.Unlock()
-	if err := c.UserRegistered(state.users); err != nil {
-		log.Println(state.users, "UserRegistered")
+	if err := c.UpdateUsers(state.users); err != nil {
+		log.Println(state.users, "UpdateUsers")
 		return nil
 	}
 	if err := c.GameOpened(state.games); err != nil {
@@ -197,8 +197,8 @@ func (c *Conn) UpdateState(id UserId) error {
 	return nil
 }
 
-// UserRegistered sends a KindUserRegistered message to the client.
-func (c *Conn) UserRegistered(users map[UserId]UserName) error {
+// UpdateUsers sends a KindUpdateUsers message to the client.
+func (c *Conn) UpdateUsers(users map[UserId]UserName) error {
 	var usersSlice = []map[string]string{}
 	for key, val := range users {
 		usersSlice = append(usersSlice, map[string]string{"id": string(key), "name": string(val)})
@@ -206,7 +206,7 @@ func (c *Conn) UserRegistered(users map[UserId]UserName) error {
 	usersList, _ := json.Marshal(usersSlice)
 
 	return c.write(&Envelope{
-		Kind: KindUserRegistered,
+		Kind: KindUpdateUsers,
 		Data: map[string]string{
 			"users": string(usersList),
 		},
@@ -295,8 +295,8 @@ func handleWebsocket(w http.ResponseWriter, r *http.Request) {
 			case userName := <-c.channels.RegisterUser():
 				onRegisterUser(userId, userName)
 			case users := <-c.channels.userRegistered:
-				if err := c.UserRegistered(users); err != nil {
-					log.Printf("UserRegistered: %v", err)
+				if err := c.UpdateUsers(users); err != nil {
+					log.Printf("UpdateUsers: %v", err)
 				}
 			case host := <-c.channels.OpenGame():
 				onOpenGame(userId, host)

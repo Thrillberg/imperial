@@ -81,7 +81,7 @@ export default {
     };
   },
   created() {
-    apiClient.onUserRegistered(({ users }) => {
+    apiClient.onUpdateUsers(({ users }) => {
       this.users = new Set(JSON.parse(users));
       for (const user of this.users) {
         if (this.$cookies.get("userId") === user.id) {
