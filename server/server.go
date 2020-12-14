@@ -130,6 +130,7 @@ func NewConn(ws *websocket.Conn, userId UserId) *Conn {
 			joinGame:       make(chan JoinGamePayload),
 			gameJoined:     make(chan map[GameId]*Game, 1),
 			tick:           make(chan TickPayload),
+			gameTicked:     make(chan map[string]string, 1),
 		},
 	}
 }
@@ -142,6 +143,7 @@ type channels struct {
 	joinGame       chan JoinGamePayload
 	gameJoined     chan map[GameId]*Game
 	tick           chan TickPayload
+	gameTicked     chan map[string]string
 }
 
 func (p *channels) RegisterUser() <-chan UserName {
@@ -170,6 +172,10 @@ func (p *channels) GameJoined() chan<- map[GameId]*Game {
 
 func (p *channels) Tick() <-chan TickPayload {
 	return p.tick
+}
+
+func (p *channels) GameTicked() chan<- map[string]string {
+	return p.gameTicked
 }
 
 type JoinGamePayload struct {
@@ -238,14 +244,12 @@ func (c *Conn) UpdateGames(games map[GameId]*Game) error {
 }
 
 // UpdateGameLog sends a KindUpdateGameLog message to the client.
-func (c *Conn) UpdateGameLog(gameId GameId, log []Action) error {
-	logList, _ := json.Marshal(log)
-
+func (c *Conn) UpdateGameLog(gameId string, gameLog string) error {
 	return c.write(&Envelope{
 		Kind: KindUpdateGameLog,
 		Data: map[string]string{
-			"gameId": string(gameId),
-			"log":    string(logList),
+			"gameId": gameId,
+			"log":    gameLog,
 		},
 	})
 }
@@ -323,6 +327,10 @@ func handleWebsocket(w http.ResponseWriter, r *http.Request) {
 				}
 			case tickPayload := <-c.channels.Tick():
 				onTick(tickPayload.gameId, tickPayload.action)
+			case game := <-c.channels.gameTicked:
+				if err := c.UpdateGameLog(game["gameId"], game["gameLog"]); err != nil {
+					log.Printf("UpdateGameLog: %v", err)
+				}
 			case <-r.Context().Done():
 				log.Println("request closed")
 				return
@@ -406,14 +414,19 @@ func onTick(gameId GameId, action Action) error {
 	state.Lock()
 	defer state.Unlock()
 
-	state.games[gameId].Log = append(state.games[gameId].Log, action)
-	log.Printf("%s: %s", KindTick, state.games[gameId].Log)
+	game := state.games[gameId]
 
-	for _, conn := range state.connections {
-		if err := conn.UpdateGameLog(gameId, state.games[gameId].Log); err != nil {
-			log.Println(state.games[gameId].Log, "UpdateGameLog")
-			return nil
-		}
+	game.Log = append(game.Log, action)
+	log.Printf("%s: %s", KindTick, game.Log)
+
+	connections := make([]*Conn, 0)
+	for userId := range game.Players {
+		connections = append(connections, state.connections[userId])
+	}
+
+	gameLog, _ := json.Marshal(game.Log)
+	for _, conn := range connections {
+		conn.channels.gameTicked <- map[string]string{"gameId": string(gameId), "gameLog": string(gameLog)}
 	}
 
 	return nil

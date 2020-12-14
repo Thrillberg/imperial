@@ -184,43 +184,12 @@ export default {
       purchasingBond: false
     };
   },
+  destroyed() {
+    apiClient.clearHandlers();
+  },
   created() {
-    apiClient.onUpdateUsers(({ users }) => {
-      this.users = new Set(JSON.parse(users));
-      for (const user of this.users) {
-        if (this.$cookies.get("userId") === user.id) {
-          this.name = user.name;
-        }
-      }
-    });
-    apiClient.onUpdateGames(({ games }) => {
-      const parsedGames = JSON.parse(games);
-      const game = JSON.parse(
-        parsedGames.find(game => game.id === this.$route.params.id).game
-      );
-      const players = Object.keys(game.players).map(key => {
-        return { id: key, name: game.players[key] };
-      });
-      this.players = new Set(players);
-      // The following map only exists because of our custom Nation type, which
-      // has weirdness when we attempt nation.when() in the setup file.
-      const gameLog = game.log.map(action => {
-        if (action.type === "initialize") {
-          action.payload.players = action.payload.players.map(player => {
-            return {
-              id: player.id,
-              nation: Nation[player.nation.value]
-            };
-          });
-        } else if (action.type === "rondel") {
-          action.payload.nation = Nation[action.payload.nation.value];
-        }
-        return action;
-      });
-      this.game = Imperial.fromLog(gameLog);
-      this.controllingPlayerName = [...this.players][0].name;
-    });
     apiClient.onUpdateGameLog(({ gameId, log }) => {
+      console.log("updating game loc", gameId, log);
       if (gameId === this.$route.params.id) {
         const rawLog = JSON.parse(log);
         // The following map only exists because of our custom Nation type, which
