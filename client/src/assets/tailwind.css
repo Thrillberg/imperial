@@ -38,5 +38,5 @@ ul {
 }
 
 .hoverable:hover {
-  filter: brightness(125%);
+  filter: url(#brightness);
 }

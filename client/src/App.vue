@@ -16,7 +16,7 @@ export default {
   data: () => {
     return { username: "", users: new Set(), games: new Set() };
   },
-  destroyed() {
+  beforeDestroy() {
     apiClient.clearHandlers();
   },
   created() {

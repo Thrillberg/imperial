@@ -2,7 +2,16 @@
   <g
     class="slot"
     v-bind:transform="'translate(100, 100) rotate(' + rotation + ')'"
+    @mouseover="hover = true"
+    @mouseleave="hover = false"
   >
+    <filter v-if="hover" id="brightness">
+      <feComponentTransfer>
+        <feFuncR type="linear" slope="2" />
+        <feFuncG type="linear" slope="2" />
+        <feFuncB type="linear" slope="2" />
+      </feComponentTransfer>
+    </filter>
     <path
       v-bind:id="rondel_slot.type"
       v-bind:fill="rondel_slot.color"
@@ -78,7 +87,8 @@ export default {
         Math.sin((2 * Math.PI) / slotCount),
         // Finish by closing the path.
         "Z"
-      ].join(" ")
+      ].join(" "),
+      hover: false
     };
   },
   methods: {
