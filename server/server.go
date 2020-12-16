@@ -101,6 +101,8 @@ const (
 	KindUpdateGames = Kind("updateGames")
 	// KindJoinGame is received from clients when they join a game.
 	KindJoinGame = Kind("joinGame")
+	// KindGetGameLog is received from clients when they navigate to a game.
+	KindGetGameLog = Kind("getGameLog")
 	// KindTick is received from clients when they register a
 	// new entry in the game log.
 	KindTick = Kind("tick")
@@ -129,6 +131,7 @@ func NewConn(ws *websocket.Conn, userId UserId) *Conn {
 			gameOpened:     make(chan map[GameId]*Game, 1),
 			joinGame:       make(chan JoinGamePayload),
 			gameJoined:     make(chan map[GameId]*Game, 1),
+			getGameLog:     make(chan GameId),
 			tick:           make(chan TickPayload),
 			gameTicked:     make(chan map[string]string, 1),
 		},
@@ -142,6 +145,7 @@ type channels struct {
 	gameOpened     chan map[GameId]*Game
 	joinGame       chan JoinGamePayload
 	gameJoined     chan map[GameId]*Game
+	getGameLog     chan GameId
 	tick           chan TickPayload
 	gameTicked     chan map[string]string
 }
@@ -168,6 +172,10 @@ func (p *channels) JoinGame() <-chan JoinGamePayload {
 
 func (p *channels) GameJoined() chan<- map[GameId]*Game {
 	return p.gameJoined
+}
+
+func (p *channels) GetGameLog() <-chan GameId {
+	return p.getGameLog
 }
 
 func (p *channels) Tick() <-chan TickPayload {
@@ -272,6 +280,8 @@ func (c *Conn) Listen() {
 				UserName(e.Data["userName"]),
 				GameId(e.Data["gameId"]),
 			}
+		} else if e.Kind == KindGetGameLog {
+			c.channels.getGameLog <- GameId(e.Data["gameId"])
 		} else if e.Kind == KindTick {
 			c.channels.tick <- TickPayload{
 				GameId(e.Data["gameId"]),
@@ -324,6 +334,12 @@ func handleWebsocket(w http.ResponseWriter, r *http.Request) {
 			case games := <-c.channels.gameJoined:
 				if err := c.UpdateGames(games); err != nil {
 					log.Printf("UpdateGames: %v", err)
+				}
+			case gameId := <-c.channels.getGameLog:
+				rawGameLog := state.games[gameId].Log
+				gameLog, _ := json.Marshal(rawGameLog)
+				if err := c.UpdateGameLog(string(gameId), string(gameLog)); err != nil {
+					log.Printf("UpdateGameLog: %v", err)
 				}
 			case tickPayload := <-c.channels.Tick():
 				onTick(tickPayload.gameId, tickPayload.action)

@@ -66,7 +66,6 @@
 
 <script>
 import Action from "../../lib/action.js";
-import Imperial from "../../lib/imperial.js";
 import { Nation } from "../../lib/constants.js";
 import { apiClient } from "../router/index.js";
 
@@ -79,6 +78,12 @@ export default {
     };
   },
   props: ["username", "users", "games"],
+  beforeDestroy() {
+    apiClient.clearHandlers();
+  },
+  mounted() {
+    apiClient.onUpdateGameLog(() => {});
+  },
   methods: {
     registerUser: function(name) {
       apiClient.registerUser(name);
@@ -92,7 +97,8 @@ export default {
       apiClient.openGame(this.username);
     },
     gameStarted: function(gameId) {
-      if (this.games.find(game => game.id === gameId).log.length > 0) {
+      const players = this.games.find(game => game.id === gameId).players;
+      if (Object.keys(players).length === 2) {
         return true;
       } else {
         return false;
@@ -105,13 +111,14 @@ export default {
     },
     joinGame: function(gameId) {
       apiClient.joinGame(this.$cookies.get("userId"), gameId, this.username);
-
-      let host = this.games.find(game => game.id === gameId).host;
-      let players = this.assignNations([host, this.username]);
+      const game = this.games.find(game => game.id === gameId);
+      const rawPlayers = {
+        [this.$cookies.get("userId")]: this.username,
+        ...game.players
+      };
+      const players = this.assignNations(Object.values(rawPlayers));
       const action = Action.initialize({ players });
-      this.game = Imperial.fromLog([action]);
-
-      apiClient.tick(gameId, action);
+      apiClient.tick(game.id, action);
     },
     // TODO: Don't hardcode the nation assignment, figure out how to accept 2-6 players
     assignNations: function(players) {

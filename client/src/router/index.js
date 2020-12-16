@@ -82,6 +82,13 @@ class APIClient {
     });
   }
 
+  getGameLog(gameId) {
+    return this.send({
+      kind: "getGameLog",
+      data: { gameId }
+    });
+  }
+
   tick(gameId, action) {
     return this.send({
       kind: "tick",
