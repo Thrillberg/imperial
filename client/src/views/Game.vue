@@ -23,7 +23,7 @@
       <Rondel
         v-bind:soloMode="soloMode"
         v-bind:game="game"
-        v-bind:name="name"
+        v-bind:name="username"
         v-on:tick-with-action="tickWithAction"
       ></Rondel>
     </div>
@@ -88,10 +88,10 @@ export default {
     Rondel,
     TaxChart
   },
+  props: ["username", "users", "games"],
   data: () => {
     const unstartedGame = {
       availableActions: new Set(),
-      name: "",
       nations: new Map([
         [
           Nation.AH,
@@ -184,48 +184,17 @@ export default {
       purchasingBond: false
     };
   },
-  created() {
-    apiClient.onUserRegistered(({ users }) => {
-      this.users = new Set(JSON.parse(users));
-      for (const user of this.users) {
-        if (this.$cookies.get("userId") === user.id) {
-          this.name = user.name;
-        }
-      }
-    });
-    apiClient.onGameOpened(({ games }) => {
-      const parsedGames = JSON.parse(games);
-      const game = JSON.parse(
-        parsedGames.find(game => game.id === this.$route.params.id).game
-      );
-      const players = Object.keys(game.players).map(key => {
-        return { id: key, name: game.players[key] };
-      });
-      this.players = new Set(players);
-      // The following map only exists because of our custom Nation type, which
-      // has weirdness when we attempt nation.when() in the setup file.
-      const gameLog = game.log.map(action => {
-        if (action.type === "initialize") {
-          action.payload.players = action.payload.players.map(player => {
-            return {
-              id: player.id,
-              nation: Nation[player.nation.value]
-            };
-          });
-        } else if (action.type === "rondel") {
-          action.payload.nation = Nation[action.payload.nation.value];
-        }
-        return action;
-      });
-      this.game = Imperial.fromLog(gameLog);
-      this.controllingPlayerName = [...this.players][0].name;
-    });
+  beforeDestroy() {
+    apiClient.clearHandlers();
+  },
+  mounted() {
     apiClient.onUpdateGameLog(({ gameId, log }) => {
       if (gameId === this.$route.params.id) {
         const rawLog = JSON.parse(log);
         // The following map only exists because of our custom Nation type, which
         // has weirdness when we attempt nation.when() in the setup file.
-        const gameLog = rawLog.map(action => {
+        const gameLog = rawLog.map(rawAction => {
+          const action = JSON.parse(rawAction);
           if (action.type === "initialize") {
             action.payload.players = action.payload.players.map(player => {
               return {
@@ -239,9 +208,11 @@ export default {
           return action;
         });
         this.game = Imperial.fromLog(gameLog);
+        this.controllingPlayerName = this.game.currentPlayerName;
         this.gameStarted = true;
       }
     });
+    apiClient.getGameLog(this.$route.params.id);
   },
   methods: {
     validProvinces() {
@@ -309,17 +280,7 @@ export default {
     tickWithAction: function(action) {
       this.game.tick(action);
       this.controllingPlayerName = this.game.currentPlayerName;
-      if (!this.soloMode) {
-        this.webSocket.send(
-          JSON.stringify({
-            kind: "tick",
-            data: {
-              gameId: JSON.stringify(this.$route.params.id),
-              action: JSON.stringify(action)
-            }
-          })
-        );
-      }
+      apiClient.tick(this.$route.params.id, action);
       if (action.type === "rondel" && action.payload.slot === "import") {
         this.importStatus.active = true;
       }

@@ -91,15 +91,18 @@ const (
 	// KindRegisterUser is received from clients when they register
 	// a name.
 	KindRegisterUser = Kind("registerUser")
-	// KindUserRegistered is sent to clients when a user registers a
-	// name.
-	KindUserRegistered = Kind("userRegistered")
+	// KindUpdateUsers is sent to clients upon WebSockets connection and
+	// when a user registers a name.
+	KindUpdateUsers = Kind("updateUsers")
 	// KindOpenGame is received from clients when they open a new game.
 	KindOpenGame = Kind("openGame")
-	// KindGameOpened is sent to the clients when a user opens a new game.
-	KindGameOpened = Kind("gameOpened")
+	// KindUpdateGames is sent to the clients upon WebSockets connection and
+	// when a user opens a new game.
+	KindUpdateGames = Kind("updateGames")
 	// KindJoinGame is received from clients when they join a game.
 	KindJoinGame = Kind("joinGame")
+	// KindGetGameLog is received from clients when they navigate to a game.
+	KindGetGameLog = Kind("getGameLog")
 	// KindTick is received from clients when they register a
 	// new entry in the game log.
 	KindTick = Kind("tick")
@@ -127,7 +130,10 @@ func NewConn(ws *websocket.Conn, userId UserId) *Conn {
 			openGame:       make(chan UserName),
 			gameOpened:     make(chan map[GameId]*Game, 1),
 			joinGame:       make(chan JoinGamePayload),
+			gameJoined:     make(chan map[GameId]*Game, 1),
+			getGameLog:     make(chan GameId),
 			tick:           make(chan TickPayload),
+			gameTicked:     make(chan map[string]string, 1),
 		},
 	}
 }
@@ -138,7 +144,10 @@ type channels struct {
 	openGame       chan UserName
 	gameOpened     chan map[GameId]*Game
 	joinGame       chan JoinGamePayload
+	gameJoined     chan map[GameId]*Game
+	getGameLog     chan GameId
 	tick           chan TickPayload
+	gameTicked     chan map[string]string
 }
 
 func (p *channels) RegisterUser() <-chan UserName {
@@ -161,8 +170,20 @@ func (p *channels) JoinGame() <-chan JoinGamePayload {
 	return p.joinGame
 }
 
+func (p *channels) GameJoined() chan<- map[GameId]*Game {
+	return p.gameJoined
+}
+
+func (p *channels) GetGameLog() <-chan GameId {
+	return p.getGameLog
+}
+
 func (p *channels) Tick() <-chan TickPayload {
 	return p.tick
+}
+
+func (p *channels) GameTicked() chan<- map[string]string {
+	return p.gameTicked
 }
 
 type JoinGamePayload struct {
@@ -185,20 +206,20 @@ func (c *Conn) write(v interface{}) error {
 func (c *Conn) UpdateState(id UserId) error {
 	state.Lock()
 	defer state.Unlock()
-	if err := c.UserRegistered(state.users); err != nil {
-		log.Println(state.users, "UserRegistered")
+	if err := c.UpdateUsers(state.users); err != nil {
+		log.Println(state.users, "UpdateUsers")
 		return nil
 	}
-	if err := c.GameOpened(state.games); err != nil {
-		log.Println(state.games, "GameOpened")
+	if err := c.UpdateGames(state.games); err != nil {
+		log.Println(state.games, "UpdateGames")
 		return nil
 	}
 
 	return nil
 }
 
-// UserRegistered sends a KindUserRegistered message to the client.
-func (c *Conn) UserRegistered(users map[UserId]UserName) error {
+// UpdateUsers sends a KindUpdateUsers message to the client.
+func (c *Conn) UpdateUsers(users map[UserId]UserName) error {
 	var usersSlice = []map[string]string{}
 	for key, val := range users {
 		usersSlice = append(usersSlice, map[string]string{"id": string(key), "name": string(val)})
@@ -206,15 +227,15 @@ func (c *Conn) UserRegistered(users map[UserId]UserName) error {
 	usersList, _ := json.Marshal(usersSlice)
 
 	return c.write(&Envelope{
-		Kind: KindUserRegistered,
+		Kind: KindUpdateUsers,
 		Data: map[string]string{
 			"users": string(usersList),
 		},
 	})
 }
 
-// GameOpened sends a KindGameOpened message to the client.
-func (c *Conn) GameOpened(games map[GameId]*Game) error {
+// UpdateGames sends a KindUpdateGames message to the client.
+func (c *Conn) UpdateGames(games map[GameId]*Game) error {
 	var gamesSlice = []map[string]string{}
 	for key, val := range games {
 		parsedVal, _ := json.Marshal(val)
@@ -223,7 +244,7 @@ func (c *Conn) GameOpened(games map[GameId]*Game) error {
 	gamesList, _ := json.Marshal(gamesSlice)
 
 	return c.write(&Envelope{
-		Kind: KindGameOpened,
+		Kind: KindUpdateGames,
 		Data: map[string]string{
 			"games": string(gamesList),
 		},
@@ -231,14 +252,12 @@ func (c *Conn) GameOpened(games map[GameId]*Game) error {
 }
 
 // UpdateGameLog sends a KindUpdateGameLog message to the client.
-func (c *Conn) UpdateGameLog(gameId GameId, log []Action) error {
-	logList, _ := json.Marshal(log)
-
+func (c *Conn) UpdateGameLog(gameId string, gameLog string) error {
 	return c.write(&Envelope{
 		Kind: KindUpdateGameLog,
 		Data: map[string]string{
-			"gameId": string(gameId),
-			"log":    string(logList),
+			"gameId": gameId,
+			"log":    gameLog,
 		},
 	})
 }
@@ -261,6 +280,8 @@ func (c *Conn) Listen() {
 				UserName(e.Data["userName"]),
 				GameId(e.Data["gameId"]),
 			}
+		} else if e.Kind == KindGetGameLog {
+			c.channels.getGameLog <- GameId(e.Data["gameId"])
 		} else if e.Kind == KindTick {
 			c.channels.tick <- TickPayload{
 				GameId(e.Data["gameId"]),
@@ -295,14 +316,14 @@ func handleWebsocket(w http.ResponseWriter, r *http.Request) {
 			case userName := <-c.channels.RegisterUser():
 				onRegisterUser(userId, userName)
 			case users := <-c.channels.userRegistered:
-				if err := c.UserRegistered(users); err != nil {
-					log.Printf("UserRegistered: %v", err)
+				if err := c.UpdateUsers(users); err != nil {
+					log.Printf("UpdateUsers: %v", err)
 				}
 			case host := <-c.channels.OpenGame():
 				onOpenGame(userId, host)
 			case games := <-c.channels.gameOpened:
-				if err := c.GameOpened(games); err != nil {
-					log.Printf("GameOpeend: %v", err)
+				if err := c.UpdateGames(games); err != nil {
+					log.Printf("UpdateGames: %v", err)
 				}
 			case joinGamePayload := <-c.channels.JoinGame():
 				onJoinGame(
@@ -310,8 +331,22 @@ func handleWebsocket(w http.ResponseWriter, r *http.Request) {
 					joinGamePayload.userName,
 					joinGamePayload.gameId,
 				)
+			case games := <-c.channels.gameJoined:
+				if err := c.UpdateGames(games); err != nil {
+					log.Printf("UpdateGames: %v", err)
+				}
+			case gameId := <-c.channels.getGameLog:
+				rawGameLog := state.games[gameId].Log
+				gameLog, _ := json.Marshal(rawGameLog)
+				if err := c.UpdateGameLog(string(gameId), string(gameLog)); err != nil {
+					log.Printf("UpdateGameLog: %v", err)
+				}
 			case tickPayload := <-c.channels.Tick():
 				onTick(tickPayload.gameId, tickPayload.action)
+			case game := <-c.channels.gameTicked:
+				if err := c.UpdateGameLog(game["gameId"], game["gameLog"]); err != nil {
+					log.Printf("UpdateGameLog: %v", err)
+				}
 			case <-r.Context().Done():
 				log.Println("request closed")
 				return
@@ -385,7 +420,7 @@ func onJoinGame(userId UserId, userName UserName, gameId GameId) error {
 	state.games[gameId].Players[userId] = userName
 
 	for _, conn := range state.connections {
-		conn.channels.gameOpened <- state.games
+		conn.channels.gameJoined <- state.games
 	}
 
 	return nil
@@ -395,14 +430,19 @@ func onTick(gameId GameId, action Action) error {
 	state.Lock()
 	defer state.Unlock()
 
-	state.games[gameId].Log = append(state.games[gameId].Log, action)
-	log.Printf("%s: %s", KindTick, state.games[gameId].Log)
+	game := state.games[gameId]
 
-	for _, conn := range state.connections {
-		if err := conn.UpdateGameLog(gameId, state.games[gameId].Log); err != nil {
-			log.Println(state.games[gameId].Log, "UpdateGameLog")
-			return nil
-		}
+	game.Log = append(game.Log, action)
+	log.Printf("%s: %s", KindTick, game.Log)
+
+	connections := make([]*Conn, 0)
+	for userId := range game.Players {
+		connections = append(connections, state.connections[userId])
+	}
+
+	gameLog, _ := json.Marshal(game.Log)
+	for _, conn := range connections {
+		conn.channels.gameTicked <- map[string]string{"gameId": string(gameId), "gameLog": string(gameLog)}
 	}
 
 	return nil

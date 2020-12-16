@@ -4,7 +4,7 @@
       <div>
         <div class="underline">Users:</div>
         <ul v-for="user in users" v-bind:key="user.id">
-          <li v-if="isMe(user)">
+          <li v-if="username === user.name">
             <strong>{{ user.name }}</strong>
           </li>
           <li v-else>
@@ -46,11 +46,11 @@
     <div v-else class="text-center mt-20">
       <input
         class="mx-auto m-6 border-black border-solid border p-3 rounded"
-        v-model="name"
+        v-model="tempName"
         placeholder="name"
       />
       <span
-        v-on:click="registerUser(name)"
+        v-on:click="registerUser(tempName)"
         class="rounded p-4 ml-4 bg-green-800 text-white cursor-pointer"
       >
         Register
@@ -66,7 +66,6 @@
 
 <script>
 import Action from "../../lib/action.js";
-import Imperial from "../../lib/imperial.js";
 import { Nation } from "../../lib/constants.js";
 import { apiClient } from "../router/index.js";
 
@@ -75,58 +74,31 @@ export default {
   data: () => {
     return {
       activeGames: new Set(),
-      games: new Set(),
-      name: "",
-      users: new Set()
+      tempName: ""
     };
   },
-  created() {
-    apiClient.onUserRegistered(({ users }) => {
-      this.users = new Set(JSON.parse(users));
-      for (const user of this.users) {
-        if (this.$cookies.get("userId") === user.id) {
-          this.name = user.name;
-        }
-      }
-    });
-    apiClient.onGameOpened(({ games }) => {
-      const parsedGames = JSON.parse(games);
-      this.games = parsedGames.map(game => {
-        const parsedGame = JSON.parse(game.game);
-        return {
-          host: parsedGame.host,
-          log: parsedGame.log,
-          players: parsedGame.players,
-          id: game.id
-        };
-      });
-    });
-    apiClient.onUpdateGameLog(({ gameId, log }) => {
-      const game = this.games.find(game => game.id === gameId);
-      game.log = JSON.parse(log);
-    });
-  },
-  destroyed: () => {
+  props: ["username", "users", "games"],
+  beforeDestroy() {
     apiClient.clearHandlers();
   },
+  mounted() {
+    apiClient.onUpdateGameLog(() => {});
+  },
   methods: {
-    isMe: function(user) {
-      return user.name === this.name && user.id === this.$cookies.get("userId");
-    },
-    registerUser: function() {
-      apiClient.registerUser(this.name);
+    registerUser: function(name) {
+      apiClient.registerUser(name);
     },
     alreadyRegistered: function() {
-      return (
-        [...this.users].map(x => x.name).includes(this.name) &&
-        [...this.users].map(x => x.id).includes(this.$cookies.get("userId"))
-      );
+      return [...this.users]
+        .map(x => x.id)
+        .includes(this.$cookies.get("userId"));
     },
     openGame: function() {
-      apiClient.openGame(this.name);
+      apiClient.openGame(this.username);
     },
     gameStarted: function(gameId) {
-      if (this.games.find(game => game.id === gameId).log.length > 0) {
+      const players = this.games.find(game => game.id === gameId).players;
+      if (Object.keys(players).length === 2) {
         return true;
       } else {
         return false;
@@ -134,18 +106,19 @@ export default {
     },
     joinable: function(gameId) {
       let notMyGame =
-        this.games.find(game => game.id === gameId).host !== this.name;
+        this.games.find(game => game.id === gameId).host !== this.username;
       return notMyGame && this.alreadyRegistered() && !this.gameStarted(gameId);
     },
     joinGame: function(gameId) {
-      apiClient.joinGame(this.$cookies.get("userId"), gameId, this.name);
-
-      let host = this.games.find(game => game.id === gameId).host;
-      let players = this.assignNations([host, this.name]);
+      apiClient.joinGame(this.$cookies.get("userId"), gameId, this.username);
+      const game = this.games.find(game => game.id === gameId);
+      const rawPlayers = {
+        [this.$cookies.get("userId")]: this.username,
+        ...game.players
+      };
+      const players = this.assignNations(Object.values(rawPlayers));
       const action = Action.initialize({ players });
-      this.game = Imperial.fromLog([action]);
-
-      apiClient.tick(gameId, action);
+      apiClient.tick(game.id, action);
     },
     // TODO: Don't hardcode the nation assignment, figure out how to accept 2-6 players
     assignNations: function(players) {

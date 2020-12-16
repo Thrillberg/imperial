@@ -40,18 +40,18 @@ class APIClient {
     this.handlers = {};
   }
 
-  onUserRegistered(cb) {
-    if (this.handlers["userRegistered"] !== undefined) {
+  onUpdateUsers(cb) {
+    if (this.handlers["updateUsers"] !== undefined) {
       throw new Error("there is already a handler defined");
     }
-    this.handlers["userRegistered"] = cb;
+    this.handlers["updateUsers"] = cb;
   }
 
-  onGameOpened(cb) {
-    if (this.handlers["gameOpened"] !== undefined) {
+  onUpdateGames(cb) {
+    if (this.handlers["updateGames"] !== undefined) {
       throw new Error("there is already a handler defined");
     }
-    this.handlers["gameOpened"] = cb;
+    this.handlers["updateGames"] = cb;
   }
 
   onUpdateGameLog(cb) {
@@ -79,6 +79,13 @@ class APIClient {
     return this.send({
       kind: "registerUser",
       data: { name }
+    });
+  }
+
+  getGameLog(gameId) {
+    return this.send({
+      kind: "getGameLog",
+      data: { gameId }
     });
   }
 
