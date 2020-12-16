@@ -4,7 +4,6 @@
     viewBox="0 0 1500 1000"
     v-bind:width="width"
     v-bind:height="height"
-    v-bind:transform="transform"
   >
     <g v-bind:clip-path="this.fleet ? 'url(#fleetClip)' : ''">
       <path fill="#fd1" d="M0 0h1500v1000H0z" />

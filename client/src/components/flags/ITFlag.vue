@@ -3,7 +3,6 @@
     viewBox="0 0 1500 1000"
     v-bind:width="width"
     v-bind:height="height"
-    v-bind:transform="transform"
     xmlns="http://www.w3.org/2000/svg"
   >
     <g v-bind:clip-path="this.fleet ? 'url(#fleetClip)' : ''">

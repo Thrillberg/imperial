@@ -4,7 +4,6 @@
     viewBox="0 0 1017.9106 508.95532"
     v-bind:width="width"
     v-bind:height="height"
-    v-bind:transform="transform"
   >
     <clipPath id="s">
       <path d="M0,0 v30 h60 v-30 z" />
