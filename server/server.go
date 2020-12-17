@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	lovely_strings "github.com/Thrillberg/imperial/server/lovely_strings"
 	"io"
 	"log"
 	"net/http"
@@ -57,12 +58,15 @@ type UserId string
 
 type UserName string
 
+type GameName string
+
 type GameId string
 
 type Game struct {
 	Log     []Action            `json:"log"`
 	Players map[UserId]UserName `json:"players"`
 	Host    UserName            `json:"host"`
+	Name    GameName            `json:"name"`
 }
 
 // NewUserId generates a string from a UUID.
@@ -73,6 +77,11 @@ func NewUserId() UserId {
 // NewGameId generates a string from a UUID.
 func NewGameId() GameId {
 	return GameId(uuid.New().String())
+}
+
+// NewGameName generates a lovely little string.
+func NewGameName() GameName {
+	return GameName(lovely_strings.DoYourThing())
 }
 
 type Action interface{}
@@ -401,9 +410,15 @@ func onOpenGame(userId UserId, name UserName) error {
 	log.Printf("%s: %s(%s) is opening a game\n", KindOpenGame, name, userId)
 
 	gameId := NewGameId()
+	gameName := NewGameName()
 	state.Lock()
 	defer state.Unlock()
-	state.games[gameId] = &Game{[]Action{}, map[UserId]UserName{userId: name}, name}
+	state.games[gameId] = &Game{
+		[]Action{},
+		map[UserId]UserName{userId: name},
+		name,
+		gameName,
+	}
 
 	for _, conn := range state.connections {
 		conn.channels.gameOpened <- state.games

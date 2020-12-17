@@ -36,6 +36,7 @@ export default {
           host: parsedGame.host,
           log: parsedGame.log,
           players: parsedGame.players,
+          name: parsedGame.name,
           id: game.id
         };
       });

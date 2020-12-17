@@ -16,7 +16,7 @@
                 :to="{ path: '/game/' + game.id }"
                 class="text-lg font-bold"
               >
-                {{ haikunator.haikunate({ tokenLength: 0, delimiter: " " }) }}
+                {{ game.name }}
               </router-link>
               <span class="text-sm">Hosted by {{ game.host }}</span>
             </div>
@@ -53,14 +53,11 @@ import Action from "../../lib/action.js";
 import { Nation } from "../../lib/constants.js";
 import { apiClient } from "../router/index.js";
 
-import Haikunator from "haikunator";
-
 export default {
   name: "Home",
   data: () => {
     return {
       activeGames: new Set(),
-      haikunator: new Haikunator(),
       tempName: ""
     };
   },
