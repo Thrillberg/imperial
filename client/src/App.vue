@@ -1,18 +1,18 @@
 <template>
-  <div id="app">
-    <router-view
-      class="font-serif"
-      :username="username"
-      :users="users"
-      :games="games"
-    />
+  <div id="app" class="font-serif">
+    <Header :username="username" :users="users" />
+    <router-view :username="username" :users="users" :games="games" />
   </div>
 </template>
 
 <script>
 import { apiClient } from "./router/index.js";
+
+import Header from "@/components/Header.vue";
+
 export default {
   name: "App",
+  components: { Header },
   data: () => {
     return { username: "", users: new Set(), games: new Set() };
   },

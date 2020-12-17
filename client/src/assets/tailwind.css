@@ -11,13 +11,6 @@ button {
   padding: 2rem;
 }
 
-ul {
-  display: flex;
-  justify-content: space-around;
-  list-style: none;
-  padding-left: 0;
-}
-
 .buttons {
   display: flex;
   justify-content: space-around;

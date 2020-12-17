@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "core-js": "^3.6.5",
+    "haikunator": "^2.1.2",
     "tailwindcss": "^1.8.10",
     "vue": "^2.6.11",
     "vue-cookies": "^1.7.4",
