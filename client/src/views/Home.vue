@@ -1,65 +1,49 @@
 <template>
   <div class="container">
-    <div class="text-center">
-      <div>
-        <div class="underline">Users:</div>
-        <ul v-for="user in users" v-bind:key="user.id">
-          <li v-if="username === user.name">
-            <strong>{{ user.name }}</strong>
-          </li>
-          <li v-else>
-            {{ user.name }}
-          </li>
-        </ul>
-      </div>
+    <div class="flex justify-between">
       <div class="mt-4">
-        <div class="underline">Games:</div>
+        <div v-if="alreadyRegistered()" class="mt-1 mb-6">
+          <span
+            v-on:click="openGame()"
+            class="rounded p-2 bg-green-800 text-white cursor-pointer"
+            >Open New Game</span
+          >
+        </div>
         <ul v-for="game in games" v-bind:key="game.id">
-          <li class="p-2">
-            <router-link :to="{ path: '/game/' + game.id }">
-              Hosted by {{ game.host }}
-            </router-link>
+          <li class="py-3">
+            <div>
+              <router-link
+                :to="{ path: '/game/' + game.id }"
+                class="text-lg font-bold"
+              >
+                {{ haikunator.haikunate({ tokenLength: 0, delimiter: " " }) }}
+              </router-link>
+              <span class="text-sm">Hosted by {{ game.host }}</span>
+            </div>
             <span
               v-if="gameStarted(game.id)"
-              class="rounded p-2 m-1 bg-red-600 text-white font-bold"
+              class="rounded p-2 bg-red-600 text-white"
               >Game Started!</span
             >
             <router-link
               :to="{ path: '/game/' + game.id }"
               v-if="joinable(game.id)"
               v-on:click.native="joinGame(game.id)"
-              class="rounded p-2 m-1 bg-green-400"
+              class="rounded p-2 bg-green-400"
             >
               Join Game
             </router-link>
           </li>
         </ul>
       </div>
-    </div>
-    <div v-if="alreadyRegistered()" class="text-center mt-20">
-      <span
-        v-on:click="openGame()"
-        class="rounded p-4 ml-4 bg-green-800 text-white cursor-pointer"
-        >Play</span
-      >
-    </div>
-    <div v-else class="text-center mt-20">
-      <input
-        class="mx-auto m-6 border-black border-solid border p-3 rounded"
-        v-model="tempName"
-        placeholder="name"
-      />
-      <span
-        v-on:click="registerUser(tempName)"
-        class="rounded p-4 ml-4 bg-green-800 text-white cursor-pointer"
-      >
-        Register
-      </span>
-    </div>
-    <div class="text-center mt-40">
-      <span class="rounded p-2 m-1 bg-green-800 text-white">
-        Solo Mode Game
-      </span>
+      <div class="mt-4 border border-gray-500 rounded p-4">
+        <div class="underline">Registered Users:</div>
+        <ul v-for="user in users" v-bind:key="user.id">
+          <li>
+            {{ user.name }}
+          </li>
+        </ul>
+      </div>
     </div>
   </div>
 </template>
@@ -69,11 +53,14 @@ import Action from "../../lib/action.js";
 import { Nation } from "../../lib/constants.js";
 import { apiClient } from "../router/index.js";
 
+import Haikunator from "haikunator";
+
 export default {
   name: "Home",
   data: () => {
     return {
       activeGames: new Set(),
+      haikunator: new Haikunator(),
       tempName: ""
     };
   },
@@ -85,9 +72,6 @@ export default {
     apiClient.onUpdateGameLog(() => {});
   },
   methods: {
-    registerUser: function(name) {
-      apiClient.registerUser(name);
-    },
     alreadyRegistered: function() {
       return [...this.users]
         .map(x => x.id)
