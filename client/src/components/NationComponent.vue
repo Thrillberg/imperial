@@ -1,12 +1,12 @@
 <template>
-  <li>
+  <div class="m-2">
     <component
       v-bind:is="this.flag(nation)"
       v-bind:class="current_nation"
       class="h-12 w-auto"
     ></component>
     <div>{{ treasury }}m</div>
-  </li>
+  </div>
 </template>
 
 <script>

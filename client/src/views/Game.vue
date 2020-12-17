@@ -1,43 +1,51 @@
 <template>
   <div>
     <router-link to="/">Back</router-link>
-    <div class="container">
-      <ul class="players">
-        <Player
-          v-for="player in game.players"
-          v-bind:player="player"
-          v-bind:current_player="controllingPlayerName"
-          v-bind:game="game"
-          v-bind:key="player.name"
-        ></Player>
-      </ul>
-      <div class="relative">
+    <div class="flex justify-between">
+      <div class="w-1/2 border border-gray-500 rounded">
         <Board
           v-bind:game="game"
           v-bind:select_province="selectProvince"
           v-bind:valid_provinces="validProvinces()"
         ></Board>
-        <TaxChart v-bind:taxes="taxes()"></TaxChart>
       </div>
-      <PowerPointsChart v-bind:power_points="powerPoints()"></PowerPointsChart>
-      <Rondel
-        v-bind:soloMode="soloMode"
-        v-bind:game="game"
-        v-bind:name="username"
-        v-on:tick-with-action="tickWithAction"
-      ></Rondel>
+      <div class="w-1/2 p-6 mx-2 border border-gray-500 rounded">
+        <div class="flex justify-around">
+          <Player
+            v-for="player in game.players"
+            v-bind:player="player"
+            v-bind:current_player="controllingPlayerName"
+            v-bind:game="game"
+            v-bind:key="player.name"
+          ></Player>
+        </div>
+        <div class="flex items-start">
+          <Rondel
+            v-bind:soloMode="soloMode"
+            v-bind:game="game"
+            v-bind:name="username"
+            v-on:tick-with-action="tickWithAction"
+          ></Rondel>
+          <div
+            class="w-1/2 flex flex-wrap justify-around p-4 border border-gray-500 rounded"
+          >
+            <NationComponent
+              v-for="[nation] of game.nations"
+              v-bind:current_nation="
+                game.currentNation === nation ? 'current_nation' : ''
+              "
+              v-bind:nation="nation.value"
+              v-bind:treasury="game.nations.get(nation).treasury"
+              v-bind:key="nation.value"
+            ></NationComponent>
+          </div>
+        </div>
+      </div>
     </div>
-    <ul class="nations">
-      <NationComponent
-        v-for="[nation] of game.nations"
-        v-bind:current_nation="
-          game.currentNation === nation ? 'current_nation' : ''
-        "
-        v-bind:nation="nation.value"
-        v-bind:treasury="game.nations.get(nation).treasury"
-        v-bind:key="nation.value"
-      ></NationComponent>
-    </ul>
+    <div>
+      <PowerPointsChart v-bind:power_points="powerPoints()"></PowerPointsChart>
+      <TaxChart v-bind:taxes="taxes()"></TaxChart>
+    </div>
     <div class="buttons">
       <ActionComponent
         v-if="importStatus.active"

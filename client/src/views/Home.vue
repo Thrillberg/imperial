@@ -2,7 +2,7 @@
   <div class="container">
     <div class="flex justify-between">
       <div class="mt-4">
-        <div v-if="alreadyRegistered()" class="mt-1 mb-6">
+        <div v-if="registered()" class="mt-1 mb-6">
           <span
             v-on:click="openGame()"
             class="rounded p-2 bg-green-800 text-white cursor-pointer"
@@ -22,21 +22,21 @@
             </div>
             <span
               v-if="gameStarted(game.id)"
-              class="rounded p-2 bg-red-600 text-white"
+              class="rounded p-2 inline-block bg-red-600 text-white"
               >Game Started!</span
             >
             <router-link
               :to="{ path: '/game/' + game.id }"
               v-if="joinable(game.id)"
               v-on:click.native="joinGame(game.id)"
-              class="rounded p-2 bg-green-400"
+              class="rounded p-2 inline-block bg-green-400"
             >
               Join Game
             </router-link>
           </li>
         </ul>
       </div>
-      <div class="mt-4 border border-gray-500 rounded p-4">
+      <div v-if="registered()" class="mt-4 border border-gray-500 rounded p-4">
         <div class="underline">Registered Users:</div>
         <ul v-for="user in users" v-bind:key="user.id">
           <li>
@@ -69,7 +69,7 @@ export default {
     apiClient.onUpdateGameLog(() => {});
   },
   methods: {
-    alreadyRegistered: function() {
+    registered: function() {
       return [...this.users]
         .map(x => x.id)
         .includes(this.$cookies.get("userId"));
@@ -88,7 +88,7 @@ export default {
     joinable: function(gameId) {
       let notMyGame =
         this.games.find(game => game.id === gameId).host !== this.username;
-      return notMyGame && this.alreadyRegistered() && !this.gameStarted(gameId);
+      return notMyGame && this.registered() && !this.gameStarted(gameId);
     },
     joinGame: function(gameId) {
       apiClient.joinGame(this.$cookies.get("userId"), gameId, this.username);
