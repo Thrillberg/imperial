@@ -9,35 +9,61 @@
           v-bind:valid_provinces="validProvinces()"
         ></Board>
       </div>
-      <div class="w-1/2 p-6 mx-2 border border-gray-500 rounded">
-        <div class="flex justify-around">
-          <Player
-            v-for="player in game.players"
-            v-bind:player="player"
-            v-bind:current_player="controllingPlayerName"
-            v-bind:game="game"
-            v-bind:key="player.name"
-          ></Player>
-        </div>
-        <div class="flex items-start">
-          <Rondel
-            v-bind:soloMode="soloMode"
-            v-bind:game="game"
-            v-bind:name="username"
-            v-on:tick-with-action="tickWithAction"
-          ></Rondel>
-          <div
-            class="w-1/2 flex flex-wrap justify-around p-4 border border-gray-500 rounded"
+      <div class="w-1/2 mx-2 border border-gray-500 rounded">
+        <div class="flex justify-center bg-green-100 py-4">
+          <span
+            class="p-2 border border-gray500 border-r-0 rounded-l cursor-pointer"
+            :class="[
+              onActions ? 'bg-gray-700' : 'bg-white',
+              onActions ? 'text-white' : 'text-black'
+            ]"
+            v-on:click="viewActions"
           >
-            <NationComponent
-              v-for="[nation] of game.nations"
-              v-bind:current_nation="
-                game.currentNation === nation ? 'current_nation' : ''
-              "
-              v-bind:nation="nation.value"
-              v-bind:treasury="game.nations.get(nation).treasury"
-              v-bind:key="nation.value"
-            ></NationComponent>
+            Actions
+          </span>
+          <span
+            class="p-2 border border-gray500 border-l-0 rounded-r cursor-pointer"
+            :class="[
+              onGameDetails ? 'bg-gray-700' : 'bg-white',
+              onGameDetails ? 'text-white' : 'text-black'
+            ]"
+            v-on:click="viewGameDetails"
+          >
+            Game Details
+          </span>
+        </div>
+        <div class="flex justify-around">
+          <div v-if="onActions">
+            <Rondel
+              v-bind:soloMode="soloMode"
+              v-bind:game="game"
+              v-bind:name="username"
+              v-on:tick-with-action="tickWithAction"
+            ></Rondel>
+          </div>
+          <div v-else>
+            <Player
+              v-for="player in game.players"
+              v-bind:player="player"
+              v-bind:current_player="controllingPlayerName"
+              v-bind:game="game"
+              v-bind:key="player.name"
+            ></Player>
+            <div class="flex items-start">
+              <div
+                class="w-1/2 flex flex-wrap justify-around p-4 border border-gray-500 rounded"
+              >
+                <NationComponent
+                  v-for="[nation] of game.nations"
+                  v-bind:current_nation="
+                    game.currentNation === nation ? 'current_nation' : ''
+                  "
+                  v-bind:nation="nation.value"
+                  v-bind:treasury="game.nations.get(nation).treasury"
+                  v-bind:key="nation.value"
+                ></NationComponent>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -188,6 +214,8 @@ export default {
         origin: ""
       },
       name: "",
+      onActions: true,
+      onGameDetails: false,
       players: new Set(),
       purchasingBond: false
     };
@@ -223,6 +251,14 @@ export default {
     apiClient.getGameLog(this.$route.params.id);
   },
   methods: {
+    viewActions() {
+      this.onActions = true;
+      this.onGameDetails = false;
+    },
+    viewGameDetails() {
+      this.onGameDetails = true;
+      this.onActions = false;
+    },
     validProvinces() {
       // This function returns all provinces that a unit can move
       // or be imported to.

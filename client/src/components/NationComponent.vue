@@ -1,9 +1,10 @@
 <template>
   <div class="m-2">
     <component
-      v-bind:is="this.flag(nation)"
-      v-bind:class="current_nation"
-      class="h-12 w-auto"
+      :is="this.flag(nation)"
+      :class="current_nation"
+      :width="40"
+      class="border border-gray500"
     ></component>
     <div>{{ treasury }}m</div>
   </div>
