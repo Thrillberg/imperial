@@ -9,6 +9,7 @@
     ></component>
     <div>{{ treasury }}m</div>
     <div>{{ power_points }} power points</div>
+    <div>{{ tax_chart_position }} tax chart position</div>
   </div>
 </template>
 
@@ -26,6 +27,7 @@ export default {
     current_nation: String,
     nation: String,
     power_points: Number,
+    tax_chart_position: Number,
     treasury: Number
   },
   methods: {

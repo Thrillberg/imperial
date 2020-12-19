@@ -6,10 +6,15 @@ class APIClient {
   constructor() {
     this.ws = this.initws();
     this.handlers = {};
+    this.messageQueue = [];
   }
 
   initws() {
     const ws = new WebSocket(process.env.VUE_APP_IMPERIAL_WEBSOCKETS_URL);
+    ws.onopen = () => {
+      this.messageQueue.forEach(data => this.send(data));
+      this.messageQueue = [];
+    };
     ws.onmessage = message => {
       const envelope = JSON.parse(message.data);
       if (this.handlers[envelope.kind]) {
@@ -29,10 +34,10 @@ class APIClient {
   }
 
   send(data) {
-    try {
+    if (this.ws.readyState === WebSocket.OPEN) {
       this.ws.send(JSON.stringify(data));
-    } catch (e) {
-      console.error("sending message", e);
+    } else {
+      this.messageQueue.push(data);
     }
   }
 

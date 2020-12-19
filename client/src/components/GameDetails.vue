@@ -19,12 +19,10 @@
           v-bind:nation="nation.value"
           v-bind:treasury="game.nations.get(nation).treasury"
           v-bind:power_points="game.nations.get(nation).powerPoints"
+          v-bind:tax_chart_position="game.nations.get(nation).taxChartPosition"
           v-bind:key="nation.value"
         ></NationComponent>
       </div>
-    </div>
-    <div>
-      <TaxChart v-bind:taxes="taxes()"></TaxChart>
     </div>
   </div>
 </template>
@@ -32,14 +30,12 @@
 <script>
 import NationComponent from "@/components/NationComponent.vue";
 import Player from "@/components/Player.vue";
-import TaxChart from "@/components/TaxChart.vue";
 
 export default {
   name: "GameDetails",
   components: {
     NationComponent,
-    Player,
-    TaxChart
+    Player
   },
   props: ["game", "controllingPlayerName"],
   methods: {
