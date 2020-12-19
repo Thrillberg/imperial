@@ -1,5 +1,5 @@
 <template>
-  <li class="bond">{{ nation }}{{ cost }}</li>
+  <span class="bond">{{ nation }}{{ cost }}</span>
 </template>
 
 <script>

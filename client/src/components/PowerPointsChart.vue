@@ -1,5 +1,5 @@
 <template>
-  <div class="flex justify-between">
+  <div class="flex flex-wrap">
     <PowerPointSlot
       v-for="powerPointSlot in power_points"
       v-bind:powerPointSlot="powerPointSlot.slot"

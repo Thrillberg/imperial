@@ -1,43 +1,58 @@
 <template>
   <div>
     <router-link to="/">Back</router-link>
-    <div class="container">
-      <ul class="players">
-        <Player
-          v-for="player in game.players"
-          v-bind:player="player"
-          v-bind:current_player="controllingPlayerName"
-          v-bind:game="game"
-          v-bind:key="player.name"
-        ></Player>
-      </ul>
-      <div class="relative">
+    <div class="flex justify-between">
+      <div class="w-1/2 border border-gray-500 rounded">
         <Board
           v-bind:game="game"
           v-bind:select_province="selectProvince"
           v-bind:valid_provinces="validProvinces()"
         ></Board>
-        <TaxChart v-bind:taxes="taxes()"></TaxChart>
       </div>
-      <PowerPointsChart v-bind:power_points="powerPoints()"></PowerPointsChart>
-      <Rondel
-        v-bind:soloMode="soloMode"
-        v-bind:game="game"
-        v-bind:name="username"
-        v-on:tick-with-action="tickWithAction"
-      ></Rondel>
+      <div class="w-1/2 mx-2 border border-gray-500 rounded">
+        <div class="flex justify-center bg-green-100 py-4">
+          <span
+            class="p-2 border border-gray500 border-r-0 rounded-l cursor-pointer"
+            :class="[
+              onActions ? 'bg-gray-700' : 'bg-white',
+              onActions ? 'text-white' : 'text-black'
+            ]"
+            v-on:click="viewActions"
+          >
+            Actions
+          </span>
+          <span
+            class="p-2 border border-gray500 border-l-0 rounded-r cursor-pointer"
+            :class="[
+              onGameDetails ? 'bg-gray-700' : 'bg-white',
+              onGameDetails ? 'text-white' : 'text-black'
+            ]"
+            v-on:click="viewGameDetails"
+          >
+            Game Details
+          </span>
+        </div>
+        <div class="flex justify-around">
+          <div v-if="onActions">
+            <Rondel
+              v-bind:soloMode="soloMode"
+              v-bind:game="game"
+              v-bind:name="username"
+              v-on:tick-with-action="tickWithAction"
+            ></Rondel>
+            <div class="text-center text-lg mt-8">
+              You have <b>{{ this.currentPlayer.cash }}m</b> in cash.
+            </div>
+          </div>
+          <div v-else>
+            <GameDetails
+              :game="game"
+              :controllingPlayerName="controllingPlayerName"
+            />
+          </div>
+        </div>
+      </div>
     </div>
-    <ul class="nations">
-      <NationComponent
-        v-for="[nation] of game.nations"
-        v-bind:current_nation="
-          game.currentNation === nation ? 'current_nation' : ''
-        "
-        v-bind:nation="nation.value"
-        v-bind:treasury="game.nations.get(nation).treasury"
-        v-bind:key="nation.value"
-      ></NationComponent>
-    </ul>
     <div class="buttons">
       <ActionComponent
         v-if="importStatus.active"
@@ -71,22 +86,16 @@ import { apiClient } from "../router/index.js";
 
 import ActionComponent from "@/components/ActionComponent.vue";
 import Board from "@/components/board/Board.vue";
-import NationComponent from "@/components/NationComponent.vue";
-import Player from "@/components/Player.vue";
-import PowerPointsChart from "@/components/PowerPointsChart.vue";
+import GameDetails from "@/components/GameDetails.vue";
 import Rondel from "@/components/Rondel.vue";
-import TaxChart from "@/components/TaxChart.vue";
 
 export default {
   name: "Game",
   components: {
     ActionComponent,
     Board,
-    NationComponent,
-    Player,
-    PowerPointsChart,
-    Rondel,
-    TaxChart
+    GameDetails,
+    Rondel
   },
   props: ["username", "users", "games"],
   data: () => {
@@ -166,6 +175,7 @@ export default {
     return {
       buildingFactory: false,
       controllingPlayerName: "",
+      currentPlayer: {},
       soloMode: false,
       game: unstartedGame,
       gameStarted: false,
@@ -180,6 +190,8 @@ export default {
         origin: ""
       },
       name: "",
+      onActions: true,
+      onGameDetails: false,
       players: new Set(),
       purchasingBond: false
     };
@@ -208,6 +220,7 @@ export default {
           return action;
         });
         this.game = Imperial.fromLog(gameLog);
+        this.currentPlayer = this.game.players[this.username];
         this.controllingPlayerName = this.game.currentPlayerName;
         this.gameStarted = true;
       }
@@ -215,6 +228,14 @@ export default {
     apiClient.getGameLog(this.$route.params.id);
   },
   methods: {
+    viewActions() {
+      this.onActions = true;
+      this.onGameDetails = false;
+    },
+    viewGameDetails() {
+      this.onGameDetails = true;
+      this.onActions = false;
+    },
     validProvinces() {
       // This function returns all provinces that a unit can move
       // or be imported to.
@@ -233,28 +254,6 @@ export default {
         }
       }
       return Array.from(provinces);
-    },
-    taxes() {
-      return [15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5].map(slot => {
-        let nations = [];
-        for (const [nation, data] of this.game.nations) {
-          if (data.taxChartPosition === slot) {
-            nations.push(nation.value);
-          }
-        }
-        return { slot, nations };
-      });
-    },
-    powerPoints() {
-      return [...Array(26).keys()].map(slot => {
-        let nations = [];
-        for (const [nation, data] of this.game.nations) {
-          if (data.powerPoints === slot) {
-            nations.push(nation.value);
-          }
-        }
-        return { slot, nations };
-      });
     },
     selectProvince(province) {
       // If the game is in a maneuver and an origin is specified,

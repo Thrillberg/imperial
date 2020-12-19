@@ -1,12 +1,16 @@
 <template>
-  <li>
+  <div class="m-2">
+    {{ nation }}
     <component
-      v-bind:is="this.flag(nation)"
-      v-bind:class="current_nation"
-      class="h-12 w-auto"
+      :is="this.flag(nation)"
+      :class="current_nation"
+      :width="(120).toString()"
+      class="border border-gray500"
     ></component>
     <div>{{ treasury }}m</div>
-  </li>
+    <div>{{ power_points }} power points</div>
+    <div>{{ tax_chart_position }} tax chart position</div>
+  </div>
 </template>
 
 <script>
@@ -22,6 +26,8 @@ export default {
   props: {
     current_nation: String,
     nation: String,
+    power_points: Number,
+    tax_chart_position: Number,
     treasury: Number
   },
   methods: {

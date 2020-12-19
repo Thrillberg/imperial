@@ -26,10 +26,6 @@ button {
   font-size: 1.2rem;
 }
 
-.rondel {
-  margin: 0 auto;
-}
-
 .hoverable:hover {
   filter: url(#brightness);
 }
