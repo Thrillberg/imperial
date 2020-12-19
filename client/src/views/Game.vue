@@ -40,37 +40,18 @@
               v-bind:name="username"
               v-on:tick-with-action="tickWithAction"
             ></Rondel>
+            <div class="text-center text-lg mt-8">
+              You have <b>{{ this.currentPlayer.cash }}m</b> in cash.
+            </div>
           </div>
           <div v-else>
-            <Player
-              v-for="player in game.players"
-              v-bind:player="player"
-              v-bind:current_player="controllingPlayerName"
-              v-bind:game="game"
-              v-bind:key="player.name"
-            ></Player>
-            <div class="flex items-start">
-              <div
-                class="w-1/2 flex flex-wrap justify-around p-4 border border-gray-500 rounded"
-              >
-                <NationComponent
-                  v-for="[nation] of game.nations"
-                  v-bind:current_nation="
-                    game.currentNation === nation ? 'current_nation' : ''
-                  "
-                  v-bind:nation="nation.value"
-                  v-bind:treasury="game.nations.get(nation).treasury"
-                  v-bind:key="nation.value"
-                ></NationComponent>
-              </div>
-            </div>
+            <GameDetails
+              :game="game"
+              :controllingPlayerName="controllingPlayerName"
+            />
           </div>
         </div>
       </div>
-    </div>
-    <div>
-      <PowerPointsChart v-bind:power_points="powerPoints()"></PowerPointsChart>
-      <TaxChart v-bind:taxes="taxes()"></TaxChart>
     </div>
     <div class="buttons">
       <ActionComponent
@@ -105,22 +86,16 @@ import { apiClient } from "../router/index.js";
 
 import ActionComponent from "@/components/ActionComponent.vue";
 import Board from "@/components/board/Board.vue";
-import NationComponent from "@/components/NationComponent.vue";
-import Player from "@/components/Player.vue";
-import PowerPointsChart from "@/components/PowerPointsChart.vue";
+import GameDetails from "@/components/GameDetails.vue";
 import Rondel from "@/components/Rondel.vue";
-import TaxChart from "@/components/TaxChart.vue";
 
 export default {
   name: "Game",
   components: {
     ActionComponent,
     Board,
-    NationComponent,
-    Player,
-    PowerPointsChart,
-    Rondel,
-    TaxChart
+    GameDetails,
+    Rondel
   },
   props: ["username", "users", "games"],
   data: () => {
@@ -200,6 +175,7 @@ export default {
     return {
       buildingFactory: false,
       controllingPlayerName: "",
+      currentPlayer: {},
       soloMode: false,
       game: unstartedGame,
       gameStarted: false,
@@ -244,6 +220,7 @@ export default {
           return action;
         });
         this.game = Imperial.fromLog(gameLog);
+        this.currentPlayer = this.game.players[this.username];
         this.controllingPlayerName = this.game.currentPlayerName;
         this.gameStarted = true;
       }
@@ -277,28 +254,6 @@ export default {
         }
       }
       return Array.from(provinces);
-    },
-    taxes() {
-      return [15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5].map(slot => {
-        let nations = [];
-        for (const [nation, data] of this.game.nations) {
-          if (data.taxChartPosition === slot) {
-            nations.push(nation.value);
-          }
-        }
-        return { slot, nations };
-      });
-    },
-    powerPoints() {
-      return [...Array(26).keys()].map(slot => {
-        let nations = [];
-        for (const [nation, data] of this.game.nations) {
-          if (data.powerPoints === slot) {
-            nations.push(nation.value);
-          }
-        }
-        return { slot, nations };
-      });
     },
     selectProvince(province) {
       // If the game is in a maneuver and an origin is specified,

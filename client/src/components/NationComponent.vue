@@ -1,12 +1,14 @@
 <template>
   <div class="m-2">
+    {{ nation }}
     <component
       :is="this.flag(nation)"
       :class="current_nation"
-      :width="40"
+      :width="(120).toString()"
       class="border border-gray500"
     ></component>
     <div>{{ treasury }}m</div>
+    <div>{{ power_points }} power points</div>
   </div>
 </template>
 
@@ -23,6 +25,7 @@ export default {
   props: {
     current_nation: String,
     nation: String,
+    power_points: Number,
     treasury: Number
   },
   methods: {
