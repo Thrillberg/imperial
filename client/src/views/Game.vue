@@ -1,7 +1,7 @@
 <template>
   <div>
     <router-link to="/">Back</router-link>
-    <div class="flex justify-between">
+    <div v-if="gameStarted" class="flex justify-between">
       <div class="w-1/2 border border-gray-500 rounded">
         <Board
           v-bind:game="game"
@@ -52,28 +52,42 @@
           </div>
         </div>
       </div>
+      <div class="buttons">
+        <ActionComponent
+          v-if="importStatus.active"
+          v-bind:action="importStatus.endImport"
+          v-bind:text="'End import'"
+          v-bind:dispatch="runImport"
+        ></ActionComponent>
+        <ActionComponent
+          v-else-if="maneuverStatus.active"
+          v-bind:action="maneuverStatus.endManeuver"
+          v-bind:text="'End maneuver'"
+          v-bind:dispatch="endManeuver"
+        ></ActionComponent>
+        <ActionComponent
+          v-else-if="purchasingBond || buildingFactory"
+          v-for="action in game.availableActions"
+          v-bind:key="JSON.stringify(action)"
+          v-bind:action="action"
+          v-bind:text="actionToText(action)"
+          v-bind:dispatch="tickWithAction"
+        ></ActionComponent>
+      </div>
     </div>
-    <div class="buttons">
-      <ActionComponent
-        v-if="importStatus.active"
-        v-bind:action="importStatus.endImport"
-        v-bind:text="'End import'"
-        v-bind:dispatch="runImport"
-      ></ActionComponent>
-      <ActionComponent
-        v-else-if="maneuverStatus.active"
-        v-bind:action="maneuverStatus.endManeuver"
-        v-bind:text="'End maneuver'"
-        v-bind:dispatch="endManeuver"
-      ></ActionComponent>
-      <ActionComponent
-        v-else-if="purchasingBond || buildingFactory"
-        v-for="action in game.availableActions"
-        v-bind:key="JSON.stringify(action)"
-        v-bind:action="action"
-        v-bind:text="actionToText(action)"
-        v-bind:dispatch="tickWithAction"
-      ></ActionComponent>
+    <div v-else class="flex justify-between">
+      <div class="w-1/2 border border-gray-500 rounded">
+        <Board
+          v-bind:game="game"
+          v-bind:select_province="selectProvince"
+          v-bind:valid_provinces="validProvinces()"
+        ></Board>
+      </div>
+      <div class="w-1/2 mx-2 border border-gray-500 rounded">
+        <div class="text-2xl">
+          Game not yet started!
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -220,9 +234,11 @@ export default {
           return action;
         });
         this.game = Imperial.fromLog(gameLog);
-        this.currentPlayer = this.game.players[this.username];
-        this.controllingPlayerName = this.game.currentPlayerName;
-        this.gameStarted = true;
+        if (this.game.players) {
+          this.gameStarted = true;
+          this.currentPlayer = this.game.players[this.username];
+          this.controllingPlayerName = this.game.currentPlayerName;
+        }
       }
     });
     apiClient.getGameLog(this.$route.params.id);
