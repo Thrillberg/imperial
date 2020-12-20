@@ -1,44 +1,49 @@
 <template>
-  <component
-    ref="province"
-    v-bind:is="province"
-    v-on:click="select_province(name)"
-  >
+  <component ref="province" :is="province" v-on:click="select_province(name)">
     <circle
       v-if="dot && this.mounted"
-      v-bind:cx="x(0) + 6"
-      v-bind:cy="y(0) - 5"
+      :cx="x(0) + 6"
+      :cy="y(0) - 5"
       r="2"
       v-bind:fill="nationFill(dot)"
     ></circle>
     <Factory
       v-if="factory && this.mounted"
-      v-bind:type="factory"
-      v-bind:x="x(0) - 10"
-      v-bind:y="y(0)"
-      v-bind:fill="this.fill(factory)"
+      :type="factory"
+      :x="x(0) - 10"
+      :y="y(0)"
+      :fill="this.fill(factory)"
       stroke="white"
       stroke-width="2px"
     ></Factory>
     <Flag
       v-for="(nation, index) in availableFleets()"
-      v-bind:nation="nation"
+      :nation="nation"
+      :key="nation + index"
+      :x="x(index)"
+      :y="y(index)"
+      :fleet="true"
       width="13"
       height="8"
-      v-bind:key="nation + index"
-      v-bind:x="x(index)"
-      v-bind:y="y(index)"
-      v-bind:fleet="true"
     ></Flag>
     <Flag
       v-for="(nation, index) in availableArmies()"
-      v-bind:nation="nation"
+      :nation="nation"
+      :key="nation + index"
+      :x="x(index)"
+      :y="y(index)"
       width="13"
       height="8"
-      v-bind:key="nation + index"
-      v-bind:x="x(index)"
-      v-bind:y="y(index)"
     ></Flag>
+    <rect
+      v-if="importingArmy"
+      :x="x(0)"
+      :y="y(0)"
+      width="13"
+      height="8"
+      fill="none"
+      stroke-dasharray="1,1"
+    ></rect>
   </component>
 </template>
 
@@ -52,6 +57,7 @@ export default {
   props: {
     dot: String,
     factory: String,
+    importingArmy: Boolean,
     is_valid: Boolean,
     name: String,
     province: Object,

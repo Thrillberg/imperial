@@ -1,13 +1,13 @@
 <template>
   <g v-bind:transform="transform">
     <component
-      v-bind:is="this.flag(nation)"
-      v-bind:width="width"
-      v-bind:height="height"
-      v-bind:transform="transform"
-      v-bind:x="x"
-      v-bind:y="y"
-      v-bind:fleet="this.fleet"
+      :is="this.flag(nation)"
+      :width="width"
+      :height="height"
+      :transform="transform"
+      :x="x"
+      :y="y"
+      :fleet="this.fleet"
     ></component>
   </g>
 </template>

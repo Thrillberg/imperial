@@ -307,6 +307,7 @@ export default class Imperial {
       "taxation",
       "maneuver2"
     ];
+    this.importing = false;
     if (
       potentialPreInvestorSlots.includes(
         this.nations.get(this.currentNation).previousRondelPosition
@@ -605,6 +606,7 @@ export default class Imperial {
           }
         }
         this.availableActions = availableActions;
+        this.importing = true;
         return;
       }
       case "production1":

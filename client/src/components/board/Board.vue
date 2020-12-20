@@ -21,25 +21,26 @@
     <g stroke="#000000" stroke-width="0.5">
       <Province
         v-for="(province, name) in sea_provinces"
-        v-bind:province="province"
-        v-bind:name="name"
-        v-bind:select_province="select_province"
-        v-bind:fleets="fleets(name)"
-        v-bind:is_valid="isValid(name)"
-        v-bind:dot="dot(name)"
-        v-bind:key="name"
+        :province="province"
+        :name="name"
+        :select_province="select_province"
+        :fleets="fleets(name)"
+        :is_valid="isValid(name)"
+        :dot="dot(name)"
+        :key="name"
       ></Province>
       <Province
         v-for="(province, name) in land_provinces"
-        v-bind:province="province"
-        v-bind:name="name"
-        v-bind:select_province="select_province"
-        v-bind:fleets="fleets(name)"
-        v-bind:armies="armies(name)"
-        v-bind:is_valid="isValid(name)"
-        v-bind:dot="dot(name)"
-        v-bind:factory="factory(name)"
-        v-bind:key="name"
+        :province="province"
+        :name="name"
+        :select_province="select_province"
+        :fleets="fleets(name)"
+        :armies="armies(name)"
+        :importing-army="importingArmy(name)"
+        :is_valid="isValid(name)"
+        :dot="dot(name)"
+        :factory="factory(name)"
+        :key="name"
       ></Province>
     </g>
   </svg>
@@ -111,6 +112,7 @@ export default {
   props: {
     game: Object,
     gameStarted: Boolean,
+    importing_units: Array,
     select_province: Function,
     valid_provinces: Array
   },
@@ -144,6 +146,15 @@ export default {
         }
       }
       return fleets;
+    },
+    importingArmy(province) {
+      if (!this.gameStarted) {
+        return false;
+      } else if (this.importing_units.find(unit => unit === province)) {
+        return true;
+      }
+
+      return false;
     },
     factory(province) {
       const factory = this.factories().find(factory => {

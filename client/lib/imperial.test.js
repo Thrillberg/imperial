@@ -284,6 +284,7 @@ describe("imperial", () => {
             ].map(slot => Action.rondel({ nation: Nation.IT, cost: 0, slot }))
           )
         );
+        expect(game.importing).toEqual(false);
       });
 
       test("import one army", () => {
@@ -298,6 +299,7 @@ describe("imperial", () => {
 
         expect(game.units).toEqual(expected);
         expect(game.nations.get(Nation.AH).treasury).toEqual(10);
+        expect(game.importing).toEqual(false);
       });
 
       test("import one army and one fleet", () => {
@@ -319,6 +321,7 @@ describe("imperial", () => {
 
         expect(game.units).toEqual(expected);
         expect(game.nations.get(Nation.AH).treasury).toEqual(9);
+        expect(game.importing).toEqual(false);
       });
 
       test("import two armies and one fleet", () => {
@@ -341,6 +344,7 @@ describe("imperial", () => {
 
         expect(game.units).toEqual(expected);
         expect(game.nations.get(Nation.AH).treasury).toEqual(8);
+        expect(game.importing).toEqual(false);
       });
     });
 
@@ -477,6 +481,7 @@ describe("imperial", () => {
 
           expect(game.availableActions).toEqual(availableActions);
           expect(game.nations.get(Nation.AH).rondelPosition).toEqual("import");
+          expect(game.importing).toEqual(true);
         });
 
         test("nation can import fleets in their coastal province", () => {
@@ -616,6 +621,7 @@ describe("imperial", () => {
 
           expect(game.availableActions).toEqual(availableActions);
           expect(game.nations.get(Nation.AH).rondelPosition).toEqual("import");
+          expect(game.importing).toEqual(true);
         });
       });
 

@@ -8,6 +8,7 @@
           :gameStarted="gameStarted"
           :select_province="selectProvince"
           :valid_provinces="validProvinces()"
+          :importing_units="importPlacements"
         ></Board>
       </div>
       <div class="w-1/2 mx-2 border border-gray-500 rounded">
@@ -43,6 +44,21 @@
             <div class="text-center text-lg mt-8">
               You have <b>{{ this.currentPlayer.cash }}m</b> in cash.
             </div>
+            <div
+              v-if="game.importing && username === controllingPlayerName"
+              class="text-center text-lg"
+            >
+              <div>
+                You have
+                <b>{{ 3 - this.importPlacements.length }}</b> imports left.
+              </div>
+              <div
+                v-on:click="runImport"
+                class="rounded p-2 bg-green-800 text-white cursor-pointer"
+              >
+                End import
+              </div>
+            </div>
           </div>
           <div v-else>
             <GameDetails
@@ -54,13 +70,7 @@
       </div>
       <div class="buttons">
         <ActionComponent
-          v-if="importStatus.active"
-          v-bind:action="importStatus.endImport"
-          v-bind:text="'End import'"
-          v-bind:dispatch="runImport"
-        ></ActionComponent>
-        <ActionComponent
-          v-else-if="maneuverStatus.active"
+          v-if="maneuverStatus.active"
           v-bind:action="maneuverStatus.endManeuver"
           v-bind:text="'End maneuver'"
           v-bind:dispatch="endManeuver"
@@ -79,7 +89,7 @@
       <div class="w-1/2 border border-gray-500 rounded">
         <Board
           v-bind:game="game"
-          v-bind:select_province="selectProvince"
+          v-bind:select_province="() => {}"
           v-bind:valid_provinces="[]"
         ></Board>
       </div>
@@ -118,11 +128,7 @@ export default {
       currentPlayer: {},
       game: {},
       gameStarted: false,
-      importStatus: {
-        active: false,
-        endImport: Action.import({ placements: new Set() }),
-        placements: []
-      },
+      importPlacements: [],
       maneuverStatus: {
         active: false,
         endManeuver: Action.endManeuver(),
@@ -188,7 +194,7 @@ export default {
           } else {
             provinces.add(action.payload.origin);
           }
-        } else if (action.type === "import" && this.importStatus.active) {
+        } else if (action.type === "import" && this.game.importing) {
           action.payload.placements.forEach(placement => {
             provinces.add(placement.province);
           });
@@ -218,8 +224,11 @@ export default {
         this.maneuverStatus.origin = province;
         // If the game is in an import, then each specified province
         // gets added to the placements.
-      } else if (this.importStatus.active) {
-        this.importStatus.placements.push(province);
+      } else if (this.game.importing) {
+        this.importPlacements.push(province);
+        if (this.importPlacements.length === 3) {
+          this.runImport();
+        }
       } else if (this.game.buildingFactory) {
         let factory = {};
         for (const action of this.game.availableActions) {
@@ -236,9 +245,6 @@ export default {
       apiClient.tick(this.$route.params.id, action);
       if (action.type == "rondel") {
         switch (action.payload.slot) {
-          case "import":
-            this.importStatus.active = true;
-            break;
           case "investor":
             if (this.game.investorCardActive) {
               this.controllingPlayerName = this.game.investorCardHolder;
@@ -277,24 +283,23 @@ export default {
       for (const { payload } of this.game.availableActions) {
         const allowedCombo = payload.placements.map(({ province }) => province);
         // It's not a match if the lengths are different.
-        if (payload.placements.length === this.importStatus.placements.length) {
+        if (payload.placements.length === this.importPlacements.length) {
           // JavaScript can't directly compare arrays so we test for equality by looping through both arrays.
           let comboMatches = true;
           for (let i = 0; i < allowedCombo.length; i++) {
-            if (allowedCombo[i] !== this.importStatus.placements[i]) {
+            if (allowedCombo[i] !== this.importPlacements[i]) {
               comboMatches = false;
             }
           }
 
           if (comboMatches) {
-            this.importStatus.active = false;
             this.tickWithAction(Action.import(payload));
-            this.importStatus.placements = [];
+            this.importPlacements = [];
             return;
           }
         }
       }
-      this.importStatus.placements = [];
+      this.importPlacements = [];
     },
     endManeuver: function(action) {
       this.tickWithAction(action);
