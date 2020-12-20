@@ -4,10 +4,10 @@
     <div v-if="gameStarted" class="flex justify-between">
       <div class="w-1/2 border border-gray-500 rounded">
         <Board
-          v-bind:game="game"
+          :game="game"
           :gameStarted="gameStarted"
-          v-bind:select_province="selectProvince"
-          v-bind:valid_provinces="validProvinces()"
+          :select_province="selectProvince"
+          :valid_provinces="validProvinces()"
         ></Board>
       </div>
       <div class="w-1/2 mx-2 border border-gray-500 rounded">
@@ -66,7 +66,7 @@
           v-bind:dispatch="endManeuver"
         ></ActionComponent>
         <ActionComponent
-          v-else-if="purchasingBond || buildingFactory"
+          v-else-if="purchasingBond"
           v-for="action in game.availableActions"
           v-bind:key="JSON.stringify(action)"
           v-bind:action="action"
@@ -80,7 +80,7 @@
         <Board
           v-bind:game="game"
           v-bind:select_province="selectProvince"
-          v-bind:valid_provinces="validProvinces()"
+          v-bind:valid_provinces="[]"
         ></Board>
       </div>
       <div class="w-1/2 mx-2 border border-gray-500 rounded">
@@ -114,7 +114,6 @@ export default {
   props: ["username", "users", "games"],
   data: () => {
     return {
-      buildingFactory: false,
       controllingPlayerName: "",
       currentPlayer: {},
       game: {},
@@ -179,10 +178,6 @@ export default {
       this.onActions = false;
     },
     validProvinces() {
-      if (!this.gameStarted) {
-        return [];
-      }
-
       // This function returns all provinces that a unit can move
       // or be imported to.
       let provinces = new Set();
@@ -197,6 +192,11 @@ export default {
           action.payload.placements.forEach(placement => {
             provinces.add(placement.province);
           });
+        } else if (
+          action.type === "buildFactory" &&
+          this.game.buildingFactory
+        ) {
+          provinces.add(action.payload.province);
         }
       }
       return Array.from(provinces);
@@ -220,6 +220,14 @@ export default {
         // gets added to the placements.
       } else if (this.importStatus.active) {
         this.importStatus.placements.push(province);
+      } else if (this.game.buildingFactory) {
+        let factory = {};
+        for (const action of this.game.availableActions) {
+          if (action.payload.province === province) {
+            factory = action;
+          }
+        }
+        this.tickWithAction(factory);
       }
     },
     tickWithAction: function(action) {
@@ -230,9 +238,6 @@ export default {
         switch (action.payload.slot) {
           case "import":
             this.importStatus.active = true;
-            break;
-          case "factory":
-            this.buildingFactory = true;
             break;
           case "investor":
             if (this.game.investorCardActive) {
@@ -249,9 +254,6 @@ export default {
       if (action.type === "bondPurchase") {
         this.purchasingBond = false;
       }
-      if (action.type === "buildFactory") {
-        this.buildingFactory = false;
-      }
       for (const action of this.game.availableActions) {
         if (action.type === "rondel") {
           this.maneuverStatus.active = false;
@@ -259,9 +261,7 @@ export default {
       }
     },
     actionToText: function(action) {
-      if (action.type === "buildFactory") {
-        return `Build factory in ${action.payload.province}`;
-      } else if (action.type === "bondPurchase") {
+      if (action.type === "bondPurchase") {
         return `Purchase a ${action.payload.nation.value} bond for ${action.payload.cost}`;
       } else if (action.type === "endManeuver") {
         return `End maneuver`;

@@ -235,6 +235,7 @@ describe("imperial", () => {
             ].map(slot => Action.rondel({ nation: Nation.IT, cost: 0, slot }))
           )
         );
+        expect(game.buildingFactory).toEqual(false);
       });
     });
 
@@ -1549,6 +1550,7 @@ describe("imperial", () => {
               Action.buildFactory({ province: "b" })
             ])
           );
+          expect(game.buildingFactory).toEqual(true);
         });
 
         test("nation may not build a factory where one is already built", () => {
@@ -1562,6 +1564,7 @@ describe("imperial", () => {
           expect(game.availableActions).toEqual(
             new Set([Action.buildFactory({ province: "b" })])
           );
+          expect(game.buildingFactory).toEqual(true);
         });
 
         test("nation may not build a factory where a foreign unit is present", () => {
@@ -1575,6 +1578,7 @@ describe("imperial", () => {
           expect(game.availableActions).toEqual(
             new Set([Action.buildFactory({ province: "b" })])
           );
+          expect(game.buildingFactory).toEqual(true);
         });
 
         test("nation may not build a factory if the nation has less than 5m treasury", () => {

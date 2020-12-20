@@ -287,6 +287,7 @@ export default class Imperial {
     }
     this.handleAdvancePlayer();
     this.availableActions = new Set(this.rondelActions(this.currentNation));
+    this.buildingFactory = false;
   }
 
   import(action) {
@@ -713,6 +714,7 @@ export default class Imperial {
               this.availableActions.add(Action.buildFactory({ province }));
           }
         }
+        this.buildingFactory = true;
 
         return;
       }
