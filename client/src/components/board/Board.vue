@@ -8,6 +8,13 @@
     version="1.1"
     viewBox="0 0 536 430"
   >
+    <filter id="brightness">
+      <feComponentTransfer>
+        <feFuncR type="linear" slope="2" />
+        <feFuncG type="linear" slope="2" />
+        <feFuncB type="linear" slope="2" />
+      </feComponentTransfer>
+    </filter>
     <clipPath id="fleetClip">
       <circle cx="750" cy="500" r="500" />
     </clipPath>
