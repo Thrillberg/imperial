@@ -36,6 +36,17 @@
         </div>
         <div class="flex justify-around">
           <div v-if="onActions">
+            <div class="my-8">
+              <div class="text-center text-2xl">
+                <b>{{ stringify(game.currentNation.value) }}'s</b> turn
+              </div>
+              <Flag
+                :height="(90).toString()"
+                :width="(120).toString()"
+                :nation="game.currentNation.value"
+                class="mx-auto"
+              />
+            </div>
             <Rondel
               v-bind:game="game"
               v-bind:name="username"
@@ -110,14 +121,18 @@ import { apiClient } from "../router/index.js";
 
 import ActionComponent from "@/components/ActionComponent.vue";
 import Board from "@/components/board/Board.vue";
+import Flag from "@/components/flags/Flag.vue";
 import GameDetails from "@/components/GameDetails.vue";
 import Rondel from "@/components/Rondel.vue";
+
+import stringify from "../stringify.js";
 
 export default {
   name: "Game",
   components: {
     ActionComponent,
     Board,
+    Flag,
     GameDetails,
     Rondel
   },
@@ -175,6 +190,9 @@ export default {
     apiClient.getGameLog(this.$route.params.id);
   },
   methods: {
+    stringify(nation) {
+      return stringify(nation);
+    },
     viewActions() {
       this.onActions = true;
       this.onGameDetails = false;

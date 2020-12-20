@@ -38,16 +38,19 @@
     >
       {{ rondel_slot.label }}
     </text>
-    <Flag
-      v-for="nation in nations"
-      v-bind:nation="nation"
-      v-bind:key="nation"
-      width="15"
-      height="10"
+    <g
       v-bind:transform="
         'translate(' + flagTranslation + ') rotate(' + -rotation + ')'
       "
-    ></Flag>
+    >
+      <Flag
+        v-for="nation in nations"
+        v-bind:nation="nation"
+        v-bind:key="nation"
+        width="15"
+        height="10"
+      ></Flag>
+    </g>
   </g>
 </template>
 

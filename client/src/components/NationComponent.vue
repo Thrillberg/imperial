@@ -1,6 +1,6 @@
 <template>
   <div class="m-2">
-    {{ nation }}
+    {{ stringify(nation) }}
     <component
       :is="this.flag(nation)"
       :class="current_nation"
@@ -21,6 +21,8 @@ import GBFlag from "./flags/GBFlag.vue";
 import GEFlag from "./flags/GEFlag.vue";
 import RUFlag from "./flags/RUFlag.vue";
 
+import stringify from "../stringify.js";
+
 export default {
   name: "NationComponent",
   props: {
@@ -31,6 +33,9 @@ export default {
     treasury: Number
   },
   methods: {
+    stringify(nation) {
+      return stringify(nation);
+    },
     flag: nation => {
       switch (nation) {
         case "AH":
