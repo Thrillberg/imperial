@@ -41,10 +41,13 @@
                 <b>{{ stringify(game.currentNation.value) }}'s</b> turn
               </div>
               <Flag
-                :height="(90).toString()"
+                :height="(80).toString()"
                 :width="(120).toString()"
                 :nation="game.currentNation.value"
                 class="mx-auto"
+                :class="
+                  username === controllingPlayerName ? 'current_nation' : ''
+                "
               />
             </div>
             <Rondel
@@ -327,3 +330,9 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.current_nation {
+  box-shadow: 0 0 2rem 0.5rem #ffd700;
+}
+</style>
