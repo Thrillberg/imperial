@@ -29,7 +29,6 @@ export default {
     RondelSlot
   },
   props: {
-    soloMode: Boolean,
     game: Object,
     name: String
   },
@@ -37,7 +36,7 @@ export default {
     isValid(slot) {
       if (
         this.validSlots().includes(slot) &&
-        (this.game.currentPlayerName === this.name || this.soloMode)
+        this.game.currentPlayerName === this.name
       ) {
         return true;
       }
@@ -54,7 +53,7 @@ export default {
       return nations;
     },
     slotClicked: function(slot) {
-      if (this.game.currentPlayerName === this.name || this.soloMode) {
+      if (this.game.currentPlayerName === this.name) {
         for (const action of this.game.availableActions) {
           if (action.payload.slot === slot) {
             this.$emit("tick-with-action", action);

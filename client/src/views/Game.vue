@@ -35,7 +35,6 @@
         <div class="flex justify-around">
           <div v-if="onActions">
             <Rondel
-              v-bind:soloMode="soloMode"
               v-bind:game="game"
               v-bind:name="username"
               v-on:tick-with-action="tickWithAction"
@@ -190,7 +189,6 @@ export default {
       buildingFactory: false,
       controllingPlayerName: "",
       currentPlayer: {},
-      soloMode: false,
       game: unstartedGame,
       gameStarted: false,
       importStatus: {
