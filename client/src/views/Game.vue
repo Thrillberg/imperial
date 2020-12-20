@@ -5,6 +5,7 @@
       <div class="w-1/2 border border-gray-500 rounded">
         <Board
           v-bind:game="game"
+          :gameStarted="gameStarted"
           v-bind:select_province="selectProvince"
           v-bind:valid_provinces="validProvinces()"
         ></Board>
@@ -112,84 +113,11 @@ export default {
   },
   props: ["username", "users", "games"],
   data: () => {
-    const unstartedGame = {
-      availableActions: new Set(),
-      nations: new Map([
-        [
-          Nation.AH,
-          {
-            controller: "",
-            treasury: 0,
-            rondelPosition: null,
-            flagCount: 0,
-            powerPoints: 0,
-            taxChartPosition: 5
-          }
-        ],
-        [
-          Nation.IT,
-          {
-            controller: "",
-            treasury: 0,
-            rondelPosition: null,
-            flagCount: 0,
-            powerPoints: 0,
-            taxChartPosition: 5
-          }
-        ],
-        [
-          Nation.FR,
-          {
-            controller: "",
-            treasury: 0,
-            rondelPosition: null,
-            flagCount: 0,
-            powerPoints: 0,
-            taxChartPosition: 5
-          }
-        ],
-        [
-          Nation.GE,
-          {
-            controller: "",
-            treasury: 0,
-            rondelPosition: null,
-            flagCount: 0,
-            powerPoints: 0,
-            taxChartPosition: 5
-          }
-        ],
-        [
-          Nation.GB,
-          {
-            controller: "",
-            treasury: 0,
-            rondelPosition: null,
-            flagCount: 0,
-            powerPoints: 0,
-            taxChartPosition: 5
-          }
-        ],
-        [
-          Nation.RU,
-          {
-            controller: "",
-            treasury: 0,
-            rondelPosition: null,
-            flagCount: 0,
-            powerPoints: 0,
-            taxChartPosition: 5
-          }
-        ]
-      ]),
-      units: new Map(),
-      provinces: new Map()
-    };
     return {
       buildingFactory: false,
       controllingPlayerName: "",
       currentPlayer: {},
-      game: unstartedGame,
+      game: {},
       gameStarted: false,
       importStatus: {
         active: false,
@@ -251,6 +179,10 @@ export default {
       this.onActions = false;
     },
     validProvinces() {
+      if (!this.gameStarted) {
+        return [];
+      }
+
       // This function returns all provinces that a unit can move
       // or be imported to.
       let provinces = new Set();
@@ -294,30 +226,31 @@ export default {
       this.game.tick(action);
       this.controllingPlayerName = this.game.currentPlayerName;
       apiClient.tick(this.$route.params.id, action);
-      if (action.type === "rondel" && action.payload.slot === "import") {
-        this.importStatus.active = true;
+      if (action.type == "rondel") {
+        switch (action.payload.slot) {
+          case "import":
+            this.importStatus.active = true;
+            break;
+          case "factory":
+            this.buildingFactory = true;
+            break;
+          case "investor":
+            if (this.game.investorCardActive) {
+              this.controllingPlayerName = this.game.investorCardHolder;
+            }
+            this.purchasingBond = true;
+            break;
+          case "maneuver1":
+          case "maneuver2":
+            this.maneuverStatus.active = true;
+            break;
+        }
       }
       if (action.type === "bondPurchase") {
         this.purchasingBond = false;
       }
-      if (action.type === "rondel" && action.payload.slot === "factory") {
-        this.buildingFactory = true;
-      }
       if (action.type === "buildFactory") {
         this.buildingFactory = false;
-      }
-      if (action.type === "rondel" && action.payload.slot === "investor") {
-        if (this.game.investorCardActive) {
-          this.controllingPlayerName = this.game.investorCardHolder;
-        }
-        this.purchasingBond = true;
-      }
-      if (
-        action.type === "rondel" &&
-        (action.payload.slot === "maneuver1" ||
-          action.payload.slot === "maneuver2")
-      ) {
-        this.maneuverStatus.active = true;
       }
       for (const action of this.game.availableActions) {
         if (action.type === "rondel") {

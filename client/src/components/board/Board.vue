@@ -110,6 +110,7 @@ export default {
   name: "Board",
   props: {
     game: Object,
+    gameStarted: Boolean,
     select_province: Function,
     valid_provinces: Array
   },
@@ -128,6 +129,10 @@ export default {
       return armies;
     },
     fleets(province) {
+      if (!this.gameStarted) {
+        return [];
+      }
+
       let fleets = [];
       for (const [provinceWithUnits, allUnitsInProvince] of this.allUnits()) {
         for (const [nation, provinceUnits] of allUnitsInProvince) {
@@ -158,6 +163,10 @@ export default {
       return nation;
     },
     allUnits() {
+      if (!this.gameStarted) {
+        return new Map();
+      }
+
       // This function returns all units on the board.
       let allUnits = new Map();
       for (const [nation, unitsByNation] of this.game.units) {
@@ -172,6 +181,10 @@ export default {
       return allUnits;
     },
     factories() {
+      if (!this.gameStarted) {
+        return [];
+      }
+
       let factories = [];
       for (let [province, data] of this.game.provinces) {
         const factory = data.factory;
@@ -182,6 +195,10 @@ export default {
       return factories;
     },
     dots() {
+      if (!this.gameStarted) {
+        return [];
+      }
+
       let flags = [];
       for (const [province, data] of this.game.provinces) {
         const flag = data.flag;
