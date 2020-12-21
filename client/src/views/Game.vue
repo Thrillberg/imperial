@@ -177,7 +177,10 @@ export default {
                 nation: Nation[player.nation.value]
               };
             });
-          } else if (action.type === "rondel") {
+          } else if (
+            action.type === "rondel" ||
+            action.type === "bondPurchase"
+          ) {
             action.payload.nation = Nation[action.payload.nation.value];
           }
           return action;
