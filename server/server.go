@@ -273,11 +273,14 @@ func (c *Conn) UpdateGameLog(gameId string, gameLog string) error {
 
 // Listen starts an infinite loop of reading messages from the client.
 func (c *Conn) Listen() {
+	defer func() {
+		c.conn.Close()
+	}()
 	for {
 		e := Envelope{}
 		if err := c.conn.ReadJSON(&e); err != nil {
 			log.Println("read error", err)
-			return
+			break
 		}
 		if e.Kind == KindRegisterUser {
 			c.channels.registerUser <- UserName(e.Data["name"])
