@@ -364,7 +364,7 @@ func handleWebsocket(w http.ResponseWriter, r *http.Request) {
 				}
 			case <-r.Context().Done():
 				log.Println("request closed")
-				break
+				return
 			}
 		}
 	}()
