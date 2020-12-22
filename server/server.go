@@ -322,6 +322,9 @@ func handleWebsocket(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	c := NewConn(ws, userId)
+	defer func() {
+		c.conn.Close()
+	}()
 	go func() {
 		for {
 			select {
@@ -361,7 +364,7 @@ func handleWebsocket(w http.ResponseWriter, r *http.Request) {
 				}
 			case <-r.Context().Done():
 				log.Println("request closed")
-				return
+				break
 			}
 		}
 	}()
