@@ -1608,13 +1608,15 @@ describe("imperial", () => {
             { name: "b", nation: null, isOcean: true },
             { name: "c", nation: Nation.AH },
             { name: "d", nation: Nation.AH },
-            { name: "e", nation: null }
+            { name: "e", nation: null },
+            { name: "f", nation: Nation.IT },
           ],
           edges: [
             ["a", "b"],
             ["c", "d"],
             ["a", "d"],
-            ["a", "e"]
+            ["a", "e"],
+            ["c", "f"]
           ]
         });
 
@@ -1782,7 +1784,8 @@ describe("imperial", () => {
           expect(game.availableActions).toEqual(
             new Set([
               Action.endManeuver(),
-              Action.maneuver({ origin: "d", destination: "c" })
+              Action.maneuver({ origin: "d", destination: "c" }),
+              Action.maneuver({ origin: "d", destination: "f" })
             ])
           );
         });
@@ -1802,7 +1805,8 @@ describe("imperial", () => {
           expect(game.availableActions).toEqual(
             new Set([
               Action.endManeuver(),
-              Action.maneuver({ origin: "c", destination: "d" })
+              Action.maneuver({ origin: "c", destination: "d" }),
+              Action.maneuver({ origin: "c", destination: "f" })
             ])
           );
         });
@@ -1822,7 +1826,8 @@ describe("imperial", () => {
           expect(game.availableActions).toEqual(
             new Set([
               Action.endManeuver(),
-              Action.maneuver({ origin: "c", destination: "d" })
+              Action.maneuver({ origin: "c", destination: "d" }),
+              Action.maneuver({ origin: "c", destination: "f" })
             ])
           );
         });
@@ -1867,7 +1872,8 @@ describe("imperial", () => {
             new Set([
               Action.endManeuver(),
               Action.maneuver({ origin: "b", destination: "a" }),
-              Action.maneuver({ origin: "d", destination: "c" })
+              Action.maneuver({ origin: "d", destination: "c" }),
+              Action.maneuver({ origin: "d", destination: "f" })
             ])
           );
 
@@ -1877,9 +1883,36 @@ describe("imperial", () => {
             new Set([
               Action.endManeuver(),
               Action.maneuver({ origin: "d", destination: "e" }),
-              Action.maneuver({ origin: "d", destination: "c" })
+              Action.maneuver({ origin: "d", destination: "c" }),
+              Action.maneuver({ origin: "d", destination: "f" })
             ])
           );
+        });
+      });
+
+      describe("updating the province flag", () => {
+        test("maneuver army to neutral province adds a flag to the province", () => {
+          const game = newGame();
+          game.units.get(Nation.AH).get("c").armies++;
+
+          game.tick(
+            Action.rondel({ slot: "maneuver1", nation: Nation.AH, cost: 0 })
+          );
+          game.tick(Action.maneuver({ origin: "c", destination: "e" }));
+
+          expect(game.provinces.get("e").flag).toEqual(Nation.AH);
+        });
+
+        test("maneuver army to other nation's province does not add a flag", () => {
+          const game = newGame();
+          game.units.get(Nation.AH).get("c").armies++;
+
+          game.tick(
+            Action.rondel({ slot: "maneuver1", nation: Nation.AH, cost: 0 })
+          );
+          game.tick(Action.maneuver({ origin: "c", destination: "f" }));
+
+          expect(game.provinces.get("f").flag).toEqual(undefined);
         });
       });
     });

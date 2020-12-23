@@ -382,8 +382,17 @@ export default class Imperial {
       }
     }
 
-    // Update province flag
-    this.provinces.get(destination).flag = this.currentNation;
+    // Don't update the province flag if the province is a home province of a nation.
+    let plantFlag = true;
+    for (const [nation, provinces] of this.board.byNation) {
+      if (provinces.has(destination) && !!nation) {
+        plantFlag = false;
+      }
+    }
+    if (plantFlag === true) {
+      // Update province flag
+      this.provinces.get(destination).flag = this.currentNation;
+    }
 
     if (this.unitsToMove.length > 0) {
       const provincesWithFleets = new Map();
