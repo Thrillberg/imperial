@@ -197,6 +197,9 @@ export default {
             action.type === "bondPurchase"
           ) {
             action.payload.nation = Nation[action.payload.nation.value];
+          } else if (action.type === "fight" || action.type === "coexist") {
+            action.payload.incumbent = Nation[action.payload.incumbent.value];
+            action.payload.challenger = Nation[action.payload.challenger.value];
           }
           return action;
         });
@@ -282,12 +285,6 @@ export default {
       this.game.tick(action);
       this.controllingPlayerName = this.game.currentPlayerName;
       apiClient.tick(this.$route.params.id, action);
-      // Imperial class auto-ticks the endManeuver action so we have to do
-      // it here too.
-      // TODO: Figure out a way to make this more automatic.
-      if (action.type == "fight" || action.type == "coexist") {
-        apiClient.tick(this.$route.params.id, Action.endManeuver());
-      }
       if (action.type == "rondel") {
         switch (action.payload.slot) {
           case "investor":
