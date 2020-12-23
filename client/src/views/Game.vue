@@ -84,6 +84,23 @@
                 End maneuver
               </div>
             </div>
+            <div
+              v-if="game.handlingConflict && username === controllingPlayerName"
+              class="text-center text-lg"
+            >
+              <div
+                v-on:click="coexist"
+                class="rounded p-2 bg-green-800 text-white cursor-pointer"
+              >
+                Coexist
+              </div>
+              <div
+                v-on:click="fight"
+                class="rounded p-2 bg-green-800 text-white cursor-pointer"
+              >
+                Fight
+              </div>
+            </div>
           </div>
           <div v-else>
             <GameDetails
@@ -265,6 +282,12 @@ export default {
       this.game.tick(action);
       this.controllingPlayerName = this.game.currentPlayerName;
       apiClient.tick(this.$route.params.id, action);
+      // Imperial class auto-ticks the endManeuver action so we have to do
+      // it here too.
+      // TODO: Figure out a way to make this more automatic.
+      if (action.type == "fight" || action.type == "coexist") {
+        apiClient.tick(this.$route.params.id, Action.endManeuver());
+      }
       if (action.type == "rondel") {
         switch (action.payload.slot) {
           case "investor":
@@ -315,6 +338,24 @@ export default {
     endManeuver: function() {
       this.tickWithAction(Action.endManeuver());
       this.maneuverOrigin = "";
+    },
+    coexist: function() {
+      let coexistAction = {};
+      for (const action of this.game.availableActions) {
+        if (action.type === "coexist") {
+          coexistAction = action;
+        }
+      }
+      this.tickWithAction(coexistAction);
+    },
+    fight: function() {
+      let fightAction = {};
+      for (const action of this.game.availableActions) {
+        if (action.type === "fight") {
+          fightAction = action;
+        }
+      }
+      this.tickWithAction(fightAction);
     }
   }
 };

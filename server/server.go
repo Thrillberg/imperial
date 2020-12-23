@@ -320,8 +320,8 @@ func handleWebsocket(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	c := NewConn(ws, userId)
-	defer c.conn.Close()
 	go func() {
+		defer c.conn.Close()
 		for {
 			select {
 			case userName := <-c.channels.RegisterUser():
