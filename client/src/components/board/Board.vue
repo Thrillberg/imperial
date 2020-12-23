@@ -185,7 +185,14 @@ export default {
           let allUnitsInProvince = new Map();
           if (units.armies > 0 || units.fleets > 0) {
             allUnitsInProvince.set(nation.value, units);
-            allUnits.set(province, allUnitsInProvince);
+            if (allUnits.get(province)) {
+              allUnits.set(
+                province,
+                new Set([...allUnitsInProvince, ...allUnits.get(province)])
+              );
+            } else {
+              allUnits.set(province, allUnitsInProvince);
+            }
           }
         }
       }

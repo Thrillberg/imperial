@@ -20,6 +20,7 @@ export default class Imperial {
     this.availableActions = new Set();
 
     this.maneuvering = false;
+    this.handlingConflict = false;
   }
 
   tick(action) {
@@ -211,8 +212,11 @@ export default class Imperial {
         action.payload.challenger;
     }
 
+    this.handlingConflict = false;
     if (this.unitsToMove.length === 0) {
-      this.tick(Action.endManeuver());
+      this.unitsToMove = [];
+      this.handleAdvancePlayer();
+      this.availableActions = new Set(this.rondelActions(this.currentNation));
     } else {
       const lastManeuverRondelAction = this.log
         .reverse()
@@ -222,8 +226,11 @@ export default class Imperial {
   }
 
   coexist() {
+    this.handlingConflict = false;
     if (this.unitsToMove.length === 0) {
-      this.tick(Action.endManeuver());
+      this.unitsToMove = [];
+      this.handleAdvancePlayer();
+      this.availableActions = new Set(this.rondelActions(this.currentNation));
     } else {
       const lastManeuverRondelAction = this.log
         .reverse()
@@ -370,6 +377,7 @@ export default class Imperial {
             targetType: null
           })
         ]);
+        this.handlingConflict = true;
         return;
       }
     }

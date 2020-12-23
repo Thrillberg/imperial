@@ -84,6 +84,23 @@
                 End maneuver
               </div>
             </div>
+            <div
+              v-if="game.handlingConflict && username === controllingPlayerName"
+              class="text-center text-lg"
+            >
+              <div
+                v-on:click="coexist"
+                class="rounded p-2 bg-green-800 text-white cursor-pointer"
+              >
+                Coexist
+              </div>
+              <div
+                v-on:click="fight"
+                class="rounded p-2 bg-green-800 text-white cursor-pointer"
+              >
+                Fight
+              </div>
+            </div>
           </div>
           <div v-else>
             <GameDetails
@@ -180,6 +197,9 @@ export default {
             action.type === "bondPurchase"
           ) {
             action.payload.nation = Nation[action.payload.nation.value];
+          } else if (action.type === "fight" || action.type === "coexist") {
+            action.payload.incumbent = Nation[action.payload.incumbent.value];
+            action.payload.challenger = Nation[action.payload.challenger.value];
           }
           return action;
         });
@@ -315,6 +335,24 @@ export default {
     endManeuver: function() {
       this.tickWithAction(Action.endManeuver());
       this.maneuverOrigin = "";
+    },
+    coexist: function() {
+      let coexistAction = {};
+      for (const action of this.game.availableActions) {
+        if (action.type === "coexist") {
+          coexistAction = action;
+        }
+      }
+      this.tickWithAction(coexistAction);
+    },
+    fight: function() {
+      let fightAction = {};
+      for (const action of this.game.availableActions) {
+        if (action.type === "fight") {
+          fightAction = action;
+        }
+      }
+      this.tickWithAction(fightAction);
     }
   }
 };

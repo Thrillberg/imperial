@@ -2072,7 +2072,7 @@ describe("imperial", () => {
       });
 
       describe("after fight is adjudicated", () => {
-        test("endManeuver is pushed if challenger has no more units to move", () => {
+        test("availalableActions are updated if challenger has no more units to move", () => {
           const game = newGame();
           game.units.get(Nation.AH).get("b").armies++;
           game.units.get(Nation.IT).get("a").armies++;
@@ -2090,7 +2090,20 @@ describe("imperial", () => {
             })
           );
 
-          expect(game.log[game.log.length - 1]).toEqual(Action.endManeuver());
+          expect(game.availableActions).toEqual(
+            new Set(
+              [
+                "factory",
+                "production1",
+                "maneuver1",
+                "investor",
+                "import",
+                "production2",
+                "maneuver2",
+                "taxation"
+              ].map(slot => Action.rondel({ nation: Nation.IT, cost: 0, slot }))
+            )
+          );
         });
 
         test("challenger can maneuver if challenger has more units to move", () => {
@@ -2186,7 +2199,7 @@ describe("imperial", () => {
       });
 
       describe("after coexistence is adjudicated", () => {
-        test("endManeuver is pushed if challenger has no more units to move", () => {
+        test("availableActions are updated if challenger has no more units to move", () => {
           const game = newGame();
           game.units.get(Nation.AH).get("b").armies++;
           game.units.get(Nation.IT).get("a").armies++;
@@ -2203,7 +2216,20 @@ describe("imperial", () => {
             })
           );
 
-          expect(game.log[game.log.length - 1]).toEqual(Action.endManeuver());
+          expect(game.availableActions).toEqual(
+            new Set(
+              [
+                "factory",
+                "production1",
+                "maneuver1",
+                "investor",
+                "import",
+                "production2",
+                "maneuver2",
+                "taxation"
+              ].map(slot => Action.rondel({ nation: Nation.IT, cost: 0, slot }))
+            )
+          );
         });
 
         test("challenger can maneuver if challenger has more units to move", () => {
