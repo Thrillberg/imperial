@@ -18,6 +18,8 @@ export default class Imperial {
     this.provinces = new Map();
     this.nations = new Map();
     this.availableActions = new Set();
+
+    this.maneuvering = false;
   }
 
   tick(action) {
@@ -152,6 +154,7 @@ export default class Imperial {
 
   endManeuver() {
     this.unitsToMove = [];
+    this.maneuvering = false;
     this.handleAdvancePlayer();
     this.availableActions = new Set(this.rondelActions(this.currentNation));
   }
@@ -414,6 +417,7 @@ export default class Imperial {
       });
       this.availableActions = out;
     } else {
+      // No more units may be maneuvered on this turn.
       if (this.nations.get(this.currentNation).rondelPosition === "maneuver2") {
         const potentialPreInvestorSlots = [
           "factory",
@@ -428,6 +432,7 @@ export default class Imperial {
           this.endOfInvestorTurn();
         }
       }
+      this.maneuvering = false;
       this.handleAdvancePlayer();
       this.availableActions = new Set(this.rondelActions(this.currentNation));
     }
@@ -694,6 +699,7 @@ export default class Imperial {
       }
       case "maneuver1":
       case "maneuver2": {
+        this.maneuvering = true;
         this.beginManeuver(action);
         return;
       }

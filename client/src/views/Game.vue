@@ -73,6 +73,17 @@
                 End import
               </div>
             </div>
+            <div
+              v-if="game.maneuvering && username === controllingPlayerName"
+              class="text-center text-lg"
+            >
+              <div
+                v-on:click="endManeuver"
+                class="rounded p-2 bg-green-800 text-white cursor-pointer"
+              >
+                End maneuver
+              </div>
+            </div>
           </div>
           <div v-else>
             <GameDetails
@@ -82,15 +93,8 @@
           </div>
         </div>
       </div>
-      <div class="buttons">
+      <div class="buttons" v-if="purchasingBond">
         <ActionComponent
-          v-if="maneuverStatus.active"
-          v-bind:action="maneuverStatus.endManeuver"
-          v-bind:text="'End maneuver'"
-          v-bind:dispatch="endManeuver"
-        ></ActionComponent>
-        <ActionComponent
-          v-else-if="purchasingBond"
           v-for="action in game.availableActions"
           v-bind:key="JSON.stringify(action)"
           v-bind:action="action"
@@ -147,15 +151,9 @@ export default {
       game: {},
       gameStarted: false,
       importPlacements: [],
-      maneuverStatus: {
-        active: false,
-        endManeuver: Action.endManeuver(),
-        origin: ""
-      },
-      name: "",
+      maneuverOrigin: "",
       onActions: true,
       onGameDetails: false,
-      players: new Set(),
       purchasingBond: false
     };
   },
@@ -212,8 +210,8 @@ export default {
       // or be imported to.
       let provinces = new Set();
       for (const action of this.game.availableActions) {
-        if (action.type === "maneuver" && this.maneuverStatus.active) {
-          if (this.maneuverStatus.origin) {
+        if (action.type === "maneuver" && this.game.maneuvering) {
+          if (this.maneuverOrigin) {
             provinces.add(action.payload.destination);
           } else {
             provinces.add(action.payload.origin);
@@ -234,18 +232,18 @@ export default {
     selectProvince(province) {
       // If the game is in a maneuver and an origin is specified,
       // then the next specified province is the destination
-      if (this.maneuverStatus.active && this.maneuverStatus.origin) {
+      if (this.game.maneuvering && this.maneuverOrigin) {
         const maneuver = Action.maneuver({
-          origin: this.maneuverStatus.origin,
+          origin: this.maneuverOrigin,
           destination: province
         });
         // Reset maneuverStatus
-        this.maneuverStatus.origin = "";
+        this.maneuverOrigin = "";
         this.tickWithAction(maneuver);
         // If the game is in a maneuver with no origin specified,
         // then the next specified province is the origin
-      } else if (this.maneuverStatus.active) {
-        this.maneuverStatus.origin = province;
+      } else if (this.game.maneuvering) {
+        this.maneuverOrigin = province;
         // If the game is in an import, then each specified province
         // gets added to the placements.
       } else if (this.game.importing) {
@@ -275,26 +273,15 @@ export default {
             }
             this.purchasingBond = true;
             break;
-          case "maneuver1":
-          case "maneuver2":
-            this.maneuverStatus.active = true;
-            break;
         }
       }
       if (action.type === "bondPurchase") {
         this.purchasingBond = false;
       }
-      for (const action of this.game.availableActions) {
-        if (action.type === "rondel") {
-          this.maneuverStatus.active = false;
-        }
-      }
     },
     actionToText: function(action) {
       if (action.type === "bondPurchase") {
         return `Purchase a ${action.payload.nation.value} bond for ${action.payload.cost}`;
-      } else if (action.type === "endManeuver") {
-        return `End maneuver`;
       } else if (action.type === "coexist") {
         return `Coexist`;
       } else if (action.type === "fight") {
@@ -325,10 +312,9 @@ export default {
       }
       this.importPlacements = [];
     },
-    endManeuver: function(action) {
-      this.tickWithAction(action);
-      this.maneuverStatus.active = false;
-      this.maneuverStatus.origin = "";
+    endManeuver: function() {
+      this.tickWithAction(Action.endManeuver());
+      this.maneuverOrigin = "";
     }
   }
 };
