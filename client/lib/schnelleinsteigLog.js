@@ -82,7 +82,7 @@ export default [
     province: "westernmediterraneansea",
     incumbent: Nation.IT,
     challenger: Nation.FR,
-    targetType: null
+    targetType: "fleet"
   }),
   Action.maneuver({
     origin: "bordeaux",
@@ -124,5 +124,14 @@ export default [
   Action.maneuver({
     origin: "moscow",
     destination: "lemberg"
-  })
+  }),
+  // fifth round
+  Action.rondel({ nation: Nation.AH, cost: 0, slot: "maneuver1" }),
+  Action.maneuver({
+    origin: "ioniansea",
+    destination: "westernmediterraneansea"
+  }),
+  Action.maneuver({ origin: "tunis", destination: "algeria" }),
+  Action.maneuver({ origin: "westbalkan", destination: "bulgaria" }),
+  Action.maneuver({ origin: "romania", destination: "odessa" })
 ];

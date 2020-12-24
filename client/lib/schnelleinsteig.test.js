@@ -904,7 +904,7 @@ describe("Schnelleinsteig", () => {
     });
 
     describe("2. IT does maneuver2", () => {
-      const log = mainLog.slice(0, 42);
+      const log = mainLog.slice(0, 43);
       const game = Imperial.fromLog(log);
       game.tick(
         Action.rondel({ nation: Nation.IT, cost: 0, slot: "maneuver2" })
@@ -983,7 +983,7 @@ describe("Schnelleinsteig", () => {
     });
 
     describe("3. FR does maneuver1", () => {
-      const log = mainLog.slice(0, 45);
+      const log = mainLog.slice(0, 46);
       const game = Imperial.fromLog(log);
       game.tick(
         Action.rondel({ nation: Nation.FR, cost: 0, slot: "maneuver1" })
@@ -1037,7 +1037,7 @@ describe("Schnelleinsteig", () => {
             province: "westernmediterraneansea",
             incumbent: Nation.IT,
             challenger: Nation.FR,
-            targetType: null
+            targetType: "fleet"
           })
         ];
 
@@ -1050,7 +1050,7 @@ describe("Schnelleinsteig", () => {
             province: "westernmediterraneansea",
             incumbent: Nation.IT,
             challenger: Nation.FR,
-            targetType: null
+            targetType: "fleet"
           })
         );
         const westernMed = game.provinces.get("westernmediterraneansea");
@@ -1205,7 +1205,7 @@ describe("Schnelleinsteig", () => {
     });
 
     describe("6. RU does production2", () => {
-      const log = mainLog.slice(0, 53);
+      const log = mainLog.slice(0, 54);
       const game = Imperial.fromLog(log);
       game.tick(
         Action.rondel({ nation: Nation.RU, cost: 0, slot: "production2" })
@@ -1257,7 +1257,7 @@ describe("Schnelleinsteig", () => {
     });
 
     describe("2. IT does production1", () => {
-      const log = mainLog.slice(0, 54);
+      const log = mainLog.slice(0, 56);
       const game = Imperial.fromLog(log);
       game.tick(
         Action.rondel({ nation: Nation.IT, cost: 0, slot: "production1" })
@@ -1414,7 +1414,7 @@ describe("Schnelleinsteig", () => {
     });
 
     describe("4. GB does production2", () => {
-      const log = mainLog.slice(0, 56);
+      const log = mainLog.slice(0, 59);
       const game = Imperial.fromLog(log);
       game.tick(
         Action.rondel({ nation: Nation.GB, cost: 0, slot: "production2" })
@@ -1466,7 +1466,7 @@ describe("Schnelleinsteig", () => {
     });
 
     describe("6. RU does maneuver2", () => {
-      const log = mainLog.slice(0, 59);
+      const log = mainLog.slice(0, 62);
       const game = Imperial.fromLog(log);
       game.tick(
         Action.rondel({ nation: Nation.RU, cost: 0, slot: "maneuver2" })
@@ -1577,7 +1577,7 @@ describe("Schnelleinsteig", () => {
 
   describe("fifth round", () => {
     describe("1. AH does maneuver1", () => {
-      const log = mainLog.slice(0, 65);
+      const log = mainLog.slice(0, 68);
       const game = Imperial.fromLog(log);
       game.tick(
         Action.rondel({ nation: Nation.AH, cost: 0, slot: "maneuver1" })
@@ -1700,7 +1700,7 @@ describe("Schnelleinsteig", () => {
     });
 
     describe("2. IT invests", () => {
-      const log = mainLog.slice(0, 69);
+      const log = mainLog.slice(0, 74);
       const game = Imperial.fromLog(log);
       game.tick(
         Action.rondel({ nation: Nation.IT, cost: 0, slot: "investor" })

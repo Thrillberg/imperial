@@ -282,7 +282,6 @@ export default {
       }
     },
     tickWithAction: function(action) {
-      this.game.tick(action);
       this.controllingPlayerName = this.game.currentPlayerName;
       apiClient.tick(this.$route.params.id, action);
       if (action.type == "rondel") {

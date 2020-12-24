@@ -24,25 +24,38 @@ export default class Imperial {
   }
 
   tick(action) {
+    // Initialize and endGame actions are always valid.
+    if (action.type === "initialize") {
+      this.log.push(action);
+      this.initialize(action);
+      return;
+    } else if (action.type === "endGame") {
+      this.log.push(action);
+      this.endGame();
+      return;
+    }
+
+    // Check if the requested action is invalid.
+    let validAction = false;
+    for (const availableAction of this.availableActions) {
+      if (this.isEqual(availableAction, action)) {
+        validAction = true;
+      }
+    }
+
+    if (!validAction) { return; }
+
     this.log.push(action);
 
     switch (action.type) {
       case "noop":
         return;
-      case "initialize": {
-        this.initialize(action);
-        return;
-      }
       case "bondPurchase": {
         this.bondPurchase(action);
         return;
       }
       case "endManeuver": {
         this.endManeuver();
-        return;
-      }
-      case "endGame": {
-        this.endGame();
         return;
       }
       case "fight": {
@@ -359,26 +372,40 @@ export default class Imperial {
 
     // Interrupt manuevers in case of potential conflict!
     for (const [nation] of this.nations) {
-      if (
-        nation !== this.currentNation &&
-        (this.units.get(nation).get(destination).armies > 0 ||
-          this.units.get(nation).get(destination).fleets > 0)
-      ) {
-        this.availableActions = new Set([
-          Action.coexist({
-            province: destination,
-            incumbent: nation,
-            challenger: this.currentNation
-          }),
-          Action.fight({
-            province: destination,
-            incumbent: nation,
-            challenger: this.currentNation,
-            targetType: null
-          })
-        ]);
-        this.handlingConflict = true;
-        return;
+      if (nation !== this.currentNation) {
+        if (this.units.get(nation).get(destination).armies > 0) {
+          this.availableActions = new Set([
+            Action.fight({
+              province: destination,
+              incumbent: nation,
+              challenger: this.currentNation,
+              targetType: "army"
+            }),
+            Action.coexist({
+              province: destination,
+              incumbent: nation,
+              challenger: this.currentNation
+            })
+          ]);
+          this.handlingConflict = true;
+          return;
+        } else if (this.units.get(nation).get(destination).fleets > 0) {
+          this.availableActions = new Set([
+            Action.fight({
+              province: destination,
+              incumbent: nation,
+              challenger: this.currentNation,
+              targetType: "fleet"
+            }),
+            Action.coexist({
+              province: destination,
+              incumbent: nation,
+              challenger: this.currentNation
+            })
+          ]);
+          this.handlingConflict = true;
+          return;
+        }
       }
     }
 
@@ -655,7 +682,6 @@ export default class Imperial {
             )
           ) {
             this.endOfInvestorTurn();
-            this.handleAdvancePlayer();
             return;
           }
         }
@@ -784,6 +810,7 @@ export default class Imperial {
 
   beginManeuver(action) {
     const destinations = new Set([Action.endManeuver()]);
+    this.unitsToMove = [];
 
     // Collect all units that are allowed to move on this turn
     for (const [province, units] of this.units.get(action.payload.nation)) {
@@ -1026,5 +1053,19 @@ export default class Imperial {
       }
     }
     return count;
+  }
+
+  isEqual(action1, action2) {
+    if (action1.type !== action2.type) {
+      return false;
+    }
+    
+    if (action1.payload && action2.payload) {
+      return Object.keys(action1.payload).every(key => {
+        return action1.payload[key] === action2.payload[key]
+      });
+    } else {
+      return true;
+    }
   }
 }

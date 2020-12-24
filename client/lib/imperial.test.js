@@ -76,6 +76,9 @@ describe("imperial", () => {
         const game = newGame();
         // Give player one bond to trade in
         game.players["player1"].bonds = new Set([Bond(Nation.AH, 1)]);
+        game.availableActions = new Set([
+          Action.bondPurchase({ player: "player1", cost: 4, nation: Nation.AH })
+        ]);
 
         game.tick(
           Action.bondPurchase({ player: "player1", cost: 4, nation: Nation.AH })
@@ -93,6 +96,7 @@ describe("imperial", () => {
         // Nobody controls Italy
         game.nations.get(Nation.IT).controller = null;
 
+        game.tick(Action.rondel({nation: Nation.IT, cost: 0, slot: "investor"}));
         game.tick(
           Action.bondPurchase({ player: "player1", cost: 4, nation: Nation.IT })
         );
@@ -213,7 +217,7 @@ describe("imperial", () => {
         return game;
       };
 
-      describe("AH builds a factory", () => {
+      test("AH builds a factory", () => {
         const game = newGame();
 
         game.tick(
@@ -266,6 +270,7 @@ describe("imperial", () => {
         const beforeUnits = cloneUnits(game.units);
         expect(game.nations.get(Nation.AH).treasury).toEqual(11);
 
+        game.rondel(Action.rondel({nation: Nation.AH, cost: 0, slot: "import"}));
         game.tick(Action.import({ placements: [] }));
 
         expect(game.units).toEqual(beforeUnits);
@@ -293,6 +298,7 @@ describe("imperial", () => {
         expected.get(Nation.AH).get("a").armies++;
         expect(game.nations.get(Nation.AH).treasury).toEqual(11);
 
+        game.rondel(Action.rondel({nation: Nation.AH, cost: 0, slot: "import"}));
         game.tick(
           Action.import({ placements: [{ province: "a", type: "army" }] })
         );
@@ -310,6 +316,7 @@ describe("imperial", () => {
 
         expect(game.nations.get(Nation.AH).treasury).toEqual(11);
 
+        game.rondel(Action.rondel({nation: Nation.AH, cost: 0, slot: "import"}));
         game.tick(
           Action.import({
             placements: [
@@ -332,6 +339,7 @@ describe("imperial", () => {
         expected.get(Nation.AH).get("a").fleets++;
         expect(game.nations.get(Nation.AH).treasury).toEqual(11);
 
+        game.rondel(Action.rondel({nation: Nation.AH, cost: 0, slot: "import"}));
         game.tick(
           Action.import({
             placements: [
@@ -1682,7 +1690,7 @@ describe("imperial", () => {
                 province: "b",
                 incumbent: Nation.IT,
                 challenger: Nation.AH,
-                targetType: null
+                targetType: "fleet"
               })
             ])
           );
@@ -1761,7 +1769,7 @@ describe("imperial", () => {
                 province: "d",
                 incumbent: Nation.IT,
                 challenger: Nation.AH,
-                targetType: null
+                targetType: "army"
               })
             ])
           );
@@ -1922,9 +1930,10 @@ describe("imperial", () => {
         const board = new GameBoard({
           nodes: [
             { name: "a", nation: null },
-            { name: "b", nation: null, isOcean: true }
+            { name: "b", nation: null, isOcean: true },
+            { name: "c", nation: null }
           ],
-          edges: [["a", "b"]]
+          edges: [["a", "b"], ["a", "c"]]
         });
 
         const game = new Imperial(board);
@@ -1960,15 +1969,17 @@ describe("imperial", () => {
 
         test("both nations lose an army", () => {
           const game = newGame();
-          game.units.get(Nation.AH).get("a").armies++;
+          game.units.get(Nation.AH).get("c").armies++;
           game.units.get(Nation.IT).get("a").armies++;
 
+          game.tick(Action.rondel({nation: Nation.AH, cost: 0, slot: "maneuver1"}));
+          game.tick(Action.maneuver({origin: "c", destination: "a"}));
           game.tick(
             Action.fight({
               province: "a",
-              incumbent: Nation.AH,
-              challenger: Nation.IT,
-              targetType: null
+              incumbent: Nation.IT,
+              challenger: Nation.AH,
+              targetType: "army"
             })
           );
 
@@ -1984,15 +1995,17 @@ describe("imperial", () => {
 
         test("both nations lose a fleet", () => {
           const game = newGame();
-          game.units.get(Nation.AH).get("b").fleets++;
+          game.units.get(Nation.AH).get("a").fleets++;
           game.units.get(Nation.IT).get("b").fleets++;
 
+          game.tick(Action.rondel({nation: Nation.AH, cost: 0, slot: "maneuver1"}));
+          game.tick(Action.maneuver({origin: "a", destination: "b"}));
           game.tick(
             Action.fight({
               province: "b",
               incumbent: Nation.AH,
               challenger: Nation.IT,
-              targetType: null
+              targetType: "fleet"
             })
           );
 
@@ -2010,80 +2023,12 @@ describe("imperial", () => {
       describe("one nation has more armies than another", () => {
         test("flag changes to the challenger", () => {
           const game = newGame();
-          game.units.get(Nation.AH).get("a").armies++;
+          game.units.get(Nation.AH).get("b").armies++;
           game.units.get(Nation.IT).get("a").armies++;
           game.units.get(Nation.IT).get("a").armies++;
 
-          game.tick(
-            Action.fight({
-              province: "a",
-              incumbent: Nation.AH,
-              challenger: Nation.IT,
-              targetType: null
-            })
-          );
-
-          expect(game.provinces.get("a").flag).toEqual(Nation.IT);
-        });
-
-        test("both nations lose one army but another remains", () => {
-          const game = newGame();
-          game.units.get(Nation.AH).get("a").armies++;
-          game.units.get(Nation.AH).get("a").armies++;
-          game.units.get(Nation.IT).get("a").armies++;
-
-          game.tick(
-            Action.fight({
-              province: "a",
-              incumbent: Nation.AH,
-              challenger: Nation.IT,
-              targetType: null
-            })
-          );
-
-          expect(game.units.get(Nation.AH).get("a")).toEqual({
-            armies: 1,
-            fleets: 0
-          });
-          expect(game.units.get(Nation.IT).get("a")).toEqual({
-            armies: 0,
-            fleets: 0
-          });
-        });
-      });
-
-      describe("a coastal province with a mixture of armies and fleets", () => {
-        test("challenger chose to attack the fleet", () => {
-          const game = newGame();
-          game.units.get(Nation.AH).get("a").armies++;
-          game.units.get(Nation.AH).get("a").fleets++;
-          game.units.get(Nation.IT).get("a").armies++;
-
-          game.tick(
-            Action.fight({
-              province: "a",
-              incumbent: Nation.AH,
-              challenger: Nation.IT,
-              targetType: "fleet"
-            })
-          );
-
-          expect(game.units.get(Nation.AH).get("a")).toEqual({
-            armies: 1,
-            fleets: 0
-          });
-          expect(game.units.get(Nation.IT).get("b")).toEqual({
-            armies: 0,
-            fleets: 0
-          });
-        });
-
-        test("challenger chose to attack the army", () => {
-          const game = newGame();
-          game.units.get(Nation.AH).get("a").armies++;
-          game.units.get(Nation.AH).get("a").fleets++;
-          game.units.get(Nation.IT).get("a").armies++;
-
+          game.tick(Action.rondel({nation: Nation.AH, cost: 0, slot: "maneuver1"}));
+          game.tick(Action.maneuver({origin: "b", destination: "a"}));
           game.tick(
             Action.fight({
               province: "a",
@@ -2093,11 +2038,87 @@ describe("imperial", () => {
             })
           );
 
+          expect(game.provinces.get("a").flag).toEqual(Nation.IT);
+        });
+
+        test("both nations lose one army but another remains", () => {
+          const game = newGame();
+          game.units.get(Nation.IT).get("a").armies++;
+          game.units.get(Nation.IT).get("a").armies++;
+          game.units.get(Nation.AH).get("b").armies++;
+
+          game.tick(Action.rondel({nation: Nation.AH, cost: 0, slot: "maneuver1"}));
+          game.tick(Action.maneuver({origin: "b", destination: "a"}));
+          game.tick(
+            Action.fight({
+              province: "a",
+              incumbent: Nation.IT,
+              challenger: Nation.AH,
+              targetType: "army"
+            })
+          );
+
+          expect(game.units.get(Nation.IT).get("a")).toEqual({
+            armies: 1,
+            fleets: 0
+          });
           expect(game.units.get(Nation.AH).get("a")).toEqual({
+            armies: 0,
+            fleets: 0
+          });
+        });
+      });
+
+      describe("a coastal province with a mixture of armies and fleets", () => {
+        test("challenger chose to attack the fleet", () => {
+          const game = newGame();
+          game.units.get(Nation.IT).get("a").armies++;
+          game.units.get(Nation.IT).get("a").fleets++;
+          game.units.get(Nation.AH).get("b").armies++;
+
+          game.tick(Action.rondel({nation: Nation.AH, cost: 0, slot: "maneuver1"}));
+          game.tick(Action.maneuver({origin: "b", destination: "a"}));
+          game.tick(
+            Action.fight({
+              province: "a",
+              incumbent: Nation.IT,
+              challenger: Nation.AH,
+              targetType: "fleet"
+            })
+          );
+
+          expect(game.units.get(Nation.IT).get("a")).toEqual({
+            armies: 1,
+            fleets: 0
+          });
+          expect(game.units.get(Nation.AH).get("b")).toEqual({
+            armies: 0,
+            fleets: 0
+          });
+        });
+
+        test("challenger chose to attack the army", () => {
+          const game = newGame();
+          game.units.get(Nation.IT).get("a").armies++;
+          game.units.get(Nation.IT).get("a").fleets++;
+          game.units.get(Nation.AH).get("b").armies++;
+
+          game.tick(Action.rondel({nation: Nation.AH, cost: 0, slot: "maneuver1"}));
+          game.tick(Action.maneuver({origin: "b", destination: "a"}));
+          game.tick(
+            Action.fight({
+              province: "a",
+              incumbent: Nation.IT,
+              challenger: Nation.AH,
+              targetType: "army"
+            })
+          );
+
+          expect(game.units.get(Nation.IT).get("a")).toEqual({
             armies: 0,
             fleets: 1
           });
-          expect(game.units.get(Nation.IT).get("b")).toEqual({
+          expect(game.units.get(Nation.AH).get("b")).toEqual({
             armies: 0,
             fleets: 0
           });
@@ -2296,7 +2317,10 @@ describe("imperial", () => {
     describe("currentPlayerName on new turn", () => {
       const newGame = () => {
         const board = new GameBoard({
-          nodes: [],
+          nodes: [
+            { name: "a", nation: Nation.AH },
+            { name: "b", nation: Nation.AH }
+          ],
           edges: []
         });
 
@@ -2318,10 +2342,52 @@ describe("imperial", () => {
         game.nations.get(Nation.IT).controller = null;
 
         // End maneuver just because it is simple; the action is unimportant
-        game.tick(Action.endManeuver());
+        game.tick(Action.rondel({nation: Nation.AH, cost: 0, slot: "production1"}));
 
         expect(game.currentNation).toEqual(Nation.FR);
         expect(game.currentPlayerName).toEqual("player1");
+      });
+    });
+
+    describe("invalid moves", () => {
+      const newGame = () => {
+        const board = new GameBoard({
+          nodes: [
+            { name: "a", nation: null },
+            { name: "b", nation: null },
+            { name: "c", nation: null }
+          ],
+          edges: [["a", "c"]]
+        });
+
+        const game = new Imperial(board);
+        game.tick(
+          Action.initialize({
+            players: [
+              { id: "player1", nation: Nation.AH },
+              { id: "player2", nation: Nation.IT }
+            ]
+          })
+        );
+        return game;
+      };
+
+      test.only("when impossible maneuver is attempted, maneuver is rejected", () => {
+        const game = newGame();
+        game.units.get(Nation.AH).get("a").armies = 1;
+
+        game.tick(Action.rondel({nation: Nation.AH, cost: 0, slot: "maneuver1"}));
+        game.tick(Action.maneuver({origin: "a", destination: "b"}));
+
+        expect(game.log).toEqual([
+          Action.initialize({
+            players: [
+              { id: "player1", nation: Nation.AH },
+              { id: "player2", nation: Nation.IT }
+            ]
+          }),
+          Action.rondel({nation: Nation.AH, cost: 0, slot: "maneuver1"})
+        ]);
       });
     });
   });
