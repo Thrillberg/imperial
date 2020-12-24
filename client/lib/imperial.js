@@ -373,36 +373,36 @@ export default class Imperial {
     // Interrupt manuevers in case of potential conflict!
     for (const [nation] of this.nations) {
       if (nation !== this.currentNation) {
-        if (this.units.get(nation).get(destination).armies > 0) {
-          this.availableActions = new Set([
-            Action.fight({
-              province: destination,
-              incumbent: nation,
-              challenger: this.currentNation,
-              targetType: "army"
-            }),
+        const units = this.units.get(nation).get(destination);
+        if (units.armies > 0 || units.fleets > 0) {
+          this.availableActions = new Set();
+          if (units.armies > 0) {
+            this.availableActions.add(
+              Action.fight({
+                province: destination,
+                incumbent: nation,
+                challenger: this.currentNation,
+                targetType: "army"
+              })
+            );
+          }
+          if (units.fleets > 0) {
+            this.availableActions.add(
+              Action.fight({
+                province: destination,
+                incumbent: nation,
+                challenger: this.currentNation,
+                targetType: "fleet"
+              }),
+            );
+          }
+          this.availableActions.add(
             Action.coexist({
               province: destination,
               incumbent: nation,
               challenger: this.currentNation
             })
-          ]);
-          this.handlingConflict = true;
-          return;
-        } else if (this.units.get(nation).get(destination).fleets > 0) {
-          this.availableActions = new Set([
-            Action.fight({
-              province: destination,
-              incumbent: nation,
-              challenger: this.currentNation,
-              targetType: "fleet"
-            }),
-            Action.coexist({
-              province: destination,
-              incumbent: nation,
-              challenger: this.currentNation
-            })
-          ]);
+          )
           this.handlingConflict = true;
           return;
         }
@@ -484,12 +484,9 @@ export default class Imperial {
 
   rondel(action) {
     this.currentNation = action.payload.nation;
-    this.nations.get(
-      this.currentNation
-    ).previousRondelPosition = this.nations.get(
-      this.currentNation
-    ).rondelPosition;
-    this.nations.get(this.currentNation).rondelPosition = action.payload.slot;
+    const currentNation = this.nations.get(this.currentNation);
+    currentNation.previousRondelPosition = currentNation.rondelPosition;
+    currentNation.rondelPosition = action.payload.slot;
     this.players[this.currentPlayerName].cash -= action.payload.cost;
 
     switch (action.payload.slot) {
