@@ -36,13 +36,13 @@ Navigate to `http://localhost:8081` in a web browser.
 make ci
 ```
 
-## To deploy the client side code:
+## To publish the client side code:
 
 ```
-make client/deploy
+make client/publish
 ```
 
-_N.B. The above deploy command requires a configured [`AWS CLI`](https://aws.amazon.com/cli/)!_
+_N.B. The above publish command requires a configured [`AWS CLI`](https://aws.amazon.com/cli/)!_
 
 ## What the heck is a _Schnelleinsteig_??
 

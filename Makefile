@@ -13,8 +13,8 @@ test:
 server/build:
 	make -C server build
 
-client/deploy:
-	make -C client deploy
+client/publish:
+	make -C client publish
 
 server/run:
 	make -C server run

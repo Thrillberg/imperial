@@ -6,7 +6,7 @@
     "serve": "vue-cli-service serve --port 8081",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "deploy": "npm run build && aws s3 sync --cache-control 'max-age=604800' --exclude index.html dist/ s3://playimperial.club/ && aws s3 sync --cache-control 'no-cache' dist/ s3://playimperial.club",
+    "publish": "npm run build && aws s3 sync --cache-control 'max-age=604800' --exclude index.html dist/ s3://playimperial.club/ && aws s3 sync --cache-control 'no-cache' dist/ s3://playimperial.club",
     "board": "node board.js | sfdp -Tsvg > board.svg",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
