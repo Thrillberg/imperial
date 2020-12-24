@@ -140,6 +140,7 @@ describe("imperial", () => {
           Action.rondel({ nation: Nation.IT, cost: 6, slot: "factory" })
         );
         game.units.get(Nation.AH).get("a").armies = 1;
+        game.players["player2"].cash = 6;
 
         game.nations.get(Nation.IT).rondelPosition = "maneuver1";
         game.tick(
@@ -456,6 +457,32 @@ describe("imperial", () => {
           );
 
           expect(game.players["player1"].cash).toEqual(0);
+        });
+        test("player cannot move to slot they can't afford", () => {
+          const game = newGame();
+
+          game.players["player1"].cash = 0;
+
+          game.tick(Action.rondel({ slot: "import", cost: 0, nation: Nation.AH }));
+          game.tick(Action.import({ placements: [] }));
+          game.tick(Action.rondel({ slot: "import", cost: 0, nation: Nation.IT }));
+          game.tick(Action.import({ placements: [] }));
+          game.tick(Action.rondel({ slot: "import", cost: 0, nation: Nation.FR }));
+          game.tick(Action.import({ placements: [] }));
+          game.tick(Action.rondel({ slot: "import", cost: 0, nation: Nation.GB }));
+          game.tick(Action.import({ placements: [] }));
+          game.tick(Action.rondel({ slot: "import", cost: 0, nation: Nation.GE }));
+          game.tick(Action.import({ placements: [] }));
+          game.tick(Action.rondel({ slot: "import", cost: 0, nation: Nation.RU }));
+          game.tick(Action.import({ placements: [] }));
+
+          expect(game.availableActions).toEqual(
+            new Set([
+              Action.rondel({ slot: "production2", cost: 0, nation: Nation.AH }),
+              Action.rondel({ slot: "maneuver2", cost: 0, nation: Nation.AH }),
+              Action.rondel({ slot: "taxation", cost: 0, nation: Nation.AH }),
+            ])
+          );
         });
       });
 
@@ -774,6 +801,7 @@ describe("imperial", () => {
               Action.rondel({ nation: Nation.IT, cost: 6, slot: "production2" })
             );
             game.nations.get(Nation.IT).rondelPosition = "taxation";
+            game.players["player2"].cash = 6;
 
             game.tick(
               Action.rondel({ slot: production, cost: 0, nation: Nation.AH })

@@ -1004,6 +1004,13 @@ export default class Imperial {
         out.add(Action.rondel({ nation, cost: 0, slot }));
       });
     }
+    // Remove rondel positions that the player cannot afford.
+    const cash = this.players[this.currentPlayerName].cash;
+    for (const position of out) {
+      if (position.payload.cost > cash) {
+        out.delete(position);
+      }
+    }
     return out;
   }
 
