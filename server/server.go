@@ -273,12 +273,16 @@ func (c *Conn) UpdateGameLog(gameId string, gameLog string) error {
 
 // Listen starts an infinite loop of reading messages from the client.
 func (c *Conn) Listen() {
-	defer c.conn.Close()
+	defer func() {
+		c.conn.Close()
+	}()
 	for {
 		e := Envelope{}
 		if err := c.conn.ReadJSON(&e); err != nil {
-			log.Println("read error", err)
-			return
+			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
+				log.Printf("error: %v", err)
+			}
+			break
 		}
 		if e.Kind == KindRegisterUser {
 			c.channels.registerUser <- UserName(e.Data["name"])

@@ -18,6 +18,7 @@ export default {
   },
   beforeDestroy() {
     apiClient.clearHandlers();
+    apiClient.ws.close();
   },
   created() {
     apiClient.onUpdateUsers(({ users }) => {

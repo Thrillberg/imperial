@@ -25,12 +25,17 @@ class APIClient {
       }
     };
     ws.onclose = this.onclose.bind(this);
+    ws.onerror = this.onerror.bind(this);
     return ws;
   }
 
   onclose() {
     console.info("replacing closed websocket");
     this.ws = this.initws();
+  }
+
+  onerror(err) {
+    console.error("websocket error", err);
   }
 
   send(data) {
