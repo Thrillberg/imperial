@@ -1060,16 +1060,31 @@ export default class Imperial {
   }
 
   isEqual(action1, action2) {
-    if (action1.type !== action2.type) {
-      return false;
-    }
+    if (action1.type !== action2.type) return false;
     
     if (action1.payload && action2.payload) {
+      if (action1.type === "import" && action2.type === "import") {
+        return this.arraysAreEqual(action1.payload.placements, action2.payload.placements);
+      }
+
       return Object.keys(action1.payload).every(key => {
         return action1.payload[key] === action2.payload[key]
       });
     } else {
       return true;
     }
+  }
+
+  arraysAreEqual(array1, array2) {
+    if (array1.length !== array2.length) return false;
+
+    for (let i=0; i < array1.length; i++) {
+      const allAttributesMatch = Object.keys(array1[i]).every(key => {
+        return array1[i][key] === array2[i][key]
+      });
+      if (!allAttributesMatch) return false;
+    }
+
+    return true;
   }
 }

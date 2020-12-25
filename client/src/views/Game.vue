@@ -308,28 +308,13 @@ export default {
       }
     },
     runImport: function() {
-      // This function looks for a match between the provided provinces from the UI and the validated
-      // provinces from the game logic (this.game.availableActions).
-      for (const { payload } of this.game.availableActions) {
-        const allowedCombo = payload.placements.map(({ province }) => province);
-        // It's not a match if the lengths are different.
-        if (payload.placements.length === this.importPlacements.length) {
-          // JavaScript can't directly compare arrays so we test for equality by looping through both arrays.
-          let comboMatches = true;
-          for (let i = 0; i < allowedCombo.length; i++) {
-            if (allowedCombo[i] !== this.importPlacements[i]) {
-              comboMatches = false;
-            }
-          }
-
-          if (comboMatches) {
-            this.tickWithAction(Action.import(payload));
-            this.importPlacements = [];
-            return;
-          }
-        }
-      }
+      // TODO: Allow imports of fleets too.
+      const placements = this.importPlacements.map(placement => {
+        return { province: placement, type: "army" };
+      });
+      this.tickWithAction(Action.import({ placements }));
       this.importPlacements = [];
+      return;
     },
     endManeuver: function() {
       this.tickWithAction(Action.endManeuver());
