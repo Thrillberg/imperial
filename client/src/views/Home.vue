@@ -25,13 +25,23 @@
               class="rounded p-2 inline-block bg-red-600 text-white"
               >Game Started!</span
             >
-            <router-link
-              :to="{ path: '/game/' + game.id }"
+            <div
               v-if="joinable(game.id)"
-              v-on:click.native="joinGame(game.id)"
+              v-on:click="joinGame(game.id)"
               class="rounded p-2 inline-block bg-green-400"
             >
               Join Game
+            </div>
+            <div v-if="!gameStarted(game.id)">
+              {{ Object.keys(game.players).length }} / 6 players
+            </div>
+            <router-link
+              v-if="!gameStarted(game.id) && isHost(game.id)"
+              :to="{ path: '/game/' + game.id }"
+              v-on:click.native="startGame(game.id)"
+              class="rounded p-2 inline-block bg-green-600 text-white cursor-pointer"
+            >
+              Start Game
             </router-link>
           </li>
         </ul>
@@ -78,35 +88,86 @@ export default {
       apiClient.openGame(this.username);
     },
     gameStarted: function(gameId) {
-      const players = this.games.find(game => game.id === gameId).players;
-      if (Object.keys(players).length === 2) {
+      const log = this.games.find(game => game.id === gameId).log;
+      if (log.length > 0) {
         return true;
       } else {
         return false;
       }
     },
     joinable: function(gameId) {
-      let notMyGame =
-        this.games.find(game => game.id === gameId).host !== this.username;
-      return notMyGame && this.registered() && !this.gameStarted(gameId);
+      const game = this.games.find(game => game.id === gameId);
+      const inGame = Object.values(game.players).includes(this.username);
+      return !inGame && this.registered() && !this.gameStarted(gameId);
+    },
+    isHost: function(gameId) {
+      const game = this.games.find(game => game.id === gameId);
+      return game.host === this.username;
     },
     joinGame: function(gameId) {
       apiClient.joinGame(this.$cookies.get("userId"), gameId, this.username);
+    },
+    startGame: function(gameId) {
       const game = this.games.find(game => game.id === gameId);
-      const rawPlayers = {
-        [this.$cookies.get("userId")]: this.username,
-        ...game.players
-      };
-      const players = this.assignNations(Object.values(rawPlayers));
+      const shuffledPlayers = this.shuffle(Object.values(game.players));
+      const players = this.assignNations(shuffledPlayers);
       const action = Action.initialize({ players });
       apiClient.tick(game.id, action);
     },
-    // TODO: Don't hardcode the nation assignment, figure out how to accept 2-6 players
+    shuffle: function(players) {
+      let currentIndex = players.length,
+        temporaryValue,
+        randomIndex;
+
+      while (currentIndex !== 0) {
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex -= 1;
+
+        temporaryValue = players[currentIndex];
+        players[currentIndex] = players[randomIndex];
+        players[randomIndex] = temporaryValue;
+      }
+
+      return players;
+    },
     assignNations: function(players) {
-      return [
-        { id: players[0], nation: Nation.AH },
-        { id: players[1], nation: Nation.IT }
-      ];
+      switch (players.length) {
+        case 2:
+          return [
+            { id: players[0], nation: Nation.AH },
+            { id: players[1], nation: Nation.IT }
+          ];
+        case 3:
+          return [
+            { id: players[0], nation: Nation.AH },
+            { id: players[1], nation: Nation.IT },
+            { id: players[2], nation: Nation.FR }
+          ];
+        case 4:
+          return [
+            { id: players[0], nation: Nation.AH },
+            { id: players[1], nation: Nation.IT },
+            { id: players[2], nation: Nation.FR },
+            { id: players[3], nation: Nation.GB }
+          ];
+        case 5:
+          return [
+            { id: players[0], nation: Nation.AH },
+            { id: players[1], nation: Nation.IT },
+            { id: players[2], nation: Nation.FR },
+            { id: players[3], nation: Nation.GB },
+            { id: players[4], nation: Nation.GE }
+          ];
+        case 6:
+          return [
+            { id: players[0], nation: Nation.AH },
+            { id: players[1], nation: Nation.IT },
+            { id: players[2], nation: Nation.FR },
+            { id: players[3], nation: Nation.GB },
+            { id: players[4], nation: Nation.GE },
+            { id: players[5], nation: Nation.RU }
+          ];
+      }
     }
   }
 };
