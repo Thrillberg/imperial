@@ -1,17 +1,19 @@
 package main
 
 import (
+	"database/sql"
 	"encoding/json"
 	"fmt"
-	lovely_strings "github.com/Thrillberg/imperial/server/lovely_strings"
 	"io"
 	"log"
 	"net/http"
 	"os"
 	"sync"
 
+	lovely_strings "github.com/Thrillberg/imperial/server/lovely_strings"
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
+	_ "github.com/jackc/pgx/v4/stdlib"
 )
 
 type globalState struct {
@@ -39,6 +41,38 @@ func init() {
 }
 
 func main() {
+	db, err := sql.Open("pgx", os.Getenv("DATABASE_URL"))
+	if err != nil {
+		log.Fatalf("opening database: %v", err)
+	}
+	row := db.QueryRow("SELECT 42;")
+	var result int
+	if err := row.Scan(&result); err != nil {
+		log.Fatalf("scanning row: %v", err)
+	}
+	log.Printf("got: %d", result)
+	if _, err := db.Exec("CREATE TABLE IF NOT EXISTS a (b STRING);"); err != nil {
+		log.Fatalf("initializing schema: %v", err)
+	}
+	if res, err := db.Exec(`INSERT INTO a (b) VALUES ('hello'),('world');`); err != nil {
+		log.Fatalf("inserting data: %v", err)
+	} else {
+		affected, err := res.RowsAffected()
+		log.Printf("inserted %d rows (err: %v)", affected, err)
+	}
+	rows, err := db.Query("SELECT b FROM a;")
+	if err != nil {
+		log.Fatalf("selecting rows: %v", err)
+	}
+	for rows.Next() {
+		var str string
+		if err := rows.Scan(&str); err != nil {
+			log.Fatalf("scanning result: %v", err)
+		}
+		log.Printf("got row: %v", str)
+	}
+	return
+
 	var addr = ":80"
 	if len(os.Args) == 2 {
 		addr = ":8080"
@@ -46,7 +80,7 @@ func main() {
 	http.HandleFunc("/health", handleHealth)
 	http.HandleFunc("/ws", handleWebsocket)
 	log.Println("serving websockets at", addr)
-	err := http.ListenAndServe(addr, nil)
+	err = http.ListenAndServe(addr, nil)
 	if err != nil {
 		log.Println("connection error", err)
 	}
