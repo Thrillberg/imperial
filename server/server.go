@@ -21,6 +21,7 @@ type globalState struct {
 	connections map[UserId]*Conn
 	users       map[UserId]UserName
 	games       map[GameId]*Game
+	db          *sql.DB
 }
 
 // state is this server's global state. It is coarsely locked by
@@ -30,6 +31,7 @@ var state = globalState{
 	connections: map[UserId]*Conn{},
 	users:       map[UserId]UserName{},
 	games:       map[GameId]*Game{},
+	db:          &sql.DB{},
 }
 
 var upgrader = websocket.Upgrader{CheckOrigin: func(*http.Request) bool { return true }}
@@ -41,44 +43,24 @@ func init() {
 }
 
 func main() {
+	// Initialize database.
 	db, err := sql.Open("pgx", os.Getenv("DATABASE_URL"))
 	if err != nil {
 		log.Fatalf("opening database: %v", err)
 	}
-	row := db.QueryRow("SELECT 42;")
-	var result int
-	if err := row.Scan(&result); err != nil {
-		log.Fatalf("scanning row: %v", err)
-	}
-	log.Printf("got: %d", result)
-	if _, err := db.Exec("CREATE TABLE IF NOT EXISTS a (b STRING);"); err != nil {
+	state.db = db
+	if _, err := state.db.Exec("CREATE TABLE IF NOT EXISTS users (id UUID, name VARCHAR);"); err != nil {
 		log.Fatalf("initializing schema: %v", err)
 	}
-	if res, err := db.Exec(`INSERT INTO a (b) VALUES ('hello'),('world');`); err != nil {
-		log.Fatalf("inserting data: %v", err)
-	} else {
-		affected, err := res.RowsAffected()
-		log.Printf("inserted %d rows (err: %v)", affected, err)
-	}
-	rows, err := db.Query("SELECT b FROM a;")
-	if err != nil {
-		log.Fatalf("selecting rows: %v", err)
-	}
-	for rows.Next() {
-		var str string
-		if err := rows.Scan(&str); err != nil {
-			log.Fatalf("scanning result: %v", err)
-		}
-		log.Printf("got row: %v", str)
-	}
-	return
 
 	var addr = ":80"
 	if len(os.Args) == 2 {
 		addr = ":8080"
 	}
+	// Handle endpoints.
 	http.HandleFunc("/health", handleHealth)
 	http.HandleFunc("/ws", handleWebsocket)
+
 	log.Println("serving websockets at", addr)
 	err = http.ListenAndServe(addr, nil)
 	if err != nil {
@@ -264,8 +246,19 @@ func (c *Conn) UpdateState(id UserId) error {
 // UpdateUsers sends a KindUpdateUsers message to the client.
 func (c *Conn) UpdateUsers(users map[UserId]UserName) error {
 	var usersSlice = []map[string]string{}
-	for key, val := range users {
-		usersSlice = append(usersSlice, map[string]string{"id": string(key), "name": string(val)})
+	// Read users from db.
+	rows, err := state.db.Query("SELECT * FROM users;")
+	if err != nil {
+		log.Fatalf("selecting rows: %v", err)
+	}
+	for rows.Next() {
+		var id string
+		var name string
+		if err := rows.Scan(&id, &name); err != nil {
+			log.Fatalf("scanning result: %v", err)
+		}
+		log.Printf("got row: %v(%v)", id, name)
+		usersSlice = append(usersSlice, map[string]string{"id": id, "name": name})
 	}
 	usersList, _ := json.Marshal(usersSlice)
 
@@ -438,6 +431,13 @@ func onRegisterUser(userId UserId, name UserName) error {
 	state.Lock()
 	defer state.Unlock()
 	state.users[userId] = name
+	// Save user to db.
+	if result, err := state.db.Exec("INSERT INTO users (id, name) VALUES ($1, $2);", string(userId), string(name)); err != nil {
+		log.Fatalf("inserting data: %v", err)
+	} else {
+		affected, err := result.RowsAffected()
+		log.Printf("inserted %d rows (err: %v)", affected, err)
+	}
 
 	for _, conn := range state.connections {
 		conn.channels.userRegistered <- state.users
