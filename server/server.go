@@ -44,7 +44,11 @@ func init() {
 
 func main() {
 	// Initialize database.
-	db, err := sql.Open("pgx", os.Getenv("DATABASE_URL"))
+	var dbUrl = "postgres:password@imperial.c8ouqfmvapgm.us-east-1.rds.amazonaws.com:5432/imperial"
+	if len(os.Args) == 2 {
+		dbUrl = os.Getenv("DATABASE_URL")
+	}
+	db, err := sql.Open("pgx", dbUrl)
 	if err != nil {
 		log.Fatalf("opening database: %v", err)
 	}
