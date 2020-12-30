@@ -6,19 +6,20 @@ import ActionCable from "actioncable";
 
 class APIClient {
   constructor() {
-    this.ws = this.initws(this);
+    this.ws = this.initws();
     this.handlers = {};
     this.messageQueue = [];
   }
 
-  initws(client) {
+  initws() {
     const ws = ActionCable.createConsumer(
       process.env.VUE_APP_IMPERIAL_WEBSOCKETS_URL
     );
     ws.subscriptions.create("AppearanceChannel", {
-      received(envelope) {
-        if (client.handlers[envelope.kind]) {
-          client.handlers[envelope.kind](envelope.data);
+      received: envelope => {
+        console.log("received envelope", envelope);
+        if (this.handlers[envelope.kind]) {
+          this.handlers[envelope.kind](envelope.data);
         } else {
           console.error(envelope);
           throw new Error(`unhandled kind: ${envelope.kind}`);
@@ -26,28 +27,6 @@ class APIClient {
       }
     });
     return ws;
-    //const ws = new WebSocket(process.env.VUE_APP_IMPERIAL_WEBSOCKETS_URL);
-    //ws.onopen = () => {
-    //  this.send({
-    //    command: "subscribe",
-    //    identifier: '{ "channel": "AppearanceChannel" }'
-    //  });
-    //  this.messageQueue.forEach(data => this.send(data));
-    //  this.messageQueue = [];
-    //};
-    //ws.onmessage = message => {
-    //  const envelope = JSON.parse(message.data);
-    //  console.log(envelope);
-    //  if (this.handlers[envelope.kind]) {
-    //    this.handlers[envelope.kind](envelope.data);
-    //  } else {
-    //    console.error(envelope);
-    //    throw new Error(`unhandled kind: ${envelope.kind}`);
-    //  }
-    //};
-    //ws.onclose = this.onclose.bind(this);
-    //ws.onerror = this.onerror.bind(this);
-    //return ws;
   }
 
   onclose() {
@@ -59,9 +38,14 @@ class APIClient {
     console.error("websocket error", err);
   }
 
-  send(data) {
-    if (this.ws.readyState === WebSocket.OPEN) {
-      this.ws.send(JSON.stringify(data));
+  send(data, channel) {
+    if (this.ws.connection.webSocket.readyState === WebSocket.OPEN) {
+      const sendableData = {
+        command: "message",
+        identifier: JSON.stringify({ channel }),
+        data: JSON.stringify(data)
+      };
+      this.ws.send(sendableData);
     } else {
       this.messageQueue.push(data);
     }
@@ -107,10 +91,13 @@ class APIClient {
   }
 
   registerUser(name) {
-    return this.send({
-      kind: "registerUser",
-      data: { name }
-    });
+    return this.send(
+      {
+        kind: "registerUser",
+        data: { name }
+      },
+      "AppearanceChannel"
+    );
   }
 
   getGameLog(gameId) {
