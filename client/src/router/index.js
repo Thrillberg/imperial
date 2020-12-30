@@ -12,6 +12,10 @@ class APIClient {
   }
 
   initws() {
+    fetch("http://localhost:3000/session", {
+      method: "POST",
+      credentials: "include"
+    });
     const ws = ActionCable.createConsumer(
       process.env.VUE_APP_IMPERIAL_WEBSOCKETS_URL
     );

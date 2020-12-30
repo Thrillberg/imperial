@@ -23,7 +23,7 @@
 </template>
 
 <script>
-import { apiClient } from "../router/index.js";
+//import { apiClient } from "../router/index.js";
 
 export default {
   name: "Header",
@@ -37,10 +37,11 @@ export default {
     alreadyRegistered: function() {
       return [...this.users]
         .map(x => x.id)
-        .includes(this.$cookies.get("userId"));
+        .includes(this.$cookies.get("user_id"));
     },
-    registerUser: function(name) {
-      apiClient.registerUser(name);
+    registerUser: function() {
+      console.log(this.$cookies.keys());
+      //apiClient.registerUser(name);
     }
   }
 };
