@@ -82,7 +82,7 @@ export default {
     registered: function() {
       return [...this.users]
         .map(x => x.id)
-        .includes(this.$cookies.get("userId"));
+        .includes(this.$cookies.get("user_id"));
     },
     openGame: function() {
       apiClient.openGame(this.username);

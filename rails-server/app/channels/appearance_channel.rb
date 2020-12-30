@@ -8,7 +8,12 @@ class AppearanceChannel < ApplicationCable::Channel
   end
 
   def receive(data)
-    user = User.create(name: data["data"]["name"])
+    case data["kind"]
+    when "registerUser"
+      user = User.create(name: data["data"]["name"])
+    when "openGame"
+      p data
+    end
   end
 
   def unsubscribed

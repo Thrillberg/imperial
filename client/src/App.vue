@@ -24,7 +24,7 @@ export default {
     apiClient.onUpdateUsers(({ users }) => {
       this.users = new Set(users);
       for (const user of this.users) {
-        if (this.$cookies.get("userId") === user.id) {
+        if (this.$cookies.get("user_id") === user.id) {
           this.username = user.name;
         }
       }

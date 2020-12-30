@@ -49,6 +49,7 @@ class APIClient {
         identifier: JSON.stringify({ channel }),
         data: JSON.stringify(data)
       };
+      console.log("sending message", sendableData);
       this.ws.send(sendableData);
     } else {
       this.messageQueue.push(data);
@@ -88,10 +89,13 @@ class APIClient {
   }
 
   openGame(host) {
-    return this.send({
-      kind: "openGame",
-      data: { host }
-    });
+    return this.send(
+      {
+        kind: "openGame",
+        data: { host }
+      },
+      "AppearanceChannel"
+    );
   }
 
   registerUser(name) {
