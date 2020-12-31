@@ -110,17 +110,23 @@ class APIClient {
   }
 
   getGameLog(gameId) {
-    return this.send({
-      kind: "getGameLog",
-      data: { gameId }
-    });
+    return this.send(
+      {
+        kind: "getGameLog",
+        data: { gameId }
+      },
+      "AppearanceChannel"
+    );
   }
 
   tick(gameId, action) {
-    return this.send({
-      kind: "tick",
-      data: { gameId, action: JSON.stringify(action) }
-    });
+    return this.send(
+      {
+        kind: "tick",
+        data: { gameId, action: JSON.stringify(action) }
+      },
+      "AppearanceChannel"
+    );
   }
 }
 

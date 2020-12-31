@@ -33,7 +33,7 @@ export default {
         return {
           host: game.host,
           log: [],
-          players: [],
+          players: game.players,
           name: game.name,
           id: game.id
         };
@@ -44,12 +44,6 @@ export default {
     onRegister(data) {
       this.users.find(user => user.id === data.id).name = data.name;
       this.username = data.name;
-      //for (const user of this.users) {
-      //  if (user.id === data.id) {
-      //    user.name = data.name;
-      //    this.username = data.name;
-      //  }
-      //}
     }
   }
 };

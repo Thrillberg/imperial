@@ -9,7 +9,7 @@ class AppearanceChannel < ApplicationCable::Channel
       kind: "updateGames",
       data: {
         games: Game.all.map do |game|
-          { name: game.name, id: game.id, host: game.host.name }
+          to_json(game)
         end
       }
     }
@@ -27,15 +27,26 @@ class AppearanceChannel < ApplicationCable::Channel
         kind: "updateGames",
         data: {
           games: Game.all.map do |game|
-            { name: game.name, id: game.id, host: game.host.name }
+            to_json(game)
           end
         }
       }
       ActionCable.server.broadcast("appearance_channel", payload)
+    when "tick"
+      game = Game.find(data["data"]["gameId"])
+      data = JSON.parse(data["data"]["action"])
+      game.actions << Action.new(data: data)
     end
   end
 
-  def unsubscribed
-    # Any cleanup needed when channel is unsubscribed
+  private
+
+  def to_json(game)
+    {
+      name: game.name,
+      id: game.id,
+      host: game.host.name,
+      players: game.users.map(&:name)
+    }
   end
 end
