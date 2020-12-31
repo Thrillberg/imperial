@@ -12,23 +12,24 @@ class APIClient {
   }
 
   initws() {
-    fetch("http://localhost:3000/session", {
-      method: "POST",
-      credentials: "include"
-    });
     const ws = ActionCable.createConsumer(
       process.env.VUE_APP_IMPERIAL_WEBSOCKETS_URL
     );
-    ws.subscriptions.create("AppearanceChannel", {
-      received: envelope => {
-        console.log("received envelope", envelope);
-        if (this.handlers[envelope.kind]) {
-          this.handlers[envelope.kind](envelope.data);
-        } else {
-          console.error(envelope);
-          throw new Error(`unhandled kind: ${envelope.kind}`);
+    fetch("http://localhost:3000/session", {
+      method: "POST",
+      credentials: "include"
+    }).then(() => {
+      ws.subscriptions.create("AppearanceChannel", {
+        received: envelope => {
+          console.log("received envelope", envelope);
+          if (this.handlers[envelope.kind]) {
+            this.handlers[envelope.kind](envelope.data);
+          } else {
+            console.error(envelope);
+            throw new Error(`unhandled kind: ${envelope.kind}`);
+          }
         }
-      }
+      });
     });
     return ws;
   }

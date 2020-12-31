@@ -4,5 +4,6 @@ class UsersController < ApplicationController
   def create
     user = User.find(params[:id])
     user.update(name: params[:name])
+    render json: user
   end
 end

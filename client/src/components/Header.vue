@@ -33,8 +33,8 @@ export default {
   },
   methods: {
     alreadyRegistered: function() {
-      if (this.users.size > 0) {
-        const user = [...this.users].find(
+      if (this.users.length > 0) {
+        const user = this.users.find(
           user => user.id === this.$cookies.get("user_id")
         );
         return user.name !== "anonymous";
@@ -52,7 +52,11 @@ export default {
           name: this.tempName,
           id: this.$cookies.get("user_id")
         })
-      });
+      })
+        .then(response => response.json())
+        .then(data => {
+          this.$emit("registered", data);
+        });
     }
   }
 };
