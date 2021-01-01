@@ -1,6 +1,6 @@
 <template>
   <div id="app" class="font-serif">
-    <Header :username="username" :users="users" />
+    <Header @registered="onRegister" :username="username" :users="users" />
     <router-view :username="username" :users="users" :games="games" />
   </div>
 </template>
@@ -14,7 +14,7 @@ export default {
   name: "App",
   components: { Header },
   data: () => {
-    return { username: "", users: new Set(), games: new Set() };
+    return { username: "", users: [], games: new Set() };
   },
   beforeDestroy() {
     apiClient.clearHandlers();
@@ -22,26 +22,30 @@ export default {
   },
   created() {
     apiClient.onUpdateUsers(({ users }) => {
-      this.users = new Set(JSON.parse(users));
-      for (const user of this.users) {
-        if (this.$cookies.get("userId") === user.id) {
-          this.username = user.name;
-        }
-      }
+      this.users = users;
+      const user = this.users.find(
+        user => this.$cookies.get("user_id") === user.id
+      );
+      this.username = user.name;
     });
     apiClient.onUpdateGames(({ games }) => {
-      const parsedGames = JSON.parse(games);
-      this.games = parsedGames.map(game => {
-        const parsedGame = JSON.parse(game.game);
+      this.games = games.map(game => {
+        console.log(game);
         return {
-          host: parsedGame.host,
-          log: parsedGame.log,
-          players: parsedGame.players,
-          name: parsedGame.name,
+          host: game.host,
+          log: game.log,
+          players: game.players,
+          name: game.name,
           id: game.id
         };
       });
     });
+  },
+  methods: {
+    onRegister(data) {
+      this.users.find(user => user.id === data.id).name = data.name;
+      this.username = data.name;
+    }
   }
 };
 </script>

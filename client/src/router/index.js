@@ -2,6 +2,8 @@ import Vue from "vue";
 import VueRouter from "vue-router";
 import Home from "../views/Home.vue";
 
+import ActionCable from "actioncable";
+
 class APIClient {
   constructor() {
     this.ws = this.initws();
@@ -10,22 +12,30 @@ class APIClient {
   }
 
   initws() {
-    const ws = new WebSocket(process.env.VUE_APP_IMPERIAL_WEBSOCKETS_URL);
-    ws.onopen = () => {
-      this.messageQueue.forEach(data => this.send(data));
-      this.messageQueue = [];
-    };
-    ws.onmessage = message => {
-      const envelope = JSON.parse(message.data);
-      if (this.handlers[envelope.kind]) {
-        this.handlers[envelope.kind](envelope.data);
-      } else {
-        console.error(envelope);
-        throw new Error(`unhandled kind: ${envelope.kind}`);
-      }
-    };
-    ws.onclose = this.onclose.bind(this);
-    ws.onerror = this.onerror.bind(this);
+    const ws = ActionCable.createConsumer(
+      process.env.VUE_APP_IMPERIAL_WEBSOCKETS_URL
+    );
+    fetch(process.env.VUE_APP_IMPERIAL_SESSION_URL, {
+      method: "POST",
+      credentials: "include"
+    }).then(() => {
+      ws.subscriptions.create("AppearanceChannel", {
+        connected: () => {
+          this.messageQueue.forEach(data =>
+            this.send(data, "AppearanceChannel")
+          );
+          this.messageQueue = [];
+        },
+        received: envelope => {
+          if (this.handlers[envelope.kind]) {
+            this.handlers[envelope.kind](envelope.data);
+          } else {
+            console.error(envelope);
+            throw new Error(`unhandled kind: ${envelope.kind}`);
+          }
+        }
+      });
+    });
     return ws;
   }
 
@@ -38,9 +48,14 @@ class APIClient {
     console.error("websocket error", err);
   }
 
-  send(data) {
-    if (this.ws.readyState === WebSocket.OPEN) {
-      this.ws.send(JSON.stringify(data));
+  send(data, channel) {
+    if (this.ws.connection.webSocket?.readyState === WebSocket.OPEN) {
+      const sendableData = {
+        command: "message",
+        identifier: JSON.stringify({ channel }),
+        data: JSON.stringify(data)
+      };
+      this.ws.send(sendableData);
     } else {
       this.messageQueue.push(data);
     }
@@ -72,38 +87,53 @@ class APIClient {
   }
 
   joinGame(userId, gameId, userName) {
-    return this.send({
-      kind: "joinGame",
-      data: { userName, userId, gameId }
-    });
+    return this.send(
+      {
+        kind: "joinGame",
+        data: { userName, userId, gameId }
+      },
+      "AppearanceChannel"
+    );
   }
 
   openGame(host) {
-    return this.send({
-      kind: "openGame",
-      data: { host }
-    });
+    return this.send(
+      {
+        kind: "openGame",
+        data: { host }
+      },
+      "AppearanceChannel"
+    );
   }
 
   registerUser(name) {
-    return this.send({
-      kind: "registerUser",
-      data: { name }
-    });
+    return this.send(
+      {
+        kind: "registerUser",
+        data: { name }
+      },
+      "AppearanceChannel"
+    );
   }
 
   getGameLog(gameId) {
-    return this.send({
-      kind: "getGameLog",
-      data: { gameId }
-    });
+    return this.send(
+      {
+        kind: "getGameLog",
+        data: { gameId }
+      },
+      "AppearanceChannel"
+    );
   }
 
   tick(gameId, action) {
-    return this.send({
-      kind: "tick",
-      data: { gameId, action: JSON.stringify(action) }
-    });
+    return this.send(
+      {
+        kind: "tick",
+        data: { gameId, action: JSON.stringify(action) }
+      },
+      "AppearanceChannel"
+    );
   }
 }
 

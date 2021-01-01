@@ -4,7 +4,6 @@ server/Imperial
 node_modules
 dist
 
-
 # local env files
 .env.local
 .env.*.local
@@ -23,3 +22,43 @@ pnpm-debug.log*
 *.njsproj
 *.sln
 *.sw?
+
+# Ignore bundler config.
+/rails-server/.bundle
+
+# Ignore the default SQLite database.
+/rails-server/db/*.sqlite3
+/rails-server/db/*.sqlite3-journal
+/rails-server/db/*.sqlite3-*
+
+# Ignore all logfiles and tempfiles.
+/rails-server/log/*
+/rails-server/tmp/*
+!/log/.keep
+!/tmp/.keep
+
+# Ignore pidfiles, but keep the directory.
+/rails-server/tmp/pids/*
+!/tmp/pids/
+!/tmp/pids/.keep
+
+# Ignore uploaded files in development.
+/rails-server/storage/*
+!/storage/.keep
+
+/rails-server/public/assets
+.byebug_history
+
+# Ignore master key for decrypting credentials and more.
+/rails-server/config/master.key
+
+/rails-server/public/packs
+/rails-server/public/packs-test
+/rails-server/node_modules
+/rails-server/yarn-error.log
+/rails-server/yarn-debug.log*
+/rails-server/.yarn-integrity
+
+/tmp
+/rails-server/config/master.key
+/rails-server/config/credentials/production.key

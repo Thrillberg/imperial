@@ -35,12 +35,31 @@ export default {
   },
   methods: {
     alreadyRegistered: function() {
-      return [...this.users]
-        .map(x => x.id)
-        .includes(this.$cookies.get("userId"));
+      if (this.users.length > 0) {
+        const user = this.users.find(
+          user => user.id === this.$cookies.get("user_id")
+        );
+        return user.name !== "anonymous";
+      } else {
+        return false;
+      }
     },
-    registerUser: function(name) {
-      apiClient.registerUser(name);
+    registerUser: function() {
+      fetch("http://localhost:3000/user", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          name: this.tempName,
+          id: this.$cookies.get("user_id")
+        })
+      })
+        .then(response => response.json())
+        .then(data => {
+          this.$emit("registered", data);
+          apiClient.registerUser(this.tempName);
+        });
     }
   }
 };

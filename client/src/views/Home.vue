@@ -2,7 +2,7 @@
   <div class="container">
     <div class="flex justify-between">
       <div class="mt-4">
-        <div v-if="registered()" class="mt-1 mb-6">
+        <div v-if="registered" class="mt-1 mb-6">
           <span
             v-on:click="openGame()"
             class="rounded p-2 bg-green-800 text-white cursor-pointer"
@@ -46,7 +46,7 @@
           </li>
         </ul>
       </div>
-      <div v-if="registered()" class="mt-4 border border-gray-500 rounded p-4">
+      <div v-if="registered" class="mt-4 border border-gray-500 rounded p-4">
         <div class="underline">Registered Users:</div>
         <ul v-for="user in users" v-bind:key="user.id">
           <li>
@@ -78,12 +78,19 @@ export default {
   mounted() {
     apiClient.onUpdateGameLog(() => {});
   },
-  methods: {
+  computed: {
     registered: function() {
-      return [...this.users]
-        .map(x => x.id)
-        .includes(this.$cookies.get("userId"));
-    },
+      if (this.users.length > 0) {
+        const user = this.users.find(
+          user => user.id === this.$cookies.get("user_id")
+        );
+        return user.name !== "anonymous";
+      } else {
+        return false;
+      }
+    }
+  },
+  methods: {
     openGame: function() {
       apiClient.openGame(this.username);
     },
@@ -98,14 +105,14 @@ export default {
     joinable: function(gameId) {
       const game = this.games.find(game => game.id === gameId);
       const inGame = Object.values(game.players).includes(this.username);
-      return !inGame && this.registered() && !this.gameStarted(gameId);
+      return !inGame && this.registered && !this.gameStarted(gameId);
     },
     isHost: function(gameId) {
       const game = this.games.find(game => game.id === gameId);
       return game.host === this.username;
     },
     joinGame: function(gameId) {
-      apiClient.joinGame(this.$cookies.get("userId"), gameId, this.username);
+      apiClient.joinGame(this.$cookies.get("user_id"), gameId, this.username);
     },
     startGame: function(gameId) {
       const game = this.games.find(game => game.id === gameId);
