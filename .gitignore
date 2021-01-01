@@ -58,3 +58,5 @@ pnpm-debug.log*
 /rails-server/yarn-error.log
 /rails-server/yarn-debug.log*
 /rails-server/.yarn-integrity
+
+/tmp
