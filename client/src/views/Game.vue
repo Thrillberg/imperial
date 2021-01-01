@@ -180,7 +180,7 @@ export default {
   mounted() {
     apiClient.onUpdateGameLog(({ gameId, log }) => {
       if (gameId === this.$route.params.id) {
-        const rawLog = JSON.parse(log);
+        const rawLog = log;
         // The following map only exists because of our custom Nation type, which
         // has weirdness when we attempt nation.when() in the setup file.
         const gameLog = rawLog.map(rawAction => {

@@ -30,9 +30,10 @@ export default {
     });
     apiClient.onUpdateGames(({ games }) => {
       this.games = games.map(game => {
+        console.log(game);
         return {
           host: game.host,
-          log: [],
+          log: game.log,
           players: game.players,
           name: game.name,
           id: game.id

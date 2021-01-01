@@ -20,8 +20,13 @@ class APIClient {
       credentials: "include"
     }).then(() => {
       ws.subscriptions.create("AppearanceChannel", {
+        connected: () => {
+          this.messageQueue.forEach(data =>
+            this.send(data, "AppearanceChannel")
+          );
+          this.messageQueue = [];
+        },
         received: envelope => {
-          console.log("received envelope", envelope);
           if (this.handlers[envelope.kind]) {
             this.handlers[envelope.kind](envelope.data);
           } else {
@@ -44,13 +49,12 @@ class APIClient {
   }
 
   send(data, channel) {
-    if (this.ws.connection.webSocket.readyState === WebSocket.OPEN) {
+    if (this.ws.connection.webSocket?.readyState === WebSocket.OPEN) {
       const sendableData = {
         command: "message",
         identifier: JSON.stringify({ channel }),
         data: JSON.stringify(data)
       };
-      console.log("sending message", sendableData);
       this.ws.send(sendableData);
     } else {
       this.messageQueue.push(data);
@@ -83,10 +87,13 @@ class APIClient {
   }
 
   joinGame(userId, gameId, userName) {
-    return this.send({
-      kind: "joinGame",
-      data: { userName, userId, gameId }
-    });
+    return this.send(
+      {
+        kind: "joinGame",
+        data: { userName, userId, gameId }
+      },
+      "AppearanceChannel"
+    );
   }
 
   openGame(host) {

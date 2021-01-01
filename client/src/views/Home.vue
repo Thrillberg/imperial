@@ -112,7 +112,7 @@ export default {
       return game.host === this.username;
     },
     joinGame: function(gameId) {
-      apiClient.joinGame(this.$cookies.get("userId"), gameId, this.username);
+      apiClient.joinGame(this.$cookies.get("user_id"), gameId, this.username);
     },
     startGame: function(gameId) {
       const game = this.games.find(game => game.id === gameId);

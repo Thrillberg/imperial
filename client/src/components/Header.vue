@@ -23,6 +23,8 @@
 </template>
 
 <script>
+import { apiClient } from "../router/index.js";
+
 export default {
   name: "Header",
   props: ["username", "users"],
@@ -56,6 +58,7 @@ export default {
         .then(response => response.json())
         .then(data => {
           this.$emit("registered", data);
+          apiClient.registerUser(this.tempName);
         });
     }
   }
