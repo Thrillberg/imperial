@@ -7,7 +7,8 @@ class SessionsController < ApplicationController
     user = User.create(name: "anonymous")
     cookies[:user_id] = {
       value: user.id,
-      same_site: "Lax"
+      same_site: :none,
+      domain: "playimperial.club"
     }
   end
 end

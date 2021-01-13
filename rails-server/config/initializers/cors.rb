@@ -5,7 +5,6 @@
 
 # Read more: https://github.com/cyu/rack-cors
 
-Rails.application.config.action_dispatch.cookies_same_site_protection = :lax
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
     origins 'localhost:8081', 'playimperial.club'
