@@ -55,9 +55,3 @@ export default {
   }
 };
 </script>
-
-<style scoped>
-.current_nation {
-  box-shadow: 0 0 2rem 0.5rem #ffd700;
-}
-</style>

@@ -12,29 +12,26 @@ class APIClient {
   }
 
   initws() {
-    const ws = ActionCable.createConsumer(
-      process.env.VUE_APP_IMPERIAL_WEBSOCKETS_URL
-    );
-    fetch(process.env.VUE_APP_IMPERIAL_SESSION_URL, {
+    fetch("/session", {
       method: "POST",
       credentials: "include"
-    }).then(() => {
-      ws.subscriptions.create("AppearanceChannel", {
-        connected: () => {
-          this.messageQueue.forEach(data =>
-            this.send(data, "AppearanceChannel")
-          );
-          this.messageQueue = [];
-        },
-        received: envelope => {
-          if (this.handlers[envelope.kind]) {
-            this.handlers[envelope.kind](envelope.data);
-          } else {
-            console.error(envelope);
-            throw new Error(`unhandled kind: ${envelope.kind}`);
-          }
+    });
+    const ws = ActionCable.createConsumer("/ws");
+    ws.subscriptions.create("AppearanceChannel", {
+      connected: () => {
+        this.messageQueue.forEach(data =>
+          this.send(data, "AppearanceChannel")
+        );
+        this.messageQueue = [];
+      },
+      received: envelope => {
+        if (this.handlers[envelope.kind]) {
+          this.handlers[envelope.kind](envelope.data);
+        } else {
+          console.error(envelope);
+          throw new Error(`unhandled kind: ${envelope.kind}`);
         }
-      });
+      }
     });
     return ws;
   }
@@ -156,7 +153,6 @@ const routes = [
 
 const router = new VueRouter({
   mode: "history",
-  base: process.env.BASE_URL,
   routes
 });
 

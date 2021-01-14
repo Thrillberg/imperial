@@ -143,11 +143,11 @@ import Imperial from "../../lib/imperial.js";
 import { Nation } from "../../lib/constants.js";
 import { apiClient } from "../router/index.js";
 
-import ActionComponent from "@/components/ActionComponent.vue";
-import Board from "@/components/board/Board.vue";
-import Flag from "@/components/flags/Flag.vue";
-import GameDetails from "@/components/GameDetails.vue";
-import Rondel from "@/components/Rondel.vue";
+import ActionComponent from "../components/ActionComponent.vue";
+import Board from "../components/board/Board.vue";
+import Flag from "../components/flags/Flag.vue";
+import GameDetails from "../components/GameDetails.vue";
+import Rondel from "../components/Rondel.vue";
 
 import stringify from "../stringify.js";
 
@@ -341,9 +341,3 @@ export default {
   }
 };
 </script>
-
-<style scoped>
-.current_nation {
-  box-shadow: 0 0 2rem 0.5rem #ffd700;
-}
-</style>

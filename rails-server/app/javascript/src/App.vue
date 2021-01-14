@@ -8,7 +8,7 @@
 <script>
 import { apiClient } from "./router/index.js";
 
-import Header from "@/components/Header.vue";
+import Header from "./components/Header.vue";
 
 export default {
   name: "App",
@@ -30,7 +30,6 @@ export default {
     });
     apiClient.onUpdateGames(({ games }) => {
       this.games = games.map(game => {
-        console.log(game);
         return {
           host: game.host,
           log: game.log,

@@ -1,6 +1,6 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
 
 button {
   background: #224f4a;
@@ -28,4 +28,8 @@ button {
 
 .hoverable:hover {
   filter: url(#brightness);
+}
+
+.current_nation {
+  box-shadow: 0 0 2rem 0.5rem #ffd700;
 }

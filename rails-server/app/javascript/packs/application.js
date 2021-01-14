@@ -17,4 +17,19 @@
 import 'core-js/stable'
 import 'regenerator-runtime/runtime'
 
-console.log('Hello World from Webpacker')
+import Vue from "vue";
+import App from "../src/App.vue";
+import router from "../src/router";
+import VueCookies from "vue-cookies";
+
+Vue.config.productionTip = false;
+Vue.use(VueCookies);
+
+const app = document.createElement("div");
+app.setAttribute("id", "app");
+document.body.appendChild(app);
+
+new Vue({
+  router,
+  render: h => h(App)
+}).$mount("#app");

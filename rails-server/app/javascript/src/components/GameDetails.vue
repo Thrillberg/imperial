@@ -28,8 +28,8 @@
 </template>
 
 <script>
-import NationComponent from "@/components/NationComponent.vue";
-import Player from "@/components/Player.vue";
+import NationComponent from "../components/NationComponent.vue";
+import Player from "../components/Player.vue";
 
 export default {
   name: "GameDetails",

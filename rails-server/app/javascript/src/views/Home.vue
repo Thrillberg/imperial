@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container mx-auto">
     <div class="flex justify-between">
       <div class="mt-4">
         <div v-if="registered" class="mt-1 mb-6">

@@ -5,10 +5,6 @@ class SessionsController < ApplicationController
     return if User.find_by(id: cookies[:user_id])
 
     user = User.create(name: "anonymous")
-    cookies[:user_id] = {
-      value: user.id,
-      same_site: :none,
-      domain: "playimperial.club"
-    }
+    cookies[:user_id] = user.id
   end
 end

@@ -100,7 +100,7 @@ export default ({ players, provinceNames }) => {
   /* Calculate treasury and controller for each nation */
   for (const n of Nation) {
     /* Find bonds for the given nation, sorted by descending cost */
-    const forNation = [...purchasedBonds]
+    const forNation = Array.from(purchasedBonds)
       .filter(b => b.nation === n)
       .sort(({ cost: aCost }, { cost: bCost }) =>
         aCost < bCost ? 1 : aCost > bCost ? -1 : 0
