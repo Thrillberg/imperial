@@ -45,7 +45,7 @@ export default {
       }
     },
     registerUser: function() {
-      fetch("http://localhost:3000/user", {
+      fetch("/user", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

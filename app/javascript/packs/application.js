@@ -25,6 +25,7 @@ import VueCookies from "vue-cookies";
 Vue.config.productionTip = false;
 Vue.use(VueCookies);
 
+document.title = "Imperial";
 const app = document.createElement("div");
 app.setAttribute("id", "app");
 document.body.appendChild(app);

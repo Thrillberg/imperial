@@ -137,6 +137,7 @@ GEM
     rb-fsevent (0.10.4)
     rb-inotify (0.10.1)
       ffi (~> 1.0)
+    redis (4.2.5)
     semantic_range (2.3.1)
     spring (2.1.1)
     spring-watcher-listen (2.0.1)
@@ -169,6 +170,7 @@ DEPENDENCIES
   puma (~> 4.1)
   rack-cors
   rails (~> 6.0.3, >= 6.0.3.4)
+  redis (~> 4.0)
   spring
   spring-watcher-listen (~> 2.0.0)
   tzinfo-data

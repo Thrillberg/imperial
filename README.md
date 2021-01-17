@@ -8,41 +8,7 @@ This is an implementation of the board game, [Imperial](<https://en.wikipedia.or
 _Please note that this project is released with a Contributor Code of Conduct.
 By participating in this project you agree to abide by its terms._
 
-## To run locally:
-
-### Prerequisites:
-
-Imperial requires [npm](https://www.npmjs.com/).
-
-```
-npm i -g npm
-```
-
-Imperial requires [Go](https://golang.org/). It can be downloaded [here](https://golang.org/doc/install).
-
-### Running client and server:
-
-```
-make ci
-make client/run # in one terminal
-make server/run # in another terminal
-```
-
-Navigate to `http://localhost:8081` in a web browser.
-
-## To run tests:
-
-```
-make ci
-```
-
-## To publish the client side code:
-
-```
-make client/publish
-```
-
-_N.B. The above publish command requires a configured [`AWS CLI`](https://aws.amazon.com/cli/)!_
+## I need to write setup instructions!
 
 ## What the heck is a _Schnelleinsteig_??
 
