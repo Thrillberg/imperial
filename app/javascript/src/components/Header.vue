@@ -6,17 +6,24 @@
         >.
       </div>
       <div v-else>
-        <input
-          class="mx-auto border-black border-solid border p-3 rounded"
-          v-model="tempName"
-          placeholder="name"
-        />
-        <span
-          v-on:click="registerUser(tempName)"
-          class="rounded p-4 ml-4 bg-green-800 text-white cursor-pointer"
-        >
-          Register
-        </span>
+        <form method="post" action="/user">
+          <input
+            class="mx-auto border-black border-solid border p-3 rounded"
+            v-model="tempName"
+            name="name"
+            placeholder="name"
+          />
+          <input
+            type="hidden"
+            name="id"
+            :value="this.$cookies.get('user_id')"
+          />
+          <input
+            type="submit"
+            value="Submit"
+            class="rounded p-4 ml-4 bg-green-800 text-white cursor-pointer"
+          />
+        </form>
       </div>
     </div>
   </div>
@@ -44,23 +51,6 @@ export default {
         return false;
       }
     },
-    registerUser: function() {
-      fetch("/user", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          name: this.tempName,
-          id: this.$cookies.get("user_id")
-        })
-      })
-        .then(response => response.json())
-        .then(data => {
-          this.$emit("registered", data);
-          apiClient.registerUser(this.tempName);
-        });
-    }
   }
 };
 </script>
