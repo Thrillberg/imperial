@@ -18,11 +18,6 @@ class AppearanceChannel < ApplicationCable::Channel
 
   def receive(data)
     case data["kind"]
-    when "registerUser"
-      ActionCable.server.broadcast(
-        "appearance_channel",
-        { kind: "updateUsers", data: {users: User.all} }
-      )
     when "openGame"
       host = User.find_by(name: data["data"]["host"])
       host.games << Game.create(name: lovely_string, host: host)

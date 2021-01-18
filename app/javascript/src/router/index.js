@@ -103,16 +103,6 @@ class APIClient {
     );
   }
 
-  registerUser(name) {
-    return this.send(
-      {
-        kind: "registerUser",
-        data: { name }
-      },
-      "AppearanceChannel"
-    );
-  }
-
   getGameLog(gameId) {
     return this.send(
       {
