@@ -12,26 +12,27 @@ class APIClient {
   }
 
   initws() {
+    const ws = ActionCable.createConsumer("/ws");
     fetch("/session", {
       method: "POST",
       credentials: "include"
-    });
-    const ws = ActionCable.createConsumer("/ws");
-    ws.subscriptions.create("AppearanceChannel", {
-      connected: () => {
-        this.messageQueue.forEach(data =>
-          this.send(data, "AppearanceChannel")
-        );
-        this.messageQueue = [];
-      },
-      received: envelope => {
-        if (this.handlers[envelope.kind]) {
-          this.handlers[envelope.kind](envelope.data);
-        } else {
-          console.error(envelope);
-          throw new Error(`unhandled kind: ${envelope.kind}`);
+    }).then(() => {
+      ws.subscriptions.create("AppearanceChannel", {
+        connected: () => {
+          this.messageQueue.forEach(data =>
+            this.send(data, "AppearanceChannel")
+          );
+          this.messageQueue = [];
+        },
+        received: envelope => {
+          if (this.handlers[envelope.kind]) {
+            this.handlers[envelope.kind](envelope.data);
+          } else {
+            console.error(envelope);
+            throw new Error(`unhandled kind: ${envelope.kind}`);
+          }
         }
-      }
+      });
     });
     return ws;
   }

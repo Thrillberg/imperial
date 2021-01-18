@@ -229,56 +229,60 @@ export default {
       // This function returns all provinces that a unit can move
       // or be imported to.
       let provinces = new Set();
-      for (const action of this.game.availableActions) {
-        if (action.type === "maneuver" && this.game.maneuvering) {
-          if (this.maneuverOrigin) {
-            provinces.add(action.payload.destination);
-          } else {
-            provinces.add(action.payload.origin);
+      if (this.game.currentPlayerName === this.username) {
+        for (const action of this.game.availableActions) {
+          if (action.type === "maneuver" && this.game.maneuvering) {
+            if (this.maneuverOrigin) {
+              provinces.add(action.payload.destination);
+            } else {
+              provinces.add(action.payload.origin);
+            }
+          } else if (action.type === "import" && this.game.importing) {
+            action.payload.placements.forEach(placement => {
+              provinces.add(placement.province);
+            });
+          } else if (
+            action.type === "buildFactory" &&
+            this.game.buildingFactory
+          ) {
+            provinces.add(action.payload.province);
           }
-        } else if (action.type === "import" && this.game.importing) {
-          action.payload.placements.forEach(placement => {
-            provinces.add(placement.province);
-          });
-        } else if (
-          action.type === "buildFactory" &&
-          this.game.buildingFactory
-        ) {
-          provinces.add(action.payload.province);
         }
       }
       return Array.from(provinces);
     },
     selectProvince(province) {
-      // If the game is in a maneuver and an origin is specified,
-      // then the next specified province is the destination
-      if (this.game.maneuvering && this.maneuverOrigin) {
-        const maneuver = Action.maneuver({
-          origin: this.maneuverOrigin,
-          destination: province
-        });
-        // Reset maneuverStatus
-        this.maneuverOrigin = "";
-        this.tickWithAction(maneuver);
-        // If the game is in a maneuver with no origin specified,
-        // then the next specified province is the origin
-      } else if (this.game.maneuvering) {
-        this.maneuverOrigin = province;
-        // If the game is in an import, then each specified province
-        // gets added to the placements.
-      } else if (this.game.importing) {
-        this.importPlacements.push(province);
-        if (this.importPlacements.length === 3) {
-          this.runImport();
-        }
-      } else if (this.game.buildingFactory) {
-        let factory = {};
-        for (const action of this.game.availableActions) {
-          if (action.payload.province === province) {
-            factory = action;
+      if (this.game.currentPlayerName === this.username) {
+        // If the game is in a maneuver and an origin is specified,
+        // then the next specified province is the destination
+        if (this.game.maneuvering && this.maneuverOrigin) {
+          const maneuver = Action.maneuver({
+            origin: this.maneuverOrigin,
+            destination: province
+          });
+          // Reset maneuverStatus
+          this.maneuverOrigin = "";
+          this.tickWithAction(maneuver);
+          // If the game is in a maneuver with no origin specified,
+          // then the next specified province is the origin
+        } else if (this.game.maneuvering) {
+          this.maneuverOrigin = province;
+          // If the game is in an import, then each specified province
+          // gets added to the placements.
+        } else if (this.game.importing) {
+          this.importPlacements.push(province);
+          if (this.importPlacements.length === 3) {
+            this.runImport();
           }
+        } else if (this.game.buildingFactory) {
+          let factory = {};
+          for (const action of this.game.availableActions) {
+            if (action.payload.province === province) {
+              factory = action;
+            }
+          }
+          this.tickWithAction(factory);
         }
-        this.tickWithAction(factory);
       }
     },
     tickWithAction: function(action) {
