@@ -206,7 +206,7 @@ export default {
         this.game = Imperial.fromLog(gameLog);
         if (this.game.players) {
           this.gameStarted = true;
-          this.currentPlayer = this.game.players[this.username];
+          this.currentPlayer = this.game.players[this.username] || {};
           this.controllingPlayerName = this.game.currentPlayerName;
         }
       }
