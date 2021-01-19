@@ -9,7 +9,8 @@ export default [
       { id: "Claudia", nation: Nation.FR },
       { id: "Bert", nation: Nation.GB },
       { id: "Anton", nation: Nation.IT }
-    ]
+    ],
+    soloMode: false
   }),
   Action.noop,
   Action.noop,

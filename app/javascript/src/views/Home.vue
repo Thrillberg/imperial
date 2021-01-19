@@ -116,10 +116,21 @@ export default {
     },
     startGame: function(gameId) {
       const game = this.games.find(game => game.id === gameId);
-      const shuffledPlayers = this.shuffle(Object.values(game.players));
+      const playerNames = this.playerNames(game);
+      const shuffledPlayers = this.shuffle(playerNames);
       const players = this.assignNations(shuffledPlayers);
-      const action = Action.initialize({ players });
+      const soloMode = game.soloMode;
+      const action = Action.initialize({ players, soloMode });
       apiClient.tick(game.id, action);
+    },
+    playerNames: function(game) {
+      if (game.players.length === 1) {
+        game.soloMode = true;
+        game.players.push("Charles", "Louis", "Otto", "Henry", "Conrad");
+        return game.players;
+      }
+      game.soloMode = false;
+      return game.players;
     },
     shuffle: function(players) {
       let currentIndex = players.length,

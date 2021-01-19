@@ -36,7 +36,7 @@ export default {
     isValid(slot) {
       if (
         this.validSlots().includes(slot) &&
-        this.game.currentPlayerName === this.name
+        (this.game.currentPlayerName === this.name || this.game.soloMode)
       ) {
         return true;
       }
@@ -53,7 +53,7 @@ export default {
       return nations;
     },
     slotClicked: function(slot) {
-      if (this.game.currentPlayerName === this.name) {
+      if (this.game.currentPlayerName === this.name || this.game.soloMode) {
         for (const action of this.game.availableActions) {
           if (action.payload.slot === slot) {
             this.$emit("tick-with-action", action);

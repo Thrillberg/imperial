@@ -21,6 +21,7 @@ export default class Imperial {
 
     this.maneuvering = false;
     this.handlingConflict = false;
+    this.soloMode = false;
   }
 
   tick(action) {
@@ -100,6 +101,7 @@ export default class Imperial {
     this.units = s.units;
     this.currentPlayerName = this.nations.get(this.currentNation).controller;
     this.availableActions = new Set(this.rondelActions(this.currentNation));
+    this.soloMode = action.payload.soloMode;
   }
 
   bondPurchase(action) {

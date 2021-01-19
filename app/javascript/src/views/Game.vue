@@ -59,7 +59,7 @@
               You have <b>{{ this.currentPlayer.cash }}m</b> in cash.
             </div>
             <div
-              v-if="game.importing && username === controllingPlayerName"
+              v-if="game.importing && (username === controllingPlayerName || game.soloMode)"
               class="text-center text-lg"
             >
               <div>
@@ -74,7 +74,7 @@
               </div>
             </div>
             <div
-              v-if="game.maneuvering && username === controllingPlayerName"
+              v-if="game.maneuvering && (username === controllingPlayerName || game.soloMode)"
               class="text-center text-lg"
             >
               <div
@@ -85,7 +85,7 @@
               </div>
             </div>
             <div
-              v-if="game.handlingConflict && username === controllingPlayerName"
+              v-if="game.handlingConflict && (username === controllingPlayerName || game.soloMode)"
               class="text-center text-lg"
             >
               <div
@@ -229,7 +229,7 @@ export default {
       // This function returns all provinces that a unit can move
       // or be imported to.
       let provinces = new Set();
-      if (this.game.currentPlayerName === this.username) {
+      if (this.game.currentPlayerName === this.username || this.game.soloMode) {
         for (const action of this.game.availableActions) {
           if (action.type === "maneuver" && this.game.maneuvering) {
             if (this.maneuverOrigin) {
@@ -252,7 +252,7 @@ export default {
       return Array.from(provinces);
     },
     selectProvince(province) {
-      if (this.game.currentPlayerName === this.username) {
+      if (this.game.currentPlayerName === this.username || this.game.soloMode) {
         // If the game is in a maneuver and an origin is specified,
         // then the next specified province is the destination
         if (this.game.maneuvering && this.maneuverOrigin) {

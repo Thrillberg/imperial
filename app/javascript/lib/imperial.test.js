@@ -32,7 +32,8 @@ describe("imperial", () => {
             players: [
               { id: "player1", nation: Nation.AH },
               { id: "player2", nation: Nation.IT }
-            ]
+            ],
+            soloMode: false
           })
         );
         return game;
@@ -118,7 +119,8 @@ describe("imperial", () => {
             players: [
               { id: "player1", nation: Nation.AH },
               { id: "player2", nation: Nation.IT }
-            ]
+            ],
+            soloMode: false
           })
         );
         return game;
@@ -166,7 +168,8 @@ describe("imperial", () => {
             players: [
               { id: "player1", nation: Nation.AH },
               { id: "player2", nation: Nation.IT }
-            ]
+            ],
+            soloMode: false
           })
         );
         return game;
@@ -212,7 +215,8 @@ describe("imperial", () => {
             players: [
               { id: "player1", nation: Nation.AH },
               { id: "player2", nation: Nation.IT }
-            ]
+            ],
+            soloMode: false
           })
         );
         return game;
@@ -260,7 +264,8 @@ describe("imperial", () => {
             players: [
               { id: "player1", nation: Nation.AH },
               { id: "player2", nation: Nation.IT }
-            ]
+            ],
+            soloMode: false
           })
         );
         return game;
@@ -376,7 +381,8 @@ describe("imperial", () => {
             players: [
               { id: "player1", nation: Nation.AH },
               { id: "player2", nation: Nation.IT }
-            ]
+            ],
+            soloMode: false
           })
         );
 
@@ -418,7 +424,8 @@ describe("imperial", () => {
               players: [
                 { id: "player1", nation: Nation.AH },
                 { id: "player2", nation: Nation.IT }
-              ]
+              ],
+              soloMode: false
             })
           );
           return game;
@@ -503,7 +510,8 @@ describe("imperial", () => {
               players: [
                 { id: "player1", nation: Nation.AH },
                 { id: "player2", nation: Nation.IT }
-              ]
+              ],
+              soloMode: false
             })
           );
 
@@ -554,7 +562,8 @@ describe("imperial", () => {
               players: [
                 { id: "player1", nation: Nation.AH },
                 { id: "player2", nation: Nation.IT }
-              ]
+              ],
+              soloMode: false
             })
           );
 
@@ -701,7 +710,8 @@ describe("imperial", () => {
               players: [
                 { id: "player1", nation: Nation.AH },
                 { id: "player2", nation: Nation.IT }
-              ]
+              ],
+              soloMode: false
             })
           );
           return game;
@@ -778,7 +788,8 @@ describe("imperial", () => {
               players: [
                 { id: "player1", nation: Nation.AH },
                 { id: "player2", nation: Nation.IT }
-              ]
+              ],
+              soloMode: false
             })
           );
           return game;
@@ -824,7 +835,8 @@ describe("imperial", () => {
                 players: [
                   { id: "player1", nation: Nation.AH },
                   { id: "player2", nation: Nation.IT }
-                ]
+                ],
+                soloMode: false
               })
             );
             return game;
@@ -989,7 +1001,8 @@ describe("imperial", () => {
               players: [
                 { id: "player1", nation: Nation.AH },
                 { id: "player2", nation: Nation.IT }
-              ]
+              ],
+              soloMode: false
             })
           );
           return game;
@@ -1189,7 +1202,8 @@ describe("imperial", () => {
                 players: [
                   { id: "player1", nation: Nation.AH },
                   { id: "player2", nation: Nation.IT }
-                ]
+                ],
+                soloMode: false
               })
             );
             return game;
@@ -1366,7 +1380,8 @@ describe("imperial", () => {
               players: [
                 { id: "player1", nation: Nation.AH },
                 { id: "player2", nation: Nation.IT }
-              ]
+              ],
+              soloMode: false
             })
           );
           return game;
@@ -1592,7 +1607,8 @@ describe("imperial", () => {
               players: [
                 { id: "player1", nation: Nation.AH },
                 { id: "player2", nation: Nation.IT }
-              ]
+              ],
+              soloMode: false
             })
           );
           return game;
@@ -1682,7 +1698,8 @@ describe("imperial", () => {
             players: [
               { id: "player1", nation: Nation.AH },
               { id: "player2", nation: Nation.IT }
-            ]
+            ],
+            soloMode: false
           })
         );
         return game;
@@ -1994,7 +2011,8 @@ describe("imperial", () => {
             players: [
               { id: "player1", nation: Nation.AH },
               { id: "player2", nation: Nation.IT }
-            ]
+            ],
+            soloMode: false
           })
         );
         return game;
@@ -2258,7 +2276,8 @@ describe("imperial", () => {
             players: [
               { id: "player1", nation: Nation.AH },
               { id: "player2", nation: Nation.IT }
-            ]
+            ],
+            soloMode: false
           })
         );
         return game;
@@ -2383,7 +2402,8 @@ describe("imperial", () => {
             players: [
               { id: "player1", nation: Nation.AH },
               { id: "player2", nation: Nation.IT }
-            ]
+            ],
+            soloMode: false
           })
         );
         return game;
@@ -2419,7 +2439,8 @@ describe("imperial", () => {
             players: [
               { id: "player1", nation: Nation.AH },
               { id: "player2", nation: Nation.IT }
-            ]
+            ],
+            soloMode: false
           })
         );
         return game;
@@ -2437,7 +2458,8 @@ describe("imperial", () => {
             players: [
               { id: "player1", nation: Nation.AH },
               { id: "player2", nation: Nation.IT }
-            ]
+            ],
+            soloMode: false
           }),
           Action.rondel({nation: Nation.AH, cost: 0, slot: "maneuver1"})
         ]);
