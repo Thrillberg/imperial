@@ -8,7 +8,45 @@ This is an implementation of the board game, [Imperial](<https://en.wikipedia.or
 _Please note that this project is released with a Contributor Code of Conduct.
 By participating in this project you agree to abide by its terms._
 
-## I need to write setup instructions!
+## Local development setup
+
+Imperial uses Ruby version 2.7.1.
+
+To run Imperial on your local machine, please follow these instructions:
+
+1. Clone the repo:
+```
+git clone https://github.com/Thrillberg/imperial.git
+```
+2. Change directory into the `imperial` directory:
+```
+cd imperial
+```
+3. Run the Rails setup command:
+```
+bin/setup
+```
+4. Run the Yarn install command:
+```
+yarn install
+```
+5. In one terminal window, run webpack:
+```
+bin/webpack --watch
+```
+6. Keep webpack running and in a separate terminal window, run the Rails server:
+```
+rails s
+```
+If any of the above instructions did not work for you, please do not hesitate to [open an issue](https://github.com/Thrillberg/imperial/issues/new).
+
+## Running tests
+
+The JavaScript in this project is relatively well-tested but the Ruby and VueJS code is not, currently, well-tested. To run JS tests, run the following command from the project root:
+
+```
+npm test
+```
 
 ## What the heck is a _Schnelleinsteig_??
 
