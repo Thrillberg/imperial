@@ -49,19 +49,19 @@ class AppearanceChannel < ApplicationCable::Channel
         kind: "updateGameLog",
         data: {
           gameId: game.id,
-          log: game.actions.map(&:data)
+          log: game.actions.order(:created_at).map(&:data)
         }
       }
       ActionCable.server.broadcast("appearance_channel", payload)
     when "tick"
       game = Game.find(data["data"]["gameId"])
       data = data["data"]["action"]
-      game.actions << Action.new(data: data)
+      game.actions << Action.create(data: data)
       payload = {
         kind: "updateGameLog",
         data: {
           gameId: game.id,
-          log: game.actions.map(&:data)
+          log: game.actions.order(:created_at).map(&:data)
         }
       }
       ActionCable.server.broadcast("appearance_channel", payload)
