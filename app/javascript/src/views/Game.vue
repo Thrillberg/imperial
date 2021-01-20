@@ -170,8 +170,7 @@ export default {
       importPlacements: [],
       maneuverOrigin: "",
       onActions: true,
-      onGameDetails: false,
-      purchasingBond: false
+      onGameDetails: false
     };
   },
   beforeDestroy() {
@@ -212,6 +211,14 @@ export default {
       }
     });
     apiClient.getGameLog(this.$route.params.id);
+  },
+  computed: {
+    purchasingBond: function () {
+      const inInvestorTurn = Array.from(this.game.availableActions).every((action) => {
+        return action.type === "bondPurchase";
+      });
+      return inInvestorTurn;
+    }
   },
   methods: {
     stringify(nation) {
@@ -288,19 +295,6 @@ export default {
     tickWithAction: function(action) {
       this.controllingPlayerName = this.game.currentPlayerName;
       apiClient.tick(this.$route.params.id, action);
-      if (action.type == "rondel") {
-        switch (action.payload.slot) {
-          case "investor":
-            if (this.game.investorCardActive) {
-              this.controllingPlayerName = this.game.investorCardHolder;
-            }
-            this.purchasingBond = true;
-            break;
-        }
-      }
-      if (action.type === "bondPurchase") {
-        this.purchasingBond = false;
-      }
     },
     actionToText: function(action) {
       if (action.type === "bondPurchase") {

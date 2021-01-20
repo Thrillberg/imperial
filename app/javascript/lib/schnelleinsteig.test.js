@@ -235,13 +235,13 @@ describe("Schnelleinsteig", () => {
         expect(game.availableActions).toEqual(expectedActions);
       });
 
-      test("it is still IT's turn", () => {
+      test("it is the investor card holder's turn", () => {
         const log = mainLog.slice(0, 17);
         log.push(
           Action.rondel({ nation: Nation.IT, cost: 0, slot: "investor" })
         );
         const game = Imperial.fromLog(log);
-        const currentPlayerName = game.nations.get(Nation.IT).controller;
+        const currentPlayerName = game.investorCardHolder;
 
         expect(game.currentPlayerName).toEqual(currentPlayerName);
       });

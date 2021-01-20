@@ -887,6 +887,7 @@ export default class Imperial {
   }
 
   endOfInvestorTurn() {
+    this.currentPlayerName = this.investorCardHolder;
     // 2. Investor card holder gets 2m cash
     this.players[this.investorCardHolder].cash += 2;
     // Investor card holder may buy a bond belonging to the nation

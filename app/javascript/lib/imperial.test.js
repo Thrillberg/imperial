@@ -847,14 +847,14 @@ describe("imperial", () => {
               describe("2. Investor is activated", () => {
                 test("investor card holder gets 2m", () => {
                   const game = newGame();
-                  // Make player1 the investor card holder
-                  game.investorCardHolder = "player1";
-                  // Empty out their bonds so that they don't impact player1's cash
-                  game.players["player1"].bonds = new Set();
+                  // Make player2 the investor card holder
+                  game.investorCardHolder = "player2";
+                  // Empty out their bonds so that they don't impact player2's cash
+                  game.players["player2"].bonds = new Set();
                   // Set AH's rondel position to be something *before* investor
                   game.nations.get(Nation.AH).rondelPosition = startingPosition;
 
-                  expect(game.players["player1"].cash).toEqual(2);
+                  expect(game.players["player2"].cash).toEqual(2);
 
                   // The investor slot lies between 'maneuver1' and 'maneuver2'
                   game.tick(
@@ -865,7 +865,8 @@ describe("imperial", () => {
                     })
                   );
 
-                  expect(game.players["player1"].cash).toEqual(4);
+                  expect(game.players["player2"].cash).toEqual(4);
+                  expect(game.currentPlayerName).toEqual("player2");
                 });
 
                 test("available bonds for sale outright", () => {
