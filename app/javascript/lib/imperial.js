@@ -230,6 +230,7 @@ export default class Imperial {
     this.handlingConflict = false;
     if (this.unitsToMove.length === 0) {
       this.unitsToMove = [];
+      this.maneuvering = false;
       this.handleAdvancePlayer();
       this.availableActions = new Set(this.rondelActions(this.currentNation));
     } else {
@@ -244,6 +245,7 @@ export default class Imperial {
     this.handlingConflict = false;
     if (this.unitsToMove.length === 0) {
       this.unitsToMove = [];
+      this.maneuvering = false;
       this.handleAdvancePlayer();
       this.availableActions = new Set(this.rondelActions(this.currentNation));
     } else {
