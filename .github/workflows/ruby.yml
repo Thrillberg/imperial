@@ -26,10 +26,6 @@ jobs:
         ports:
           - 5432:5432
 
-    strategy:
-      matrix:
-        ruby-version: ['2.7.1']
-
     steps:
     - uses: actions/checkout@v2
     - name: Set up Ruby
