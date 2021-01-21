@@ -1,83 +1,41 @@
-class AppearanceChannel < ApplicationCable::Channel
+class AppearanceChannel < ApplicationChannel
   def subscribed
     stream_from "appearance_channel"
-    ActionCable.server.broadcast(
-      "appearance_channel",
-      {kind: "updateUsers", data: {users: User.all}}
-    )
-    payload = {
-      kind: "updateGames",
-      data: {
-        games: Game.all.map do |game|
-          to_json(game)
-        end
-      }
-    }
-    ActionCable.server.broadcast("appearance_channel", payload)
+    broadcast_users "appearance_channel", "updateUsers"
+    broadcast_games "appearance_channel", "updateGames"
   end
 
   def receive(data)
     case data["kind"]
     when "openGame"
+      # TODO: can this be userId also, so that it's the same as below?
       host = User.find_by(name: data["data"]["host"])
       host.games << Game.create(name: lovely_string, host: host)
-      payload = {
-        kind: "updateGames",
-        data: {
-          games: Game.all.map do |game|
-            to_json(game)
-          end
-        }
-      }
-      ActionCable.server.broadcast("appearance_channel", payload)
+      broadcast_games "appearance_channel", "updateGames"
+
     when "joinGame"
-      game = Game.find(data["data"]["gameId"])
+      game = game_from_data(data)
       user = User.find(data["data"]["userId"])
       game.users << user
-      payload = {
-        kind: "updateGames",
-        data: {
-          games: Game.all.map do |game|
-            to_json(game)
-          end
-        }
-      }
-      ActionCable.server.broadcast("appearance_channel", payload)
+      broadcast_games "appearance_channel", "updateGames"
+
     when "getGameLog"
-      game = Game.find(data["data"]["gameId"])
-      payload = {
-        kind: "updateGameLog",
-        data: {
-          gameId: game.id,
-          log: game.actions.order(:created_at).map(&:data)
-        }
-      }
-      ActionCable.server.broadcast("appearance_channel", payload)
+      game = game_from_data(data)
+      broadcast_update_game_log "appearance_channel", "updateGameLog", game
+
     when "tick"
-      game = Game.find(data["data"]["gameId"])
+      game = game_from_data(data)
       data = data["data"]["action"]
       game.actions << Action.create(data: data)
-      payload = {
-        kind: "updateGameLog",
-        data: {
-          gameId: game.id,
-          log: game.actions.order(:created_at).map(&:data)
-        }
-      }
-      ActionCable.server.broadcast("appearance_channel", payload)
+
+      broadcast_update_game_log "appearance_channel", "updateGameLog", game
     end
   end
 
   private
 
-  def to_json(game)
-    {
-      name: game.name,
-      id: game.id,
-      host: game.host.name,
-      players: game.users.map(&:name),
-      log: game.actions.map(&:data)
-    }
+  def game_from_data(data)
+    Game.includes(:actions).find(data["data"]["gameId"])
   end
 
   def lovely_string
