@@ -1,3 +1,3 @@
-class Action < ActiveRecord:: Base
+class Action < ActiveRecord::Base
   belongs_to :game
 end
