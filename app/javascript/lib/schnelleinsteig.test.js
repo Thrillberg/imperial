@@ -1613,7 +1613,11 @@ describe("Schnelleinsteig", () => {
           "bulgaria",
           "romania",
           "trieste",
-          "budapest"
+          "budapest",
+          "tunis",
+          "naples",
+          "venice",
+          "rome"
         ];
         westBalkanDestinations.map(province => {
           availableActions.add(
@@ -1623,6 +1627,19 @@ describe("Schnelleinsteig", () => {
         availableActions.add(
           Action.maneuver({ origin: "tunis", destination: "algeria" })
         );
+        const tunisConvoyDestinations = [
+          "westbalkan",
+          "greece",
+          "trieste",
+          "naples",
+          "venice",
+          "rome"
+        ];
+        tunisConvoyDestinations.map(province => {
+          availableActions.add(
+            Action.maneuver({ origin: "tunis", destination: province })
+          );
+        });
 
         expect(game.currentNation).toEqual(Nation.AH);
         expect(game.availableActions).toEqual(availableActions);
