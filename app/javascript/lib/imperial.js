@@ -667,13 +667,17 @@ export default class Imperial {
       }
       case "production1":
       case "production2": {
-        Array.from(this.board.byNation.get(action.payload.nation))
+        const nation = action.payload.nation;
+        Array.from(this.board.byNation.get(nation))
           .filter(province => this.provinces.get(province).factory !== null)
           .forEach(province => {
-            if (this.provinces.get(province).factory === "shipyard") {
-              this.units.get(action.payload.nation).get(province).fleets++;
-            } else {
-              this.units.get(action.payload.nation).get(province).armies++;
+            const units = this.units.get(nation).get(province);
+            if (this.nobodyIsOccupying(province, nation)) {
+              if (this.provinces.get(province).factory === "shipyard") {
+                units.fleets++;
+              } else {
+                units.armies++;
+              }
             }
           });
         if (action.payload.slot === "production2") {
@@ -1051,19 +1055,25 @@ export default class Imperial {
   unoccupiedFactoryCount(nation) {
     let count = 0;
     for (const province of this.board.byNation.get(nation)) {
-      let provinceIsUnoccupied = true;
-      for (const [occupyingNation] of this.units) {
-        if (occupyingNation !== nation) {
-          if (this.units.get(occupyingNation).get(province).armies > 0) {
-            provinceIsUnoccupied = false;
-          }
-        }
-      }
-      if (this.provinces.get(province).factory && provinceIsUnoccupied) {
-        count++;
-      }
+      const hasAnUnoccupiedFactory = (
+        this.provinces.get(province).factory &&
+        this.nobodyIsOccupying(province, nation)
+      )
+      if (hasAnUnoccupiedFactory) count++
     }
     return count;
+  }
+
+  nobodyIsOccupying(province, owningNation) {
+    let provinceIsUnoccupied = true;
+    for (const [occupyingNation] of this.units) {
+      if (occupyingNation !== owningNation) {
+        if (this.units.get(occupyingNation).get(province).armies > 0) {
+          provinceIsUnoccupied = false;
+        }
+      }
+    }
+    return provinceIsUnoccupied;
   }
 
   isEqual(action1, action2) {

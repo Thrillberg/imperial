@@ -796,6 +796,41 @@ describe("imperial", () => {
         };
 
         ["production1", "production2"].forEach(production => {
+          describe("units are produced", () => {
+            test("a unit is produced in a province that has a factory", () => {
+              const game = newGame();
+              game.provinces.get("a").factory = "armaments";
+
+              game.tick(
+                Action.rondel({ slot: production, cost: 0, nation: Nation.AH })
+              );
+
+              expect(game.units.get(Nation.AH).get("a").armies).toEqual(1);
+            });
+
+            test("a unit is not produced in a province that does not have a factory", () => {
+              const game = newGame();
+
+              game.tick(
+                Action.rondel({ slot: production, cost: 0, nation: Nation.AH })
+              );
+
+              expect(game.units.get(Nation.AH).get("a").armies).toEqual(0);
+            });
+
+            test("a unit is not produce in a province that has an occupied factory", () => {
+              const game = newGame();
+              game.provinces.get("a").factory = "armaments";
+              game.units.get(Nation.IT).get("a").armies = 1;
+
+              game.tick(
+                Action.rondel({ slot: production, cost: 0, nation: Nation.AH })
+              );
+
+              expect(game.units.get(Nation.AH).get("a").armies).toEqual(0);
+            });
+          });
+
           test("it is IT's turn to select a rondel slot", () => {
             const game = newGame();
             const expected = new Set();
