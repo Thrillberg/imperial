@@ -1,7 +1,7 @@
 <template>
   <div id="app" class="font-serif">
-    <Header @registered="onRegister" :username="username" :users="users" />
-    <router-view :username="username" :users="users" :games="games" />
+    <Header @registered="onRegister" :username="username" :email="email" />
+    <router-view :username="username" :email="email" :users="users" :games="games" />
   </div>
 </template>
 
@@ -18,7 +18,7 @@ export default {
   name: "App",
   components: { Header },
   data: () => {
-    return { username: "", users: [], games: new Set() };
+    return { username: "", email: "", users: [], games: new Set() };
   },
   beforeDestroy() {
     apiClient.clearHandlers();
@@ -27,10 +27,6 @@ export default {
   created() {
     apiClient.onUpdateUsers(({ users }) => {
       this.users = users;
-      const user = this.users.find(
-        user => this.$cookies.get("user_id") === user.id
-      );
-      this.username = user.name;
     });
     apiClient.onUpdateGames(({ games }) => {
       this.games = games.map(game => {
@@ -46,6 +42,13 @@ export default {
         };
       });
     });
+    // Fetch user profile
+    fetch(`/users/${this.$cookies.get("user_id")}`, { method: "GET" })
+      .then(response => response.json())
+      .then(({ name, email }) => {
+        this.username = name
+        this.email = email
+      })
   },
   methods: {
     onRegister(data) {

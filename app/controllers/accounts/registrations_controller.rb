@@ -12,8 +12,11 @@ class Accounts::RegistrationsController < Devise::RegistrationsController
   # POST /resource
   def create
     super do |account|
+      account.email = registration_params[:email]
+      account.password = registration_params[:password]
       user = User.find(cookies[:user_id])
       account.user = user
+      account.save!
     end
   end
 
@@ -62,4 +65,10 @@ class Accounts::RegistrationsController < Devise::RegistrationsController
   # def after_inactive_sign_up_path_for(resource)
   #   super(resource)
   # end
+
+  private
+
+  def registration_params
+    params.require(:registration).permit(:email, :password)
+  end
 end

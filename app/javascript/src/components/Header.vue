@@ -2,8 +2,7 @@
   <div class="h-16 bg-green-500">
     <div class="float-right p-2">
       <div v-if="alreadyRegistered()">
-        Currently registered as <strong>{{ username }}</strong
-        >.
+        Currently registered as <strong>{{ username }}</strong> ({{ email }}).
       </div>
       <div v-else>
         <form method="post" action="/user">
@@ -34,7 +33,7 @@ import { apiClient } from "../router/index.js";
 
 export default {
   name: "Header",
-  props: ["username", "users"],
+  props: ["username", "email"],
   data: () => {
     return {
       tempName: ""
@@ -42,14 +41,7 @@ export default {
   },
   methods: {
     alreadyRegistered: function() {
-      if (this.users.length > 0) {
-        const user = this.users.find(
-          user => user.id === this.$cookies.get("user_id")
-        );
-        return user.name !== "anonymous";
-      } else {
-        return false;
-      }
+      return this.username.length > 0 && this.email.length > 0;
     },
   }
 };

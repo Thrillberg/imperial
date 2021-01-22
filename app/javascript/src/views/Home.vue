@@ -2,21 +2,33 @@
   <div class="container mx-auto">
     <div class="flex justify-between">
       <div class="mt-4">
-        <div v-if="registered" class="mt-1 mb-6">
-          <form
-            method="post"
-            action="/accounts"
-          >
-            <input type="text" name="account[email]" />
-            <input type="password" name="account[password]" />
-            <input type="submit" name="submit" />
-            <!-- needs authenticity token -->
+        <div v-if="identified">
+          <form class="p-4 bg-green-500 rounded" @submit="submit">
+            <input
+              type="text"
+              placeholder="email"
+              v-model="email"
+              class="rounded p-2"
+            />
+            <input
+              type="password"
+              placeholder="password"
+              v-model="password"
+              class="rounded p-2"
+            />
+            <input
+              type="submit"
+              name="submit"
+              class="rounded p-2 bg-green-800 text-white"
+            />
           </form>
-          <span
-            v-on:click="openGame()"
-            class="rounded p-2 bg-green-800 text-white cursor-pointer"
-            >Open New Game</span
-          >
+        </div>
+        <div
+          v-if="identified || registered"
+          v-on:click="openGame()"
+          class="rounded p-2 mt-2 bg-green-800 text-white cursor-pointer inline-block"
+        >
+          Open New Game
         </div>
         <ul v-for="game in games" v-bind:key="game.id">
           <li class="py-3">
@@ -56,14 +68,6 @@
           </li>
         </ul>
       </div>
-      <div v-if="registered" class="mt-4 border border-gray-500 rounded p-4">
-        <div class="underline">Registered Users:</div>
-        <ul v-for="user in users" v-bind:key="user.id">
-          <li>
-            {{ user.name }}
-          </li>
-        </ul>
-      </div>
     </div>
   </div>
 </template>
@@ -80,13 +84,13 @@ export default {
   components: {
     Star
   },
-  data: () => {
+  props: ["username", "email", "users", "games"],
+  data: function () {
     return {
-      activeGames: new Set(),
-      tempName: ""
-    };
+      email: "",
+      password: ""
+    }
   },
-  props: ["username", "users", "games"],
   beforeDestroy() {
     apiClient.clearHandlers();
   },
@@ -94,15 +98,14 @@ export default {
     apiClient.onUpdateGameLog(() => {});
   },
   computed: {
+    identified: function() {
+      // Users who are identified have a username but have not yet
+      // submitted an email and password
+      return (this.username !== "anonymous" && this.email.length === 0)
+    },
     registered: function() {
-      if (this.users.length > 0) {
-        const user = this.users.find(
-          user => user.id === this.$cookies.get("user_id")
-        );
-        return user.name !== "anonymous";
-      } else {
-        return false;
-      }
+      // Users who are registered have a username, an email and a password
+      return (this.username !== "anonymous" && this.email.length > 0)
     }
   },
   methods: {
@@ -120,7 +123,7 @@ export default {
     joinable: function(gameId) {
       const game = this.games.find(game => game.id === gameId);
       const inGame = Object.values(game.players).includes(this.username);
-      return !inGame && this.registered && !this.gameStarted(gameId);
+      return !inGame && this.identified && !this.gameStarted(gameId);
     },
     isHost: function(gameId) {
       const game = this.games.find(game => game.id === gameId);
@@ -201,6 +204,17 @@ export default {
             { id: players[5], nation: Nation.RU }
           ];
       }
+    },
+    submit: function(e) {
+      console.log(this.$cookies.get("CSRF-TOKEN"))
+      fetch("/accounts", {
+        method: "POST",
+        headers: {
+          "X-CSRF-Token": this.$cookies.get("CSRF-TOKEN"),
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ email: this.email, password: this.password })
+      })
     }
   }
 };
