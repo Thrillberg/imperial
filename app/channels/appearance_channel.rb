@@ -8,7 +8,6 @@ class AppearanceChannel < ApplicationCable::Channel
   def receive(data)
     case data["kind"]
     when "openGame"
-      # TODO: can this be userId also, so that it's the same as below?
       host = User.find_by(name: data["data"]["host"])
       host.games << Game.create(name: lovely_string, host: host)
       broadcast_games "appearance_channel", "updateGames"
