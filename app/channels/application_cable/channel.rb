@@ -3,7 +3,7 @@ module ApplicationCable
     def broadcast_users(channel, kind)
       payload = {
         kind: kind,
-        data: { users: User.all }
+        data: {users: User.all}
       }
       ActionCable.server.broadcast(channel, payload)
     end
