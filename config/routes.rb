@@ -1,4 +1,8 @@
 Rails.application.routes.draw do
+  
+  devise_for :accounts, controllers: {
+    #sessions: 'accounts/sessions'
+  }
   mount ActionCable.server => "/ws"
   get "/health", to: "health#index"
 
