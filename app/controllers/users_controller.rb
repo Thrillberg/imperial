@@ -4,7 +4,7 @@ class UsersController < ApplicationController
   def show
     user = User.find(params[:id])
     account = Account.find_by(user: user)
-    profile = { name: user.name, email: account.email }
+    profile = { name: user&.name, email: account&.email }
     render json: profile
   end
 

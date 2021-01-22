@@ -1,7 +1,7 @@
 <template>
   <div id="app" class="font-serif">
     <Header @registered="onRegister" :username="username" :email="email" />
-    <router-view :username="username" :email="email" :users="users" :games="games" />
+    <router-view :username="username" :users="users" :games="games" />
   </div>
 </template>
 

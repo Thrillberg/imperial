@@ -1,11 +1,16 @@
 <template>
   <div class="h-16 bg-green-500">
     <div class="float-right p-2">
-      <div v-if="alreadyRegistered()">
-        Currently registered as <strong>{{ username }}</strong> ({{ email }}).
+      <div v-if="identified || registered">
+        <div v-if="identified">
+          Currently identified as <strong>{{ username }}</strong>.
+        </div>
+        <div v-if="registered">
+          Currently registered as <strong>{{ username }}</strong> ({{ email }}).
+        </div>
       </div>
       <div v-else>
-        <form method="post" action="/user">
+        <form method="post" action="/users">
           <input
             class="mx-auto border-black border-solid border p-3 rounded"
             v-model="tempName"
@@ -39,10 +44,16 @@ export default {
       tempName: ""
     };
   },
-  methods: {
-    alreadyRegistered: function() {
-      return this.username.length > 0 && this.email.length > 0;
+  computed: {
+    identified: function() {
+      // Users who are identified have a username but have not yet
+      // submitted an email and password
+      return (this.username !== "anonymous" && this.email.length === 0)
     },
-  }
+    registered: function() {
+      // Users who are registered have a username, an email and a password
+      return (this.username !== "anonymous" && this.email.length > 0)
+    }
+  },
 };
 </script>

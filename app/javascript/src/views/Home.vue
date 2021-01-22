@@ -84,7 +84,7 @@ export default {
   components: {
     Star
   },
-  props: ["username", "email", "users", "games"],
+  props: ["username", "users", "games"],
   data: function () {
     return {
       email: "",
@@ -206,7 +206,6 @@ export default {
       }
     },
     submit: function(e) {
-      console.log(this.$cookies.get("CSRF-TOKEN"))
       fetch("/accounts", {
         method: "POST",
         headers: {
