@@ -3,6 +3,15 @@
     <div class="flex justify-between">
       <div class="mt-4">
         <div v-if="registered" class="mt-1 mb-6">
+          <form
+            method="post"
+            action="/accounts"
+          >
+            <input type="text" name="account[email]" />
+            <input type="password" name="account[password]" />
+            <input type="submit" name="submit" />
+            <!-- needs authenticity token -->
+          </form>
           <span
             v-on:click="openGame()"
             class="rounded p-2 bg-green-800 text-white cursor-pointer"
