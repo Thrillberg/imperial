@@ -1,4 +1,4 @@
-class AppearanceChannel < ApplicationChannel
+class AppearanceChannel < ApplicationCable::Channel
   def subscribed
     stream_from "appearance_channel"
     broadcast_users "appearance_channel", "updateUsers"
