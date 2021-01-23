@@ -187,11 +187,28 @@ export default class Imperial {
       scores[player] = score;
     });
     const winningScore = Math.max(...Object.keys(scores).map(x => scores[x]));
-    const winner = Object.keys(scores).filter(
+    const winners = Object.keys(scores).filter(
       x => scores[x] === winningScore
-    )[0];
-
-    this.winner = winner;
+    );
+    if (winners.length === 1) {
+      this.winner = winners[0]
+    } else {
+      let winningNation = {}
+      for (const [nation, data] of this.nations) {
+        if (data.powerPoints === 25) {
+          winningNation = nation;
+        }
+      }
+      this.winner = "";
+      winners.forEach((winner) => {
+        if (
+          this.totalInvestmentInNation(winner, winningNation) >
+          this.totalInvestmentInNation(this.winner, winningNation)
+        ) {
+          this.winner = winner
+        }
+      });
+    }
   }
 
   fight(action) {
@@ -942,6 +959,10 @@ export default class Imperial {
   }
 
   totalInvestmentInNation(player, nation) {
+    if (!this.players[player]) {
+      return 0
+    }
+
     return [...this.players[player].bonds]
       .filter(bond => bond.nation === nation)
       .reduce((x, y) => x + y.cost, 0);
