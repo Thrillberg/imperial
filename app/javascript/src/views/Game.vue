@@ -110,7 +110,7 @@
           </div>
         </div>
       </div>
-      <div class="buttons" v-if="purchasingBond">
+      <div class="buttons" v-if="purchasingBond && (username === controllingPlayerName || game.soloMode)">
         <ActionComponent
           v-for="action in game.availableActions"
           v-bind:key="JSON.stringify(action)"
