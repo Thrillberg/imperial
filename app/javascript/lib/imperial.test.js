@@ -2202,6 +2202,10 @@ describe("imperial", () => {
             armies: 0,
             fleets: 0
           });
+          expect(game.units.get(Nation.AH).get("a")).toEqual({
+            armies: 0,
+            fleets: 0
+          });
         });
 
         test("challenger chose to attack the army", () => {
@@ -2226,6 +2230,10 @@ describe("imperial", () => {
             fleets: 1
           });
           expect(game.units.get(Nation.AH).get("b")).toEqual({
+            armies: 0,
+            fleets: 0
+          });
+          expect(game.units.get(Nation.AH).get("a")).toEqual({
             armies: 0,
             fleets: 0
           });

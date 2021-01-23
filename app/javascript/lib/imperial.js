@@ -209,7 +209,11 @@ export default class Imperial {
         challengerUnitsAtProvince.armies -= 1;
       } else {
         incumbentUnitsAtProvince.fleets -= 1;
-        challengerUnitsAtProvince.fleets -= 1;
+        if (challengerUnitsAtProvince.armies === 1) {
+          challengerUnitsAtProvince.armies -= 1;
+        } else {
+          challengerUnitsAtProvince.fleets -= 1;
+        }
       }
     } else {
       incumbentUnitsAtProvince.armies -= 1;
