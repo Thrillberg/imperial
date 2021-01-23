@@ -16,10 +16,10 @@ class Accounts::RegistrationsController < Devise::RegistrationsController
       account.password = registration_params[:password]
       user = User.find(cookies[:user_id])
       account.user = user
-      unless account.save
-        render json: account.errors.full_messages and return
+      if account.save
+        render(json: {username: user.name, email: account.email}) && return
       else
-        render json: { username: user.name, email: account.email } and return
+        render(json: account.errors.full_messages) && return
       end
     end
   end

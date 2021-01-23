@@ -4,11 +4,11 @@ class DeviseCreateAccounts < ActiveRecord::Migration[6.0]
   def change
     create_table :accounts, id: :uuid do |t|
       ## Database authenticatable
-      t.string :email,              null: false, default: ""
+      t.string :email, null: false, default: ""
       t.string :encrypted_password, null: false, default: ""
 
       ## Recoverable
-      t.string   :reset_password_token
+      t.string :reset_password_token
       t.datetime :reset_password_sent_at
 
       ## Rememberable
@@ -32,11 +32,10 @@ class DeviseCreateAccounts < ActiveRecord::Migration[6.0]
       # t.string   :unlock_token # Only if unlock strategy is :email or :both
       # t.datetime :locked_at
 
-
       t.timestamps null: false
     end
 
-    add_index :accounts, :email,                unique: true
+    add_index :accounts, :email, unique: true
     add_index :accounts, :reset_password_token, unique: true
     # add_index :accounts, :confirmation_token,   unique: true
     # add_index :accounts, :unlock_token,         unique: true
