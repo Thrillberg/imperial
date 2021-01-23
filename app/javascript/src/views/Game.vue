@@ -55,8 +55,16 @@
               v-bind:name="username"
               v-on:tick-with-action="tickWithAction"
             ></Rondel>
-            <div class="text-center text-lg mt-8">
+            <div class="text-center text-lg mt-4">
               You have <b>{{ this.currentPlayer.cash }}m</b> in cash.
+            </div>
+            <div class="flex justify-between">
+              <Flag
+                v-for="[nation, data] of game.nations"
+                :height="(40).toString()"
+                :nation="nation.value"
+                :filter="data.controller !== username ? 'grayscale' : ''"
+              />
             </div>
             <div
               v-if="game.importing && (username === controllingPlayerName || game.soloMode)"

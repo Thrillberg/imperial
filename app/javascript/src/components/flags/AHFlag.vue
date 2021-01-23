@@ -5,7 +5,10 @@
     v-bind:width="width"
     v-bind:height="height"
   >
-    <g v-bind:clip-path="this.fleet ? 'url(#fleetClip)' : ''">
+    <filter id="grayscale">
+      <feColorMatrix type="matrix" values="0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0"/>
+    </filter>
+    <g v-bind:clip-path="this.fleet ? 'url(#fleetClip)' : ''" :filter="activeFilter">
       <path fill="#fd1" d="M0 0h1500v1000H0z" />
       <path fill="#000" d="M0 0h15000v500H0z" />
     </g>
@@ -16,6 +19,7 @@
 export default {
   name: "AHFlag",
   props: {
+    activeFilter: String,
     fleet: Boolean,
     width: String,
     height: String,
