@@ -7,6 +7,7 @@
     :x="x"
     :y="y"
     :fleet="this.fleet"
+    :filter="activeFilter"
   ></component>
 </template>
 
@@ -21,6 +22,7 @@ import RUFlag from "./RUFlag.vue";
 export default {
   name: "Flag",
   props: {
+    filter: String,
     fleet: Boolean,
     height: String,
     nation: String,
@@ -45,6 +47,15 @@ export default {
         case "RU":
           return RUFlag;
       }
+    }
+  },
+  computed: {
+    activeFilter: function () {
+      if (this.filter === "grayscale") {
+        return "url(#grayscale)"
+      }
+
+      return "";
     }
   }
 };
