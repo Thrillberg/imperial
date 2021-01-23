@@ -2,7 +2,13 @@
   <div class="container mx-auto">
     <div class="flex justify-between">
       <div class="mt-4">
-        <div v-if="identified">
+        <div v-if="!profile.username">
+          Please submit a username above!
+        </div>
+        <div v-else-if="!profile.email">
+          <div v-for="(error, index) in errors" v-bind:key="index">
+            {{ error }}
+          </div>
           <form class="p-4 bg-green-500 rounded" @submit="submit">
             <input
               type="text"
@@ -18,13 +24,13 @@
             />
             <input
               type="submit"
-              name="submit"
+              value="Register"
               class="rounded p-2 bg-green-800 text-white"
             />
           </form>
         </div>
         <div
-          v-if="identified || registered"
+          v-else
           v-on:click="openGame()"
           class="rounded p-2 mt-2 bg-green-800 text-white cursor-pointer inline-block"
         >
@@ -84,10 +90,11 @@ export default {
   components: {
     Star
   },
-  props: ["username", "users", "games"],
+  props: ["profile", "users", "games"],
   data: function () {
     return {
       email: "",
+      errors: [],
       password: ""
     }
   },
@@ -97,20 +104,9 @@ export default {
   mounted() {
     apiClient.onUpdateGameLog(() => {});
   },
-  computed: {
-    identified: function() {
-      // Users who are identified have a username but have not yet
-      // submitted an email and password
-      return (this.username !== "anonymous" && this.email.length === 0)
-    },
-    registered: function() {
-      // Users who are registered have a username, an email and a password
-      return (this.username !== "anonymous" && this.email.length > 0)
-    }
-  },
   methods: {
     openGame: function() {
-      apiClient.openGame(this.username);
+      apiClient.openGame(this.profile.username);
     },
     gameStarted: function(gameId) {
       const log = this.games.find(game => game.id === gameId).log;
@@ -122,15 +118,15 @@ export default {
     },
     joinable: function(gameId) {
       const game = this.games.find(game => game.id === gameId);
-      const inGame = Object.values(game.players).includes(this.username);
-      return !inGame && this.identified && !this.gameStarted(gameId);
+      const inGame = Object.values(game.players).includes(this.profile.username);
+      return !inGame && this.profile.username && !this.gameStarted(gameId);
     },
     isHost: function(gameId) {
       const game = this.games.find(game => game.id === gameId);
-      return game.host === this.username;
+      return game.host === this.profile.username;
     },
     joinGame: function(gameId) {
-      apiClient.joinGame(this.$cookies.get("user_id"), gameId, this.username);
+      apiClient.joinGame(this.$cookies.get("user_id"), gameId, this.profile.username);
     },
     startGame: function(gameId) {
       const game = this.games.find(game => game.id === gameId);
@@ -214,6 +210,16 @@ export default {
         },
         body: JSON.stringify({ email: this.email, password: this.password })
       })
+        .then(response => response.json())
+        .then(data => {
+          if (data.email) {
+            this.$emit("registered", data);
+            this.errors = [];
+          } else {
+            this.errors = data;
+          }
+        })
+      e.preventDefault();
     }
   }
 };
