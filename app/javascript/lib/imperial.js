@@ -364,15 +364,14 @@ export default class Imperial {
       action.payload.province
     ).factoryType;
     this.nations.get(this.currentNation).treasury -= 5;
-    if (
-      this.nations.get(this.currentNation).previousRondelPosition ===
-      "maneuver1"
-    ) {
+    if (this.passingThroughInvestor) {
       this.middleOfInvestorTurn();
+      this.passingThroughInvestor = false;
+    } else {
+      this.handleAdvancePlayer();
+      this.availableActions = new Set(this.rondelActions(this.currentNation));
+      this.buildingFactory = false;
     }
-    this.handleAdvancePlayer();
-    this.availableActions = new Set(this.rondelActions(this.currentNation));
-    this.buildingFactory = false;
   }
 
   import(action) {
@@ -514,23 +513,14 @@ export default class Imperial {
       this.availableActions = out;
     } else {
       // No more units may be maneuvered on this turn.
-      if (this.nations.get(this.currentNation).rondelPosition === "maneuver2") {
-        const potentialPreInvestorSlots = [
-          "factory",
-          "production1",
-          "maneuver1"
-        ];
-        if (
-          potentialPreInvestorSlots.includes(
-            this.nations.get(this.currentNation).previousRondelPosition
-          )
-        ) {
-          this.middleOfInvestorTurn();
-        }
-      }
       this.maneuvering = false;
-      this.handleAdvancePlayer();
-      this.availableActions = new Set(this.rondelActions(this.currentNation));
+      if (this.passingThroughInvestor) {
+        this.middleOfInvestorTurn();
+        this.passingThroughInvestor = false;
+      } else {
+        this.handleAdvancePlayer();
+        this.availableActions = new Set(this.rondelActions(this.currentNation));
+      }
     }
   }
 
@@ -560,24 +550,6 @@ export default class Imperial {
       }
       case "production1":
       case "production2": {
-        //if (action.payload.slot === "production1") {
-        //  const potentialPreInvestorSlots = [
-        //    "maneuver1",
-        //    "production1",
-        //    "factory",
-        //    "taxation"
-        //  ];
-        //  if (
-        //    potentialPreInvestorSlots.includes(
-        //      this.nations.get(this.currentNation).previousRondelPosition
-        //    )
-        //  ) {
-        //    if (this.canAffordToPayInvestors(this.currentNation)) {
-        //      this.allowSwissBanksToForceInvestor();
-        //      return;
-        //    }
-        //  }
-        //}
         const nation = action.payload.nation;
         Array.from(this.board.byNation.get(nation))
           .filter(province => this.provinces.get(province).factory !== null)
@@ -635,19 +607,15 @@ export default class Imperial {
           return;
         }
 
-        this.availableActions = new Set(
-          this.rondelActions(this.nextNation(this.currentNation))
-        );
-        //const potentialPreInvestorSlots = ["maneuver1", "production1"];
-        //if (
-        //  potentialPreInvestorSlots.includes(
-        //    this.nations.get(this.currentNation).previousRondelPosition
-        //  )
-        //) {
-        //  this.middleOfInvestorTurn();
-        //}
-        this.handleAdvancePlayer();
-        return;
+        if (this.passingThroughInvestor) {
+          this.middleOfInvestorTurn();
+          this.passingThroughInvestor = false;
+        } else {
+          this.availableActions = new Set(
+            this.rondelActions(this.nextNation(this.currentNation))
+          );
+          this.handleAdvancePlayer();
+        }
       }
       case "maneuver1":
       case "maneuver2": {
