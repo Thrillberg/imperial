@@ -12,6 +12,7 @@
         <ul v-for="game in games" v-bind:key="game.id">
           <li class="py-3">
             <div>
+              <Star v-if="game.currentPlayer === username" />
               <router-link
                 :to="{ path: '/game/' + game.id }"
                 class="text-lg font-bold"
@@ -63,8 +64,13 @@ import Action from "../../lib/action.js";
 import { Nation } from "../../lib/constants.js";
 import { apiClient } from "../router/index.js";
 
+import Star from "../components/Star.vue";
+
 export default {
   name: "Home",
+  components: {
+    Star
+  },
   data: () => {
     return {
       activeGames: new Set(),
