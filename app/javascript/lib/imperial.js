@@ -163,9 +163,21 @@ export default class Imperial {
         action.payload.player;
     }
     this.investorCardActive = false;
-    this.advanceInvestorCard();
     this.handleAdvancePlayer();
-    this.availableActions = new Set(this.rondelActions(this.currentNation));
+
+    let swissBanks = [];
+    for (const player in this.players) {
+      if (this.nationsUnderControl(player).length === 0) {
+        swissBanks.push(player);
+      }
+    }
+    if (swissBanks.length === 0 || swissBanks[0] === this.investorCardHolder) {
+      this.advanceInvestorCard();
+      this.availableActions = new Set(this.rondelActions(this.currentNation));
+    } else {
+      console.log(swissBanks)
+      this.endOfInvestorTurn(swissBanks[0]);
+    }
   }
 
   endManeuver() {
@@ -337,7 +349,7 @@ export default class Imperial {
       this.nations.get(this.currentNation).previousRondelPosition ===
       "maneuver1"
     ) {
-      this.endOfInvestorTurn();
+      this.middleOfInvestorTurn();
     }
     this.handleAdvancePlayer();
     this.availableActions = new Set(this.rondelActions(this.currentNation));
@@ -367,7 +379,7 @@ export default class Imperial {
         this.nations.get(this.currentNation).previousRondelPosition
       )
     ) {
-      this.endOfInvestorTurn();
+      this.middleOfInvestorTurn();
       return;
     } else {
       this.handleAdvancePlayer();
@@ -504,7 +516,7 @@ export default class Imperial {
             this.nations.get(this.currentNation).previousRondelPosition
           )
         ) {
-          this.endOfInvestorTurn();
+          this.middleOfInvestorTurn();
         }
       }
       this.maneuvering = false;
@@ -713,7 +725,7 @@ export default class Imperial {
               this.nations.get(this.currentNation).previousRondelPosition
             )
           ) {
-            this.endOfInvestorTurn();
+            this.middleOfInvestorTurn();
             return;
           }
         }
@@ -767,7 +779,7 @@ export default class Imperial {
             this.nations.get(this.currentNation).previousRondelPosition
           )
         ) {
-          this.endOfInvestorTurn();
+          this.middleOfInvestorTurn();
         }
         this.handleAdvancePlayer();
         return;
@@ -838,7 +850,7 @@ export default class Imperial {
       ).treasury -= amountOwedToController;
     }
     this.investorCardActive = true;
-    this.endOfInvestorTurn();
+    this.middleOfInvestorTurn();
   }
 
   collectUnitsToMove(action) {
@@ -915,15 +927,19 @@ export default class Imperial {
     return count;
   }
 
-  endOfInvestorTurn() {
+  middleOfInvestorTurn() {
     this.currentPlayerName = this.investorCardHolder;
     // 2. Investor card holder gets 2m cash
     this.players[this.investorCardHolder].cash += 2;
-    // Investor card holder may buy a bond belonging to the nation
+    this.endOfInvestorTurn(this.investorCardHolder);
+  }
+
+  endOfInvestorTurn(investor) {
+    // Investor may buy a bond
     this.availableActions = new Set(
       [...this.availableBonds]
         .filter(bond => {
-          const player = this.investorCardHolder;
+          const player = investor;
           const exchangeableBondCosts = [...this.players[player].bonds]
             .filter(exchangeableBond => {
               return exchangeableBond.nation === bond.nation;
@@ -935,12 +951,11 @@ export default class Imperial {
         .map(bond => {
           return Action.bondPurchase({
             nation: bond.nation,
-            player: this.investorCardHolder,
+            player: investor,
             cost: bond.cost
           });
         })
     );
-    // TODO: 3. Investing without a flag
   }
 
   playerBondsOfNation(player, nation) {
@@ -1099,6 +1114,16 @@ export default class Imperial {
       }
     }
     return provinceIsUnoccupied;
+  }
+
+  nationsUnderControl(player) {
+    let nations = [];
+    for (const [nation, data] of this.nations) {
+      if (data.controller === player) {
+        nations.push(nation.value);
+      }
+    }
+    return nations;
   }
 
   isEqual(action1, action2) {
