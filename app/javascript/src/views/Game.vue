@@ -157,6 +157,7 @@ import Flag from "../components/flags/Flag.vue";
 import GameDetails from "../components/GameDetails.vue";
 import Rondel from "../components/Rondel.vue";
 
+import getGameLog from "../getGameLog.js";
 import stringify from "../stringify.js";
 
 export default {
@@ -187,29 +188,7 @@ export default {
   mounted() {
     apiClient.onUpdateGameLog(({ gameId, log }) => {
       if (gameId === this.$route.params.id) {
-        const rawLog = log;
-        // The following map only exists because of our custom Nation type, which
-        // has weirdness when we attempt nation.when() in the setup file.
-        const gameLog = rawLog.map(rawAction => {
-          const action = JSON.parse(rawAction);
-          if (action.type === "initialize") {
-            action.payload.players = action.payload.players.map(player => {
-              return {
-                id: player.id,
-                nation: Nation[player.nation.value]
-              };
-            });
-          } else if (
-            action.type === "rondel" ||
-            action.type === "bondPurchase"
-          ) {
-            action.payload.nation = Nation[action.payload.nation.value];
-          } else if (action.type === "fight" || action.type === "coexist") {
-            action.payload.incumbent = Nation[action.payload.incumbent.value];
-            action.payload.challenger = Nation[action.payload.challenger.value];
-          }
-          return action;
-        });
+        const gameLog = getGameLog(log);
         this.game = Imperial.fromLog(gameLog);
         if (this.game.players) {
           this.gameStarted = true;
