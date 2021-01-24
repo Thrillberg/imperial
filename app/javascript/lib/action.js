@@ -61,9 +61,10 @@ export default {
     "challenger",
     "targetType"
   ]),
-  forceInvestor: makeAction("forceInvestor", []),
+  forceInvestor: makeAction("forceInvestor", ["player"]),
   import: makeAction("import", ["placements"]), // placement : { province: string, type: "army"|"fleet" }
   maneuver: makeAction("maneuver", ["origin", "destination"]),
   production: makeAction("production", ["province"]),
-  rondel: makeAction("rondel", ["nation", "cost", "slot"])
+  rondel: makeAction("rondel", ["nation", "cost", "slot"]),
+  skipForceInvestor: makeAction("skipForceInvestor", ["player"])
 };

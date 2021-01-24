@@ -22,6 +22,7 @@ export default class Imperial {
     this.maneuvering = false;
     this.handlingConflict = false;
     this.soloMode = false;
+    this.passingThroughInvestor = false;
   }
 
   tick(action) {
@@ -65,6 +66,25 @@ export default class Imperial {
       }
       case "coexist": {
         this.coexist();
+        return;
+      }
+      case "forceInvestor": {
+        this.nations.get(this.currentNation).rondelPosition = "investor";
+        const investorAction = Action.rondel({
+          slot: "investor",
+          nation: this.currentNation,
+          cost: 0
+        });
+        this.investor(investorAction);
+        return;
+      }
+      case "skipForceInvestor": {
+        const reversedLog = this.log.slice().reverse();
+        const lastRondelAction = reversedLog.find((action) => {
+          return action.type === "rondel"
+        });
+        this.availableActions = new Set([lastRondelAction]);
+        this.tick(lastRondelAction);
         return;
       }
       case "buildFactory": {
@@ -365,21 +385,11 @@ export default class Imperial {
       }
       this.nations.get(nation).treasury--;
     });
-    const potentialPreInvestorSlots = [
-      "maneuver1",
-      "production1",
-      "factory",
-      "taxation",
-      "maneuver2"
-    ];
     this.importing = false;
-    if (
-      potentialPreInvestorSlots.includes(
-        this.nations.get(this.currentNation).previousRondelPosition
-      )
-    ) {
+
+    if (this.passingThroughInvestor) {
       this.middleOfInvestorTurn();
-      return;
+      this.passingThroughInvestor = false;
     } else {
       this.handleAdvancePlayer();
       this.availableActions = new Set(this.rondelActions(this.currentNation));
@@ -527,6 +537,14 @@ export default class Imperial {
   rondel(action) {
     this.currentNation = action.payload.nation;
     const currentNation = this.nations.get(this.currentNation);
+    if (this.passedThroughInvestor(currentNation.rondelPosition, action.payload.slot) && this.passingThroughInvestor === false) {
+      this.passingThroughInvestor = true;
+      // Allow Swiss Bank holders to interrupt
+      if (this.canAffordToPayInvestors(this.currentNation)) {
+        this.allowSwissBanksToForceInvestor();
+        if (this.availableActions.size > 0) return;
+      }
+    }
     currentNation.previousRondelPosition = currentNation.rondelPosition;
     currentNation.rondelPosition = action.payload.slot;
     this.players[this.currentPlayerName].cash -= action.payload.cost;
@@ -537,168 +555,29 @@ export default class Imperial {
         return;
       }
       case "import": {
-        const availableActions = new Set([Action.import({ placements: [] })]);
-        const homeProvinces = this.board.byNation.get(action.payload.nation);
-        for (const province of homeProvinces) {
-          availableActions.add(
-            Action.import({ placements: [{ province, type: "army" }] })
-          );
-          if (this.board.graph.get(province).factoryType === "shipyard") {
-            availableActions.add(
-              Action.import({ placements: [{ province, type: "fleet" }] })
-            );
-          }
-
-          for (const province2 of homeProvinces) {
-            availableActions.add(
-              Action.import({
-                placements: [
-                  { province, type: "army" },
-                  { province: province2, type: "army" }
-                ]
-              })
-            );
-            if (this.board.graph.get(province).factoryType === "shipyard") {
-              availableActions.add(
-                Action.import({
-                  placements: [
-                    { province, type: "fleet" },
-                    { province: province2, type: "army" }
-                  ]
-                })
-              );
-            }
-            if (this.board.graph.get(province2).factoryType === "shipyard") {
-              availableActions.add(
-                Action.import({
-                  placements: [
-                    { province, type: "army" },
-                    { province: province2, type: "fleet" }
-                  ]
-                })
-              );
-            }
-            if (
-              this.board.graph.get(province).factoryType === "shipyard" &&
-              this.board.graph.get(province2).factoryType === "shipyard"
-            ) {
-              availableActions.add(
-                Action.import(
-                  { placements: [{ province, type: "fleet" }] },
-                  { province: province2, type: "fleet" }
-                )
-              );
-            }
-
-            for (const province3 of homeProvinces) {
-              availableActions.add(
-                Action.import({
-                  placements: [
-                    { province, type: "army" },
-                    { province: province2, type: "army" },
-                    { province: province3, type: "army" }
-                  ]
-                })
-              );
-              if (this.board.graph.get(province).factoryType === "shipyard") {
-                availableActions.add(
-                  Action.import({
-                    placements: [
-                      { province, type: "fleet" },
-                      { province: province2, type: "army" },
-                      { province: province3, type: "army" }
-                    ]
-                  })
-                );
-              }
-              if (this.board.graph.get(province2).factoryType === "shipyard") {
-                availableActions.add(
-                  Action.import({
-                    placements: [
-                      { province, type: "army" },
-                      { province: province2, type: "fleet" },
-                      { province: province3, type: "army" }
-                    ]
-                  })
-                );
-              }
-              if (this.board.graph.get(province3).factoryType === "shipyard") {
-                availableActions.add(
-                  Action.import({
-                    placements: [
-                      { province, type: "army" },
-                      { province: province2, type: "army" },
-                      { province: province3, type: "fleet" }
-                    ]
-                  })
-                );
-              }
-              if (
-                this.board.graph.get(province).factoryType === "shipyard" &&
-                this.board.graph.get(province2).factoryType === "shipyard"
-              ) {
-                availableActions.add(
-                  Action.import({
-                    placements: [
-                      { province, type: "fleet" },
-                      { province: province2, type: "fleet" },
-                      { province: province3, type: "army" }
-                    ]
-                  })
-                );
-              }
-              if (
-                this.board.graph.get(province).factoryType === "shipyard" &&
-                this.board.graph.get(province3).factoryType === "shipyard"
-              ) {
-                availableActions.add(
-                  Action.import({
-                    placements: [
-                      { province, type: "fleet" },
-                      { province: province2, type: "army" },
-                      { province: province3, type: "fleet" }
-                    ]
-                  })
-                );
-              }
-              if (
-                this.board.graph.get(province2).factoryType === "shipyard" &&
-                this.board.graph.get(province3).factoryType === "shipyard"
-              ) {
-                availableActions.add(
-                  Action.import({
-                    placements: [
-                      { province, type: "army" },
-                      { province: province2, type: "fleet" },
-                      { province: province3, type: "fleet" }
-                    ]
-                  })
-                );
-              }
-              if (
-                this.board.graph.get(province).factoryType === "shipyard" &&
-                this.board.graph.get(province2).factoryType === "shipyard" &&
-                this.board.graph.get(province3).factoryType === "shipyard"
-              ) {
-                availableActions.add(
-                  Action.import({
-                    placements: [
-                      { province, type: "fleet" },
-                      { province: province2, type: "fleet" },
-                      { province: province3, type: "fleet" }
-                    ]
-                  })
-                );
-              }
-            }
-          }
-        }
-        this.availableActions = availableActions;
-        this.importing = true;
+        this.importRondel(action);
         return;
       }
       case "production1":
       case "production2": {
+        //if (action.payload.slot === "production1") {
+        //  const potentialPreInvestorSlots = [
+        //    "maneuver1",
+        //    "production1",
+        //    "factory",
+        //    "taxation"
+        //  ];
+        //  if (
+        //    potentialPreInvestorSlots.includes(
+        //      this.nations.get(this.currentNation).previousRondelPosition
+        //    )
+        //  ) {
+        //    if (this.canAffordToPayInvestors(this.currentNation)) {
+        //      this.allowSwissBanksToForceInvestor();
+        //      return;
+        //    }
+        //  }
+        //}
         const nation = action.payload.nation;
         Array.from(this.board.byNation.get(nation))
           .filter(province => this.provinces.get(province).factory !== null)
@@ -712,25 +591,12 @@ export default class Imperial {
               }
             }
           });
-        if (action.payload.slot === "production2") {
-          const potentialPreInvestorSlots = [
-            "maneuver1",
-            "production1",
-            "factory",
-            "taxation"
-          ];
-          if (
-            potentialPreInvestorSlots.includes(
-              this.nations.get(this.currentNation).previousRondelPosition
-            )
-          ) {
-            this.middleOfInvestorTurn();
-            return;
-          }
+        if (this.passingThroughInvestor) {
+          this.middleOfInvestorTurn();
+          return;
         }
         this.handleAdvancePlayer();
         this.availableActions = new Set(this.rondelActions(this.currentNation));
-
         return;
       }
       case "taxation": {
@@ -772,14 +638,14 @@ export default class Imperial {
         this.availableActions = new Set(
           this.rondelActions(this.nextNation(this.currentNation))
         );
-        const potentialPreInvestorSlots = ["maneuver1", "production1"];
-        if (
-          potentialPreInvestorSlots.includes(
-            this.nations.get(this.currentNation).previousRondelPosition
-          )
-        ) {
-          this.middleOfInvestorTurn();
-        }
+        //const potentialPreInvestorSlots = ["maneuver1", "production1"];
+        //if (
+        //  potentialPreInvestorSlots.includes(
+        //    this.nations.get(this.currentNation).previousRondelPosition
+        //  )
+        //) {
+        //  this.middleOfInvestorTurn();
+        //}
         this.handleAdvancePlayer();
         return;
       }
@@ -850,6 +716,168 @@ export default class Imperial {
     }
     this.investorCardActive = true;
     this.middleOfInvestorTurn();
+  }
+
+  importRondel(action) {
+    const availableActions = new Set([Action.import({ placements: [] })]);
+    const homeProvinces = this.board.byNation.get(action.payload.nation);
+    for (const province of homeProvinces) {
+      availableActions.add(
+        Action.import({ placements: [{ province, type: "army" }] })
+      );
+      if (this.board.graph.get(province).factoryType === "shipyard") {
+        availableActions.add(
+          Action.import({ placements: [{ province, type: "fleet" }] })
+        );
+      }
+
+      for (const province2 of homeProvinces) {
+        availableActions.add(
+          Action.import({
+            placements: [
+              { province, type: "army" },
+              { province: province2, type: "army" }
+            ]
+          })
+        );
+        if (this.board.graph.get(province).factoryType === "shipyard") {
+          availableActions.add(
+            Action.import({
+              placements: [
+                { province, type: "fleet" },
+                { province: province2, type: "army" }
+              ]
+            })
+          );
+        }
+        if (this.board.graph.get(province2).factoryType === "shipyard") {
+          availableActions.add(
+            Action.import({
+              placements: [
+                { province, type: "army" },
+                { province: province2, type: "fleet" }
+              ]
+            })
+          );
+        }
+        if (
+          this.board.graph.get(province).factoryType === "shipyard" &&
+          this.board.graph.get(province2).factoryType === "shipyard"
+        ) {
+          availableActions.add(
+            Action.import(
+              { placements: [{ province, type: "fleet" }] },
+              { province: province2, type: "fleet" }
+            )
+          );
+        }
+
+        for (const province3 of homeProvinces) {
+          availableActions.add(
+            Action.import({
+              placements: [
+                { province, type: "army" },
+                { province: province2, type: "army" },
+                { province: province3, type: "army" }
+              ]
+            })
+          );
+          if (this.board.graph.get(province).factoryType === "shipyard") {
+            availableActions.add(
+              Action.import({
+                placements: [
+                  { province, type: "fleet" },
+                  { province: province2, type: "army" },
+                  { province: province3, type: "army" }
+                ]
+              })
+            );
+          }
+          if (this.board.graph.get(province2).factoryType === "shipyard") {
+            availableActions.add(
+              Action.import({
+                placements: [
+                  { province, type: "army" },
+                  { province: province2, type: "fleet" },
+                  { province: province3, type: "army" }
+                ]
+              })
+            );
+          }
+          if (this.board.graph.get(province3).factoryType === "shipyard") {
+            availableActions.add(
+              Action.import({
+                placements: [
+                  { province, type: "army" },
+                  { province: province2, type: "army" },
+                  { province: province3, type: "fleet" }
+                ]
+              })
+            );
+          }
+          if (
+            this.board.graph.get(province).factoryType === "shipyard" &&
+            this.board.graph.get(province2).factoryType === "shipyard"
+          ) {
+            availableActions.add(
+              Action.import({
+                placements: [
+                  { province, type: "fleet" },
+                  { province: province2, type: "fleet" },
+                  { province: province3, type: "army" }
+                ]
+              })
+            );
+          }
+          if (
+            this.board.graph.get(province).factoryType === "shipyard" &&
+            this.board.graph.get(province3).factoryType === "shipyard"
+          ) {
+            availableActions.add(
+              Action.import({
+                placements: [
+                  { province, type: "fleet" },
+                  { province: province2, type: "army" },
+                  { province: province3, type: "fleet" }
+                ]
+              })
+            );
+          }
+          if (
+            this.board.graph.get(province2).factoryType === "shipyard" &&
+            this.board.graph.get(province3).factoryType === "shipyard"
+          ) {
+            availableActions.add(
+              Action.import({
+                placements: [
+                  { province, type: "army" },
+                  { province: province2, type: "fleet" },
+                  { province: province3, type: "fleet" }
+                ]
+              })
+            );
+          }
+          if (
+            this.board.graph.get(province).factoryType === "shipyard" &&
+            this.board.graph.get(province2).factoryType === "shipyard" &&
+            this.board.graph.get(province3).factoryType === "shipyard"
+          ) {
+            availableActions.add(
+              Action.import({
+                placements: [
+                  { province, type: "fleet" },
+                  { province: province2, type: "fleet" },
+                  { province: province3, type: "fleet" }
+                ]
+              })
+            );
+          }
+        }
+      }
+    }
+    this.availableActions = availableActions;
+    this.importing = true;
+    return;
   }
 
   collectUnitsToMove(action) {
@@ -1132,12 +1160,52 @@ export default class Imperial {
       if (action.type === "rondel") {
         return;
       } else {
-        if (action.payload.player === player) {
+        if (action.payload.player === player && action.type === "bondPurchase") {
           hasNotBoughtABond = false
         }
       }
     });
     return hasNotBoughtABond;
+  }
+
+  allowSwissBanksToForceInvestor() {
+    this.availableActions = new Set();
+    for (const player in this.players) {
+      if (this.nationsUnderControl(player).length === 0) {
+        this.availableActions.add(Action.forceInvestor({player}))
+        this.availableActions.add(Action.skipForceInvestor({player}))
+      }
+    };
+  }
+
+  canAffordToPayInvestors(nation) {
+    let totalOwed = 0;
+    for (const player of Object.keys(this.players)) {
+      this.playerBondsOfNation(player, nation).forEach(
+        bond => {
+          totalOwed += bond.number;
+        }
+      );
+    }
+    return totalOwed <= this.nations.get(nation).treasury;
+  }
+
+  passedThroughInvestor(from, to) {
+    const preInvestorSlots = [
+      "maneuver1",
+      "production1",
+      "factory",
+      "taxation",
+      "maneuver2"
+    ];
+    const postInvestorSlots = [
+      "import",
+      "production2",
+      "maneuver1",
+      "taxation",
+      "factory"
+    ]
+    return preInvestorSlots.includes(from) && postInvestorSlots.includes(to);
   }
 
   isEqual(action1, action2) {
