@@ -1104,7 +1104,7 @@ describe("imperial", () => {
 
         ["maneuver1", "production1", "factory", "taxation"].forEach(
           startingPosition => {
-            xdescribe("2. Investor is activated", () => {
+            describe("2. Investor is activated", () => {
               test("investor card holder gets 2m", () => {
                 const game = newGame();
                 // Make player2 the investor card holder
@@ -1129,7 +1129,7 @@ describe("imperial", () => {
                 expect(game.currentPlayerName).toEqual("player2");
               });
 
-              xtest("available bonds for sale outright", () => {
+              test("available bonds for sale outright", () => {
                 const game = newGame();
                 // Make player1 the investor card holder
                 game.investorCardHolder = "player1";
@@ -1183,7 +1183,7 @@ describe("imperial", () => {
                 );
               });
 
-              xtest("available bonds that can be traded up for", () => {
+              test("available bonds that can be traded up for", () => {
                 const game = newGame();
                 game.investorCardHolder = "player2";
                 game.nations.get(Nation.AH).rondelPosition = startingPosition;
@@ -1242,7 +1242,7 @@ describe("imperial", () => {
             });
 
             describe("3. Investing without a flag", () => {
-              xtest("a player who has a Swiss Bank may invest", () => {
+              test("a player who has a Swiss Bank may invest", () => {
                 const game = newGame();
                 // player2 has no bond and no investor card.
                 game.investorCardHolder = "player1";
@@ -1266,6 +1266,7 @@ describe("imperial", () => {
                     cost: 0
                   })
                 );
+                game.tick(Action.skipForceInvestor({player: "player2"}));
                 // InvestorCardHolder buys a bond first
                 game.tick(
                   Action.bondPurchase({
@@ -1425,7 +1426,7 @@ describe("imperial", () => {
                 });
               });
 
-              xtest("a player who has a Swiss Bank may choose to force the current nation to stay on the Investor slot, if the nation can pay out all the money it owes", () => {
+              test("a player who has a Swiss Bank may choose to force the current nation to stay on the Investor slot, if the nation can pay out all the money it owes", () => {
                 const game = newGame();
                 game.players["player1"].cash = 2;
                 game.investorCardHolder = "player1";
@@ -1555,7 +1556,7 @@ describe("imperial", () => {
                 );
               });
 
-              xtest("a player who has a Swiss Bank may not choose to force the current nation to stay on the Investor slot, if the nation cannot pay out all the money it owes", () => {
+              test("a player who has a Swiss Bank may not choose to force the current nation to stay on the Investor slot, if the nation cannot pay out all the money it owes", () => {
                 const game = newGame();
                 game.players["player1"].cash = 2;
                 game.investorCardHolder = "player1";
