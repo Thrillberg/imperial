@@ -608,6 +608,7 @@ export default class Imperial {
         }
 
         if (this.passingThroughInvestor) {
+          console.log("passing through");
           this.middleOfInvestorTurn();
           this.passingThroughInvestor = false;
         } else {
@@ -1163,13 +1164,12 @@ export default class Imperial {
       "maneuver1",
       "production1",
       "factory",
-      "taxation",
-      "maneuver2"
+      "taxation"
     ];
     const postInvestorSlots = [
       "import",
       "production2",
-      "maneuver1",
+      "maneuver2",
       "taxation",
       "factory"
     ]
