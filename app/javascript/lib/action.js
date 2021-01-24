@@ -61,6 +61,7 @@ export default {
     "challenger",
     "targetType"
   ]),
+  forceInvestor: makeAction("forceInvestor", []),
   import: makeAction("import", ["placements"]), // placement : { province: string, type: "army"|"fleet" }
   maneuver: makeAction("maneuver", ["origin", "destination"]),
   production: makeAction("production", ["province"]),

@@ -1290,9 +1290,9 @@ describe("imperial", () => {
                 game.nations.get(Nation.AH).controller = "player1";
                 game.nations.get(Nation.IT).controller = "player1";
                 game.nations.get(Nation.FR).controller = "player1";
-                game.nations.get(Nation.GB).controller = "player1";
-                game.nations.get(Nation.GE).controller = "player1";
-                game.nations.get(Nation.RU).controller = "player1";
+                game.nations.get(Nation.GB).controller = "player3";
+                game.nations.get(Nation.GE).controller = "player3";
+                game.nations.get(Nation.RU).controller = "player3";
                 game.players["player2"].bonds = new Set();
                 // Set AH's rondel position to be something *before* investor
                 game.nations.get(Nation.AH).rondelPosition = startingPosition;
@@ -1355,7 +1355,7 @@ describe("imperial", () => {
                 expect(game.players["player2"].cash).toEqual(0);
               });
 
-              test.only("multiple players with a Swiss Bank may invest in clockwise order, starting with the current bearer of the investor card", () => {
+              test("multiple players with a Swiss Bank may invest in clockwise order, starting with the current bearer of the investor card", () => {
                 const game = newGame();
                 game.investorCardHolder = "player3";
                 // Make player1 control all countries
@@ -1422,7 +1422,43 @@ describe("imperial", () => {
                 });
               });
 
-              test.todo("a player who has a Swiss Bank may choose to force the current nation to stay on the Investor slot, if the nation can pay out all the money it owes");
+              xtest("a player who has a Swiss Bank may choose to force the current nation to stay on the Investor slot, if the nation can pay out all the money it owes", () => {
+                const game = newGame();
+                game.players["player1"].cash = 4;
+                game.investorCardHolder = "player1";
+                // Make player1 control all countries
+                game.nations.get(Nation.AH).controller = "player1";
+                game.nations.get(Nation.IT).controller = "player1";
+                game.nations.get(Nation.FR).controller = "player1";
+                game.nations.get(Nation.GB).controller = "player1";
+                game.nations.get(Nation.GE).controller = "player1";
+                game.nations.get(Nation.RU).controller = "player1";
+                game.players["player2"].bonds = new Set();
+                // Set AH's rondel position to be something *before* investor
+                game.nations.get(Nation.AH).rondelPosition = startingPosition;
+
+                // The investor slot lies between 'maneuver1' and 'maneuver2'
+                game.tick(
+                  Action.rondel({
+                    slot: "production2",
+                    nation: Nation.AH,
+                    cost: 0
+                  })
+                );
+
+                console.log(game.availableActions);
+                expect(game.availableActions).toEqual(new Set([
+
+                ]))
+
+                // InvestorCardHolder buys a bond first
+                game.tick(
+                  Action.forceInvestor({
+                    player: "player2"
+                  })
+                );
+
+              });
               test.todo("a player who has a Swiss Bank may not choose to force the current nation to stay on the Investor slot, if the nation cannot pay out all the money it owes");
             });
           }

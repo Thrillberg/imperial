@@ -167,7 +167,7 @@ export default class Imperial {
 
     let swissBanks = [];
     for (const player in this.players) {
-      if (this.nationsUnderControl(player).length === 0) {
+      if (this.nationsUnderControl(player).length === 0 && this.hasNotBoughtABondThisTurn(player)) {
         swissBanks.push(player);
       }
     }
@@ -175,7 +175,6 @@ export default class Imperial {
       this.advanceInvestorCard();
       this.availableActions = new Set(this.rondelActions(this.currentNation));
     } else {
-      console.log(swissBanks)
       this.endOfInvestorTurn(swissBanks[0]);
     }
   }
@@ -1124,6 +1123,21 @@ export default class Imperial {
       }
     }
     return nations;
+  }
+  
+  hasNotBoughtABondThisTurn(player) {
+    let hasNotBoughtABond = true;
+    const reversedLog = this.log.slice().reverse();
+    reversedLog.forEach((action) => {
+      if (action.type === "rondel") {
+        return;
+      } else {
+        if (action.payload.player === player) {
+          hasNotBoughtABond = false
+        }
+      }
+    });
+    return hasNotBoughtABond;
   }
 
   isEqual(action1, action2) {
