@@ -39,7 +39,7 @@
         <ul v-for="game in games" v-bind:key="game.id">
           <li class="py-3">
             <div>
-              <Star v-if="game.currentPlayer === username" />
+              <Star v-if="game.currentPlayer === profile.username" />
               <router-link
                 :to="{ path: '/game/' + game.id }"
                 class="text-lg font-bold"
