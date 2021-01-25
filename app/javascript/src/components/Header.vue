@@ -1,12 +1,8 @@
 <template>
   <div class="h-16 bg-green-500">
     <div class="float-right p-2">
-      <div v-if="alreadyRegistered()">
-        Currently registered as <strong>{{ username }}</strong
-        >.
-      </div>
-      <div v-else>
-        <form method="post" action="/user">
+      <div v-if="!profile.username">
+        <form method="post" action="/users">
           <input
             class="mx-auto border-black border-solid border p-3 rounded"
             v-model="tempName"
@@ -20,10 +16,16 @@
           />
           <input
             type="submit"
-            value="Submit"
+            value="Submit Username"
             class="rounded p-4 ml-4 bg-green-800 text-white cursor-pointer"
           />
         </form>
+      </div>
+      <div v-else-if="!profile.email">
+        Currently identified as <strong>{{ profile.username }}</strong>.
+      </div>
+      <div v-else>
+        Currently registered as <strong>{{ profile.username }}</strong> ({{ profile.email }}).
       </div>
     </div>
   </div>
@@ -34,23 +36,11 @@ import { apiClient } from "../router/index.js";
 
 export default {
   name: "Header",
-  props: ["username", "users"],
+  props: ["profile"],
   data: () => {
     return {
       tempName: ""
     };
   },
-  methods: {
-    alreadyRegistered: function() {
-      if (this.users.length > 0) {
-        const user = this.users.find(
-          user => user.id === this.$cookies.get("user_id")
-        );
-        return user.name !== "anonymous";
-      } else {
-        return false;
-      }
-    },
-  }
 };
 </script>

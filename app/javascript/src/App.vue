@@ -1,7 +1,7 @@
 <template>
   <div id="app" class="font-serif">
-    <Header @registered="onRegister" :username="username" :users="users" />
-    <router-view :username="username" :users="users" :games="games" />
+    <Header :profile="profile" />
+    <router-view :profile="profile" :users="users" :games="games" v-on:registered="register" />
   </div>
 </template>
 
@@ -17,8 +17,8 @@ import getGameLog from "./getGameLog.js";
 export default {
   name: "App",
   components: { Header },
-  data: () => {
-    return { username: "", users: [], games: new Set() };
+  data: function () {
+    return { profile: {}, users: [], games: new Set() };
   },
   beforeDestroy() {
     apiClient.clearHandlers();
@@ -27,10 +27,6 @@ export default {
   created() {
     apiClient.onUpdateUsers(({ users }) => {
       this.users = users;
-      const user = this.users.find(
-        user => this.$cookies.get("user_id") === user.id
-      );
-      this.username = user.name;
     });
     apiClient.onUpdateGames(({ games }) => {
       this.games = games.map(game => {
@@ -46,11 +42,16 @@ export default {
         };
       });
     });
+    // Fetch user profile
+    fetch(`/users/${this.$cookies.get("user_id")}`, { method: "GET" })
+      .then(response => response.json())
+      .then(({ name, email }) => {
+        this.profile = { username: name, email }
+      })
   },
   methods: {
-    onRegister(data) {
-      this.users.find(user => user.id === data.id).name = data.name;
-      this.username = data.name;
+    register: function ({username, email}) {
+      this.profile = { username, email };
     }
   }
 };

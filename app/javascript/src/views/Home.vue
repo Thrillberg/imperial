@@ -2,12 +2,39 @@
   <div class="container mx-auto">
     <div class="flex justify-between">
       <div class="mt-4">
-        <div v-if="registered" class="mt-1 mb-6">
-          <span
-            v-on:click="openGame()"
-            class="rounded p-2 bg-green-800 text-white cursor-pointer"
-            >Open New Game</span
-          >
+        <div v-if="!profile.username">
+          Please submit a username above!
+        </div>
+        <div v-else-if="!profile.email">
+          <div v-for="(error, index) in errors" v-bind:key="index">
+            {{ error }}
+          </div>
+          <form class="p-4 bg-green-500 rounded" @submit="submit">
+            <input
+              type="text"
+              placeholder="email"
+              v-model="email"
+              class="rounded p-2"
+            />
+            <input
+              type="password"
+              placeholder="password"
+              v-model="password"
+              class="rounded p-2"
+            />
+            <input
+              type="submit"
+              value="Register"
+              class="rounded p-2 bg-green-800 text-white"
+            />
+          </form>
+        </div>
+        <div
+          v-if="profile.username"
+          v-on:click="openGame()"
+          class="rounded p-2 mt-2 bg-green-800 text-white cursor-pointer inline-block"
+        >
+          Open New Game
         </div>
         <ul v-for="game in games" v-bind:key="game.id">
           <li class="py-3">
@@ -47,14 +74,6 @@
           </li>
         </ul>
       </div>
-      <div v-if="registered" class="mt-4 border border-gray-500 rounded p-4">
-        <div class="underline">Registered Users:</div>
-        <ul v-for="user in users" v-bind:key="user.id">
-          <li>
-            {{ user.name }}
-          </li>
-        </ul>
-      </div>
     </div>
   </div>
 </template>
@@ -71,34 +90,23 @@ export default {
   components: {
     Star
   },
-  data: () => {
+  props: ["profile", "users", "games"],
+  data: function () {
     return {
-      activeGames: new Set(),
-      tempName: ""
-    };
+      email: "",
+      errors: [],
+      password: ""
+    }
   },
-  props: ["username", "users", "games"],
   beforeDestroy() {
     apiClient.clearHandlers();
   },
   mounted() {
     apiClient.onUpdateGameLog(() => {});
   },
-  computed: {
-    registered: function() {
-      if (this.users.length > 0) {
-        const user = this.users.find(
-          user => user.id === this.$cookies.get("user_id")
-        );
-        return user.name !== "anonymous";
-      } else {
-        return false;
-      }
-    }
-  },
   methods: {
     openGame: function() {
-      apiClient.openGame(this.username);
+      apiClient.openGame(this.profile.username);
     },
     gameStarted: function(gameId) {
       const log = this.games.find(game => game.id === gameId).log;
@@ -110,15 +118,15 @@ export default {
     },
     joinable: function(gameId) {
       const game = this.games.find(game => game.id === gameId);
-      const inGame = Object.values(game.players).includes(this.username);
-      return !inGame && this.registered && !this.gameStarted(gameId);
+      const inGame = Object.values(game.players).includes(this.profile.username);
+      return !inGame && this.profile.username && !this.gameStarted(gameId);
     },
     isHost: function(gameId) {
       const game = this.games.find(game => game.id === gameId);
-      return game.host === this.username;
+      return game.host === this.profile.username;
     },
     joinGame: function(gameId) {
-      apiClient.joinGame(this.$cookies.get("user_id"), gameId, this.username);
+      apiClient.joinGame(this.$cookies.get("user_id"), gameId, this.profile.username);
     },
     startGame: function(gameId) {
       const game = this.games.find(game => game.id === gameId);
@@ -192,6 +200,26 @@ export default {
             { id: players[5], nation: Nation.RU }
           ];
       }
+    },
+    submit: function(e) {
+      fetch("/accounts", {
+        method: "POST",
+        headers: {
+          "X-CSRF-Token": this.$cookies.get("CSRF-TOKEN"),
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ email: this.email, password: this.password })
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.email) {
+            this.$emit("registered", data);
+            this.errors = [];
+          } else {
+            this.errors = data;
+          }
+        })
+      e.preventDefault();
     }
   }
 };
