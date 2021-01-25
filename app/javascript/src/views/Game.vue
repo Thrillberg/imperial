@@ -46,13 +46,13 @@
                 :nation="game.currentNation.value"
                 class="mx-auto"
                 :class="
-                  username === controllingPlayerName ? 'current_nation' : ''
+                  profile.username === controllingPlayerName ? 'current_nation' : ''
                 "
               />
             </div>
             <Rondel
               v-bind:game="game"
-              v-bind:name="username"
+              v-bind:name="profile.username"
               v-on:tick-with-action="tickWithAction"
             ></Rondel>
             <div class="text-center text-lg mt-4">
@@ -63,11 +63,11 @@
                 v-for="[nation, data] of game.nations"
                 :height="(40).toString()"
                 :nation="nation.value"
-                :filter="data.controller !== username ? 'grayscale' : ''"
+                :filter="data.controller !== profile.username ? 'grayscale' : ''"
               />
             </div>
             <div
-              v-if="game.importing && (username === controllingPlayerName || game.soloMode)"
+              v-if="game.importing && (profile.username === controllingPlayerName || game.soloMode)"
               class="text-center text-lg"
             >
               <div>
@@ -82,7 +82,7 @@
               </div>
             </div>
             <div
-              v-if="game.maneuvering && (username === controllingPlayerName || game.soloMode)"
+              v-if="game.maneuvering && (profile.username === controllingPlayerName || game.soloMode)"
               class="text-center text-lg"
             >
               <div
@@ -93,7 +93,7 @@
               </div>
             </div>
             <div
-              v-if="game.handlingConflict && (username === controllingPlayerName || game.soloMode)"
+              v-if="game.handlingConflict && (profile.username === controllingPlayerName || game.soloMode)"
               class="text-center text-lg"
             >
               <div
@@ -118,7 +118,7 @@
           </div>
         </div>
       </div>
-      <div class="buttons" v-if="purchasingBond && (username === controllingPlayerName || game.soloMode)">
+      <div class="buttons" v-if="purchasingBond && (profile.username === controllingPlayerName || game.soloMode)">
         <ActionComponent
           v-for="action in game.availableActions"
           v-bind:key="JSON.stringify(action)"
@@ -169,7 +169,7 @@ export default {
     GameDetails,
     Rondel
   },
-  props: ["username", "users", "games"],
+  props: ["profile", "users", "games"],
   data: () => {
     return {
       controllingPlayerName: "",
@@ -192,7 +192,7 @@ export default {
         this.game = Imperial.fromLog(gameLog);
         if (this.game.players) {
           this.gameStarted = true;
-          this.currentPlayer = this.game.players[this.username] || {};
+          this.currentPlayer = this.game.players[this.profile.username] || {};
           this.controllingPlayerName = this.game.currentPlayerName;
         }
       }
@@ -223,7 +223,7 @@ export default {
       // This function returns all provinces that a unit can move
       // or be imported to.
       let provinces = new Set();
-      if (this.game.currentPlayerName === this.username || this.game.soloMode) {
+      if (this.game.currentPlayerName === this.profile.username || this.game.soloMode) {
         for (const action of this.game.availableActions) {
           if (action.type === "maneuver" && this.game.maneuvering) {
             if (this.maneuverOrigin) {
@@ -246,7 +246,7 @@ export default {
       return Array.from(provinces);
     },
     selectProvince(province) {
-      if (this.game.currentPlayerName === this.username || this.game.soloMode) {
+      if (this.game.currentPlayerName === this.profile.username || this.game.soloMode) {
         // If the game is in a maneuver and an origin is specified,
         // then the next specified province is the destination
         if (this.game.maneuvering && this.maneuverOrigin) {
