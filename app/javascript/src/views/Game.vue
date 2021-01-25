@@ -142,6 +142,11 @@
         </div>
       </div>
     </div>
+    <GameLogEntry
+      v-for="(action, index) in reversedGameLog"
+      :action="action"
+      :key="index"
+    />
   </div>
 </template>
 
@@ -155,6 +160,7 @@ import ActionComponent from "../components/ActionComponent.vue";
 import Board from "../components/board/Board.vue";
 import Flag from "../components/flags/Flag.vue";
 import GameDetails from "../components/GameDetails.vue";
+import GameLogEntry from "../components/GameLogEntry.vue";
 import Rondel from "../components/Rondel.vue";
 
 import getGameLog from "../getGameLog.js";
@@ -167,6 +173,7 @@ export default {
     Board,
     Flag,
     GameDetails,
+    GameLogEntry,
     Rondel
   },
   props: ["profile", "users", "games"],
@@ -200,6 +207,13 @@ export default {
     apiClient.getGameLog(this.$route.params.id);
   },
   computed: {
+    reversedGameLog: function () {
+      if (this.game.log) {
+        return this.game.log.slice().reverse();
+      } else {
+        return [];
+      }
+    },
     purchasingBond: function () {
       const inInvestorTurn = Array.from(this.game.availableActions).every((action) => {
         return action.type === "bondPurchase";
