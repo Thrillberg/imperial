@@ -147,17 +147,48 @@
       :action="action"
       :key="index"
     />
+    <div>
+      <div><b>Admin Area</b></div>
+      <div>Please don't cheat</div>
+      <div v-for="player of game.players" :key="player.name">
+        <div><b>{{ player.name }}</b></div>
+        <div class="flex">
+          <div v-for="[nation] of game.nations" :key="nation.value">
+            <Bond
+              v-for="(bond, index) of player.bonds"
+              :bond="bond"
+              :nation="nation.value"
+              :key="index"
+              :click_handler="(number, nation) => removeBond(number, nation, player.name)"
+            />
+          </div>
+        </div>
+        <div>Give bond to {{ player.name }}</div>
+        <div class="flex">
+          <div v-for="[nation] of game.nations" :key="nation.value">
+            <Bond
+              v-for="(bond, index) of game.availableBonds"
+              :bond="bond"
+              :nation="nation.value"
+              :key="index"
+              :click_handler="(number, nation) => grantBond(number, nation, player.name)"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 import Action from "../../lib/action.js";
 import Imperial from "../../lib/imperial.js";
-import { Nation } from "../../lib/constants.js";
+import { Bond as BondConstant, Nation } from "../../lib/constants.js";
 import { apiClient } from "../router/index.js";
 
 import ActionComponent from "../components/ActionComponent.vue";
 import Board from "../components/board/Board.vue";
+import Bond from "../components/Bond.vue";
 import Flag from "../components/flags/Flag.vue";
 import GameDetails from "../components/GameDetails.vue";
 import GameLogEntry from "../components/GameLogEntry.vue";
@@ -171,6 +202,7 @@ export default {
   components: {
     ActionComponent,
     Board,
+    Bond,
     Flag,
     GameDetails,
     GameLogEntry,
@@ -336,6 +368,28 @@ export default {
         }
       }
       this.tickWithAction(fightAction);
+    },
+    removeBond(number, nation, player) {
+      const bond = BondConstant(nation, number)
+      this.game.players[player].bonds.delete(bond)
+      const bonds = this.game.players[player].bonds;
+      const players = Object.assign({}, this.game.players);
+      players[player].bonds = bonds
+      this.$set(this.game, "players", players);
+      this.game.availableBonds.add(bond);
+      const availableBonds = new Set([...this.game.availableBonds]);
+      this.$set(this.game, "availableBonds", availableBonds);
+    },
+    grantBond(number, nation, player) {
+      const bond = BondConstant(nation, number)
+      this.game.players[player].bonds.add(bond)
+      const bonds = this.game.players[player].bonds;
+      const players = Object.assign({}, this.game.players);
+      players[player].bonds = bonds
+      this.$set(this.game, "players", players);
+      this.game.availableBonds.delete(bond);
+      const availableBonds = new Set([...this.game.availableBonds]);
+      this.$set(this.game, "availableBonds", availableBonds);
     }
   }
 };
