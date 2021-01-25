@@ -30,7 +30,7 @@
           </form>
         </div>
         <div
-          v-else
+          v-if="profile.username"
           v-on:click="openGame()"
           class="rounded p-2 mt-2 bg-green-800 text-white cursor-pointer inline-block"
         >
