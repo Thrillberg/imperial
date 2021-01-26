@@ -15,6 +15,7 @@
       </div>
     </div>
     <div v-if="player.name === game.investorCardHolder">Investor Card</div>
+    <div v-if="game.swissBanks.includes(player.name)">Swiss Bank</div>
   </div>
 </template>
 

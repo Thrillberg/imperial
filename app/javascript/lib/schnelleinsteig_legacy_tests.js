@@ -1,3 +1,7 @@
+// This file is not run anymore because it is out of date and not worth
+// the effort to update.
+// It was valuable in the initial development process and we wish it well
+// in all its future endeavours!
 import { Nation, Bond } from "./constants";
 import Action from "./action";
 import Imperial from "./imperial";

@@ -64,6 +64,7 @@
                 :height="(40).toString()"
                 :nation="nation.value"
                 :filter="data.controller !== profile.username ? 'grayscale' : ''"
+                :key="nation.value"
               />
             </div>
             <div
@@ -118,7 +119,7 @@
           </div>
         </div>
       </div>
-      <div class="buttons" v-if="purchasingBond && (profile.username === controllingPlayerName || game.soloMode)">
+      <div class="buttons" v-if="purchasingBond || canForceInvestor">
         <ActionComponent
           v-for="action in game.availableActions"
           v-bind:key="JSON.stringify(action)"
@@ -215,10 +216,15 @@ export default {
       }
     },
     purchasingBond: function () {
-      const inInvestorTurn = Array.from(this.game.availableActions).every((action) => {
-        return action.type === "bondPurchase";
-      });
-      return inInvestorTurn;
+      return Array.from(this.game.availableActions).every((action) => action.type === "bondPurchase") && (this.profile.username === this.controllingPlayerName || this.game.soloMode);
+    },
+    canForceInvestor: function () {
+      if (Array.from(this.game.availableActions).every((action) => action.type === "forceInvestor" || action.type === "skipForceInvestor")) {
+        this.controllingPlayerName = "";
+        if (this.game.swissBanks.includes(this.profile.username) || this.game.soloMode) {
+          return true;
+        }
+      }
     }
   },
   methods: {
@@ -304,6 +310,10 @@ export default {
         return `Coexist`;
       } else if (action.type === "fight") {
         return `Fight`;
+      } else if (action.type === "forceInvestor") {
+        return "Force investor";
+      } else if (action.type === "skipForceInvestor") {
+        return "Do not force investor";
       }
     },
     runImport: function() {

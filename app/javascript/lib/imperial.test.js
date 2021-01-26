@@ -199,7 +199,31 @@ describe("imperial", () => {
         expect(game.winner).toEqual("player2");
       });
 
-      test.todo("it can handle a tie");
+      test("it can handle a tie", () => {
+        const game = newGame();
+        game.nations.get(Nation.AH).powerPoints = 25;
+        game.nations.get(Nation.IT).powerPoints = 15;
+        game.players["player2"].bonds = new Set([
+          Bond(Nation.AH, 5),
+          Bond(Nation.IT, 2)
+        ]);
+        game.players["player1"].bonds = new Set([
+          Bond(Nation.AH, 2),
+          Bond(Nation.IT, 5)
+        ]);
+        game.players["player2"].cash = 4;
+        game.players["player1"].cash = 10;
+
+        game.tick(Action.endGame());
+
+        // player2 has AH bond 5 * 5 (powerPoints) + IT bond 2 * 3 (powerPoints) + 4 cash
+        // player2 has 35 points
+        // player1 has AH bond 2 * 5 (powerPoints) + IT bond 5 * 3 (powerPoints) + 10 cash
+        // player1 has 35 points
+        // Players points are equal but player1 controls more of the "winning" 
+        // country, so player2 wins the game
+        expect(game.winner).toEqual("player2");
+      });
     });
 
     describe("buildFactory", () => {
@@ -856,172 +880,6 @@ describe("imperial", () => {
             expect(game.availableActions).toEqual(expected);
           });
         });
-
-        describe("investor slot is skipped", () => {
-          const newGame = () => {
-            const board = new GameBoard({
-              nodes: [{ name: "a", nation: Nation.AH }],
-              edges: []
-            });
-
-            const game = new Imperial(board);
-            game.tick(
-              Action.initialize({
-                players: [
-                  { id: "player1", nation: Nation.AH },
-                  { id: "player2", nation: Nation.IT }
-                ],
-                soloMode: false
-              })
-            );
-            return game;
-          };
-
-          ["maneuver1", "production1", "factory", "taxation"].forEach(
-            startingPosition => {
-              describe("2. Investor is activated", () => {
-                test("investor card holder gets 2m", () => {
-                  const game = newGame();
-                  // Make player2 the investor card holder
-                  game.investorCardHolder = "player2";
-                  // Empty out their bonds so that they don't impact player2's cash
-                  game.players["player2"].bonds = new Set();
-                  // Set AH's rondel position to be something *before* investor
-                  game.nations.get(Nation.AH).rondelPosition = startingPosition;
-
-                  expect(game.players["player2"].cash).toEqual(2);
-
-                  // The investor slot lies between 'maneuver1' and 'maneuver2'
-                  game.tick(
-                    Action.rondel({
-                      slot: "production2",
-                      nation: Nation.AH,
-                      cost: 0
-                    })
-                  );
-
-                  expect(game.players["player2"].cash).toEqual(4);
-                  expect(game.currentPlayerName).toEqual("player2");
-                });
-
-                test("available bonds for sale outright", () => {
-                  const game = newGame();
-                  // Make player1 the investor card holder
-                  game.investorCardHolder = "player1";
-                  game.nations.get(Nation.AH).rondelPosition = startingPosition;
-                  // Clear out player1's bonds so they can't trade any in
-                  game.players["player1"].bonds = new Set();
-
-                  expect(game.players["player1"].cash).toEqual(2);
-
-                  game.tick(
-                    Action.rondel({
-                      slot: "production2",
-                      nation: Nation.AH,
-                      cost: 0
-                    })
-                  );
-
-                  expect(game.availableActions).toEqual(
-                    new Set([
-                      Action.bondPurchase({
-                        nation: Nation.AH,
-                        player: "player1",
-                        cost: 4
-                      }),
-                      Action.bondPurchase({
-                        nation: Nation.IT,
-                        player: "player1",
-                        cost: 4
-                      }),
-                      Action.bondPurchase({
-                        nation: Nation.FR,
-                        player: "player1",
-                        cost: 4
-                      }),
-                      Action.bondPurchase({
-                        nation: Nation.GB,
-                        player: "player1",
-                        cost: 4
-                      }),
-                      Action.bondPurchase({
-                        nation: Nation.GE,
-                        player: "player1",
-                        cost: 4
-                      }),
-                      Action.bondPurchase({
-                        nation: Nation.RU,
-                        player: "player1",
-                        cost: 4
-                      })
-                    ])
-                  );
-                });
-
-                test("available bonds that can be traded up for", () => {
-                  const game = newGame();
-                  game.investorCardHolder = "player2";
-                  game.nations.get(Nation.AH).rondelPosition = startingPosition;
-
-                  // Give the AH, 2 bond to player2
-                  game.availableBonds.delete(Bond(Nation.AH, 2));
-                  game.players["player2"].bonds = new Set([Bond(Nation.AH, 2)]);
-
-                  expect(game.players["player2"].cash).toEqual(2);
-
-                  game.tick(
-                    Action.rondel({
-                      slot: "production2",
-                      nation: Nation.AH,
-                      cost: 0
-                    })
-                  );
-
-                  // player2 can use their own 2m plus the trade-in value of 4m
-                  // from their AH, 2 bond to buy the AH, 3 bond
-                  expect(game.availableActions).toEqual(
-                    new Set([
-                      Action.bondPurchase({
-                        nation: Nation.AH,
-                        player: "player2",
-                        cost: 6
-                      }),
-                      Action.bondPurchase({
-                        nation: Nation.IT,
-                        player: "player2",
-                        cost: 4
-                      }),
-                      Action.bondPurchase({
-                        nation: Nation.FR,
-                        player: "player2",
-                        cost: 4
-                      }),
-                      Action.bondPurchase({
-                        nation: Nation.GB,
-                        player: "player2",
-                        cost: 4
-                      }),
-                      Action.bondPurchase({
-                        nation: Nation.GE,
-                        player: "player2",
-                        cost: 4
-                      }),
-                      Action.bondPurchase({
-                        nation: Nation.RU,
-                        player: "player2",
-                        cost: 4
-                      })
-                    ])
-                  );
-                });
-              });
-
-              describe("3. Investing without a flag", () => {
-                test.todo("test me plz");
-              });
-            }
-          );
-        });
       });
 
       describe("investor", () => {
@@ -1221,56 +1079,54 @@ describe("imperial", () => {
         describe("3. Investing without a flag", () => {
           test.todo("test me plz");
         });
+      });
 
-        describe("investor slot is skipped", () => {
-          const newGame = () => {
-            const board = new GameBoard({
-              nodes: [
-                { name: "a", nation: Nation.AH },
-                { name: "b", nation: Nation.AH }
+      describe("investor slot is skipped", () => {
+        const newGame = () => {
+          const board = new GameBoard({
+            nodes: [{ name: "a", nation: Nation.AH }],
+            edges: []
+          });
+
+          const game = new Imperial(board);
+          game.tick(
+            Action.initialize({
+              players: [
+                { id: "player1", nation: Nation.AH },
+                { id: "player2", nation: Nation.IT },
+                { id: "player3", nation: Nation.FR }
               ],
-              edges: []
-            });
+              soloMode: false
+            })
+          );
+          return game;
+        };
 
-            const game = new Imperial(board);
-            game.tick(
-              Action.initialize({
-                players: [
-                  { id: "player1", nation: Nation.AH },
-                  { id: "player2", nation: Nation.IT }
-                ],
-                soloMode: false
-              })
-            );
-            return game;
-          };
-
-          [
-            "maneuver1",
-            "production1",
-            "factory",
-            "taxation",
-            "maneuver2"
-          ].forEach(startingPosition => {
+        ["maneuver1", "production1", "factory", "taxation"].forEach(
+          startingPosition => {
             describe("2. Investor is activated", () => {
               test("investor card holder gets 2m", () => {
                 const game = newGame();
-                // Make player1 the investor card holder
-                game.investorCardHolder = "player1";
-                // Empty out their bonds so that they don't impact player1's cash
-                game.players["player1"].bonds = new Set();
+                // Make player2 the investor card holder
+                game.investorCardHolder = "player2";
+                // Empty out their bonds so that they don't impact player2's cash
+                game.players["player2"].bonds = new Set();
                 // Set AH's rondel position to be something *before* investor
                 game.nations.get(Nation.AH).rondelPosition = startingPosition;
 
-                expect(game.players["player1"].cash).toEqual(2);
+                expect(game.players["player2"].cash).toEqual(2);
 
-                // The investor slot lies between 'maneuver1' and 'import'
+                // The investor slot lies between 'maneuver1' and 'maneuver2'
                 game.tick(
-                  Action.rondel({ slot: "import", nation: Nation.AH, cost: 0 })
+                  Action.rondel({
+                    slot: "production2",
+                    nation: Nation.AH,
+                    cost: 0
+                  })
                 );
-                game.tick(Action.import({ placements: [] }));
 
-                expect(game.players["player1"].cash).toEqual(4);
+                expect(game.players["player2"].cash).toEqual(4);
+                expect(game.currentPlayerName).toEqual("player2");
               });
 
               test("available bonds for sale outright", () => {
@@ -1284,9 +1140,12 @@ describe("imperial", () => {
                 expect(game.players["player1"].cash).toEqual(2);
 
                 game.tick(
-                  Action.rondel({ slot: "import", nation: Nation.AH, cost: 0 })
+                  Action.rondel({
+                    slot: "production2",
+                    nation: Nation.AH,
+                    cost: 0
+                  })
                 );
-                game.tick(Action.import({ placements: [] }));
 
                 expect(game.availableActions).toEqual(
                   new Set([
@@ -1336,9 +1195,12 @@ describe("imperial", () => {
                 expect(game.players["player2"].cash).toEqual(2);
 
                 game.tick(
-                  Action.rondel({ slot: "import", nation: Nation.AH, cost: 0 })
+                  Action.rondel({
+                    slot: "production2",
+                    nation: Nation.AH,
+                    cost: 0
+                  })
                 );
-                game.tick(Action.import({ placements: [] }));
 
                 // player2 can use their own 2m plus the trade-in value of 4m
                 // from their AH, 2 bond to buy the AH, 3 bond
@@ -1380,10 +1242,415 @@ describe("imperial", () => {
             });
 
             describe("3. Investing without a flag", () => {
-              test.todo("test me plz");
+              test("a player who has a Swiss Bank may invest", () => {
+                const game = newGame();
+                // player2 has no bond and no investor card.
+                game.investorCardHolder = "player1";
+                game.players["player1"].cash = 4;
+                // Make player1 control all countries
+                game.nations.get(Nation.AH).controller = "player1";
+                game.nations.get(Nation.IT).controller = "player1";
+                game.nations.get(Nation.FR).controller = "player1";
+                game.nations.get(Nation.GB).controller = "player1";
+                game.nations.get(Nation.GE).controller = "player1";
+                game.nations.get(Nation.RU).controller = "player1";
+                game.players["player2"].bonds = new Set();
+                // Set AH's rondel position to be something *before* investor
+                game.nations.get(Nation.AH).rondelPosition = startingPosition;
+
+                // The investor slot lies between 'maneuver1' and 'maneuver2'
+                game.tick(
+                  Action.rondel({
+                    slot: "production2",
+                    nation: Nation.AH,
+                    cost: 0
+                  })
+                );
+                game.tick(Action.skipForceInvestor({player: "player2"}));
+                // InvestorCardHolder buys a bond first
+                game.tick(
+                  Action.bondPurchase({
+                    nation: Nation.AH,
+                    player: "player1",
+                    cost: 4
+                  })
+                );
+
+                game.availableActions.forEach((action) => {
+                  expect(action.type).toEqual("bondPurchase");
+                  expect(action.payload.player).toEqual("player2");
+                });
+              });
+
+              test("a player who has a Swiss Bank and the investor card may not invest twice", () => {
+                const game = newGame();
+                // player2 the investor card.
+                game.investorCardHolder = "player2";
+                game.players["player1"].cash = 4;
+                // Make player1 control all countries
+                game.nations.get(Nation.AH).controller = "player1";
+                game.nations.get(Nation.IT).controller = "player1";
+                game.nations.get(Nation.FR).controller = "player1";
+                game.nations.get(Nation.GB).controller = "player3";
+                game.nations.get(Nation.GE).controller = "player3";
+                game.nations.get(Nation.RU).controller = "player3";
+                game.players["player2"].bonds = new Set();
+                // Set AH's rondel position to be something *before* investor
+                game.nations.get(Nation.AH).rondelPosition = startingPosition;
+
+                // The investor slot lies between 'maneuver1' and 'maneuver2'
+                game.tick(
+                  Action.rondel({
+                    slot: "production2",
+                    nation: Nation.AH,
+                    cost: 0
+                  })
+                );
+                game.tick(Action.skipForceInvestor({player: "player2"}));
+                // InvestorCardHolder buys a bond first
+                game.tick(
+                  Action.bondPurchase({
+                    nation: Nation.AH,
+                    player: "player2",
+                    cost: 4
+                  })
+                );
+
+                game.availableActions.forEach((action) => {
+                  expect(action.type).toEqual("rondel");
+                });
+              });
+
+              test("a player who has a Swiss Bank does not receive 2m", () => {
+                const game = newGame();
+                game.players["player2"].cash = 0;
+                game.players["player1"].cash = 4;
+                game.investorCardHolder = "player1";
+                // Make player1 control all countries
+                game.nations.get(Nation.AH).controller = "player1";
+                game.nations.get(Nation.IT).controller = "player1";
+                game.nations.get(Nation.FR).controller = "player1";
+                game.nations.get(Nation.GB).controller = "player1";
+                game.nations.get(Nation.GE).controller = "player1";
+                game.nations.get(Nation.RU).controller = "player1";
+                game.players["player2"].bonds = new Set();
+                // Set AH's rondel position to be something *before* investor
+                game.nations.get(Nation.AH).rondelPosition = startingPosition;
+
+                // The investor slot lies between 'maneuver1' and 'maneuver2'
+                game.tick(
+                  Action.rondel({
+                    slot: "production2",
+                    nation: Nation.AH,
+                    cost: 0
+                  })
+                );
+                // InvestorCardHolder buys a bond first
+                game.tick(
+                  Action.bondPurchase({
+                    nation: Nation.AH,
+                    player: "player1",
+                    cost: 4
+                  })
+                );
+
+                expect(game.players["player2"].cash).toEqual(0);
+              });
+
+              test("multiple players with a Swiss Bank may invest in clockwise order, starting with the current bearer of the investor card", () => {
+                const game = newGame();
+                game.investorCardHolder = "player3";
+                // Make player1 control all countries
+                game.nations.get(Nation.AH).controller = "player3";
+                game.nations.get(Nation.IT).controller = "player3";
+                game.nations.get(Nation.FR).controller = "player3";
+                game.nations.get(Nation.GB).controller = "player3";
+                game.nations.get(Nation.GE).controller = "player3";
+                game.nations.get(Nation.RU).controller = "player3";
+                game.players["player1"].bonds = new Set();
+                game.players["player2"].bonds = new Set();
+                game.players["player1"].cash = 30;
+                game.players["player2"].cash = 30;
+                // Set AH's rondel position to be something *before* investor
+                game.nations.get(Nation.AH).rondelPosition = startingPosition;
+
+                // The investor slot lies between 'maneuver1' and 'maneuver2'
+                game.tick(
+                  Action.rondel({
+                    slot: "production2",
+                    nation: Nation.AH,
+                    cost: 0
+                  })
+                );
+                game.tick(Action.skipForceInvestor({ player: "player1" }));
+                game.tick(Action.skipForceInvestor({ player: "player2" }));
+                // InvestorCardHolder buys a bond first
+                game.tick(
+                  Action.bondPurchase({
+                    nation: Nation.AH,
+                    player: "player3",
+                    cost: 4
+                  })
+                );
+
+                game.availableActions.forEach((action) => {
+                  expect(action.type).toEqual("bondPurchase");
+                  expect(action.payload.player).toEqual("player1");
+                });
+
+                // player1 (a Swiss Bank) buys a bond next
+                game.tick(
+                  Action.bondPurchase({
+                    nation: Nation.IT,
+                    player: "player1",
+                    cost: 4
+                  })
+                );
+
+                game.availableActions.forEach((action) => {
+                  expect(action.type).toEqual("bondPurchase");
+                  expect(action.payload.player).toEqual("player2");
+                });
+
+                // player1 (a Swiss Bank) buys a bond next
+                game.tick(
+                  Action.bondPurchase({
+                    nation: Nation.FR,
+                    player: "player2",
+                    cost: 4
+                  })
+                );
+
+                game.availableActions.forEach((action) => {
+                  expect(action.type).toEqual("rondel");
+                });
+              });
+
+              test("a player who has a Swiss Bank may choose to force the current nation to stay on the Investor slot, if the nation can pay out all the money it owes", () => {
+                const game = newGame();
+                game.players["player1"].cash = 2;
+                game.investorCardHolder = "player1";
+                game.provinces.get("a").factory = "armaments";
+                game.swissBanks = ["player2", "player3"];
+                // Make player1 control all countries
+                game.nations.get(Nation.AH).controller = "player1";
+                game.nations.get(Nation.IT).controller = "player1";
+                game.nations.get(Nation.FR).controller = "player1";
+                game.nations.get(Nation.GB).controller = "player1";
+                game.nations.get(Nation.GE).controller = "player1";
+                game.nations.get(Nation.RU).controller = "player1";
+                game.players["player2"].bonds = new Set();
+                // Set AH's rondel position to be something *before* investor
+                game.nations.get(Nation.AH).rondelPosition = startingPosition;
+
+                // The investor slot lies between startingPosition and "production2"
+                game.tick(
+                  Action.rondel({
+                    slot: "production2",
+                    nation: Nation.AH,
+                    cost: 0
+                  })
+                );
+
+                expect(game.availableActions).toEqual(new Set([
+                  Action.forceInvestor({ player: "player2" }),
+                  Action.skipForceInvestor({ player: "player2" }),
+                  Action.forceInvestor({ player: "player3" }),
+                  Action.skipForceInvestor({ player: "player3" })
+                ]))
+
+                game.tick(
+                  Action.forceInvestor({
+                    player: "player2"
+                  })
+                );
+
+                // AH was forced to stay on investor so production never got triggered.
+                expect(game.units.get(Nation.AH).get("a")).toEqual({
+                  armies: 0,
+                  fleets: 0
+                });
+                expect(game.nations.get(Nation.AH).rondelPosition).toEqual("investor");
+                expect(game.availableActions).toEqual(
+                  new Set([
+                    Action.bondPurchase({
+                      nation: Nation.AH,
+                      player: "player1",
+                      cost: 4
+                    }),
+                    Action.bondPurchase({
+                      nation: Nation.AH,
+                      player: "player1",
+                      cost: 6
+                    }),
+                    Action.bondPurchase({
+                      nation: Nation.AH,
+                      player: "player1",
+                      cost: 12
+                    }),
+                    Action.bondPurchase({
+                      nation: Nation.AH,
+                      player: "player1",
+                      cost: 16
+                    }),
+                    Action.bondPurchase({
+                      nation: Nation.IT,
+                      player: "player1",
+                      cost: 4
+                    }),
+                    Action.bondPurchase({
+                      nation: Nation.IT,
+                      player: "player1",
+                      cost: 6
+                    }),
+                    Action.bondPurchase({
+                      nation: Nation.FR,
+                      player: "player1",
+                      cost: 4
+                    }),
+                    Action.bondPurchase({
+                      nation: Nation.FR,
+                      player: "player1",
+                      cost: 6
+                    }),
+                    Action.bondPurchase({
+                      nation: Nation.GB,
+                      player: "player1",
+                      cost: 4
+                    }),
+                    Action.bondPurchase({
+                      nation: Nation.GB,
+                      player: "player1",
+                      cost: 6
+                    }),
+                    Action.bondPurchase({
+                      nation: Nation.GB,
+                      player: "player1",
+                      cost: 12
+                    }),
+                    Action.bondPurchase({
+                      nation: Nation.GB,
+                      player: "player1",
+                      cost: 16
+                    }),
+                    Action.bondPurchase({
+                      nation: Nation.GE,
+                      player: "player1",
+                      cost: 4
+                    }),
+                    Action.bondPurchase({
+                      nation: Nation.GE,
+                      player: "player1",
+                      cost: 6
+                    }),
+                    Action.bondPurchase({
+                      nation: Nation.RU,
+                      player: "player1",
+                      cost: 4
+                    }),
+                    Action.bondPurchase({
+                      nation: Nation.RU,
+                      player: "player1",
+                      cost: 6
+                    })
+                  ])
+                );
+              });
+
+              test("a player who has a Swiss Bank may not choose to force the current nation to stay on the Investor slot, if the nation cannot pay out all the money it owes", () => {
+                const game = newGame();
+                game.players["player1"].cash = 2;
+                game.investorCardHolder = "player1";
+                game.provinces.get("a").factory = "armaments";
+                // Make player1 control all countries
+                game.nations.get(Nation.AH).controller = "player1";
+                game.nations.get(Nation.IT).controller = "player1";
+                game.nations.get(Nation.FR).controller = "player1";
+                game.nations.get(Nation.GB).controller = "player1";
+                game.nations.get(Nation.GE).controller = "player1";
+                game.nations.get(Nation.RU).controller = "player1";
+                game.players["player2"].bonds = new Set();
+                // Set AH's rondel position to be something *before* investor
+                game.nations.get(Nation.AH).rondelPosition = startingPosition;
+                game.nations.get(Nation.AH).treasury = 0;
+
+                // The investor slot lies between 'maneuver1' and 'maneuver2'
+                game.tick(
+                  Action.rondel({
+                    slot: "production2",
+                    nation: Nation.AH,
+                    cost: 0
+                  })
+                );
+
+                expect(game.availableActions).toEqual(
+                  new Set([
+                    Action.bondPurchase({
+                      nation: Nation.AH,
+                      player: "player1",
+                      cost: 4
+                    }),
+                    Action.bondPurchase({
+                      nation: Nation.AH,
+                      player: "player1",
+                      cost: 6
+                    }),
+                    Action.bondPurchase({
+                      nation: Nation.AH,
+                      player: "player1",
+                      cost: 12
+                    }),
+                    Action.bondPurchase({
+                      nation: Nation.IT,
+                      player: "player1",
+                      cost: 4
+                    }),
+                    Action.bondPurchase({
+                      nation: Nation.FR,
+                      player: "player1",
+                      cost: 4
+                    }),
+                    Action.bondPurchase({
+                      nation: Nation.GB,
+                      player: "player1",
+                      cost: 4
+                    }),
+                    Action.bondPurchase({
+                      nation: Nation.GB,
+                      player: "player1",
+                      cost: 6
+                    }),
+                    Action.bondPurchase({
+                      nation: Nation.GB,
+                      player: "player1",
+                      cost: 12
+                    }),
+                    Action.bondPurchase({
+                      nation: Nation.GE,
+                      player: "player1",
+                      cost: 4
+                    }),
+                    Action.bondPurchase({
+                      nation: Nation.GE,
+                      player: "player1",
+                      cost: 6
+                    }),
+                    Action.bondPurchase({
+                      nation: Nation.RU,
+                      player: "player1",
+                      cost: 4
+                    }),
+                    Action.bondPurchase({
+                      nation: Nation.RU,
+                      player: "player1",
+                      cost: 6
+                    })
+                  ])
+                );
+              });
             });
-          });
-        });
+          }
+        );
       });
 
       describe("taxation", () => {
