@@ -22,6 +22,7 @@ export default class Imperial {
     this.maneuvering = false;
     this.handlingConflict = false;
     this.soloMode = false;
+    this.swissBanks = [];
     this.passingThroughInvestor = false;
   }
 
@@ -185,17 +186,30 @@ export default class Imperial {
     this.investorCardActive = false;
     this.handleAdvancePlayer();
 
-    let swissBanks = [];
     for (const player in this.players) {
-      if (this.nationsUnderControl(player).length === 0 && this.hasNotBoughtABondThisTurn(player)) {
-        swissBanks.push(player);
+      if (this.nationsUnderControl(player).length > 0) {
+        const playerIndex = this.swissBanks.indexOf(player);
+        if (playerIndex !== -1) {
+          this.swissBanks.splice(playerIndex, 1)
+        }
+      } else {
+        const playerIndex = this.swissBanks.indexOf(player);
+        if (playerIndex === -1) {
+          this.swissBanks.push(player);
+        }
       }
     }
-    if (swissBanks.length === 0 || swissBanks[0] === this.investorCardHolder) {
+
+    let swissBanksToInvest = this.swissBanks;
+    if (
+      swissBanksToInvest.length > 0 &&
+      swissBanksToInvest[0] !== this.investorCardHolder &&
+      this.hasNotBoughtABondThisTurn(swissBanksToInvest[0])
+    ) {
+      this.endOfInvestorTurn(swissBanksToInvest[0]);
+    } else {
       this.advanceInvestorCard();
       this.availableActions = new Set(this.rondelActions(this.currentNation));
-    } else {
-      this.endOfInvestorTurn(swissBanks[0]);
     }
   }
 
@@ -532,7 +546,11 @@ export default class Imperial {
       // Allow Swiss Bank holders to interrupt
       if (this.canAffordToPayInvestors(this.currentNation)) {
         this.allowSwissBanksToForceInvestor();
-        if (this.availableActions.size > 0) return;
+        if (this.availableActions.size > 0) {
+          return;
+        //} else {
+        //  this.passingThroughInvestor = false;
+        }
       }
     }
     currentNation.previousRondelPosition = currentNation.rondelPosition;
@@ -565,6 +583,7 @@ export default class Imperial {
           });
         if (this.passingThroughInvestor) {
           this.middleOfInvestorTurn();
+          this.passingThroughInvestor = false;
           return;
         }
         this.handleAdvancePlayer();
@@ -608,7 +627,6 @@ export default class Imperial {
         }
 
         if (this.passingThroughInvestor) {
-          console.log("passing through");
           this.middleOfInvestorTurn();
           this.passingThroughInvestor = false;
         } else {
@@ -686,6 +704,7 @@ export default class Imperial {
     }
     this.investorCardActive = true;
     this.middleOfInvestorTurn();
+    this.passingThroughInvestor = false;
   }
 
   importRondel(action) {
@@ -932,6 +951,7 @@ export default class Imperial {
   }
 
   endOfInvestorTurn(investor) {
+    this.currentPlayerName = investor;
     // Investor may buy a bond
     this.availableActions = new Set(
       [...this.availableBonds]
@@ -1126,25 +1146,21 @@ export default class Imperial {
   hasNotBoughtABondThisTurn(player) {
     let hasNotBoughtABond = true;
     const reversedLog = this.log.slice().reverse();
-    reversedLog.forEach((action) => {
+    for (const action of reversedLog) {
       if (action.type === "rondel") {
-        return;
-      } else {
-        if (action.payload && (action.payload.player === player && action.type === "bondPurchase")) {
-          hasNotBoughtABond = false
-        }
+        break;
+      } else if (action.payload && (action.payload.player === player && action.type === "bondPurchase")) {
+        hasNotBoughtABond = false
       }
-    });
+    };
     return hasNotBoughtABond;
   }
 
   allowSwissBanksToForceInvestor() {
     this.availableActions = new Set();
-    for (const player in this.players) {
-      if (this.nationsUnderControl(player).length === 0) {
-        this.availableActions.add(Action.forceInvestor({player}))
-        this.availableActions.add(Action.skipForceInvestor({player}))
-      }
+    for (const swissBanks in this.swissBanks) {
+      this.availableActions.add(Action.forceInvestor({player}))
+      this.availableActions.add(Action.skipForceInvestor({player}))
     };
   }
 
@@ -1161,20 +1177,23 @@ export default class Imperial {
   }
 
   passedThroughInvestor(from, to) {
-    const preInvestorSlots = [
-      "maneuver1",
-      "production1",
-      "factory",
-      "taxation"
-    ];
-    const postInvestorSlots = [
-      "import",
-      "production2",
-      "maneuver2",
-      "taxation",
-      "factory"
-    ]
-    return preInvestorSlots.includes(from) && postInvestorSlots.includes(to);
+    switch (from) {
+      case "maneuver1": {
+        return ["import", "production2", "maneuver2", "taxation", "factory"].includes(to);
+      }
+      case "production1": {
+        return ["import", "production2", "maneuver2", "taxation"].includes(to);
+      }
+      case "factory": {
+        return ["import", "production2", "maneuver2"].includes(to);
+      }
+      case "taxation": {
+        return ["import", "production2"].includes(to);
+      }
+      case "maneuver2": {
+        return ["import"].includes(to);
+      }
+    }
   }
 
   isEqual(action1, action2) {

@@ -1426,7 +1426,7 @@ describe("imperial", () => {
                 });
               });
 
-              test("a player who has a Swiss Bank may choose to force the current nation to stay on the Investor slot, if the nation can pay out all the money it owes", () => {
+              xtest("a player who has a Swiss Bank may choose to force the current nation to stay on the Investor slot, if the nation can pay out all the money it owes", () => {
                 const game = newGame();
                 game.players["player1"].cash = 2;
                 game.investorCardHolder = "player1";
