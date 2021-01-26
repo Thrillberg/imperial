@@ -617,6 +617,7 @@ export default class Imperial {
           );
           this.handleAdvancePlayer();
         }
+        return;
       }
       case "maneuver1":
       case "maneuver2": {
@@ -1129,7 +1130,7 @@ export default class Imperial {
       if (action.type === "rondel") {
         return;
       } else {
-        if (action.payload.player === player && action.type === "bondPurchase") {
+        if (action.payload && (action.payload.player === player && action.type === "bondPurchase")) {
           hasNotBoughtABond = false
         }
       }
