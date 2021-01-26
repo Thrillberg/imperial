@@ -1426,11 +1426,12 @@ describe("imperial", () => {
                 });
               });
 
-              xtest("a player who has a Swiss Bank may choose to force the current nation to stay on the Investor slot, if the nation can pay out all the money it owes", () => {
+              test("a player who has a Swiss Bank may choose to force the current nation to stay on the Investor slot, if the nation can pay out all the money it owes", () => {
                 const game = newGame();
                 game.players["player1"].cash = 2;
                 game.investorCardHolder = "player1";
                 game.provinces.get("a").factory = "armaments";
+                game.swissBanks = ["player2", "player3"];
                 // Make player1 control all countries
                 game.nations.get(Nation.AH).controller = "player1";
                 game.nations.get(Nation.IT).controller = "player1";
@@ -1442,7 +1443,7 @@ describe("imperial", () => {
                 // Set AH's rondel position to be something *before* investor
                 game.nations.get(Nation.AH).rondelPosition = startingPosition;
 
-                // The investor slot lies between 'maneuver1' and 'maneuver2'
+                // The investor slot lies between startingPosition and "production2"
                 game.tick(
                   Action.rondel({
                     slot: "production2",

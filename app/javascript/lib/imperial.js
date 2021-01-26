@@ -184,7 +184,6 @@ export default class Imperial {
         action.payload.player;
     }
     this.investorCardActive = false;
-    this.handleAdvancePlayer();
 
     for (const player in this.players) {
       if (this.nationsUnderControl(player).length > 0) {
@@ -208,6 +207,7 @@ export default class Imperial {
     ) {
       this.endOfInvestorTurn(swissBanksToInvest[0]);
     } else {
+      this.handleAdvancePlayer();
       this.advanceInvestorCard();
       this.availableActions = new Set(this.rondelActions(this.currentNation));
     }
@@ -1158,7 +1158,7 @@ export default class Imperial {
 
   allowSwissBanksToForceInvestor() {
     this.availableActions = new Set();
-    for (const swissBanks in this.swissBanks) {
+    for (const player of this.swissBanks) {
       this.availableActions.add(Action.forceInvestor({player}))
       this.availableActions.add(Action.skipForceInvestor({player}))
     };
