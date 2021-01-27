@@ -489,6 +489,7 @@ describe("imperial", () => {
 
           expect(game.players["player1"].cash).toEqual(0);
         });
+
         test("player cannot move to slot they can't afford", () => {
           const game = newGame();
 
@@ -512,6 +513,28 @@ describe("imperial", () => {
               Action.rondel({ slot: "production2", cost: 0, nation: Nation.AH }),
               Action.rondel({ slot: "maneuver2", cost: 0, nation: Nation.AH }),
               Action.rondel({ slot: "taxation", cost: 0, nation: Nation.AH }),
+            ])
+          );
+        });
+
+        test("nation cannot move to Factory if they cannot afford to buy a factory", () => {
+          const game = newGame();
+
+          game.nations.get(Nation.AH).treasury = 0;
+
+          game.tick(Action.rondel({ slot: "maneuver2", cost: 0, nation: Nation.AH }));
+          game.tick(Action.endManeuver());
+          game.tick(Action.rondel({ slot: "taxation", cost: 0, nation: Nation.IT }));
+          game.tick(Action.rondel({ slot: "taxation", cost: 0, nation: Nation.FR }));
+          game.tick(Action.rondel({ slot: "taxation", cost: 0, nation: Nation.GB }));
+          game.tick(Action.rondel({ slot: "taxation", cost: 0, nation: Nation.GE }));
+          game.tick(Action.rondel({ slot: "taxation", cost: 0, nation: Nation.RU }));
+
+          expect(game.availableActions).toEqual(
+            new Set([
+              Action.rondel({ slot: "taxation", cost: 0, nation: Nation.AH }),
+              Action.rondel({ slot: "production1", cost: 0, nation: Nation.AH }),
+              Action.rondel({ slot: "maneuver1", cost: 2, nation: Nation.AH }),
             ])
           );
         });
@@ -1960,17 +1983,6 @@ describe("imperial", () => {
           );
           expect(game.buildingFactory).toEqual(true);
         });
-
-        test("nation may not build a factory if the nation has less than 5m treasury", () => {
-          const game = newGame();
-          game.nations.get(Nation.AH).treasury = 4;
-
-          game.tick(
-            Action.rondel({ slot: "factory", cost: 0, nation: Nation.AH })
-          );
-
-          expect(game.currentNation).toEqual(Nation.IT);
-        });
       });
     });
 
@@ -2005,6 +2017,8 @@ describe("imperial", () => {
             soloMode: false
           })
         );
+        // Allow Italy to be able to afford a factory
+        game.nations.get(Nation.IT).treasury = 5;
         return game;
       };
 
@@ -2318,6 +2332,8 @@ describe("imperial", () => {
             soloMode: false
           })
         );
+        // Allow Italy to be able to afford a factory
+        game.nations.get(Nation.IT).treasury = 5;
         return game;
       };
 
@@ -2591,6 +2607,8 @@ describe("imperial", () => {
             soloMode: false
           })
         );
+        // Allow Italy to be able to afford a factory
+        game.nations.get(Nation.IT).treasury = 5;
         return game;
       };
 
