@@ -6,10 +6,10 @@ class UsersController < ApplicationController
     profile = {}
     if user
       account = Account.find_by(user: user)
-      if account == current_account
-        profile = {name: user&.name, email: account&.email}
+      profile = if account == current_account
+        {name: user&.name, email: account&.email}
       else
-        profile = {name: user&.name}
+        {name: user&.name}
       end
     end
     render json: profile
