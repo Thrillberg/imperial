@@ -12,8 +12,9 @@ class UsersController < ApplicationController
   end
 
   def create
-    user = User.find(params[:id])
-    user.update(name: params[:name])
+    user = User.create(name: params[:name])
+    # This cookie will expire in 68 years!
+    cookies[:user_id] = {value: user.id, max_age: 2147483647}
     redirect_to "/"
   end
 end

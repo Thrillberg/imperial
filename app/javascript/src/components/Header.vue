@@ -1,5 +1,5 @@
 <template>
-  <div class="h-16 bg-green-500">
+  <div class="h-20 bg-green-500">
     <div class="float-left p-2 bg-green-100">
       <strong>This project is under active development!<br>User and game data may be lost at any given time.</strong>
     </div>
@@ -13,11 +13,6 @@
             placeholder="name"
           />
           <input
-            type="hidden"
-            name="id"
-            :value="this.$cookies.get('user_id')"
-          />
-          <input
             type="submit"
             value="Submit Username"
             class="rounded p-4 ml-4 bg-green-800 text-white cursor-pointer"
@@ -28,7 +23,10 @@
         Currently identified as <strong>{{ profile.username }}</strong>.
       </div>
       <div v-else>
-        Currently registered as <strong>{{ profile.username }}</strong> ({{ profile.email }}).
+        <p>Currently logged in as <strong>{{ profile.username }}</strong> ({{ profile.email }}).</p>
+        <form method="DELETE" action="/accounts/sign_out">
+          <input type="submit" value="Log out" class="bg-green-200 cursor-pointer border border-green-200 rounded p-1" />
+        </form>
       </div>
     </div>
   </div>
