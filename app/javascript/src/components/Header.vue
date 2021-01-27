@@ -24,9 +24,10 @@
       </div>
       <div v-else>
         <p>Currently logged in as <strong>{{ profile.username }}</strong> ({{ profile.email }}).</p>
-        <form method="DELETE" action="/accounts/sign_out">
-          <input type="submit" value="Log out" class="bg-green-200 cursor-pointer border border-green-200 rounded p-1" />
-        </form>
+        <p
+        class="bg-green-200 cursor-pointer border border-green-200 rounded p-1"
+        @click="signOut"
+        >Sign out</p>
       </div>
     </div>
   </div>
@@ -43,5 +44,17 @@ export default {
       tempName: ""
     };
   },
+  methods: {
+    signOut: function (e) {
+      fetch("/accounts/sign_out", {
+        method: "DELETE",
+        headers: {
+          "X-CSRF-Token": this.$cookies.get("CSRF-TOKEN")
+        }
+      })
+      this.$emit("signOut");
+      e.preventDefault();
+    }
+  }
 };
 </script>

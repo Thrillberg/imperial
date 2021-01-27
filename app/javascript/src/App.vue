@@ -1,6 +1,6 @@
 <template>
   <div id="app" class="font-serif">
-    <Header :profile="profile" />
+    <Header :profile="profile" v-on:signOut="signOut" />
     <router-view :profile="profile" :users="users" :games="games" v-on:registered="register" />
   </div>
 </template>
@@ -52,6 +52,9 @@ export default {
   methods: {
     register: function ({username, email}) {
       this.profile = { username, email };
+    },
+    signOut: function () {
+      this.profile = { username: this.profile.username };
     }
   }
 };
