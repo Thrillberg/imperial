@@ -1,12 +1,14 @@
 <template>
   <div class="m-2">
     {{ stringify(nation) }}
-    <component
-      :is="this.flag(nation)"
-      :class="current_nation"
-      :width="(120).toString()"
-      class="border border-gray500"
-    ></component>
+    <div :class="current_nation" class="w-min">
+      <Flag
+        :nation="nation"
+        :height="(40).toString()"
+        :filter="is_controller ? '' : 'grayscale'"
+        class="border border-gray500"
+      ></Flag>
+    </div>
     <div>{{ treasury }}m</div>
     <div>{{ power_points }} power points</div>
     <div>{{ tax_chart_position }} tax chart position</div>
@@ -14,19 +16,16 @@
 </template>
 
 <script>
-import AHFlag from "./flags/AHFlag.vue";
-import ITFlag from "./flags/ITFlag.vue";
-import FRFlag from "./flags/FRFlag.vue";
-import GBFlag from "./flags/GBFlag.vue";
-import GEFlag from "./flags/GEFlag.vue";
-import RUFlag from "./flags/RUFlag.vue";
+import Flag from "./flags/Flag.vue";
 
 import stringify from "../stringify.js";
 
 export default {
   name: "NationComponent",
+  components: { Flag },
   props: {
     current_nation: String,
+    is_controller: Boolean,
     nation: String,
     power_points: Number,
     tax_chart_position: Number,
@@ -35,22 +34,6 @@ export default {
   methods: {
     stringify(nation) {
       return stringify(nation);
-    },
-    flag: nation => {
-      switch (nation) {
-        case "AH":
-          return AHFlag;
-        case "IT":
-          return ITFlag;
-        case "FR":
-          return FRFlag;
-        case "GB":
-          return GBFlag;
-        case "GE":
-          return GEFlag;
-        case "RU":
-          return RUFlag;
-      }
     }
   }
 };

@@ -3,8 +3,8 @@
     class="m-2 border border-gray-500 p-1"
     v-if="nation === bond.nation.value"
   >
-    <Flag :nation="bond.nation.value" :height="(20).toString()" />
-    {{ bond.number }} / {{ bond.cost }}
+    <Flag :nation="bond.nation.value" :width="(30).toString()" />
+    {{ bond.number }}:{{ bond.cost }}
   </div>
 </template>
 

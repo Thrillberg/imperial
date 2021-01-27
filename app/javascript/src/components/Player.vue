@@ -1,11 +1,11 @@
 <template>
   <div
-    class="player p-4 m-2 bg-green-200 font-serif"
+    class="p-2 m-1 bg-green-200 font-serif"
     :class="player.name === current_player ? 'font-bold' : ''"
   >
     <h3>{{ player.name }}</h3>
-    <div class="flex">
-      <div v-for="[nation] of game.nations" :key="nation.value">
+    <div class="flex flex-wrap">
+      <div v-for="nation of nationsWithInvestment()" :key="nation.value">
         <Bond
           v-for="bond in player.bonds"
           :bond="bond"
@@ -32,6 +32,19 @@ export default {
     player: Object,
     game: Object,
     name: String
+  },
+  methods: {
+    nationsWithInvestment: function () {
+      let nations = new Set();
+      for (const [nation] of this.game.nations) {
+        for (const bond of this.player.bonds) {
+          if (bond.nation === nation) {
+            nations.add(nation);
+          }
+        }
+      }
+      return nations;
+    }
   }
 };
 </script>
