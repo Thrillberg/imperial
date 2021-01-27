@@ -26,9 +26,9 @@ cd imperial
 ```
 bin/setup
 ```
-4. Run the Yarn install command:
+4. Run the npm install command:
 ```
-yarn install
+npm install
 ```
 5. In one terminal window, run webpack:
 ```
