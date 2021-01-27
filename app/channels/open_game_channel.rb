@@ -1,41 +1,16 @@
-class AppearanceChannel < ApplicationCable::Channel
+class OpenGameChannel < ApplicationCable::Channel
   def subscribed
-    stream_from "appearance_channel"
-    broadcast_users "appearance_channel", "updateUsers"
-    broadcast_games "appearance_channel", "updateGames"
+    stream_from "open_game_channel"
+    broadcast_games "open_game_channel", "updateGames"
   end
 
   def receive(data)
-    case data["kind"]
-    when "openGame"
-      host = User.find_by(name: data["data"]["host"])
-      host.games << Game.create(name: lovely_string, host: host)
-      broadcast_games "appearance_channel", "updateGames"
-
-    when "joinGame"
-      game = game_from_data(data)
-      user = User.find(data["data"]["userId"])
-      game.users << user
-      broadcast_games "appearance_channel", "updateGames"
-
-    when "getGameLog"
-      game = game_from_data(data)
-      broadcast_update_game_log "appearance_channel", "updateGameLog", game
-
-    when "tick"
-      game = game_from_data(data)
-      data = data["data"]["action"]
-      game.actions << Action.create(data: data)
-
-      broadcast_update_game_log "appearance_channel", "updateGameLog", game
-    end
+    host = User.find_by(name: data["data"]["host"])
+    host.games << Game.create(name: lovely_string, host: host)
+    broadcast_games "open_game_channel", "updateGames"
   end
 
   private
-
-  def game_from_data(data)
-    Game.includes(:actions).find(data["data"]["gameId"])
-  end
 
   def lovely_string
     ADJECTIVES.sample + " " + NOUNS.sample

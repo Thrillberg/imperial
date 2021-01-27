@@ -28,5 +28,11 @@ module ApplicationCable
       }
       ActionCable.server.broadcast(channel, payload)
     end
+
+    private
+
+    def game_from_data(data)
+      Game.includes(:actions).find(data["data"]["gameId"])
+    end
   end
 end
