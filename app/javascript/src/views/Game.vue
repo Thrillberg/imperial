@@ -12,121 +12,13 @@
         ></Board>
       </div>
       <div class="w-1/2 mx-2 border border-gray-500 rounded">
-        <div class="flex justify-center bg-green-100 py-4">
-          <span
-            class="p-2 border border-gray500 border-r-0 rounded-l cursor-pointer"
-            :class="[
-              onActions ? 'bg-gray-700' : 'bg-white',
-              onActions ? 'text-white' : 'text-black'
-            ]"
-            v-on:click="viewActions"
-          >
-            Actions
-          </span>
-          <span
-            class="p-2 border border-gray500 border-l-0 rounded-r cursor-pointer"
-            :class="[
-              onGameDetails ? 'bg-gray-700' : 'bg-white',
-              onGameDetails ? 'text-white' : 'text-black'
-            ]"
-            v-on:click="viewGameDetails"
-          >
-            Game Details
-          </span>
-        </div>
-        <div class="flex justify-around">
-          <div v-if="onActions">
-            <div class="my-8">
-              <div class="text-center text-2xl">
-                <b>{{ stringify(game.currentNation.value) }}'s</b> turn
-              </div>
-              <Flag
-                :height="(80).toString()"
-                :width="(120).toString()"
-                :nation="game.currentNation.value"
-                class="mx-auto"
-                :class="
-                  profile.username === controllingPlayerName ? 'current_nation' : ''
-                "
-              />
-            </div>
-            <Rondel
-              v-bind:game="game"
-              v-bind:name="profile.username"
-              v-on:tick-with-action="tickWithAction"
-            ></Rondel>
-            <div class="text-center text-lg mt-4">
-              You have <b>{{ this.currentPlayer.cash }}m</b> in cash.
-            </div>
-            <div class="flex justify-between">
-              <Flag
-                v-for="[nation, data] of game.nations"
-                :height="(40).toString()"
-                :nation="nation.value"
-                :filter="data.controller !== profile.username ? 'grayscale' : ''"
-                :key="nation.value"
-              />
-            </div>
-            <div
-              v-if="game.importing && (profile.username === controllingPlayerName || game.soloMode)"
-              class="text-center text-lg"
-            >
-              <div>
-                You have
-                <b>{{ 3 - this.importPlacements.length }}</b> imports left.
-              </div>
-              <div
-                v-on:click="runImport"
-                class="rounded p-2 bg-green-800 text-white cursor-pointer"
-              >
-                End import
-              </div>
-            </div>
-            <div
-              v-if="game.maneuvering && (profile.username === controllingPlayerName || game.soloMode)"
-              class="text-center text-lg"
-            >
-              <div
-                v-on:click="endManeuver"
-                class="rounded p-2 bg-green-800 text-white cursor-pointer"
-              >
-                End maneuver
-              </div>
-            </div>
-            <div
-              v-if="game.handlingConflict && (profile.username === controllingPlayerName || game.soloMode)"
-              class="text-center text-lg"
-            >
-              <div
-                v-on:click="coexist"
-                class="rounded p-2 bg-green-800 text-white cursor-pointer"
-              >
-                Coexist
-              </div>
-              <div
-                v-on:click="fight"
-                class="rounded p-2 bg-green-800 text-white cursor-pointer"
-              >
-                Fight
-              </div>
-            </div>
-          </div>
-          <div v-else>
-            <GameDetails
-              :game="game"
-              :controllingPlayerName="controllingPlayerName"
-            />
-          </div>
-        </div>
-      </div>
-      <div class="buttons" v-if="purchasingBond || canForceInvestor">
-        <ActionComponent
-          v-for="action in game.availableActions"
-          v-bind:key="JSON.stringify(action)"
-          v-bind:action="action"
-          v-bind:text="actionToText(action)"
-          v-bind:dispatch="tickWithAction"
-        ></ActionComponent>
+        <GameDetails
+          :game="game"
+          :controllingPlayerName="controllingPlayerName"
+          :profile="profile"
+          v-on:tick="tickWithAction"
+          v-on:endManeuver="endManeuver"
+        ></GameDetails>
       </div>
     </div>
     <div v-else class="flex justify-between">
@@ -157,25 +49,20 @@ import Imperial from "../../lib/imperial.js";
 import { Nation } from "../../lib/constants.js";
 import { apiClient } from "../router/index.js";
 
-import ActionComponent from "../components/ActionComponent.vue";
 import Board from "../components/board/Board.vue";
 import Flag from "../components/flags/Flag.vue";
 import GameDetails from "../components/GameDetails.vue";
 import GameLogEntry from "../components/GameLogEntry.vue";
-import Rondel from "../components/Rondel.vue";
 
 import getGameLog from "../getGameLog.js";
-import stringify from "../stringify.js";
 
 export default {
   name: "Game",
   components: {
-    ActionComponent,
     Board,
     Flag,
     GameDetails,
-    GameLogEntry,
-    Rondel
+    GameLogEntry
   },
   props: ["profile", "users", "games"],
   data: () => {
@@ -185,9 +72,7 @@ export default {
       game: {},
       gameStarted: false,
       importPlacements: [],
-      maneuverOrigin: "",
-      onActions: true,
-      onGameDetails: false
+      maneuverOrigin: ""
     };
   },
   beforeDestroy() {
@@ -214,31 +99,9 @@ export default {
       } else {
         return [];
       }
-    },
-    purchasingBond: function () {
-      return Array.from(this.game.availableActions).every((action) => action.type === "bondPurchase") && (this.profile.username === this.controllingPlayerName || this.game.soloMode);
-    },
-    canForceInvestor: function () {
-      if (Array.from(this.game.availableActions).every((action) => action.type === "forceInvestor" || action.type === "skipForceInvestor")) {
-        this.controllingPlayerName = "";
-        if (this.game.swissBanks.includes(this.profile.username) || this.game.soloMode) {
-          return true;
-        }
-      }
     }
   },
   methods: {
-    stringify(nation) {
-      return stringify(nation);
-    },
-    viewActions() {
-      this.onActions = true;
-      this.onGameDetails = false;
-    },
-    viewGameDetails() {
-      this.onGameDetails = true;
-      this.onActions = false;
-    },
     validProvinces() {
       // This function returns all provinces that a unit can move
       // or be imported to.
@@ -303,19 +166,6 @@ export default {
       this.controllingPlayerName = this.game.currentPlayerName;
       apiClient.tick(this.$route.params.id, action);
     },
-    actionToText: function(action) {
-      if (action.type === "bondPurchase") {
-        return `Purchase a ${action.payload.nation.value} bond for ${action.payload.cost}`;
-      } else if (action.type === "coexist") {
-        return `Coexist`;
-      } else if (action.type === "fight") {
-        return `Fight`;
-      } else if (action.type === "forceInvestor") {
-        return "Force investor";
-      } else if (action.type === "skipForceInvestor") {
-        return "Do not force investor";
-      }
-    },
     runImport: function() {
       // TODO: Allow imports of fleets too.
       const placements = this.importPlacements.map(placement => {
@@ -328,24 +178,6 @@ export default {
     endManeuver: function() {
       this.tickWithAction(Action.endManeuver());
       this.maneuverOrigin = "";
-    },
-    coexist: function() {
-      let coexistAction = {};
-      for (const action of this.game.availableActions) {
-        if (action.type === "coexist") {
-          coexistAction = action;
-        }
-      }
-      this.tickWithAction(coexistAction);
-    },
-    fight: function() {
-      let fightAction = {};
-      for (const action of this.game.availableActions) {
-        if (action.type === "fight") {
-          fightAction = action;
-        }
-      }
-      this.tickWithAction(fightAction);
     }
   }
 };
