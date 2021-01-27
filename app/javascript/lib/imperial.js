@@ -1079,6 +1079,17 @@ export default class Imperial {
         out.delete(position);
       }
     }
+    // Remove factory if the nation cannot afford it.
+    const treasury = this.nations.get(nation).treasury;
+    let factoryAction = {};
+    for (const action of out) {
+      if (action.payload.slot === "factory") {
+        factoryAction = action;
+      }
+    }
+    if (treasury < 5) {
+      out.delete(factoryAction)
+    };
     return out;
   }
 
