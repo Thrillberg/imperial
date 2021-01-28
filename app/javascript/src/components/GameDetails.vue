@@ -32,10 +32,10 @@
     >
       <div>
         You have
-        <b>{{ 3 - this.importPlacements.length }}</b> imports left.
+        <b>{{ 3 - importPlacements.length }}</b> imports left.
       </div>
       <div
-        v-on:click="runImport"
+        @click="$emit('runImport')"
         class="rounded p-2 bg-green-800 text-white cursor-pointer"
       >
         End import
@@ -96,7 +96,7 @@ export default {
     Player,
     Rondel
   },
-  props: ["game", "controllingPlayerName", "profile"],
+  props: ["game", "controllingPlayerName", "profile", "importPlacements"],
   computed: {
     purchasingBond: function () {
       return Array.from(this.game.availableActions).every((action) => action.type === "bondPurchase") && (this.profile.username === this.controllingPlayerName || this.game.soloMode);
