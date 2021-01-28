@@ -16,8 +16,10 @@
           :game="game"
           :controllingPlayerName="controllingPlayerName"
           :profile="profile"
+          :importPlacements="importPlacements"
           v-on:tick="tickWithAction"
           v-on:endManeuver="endManeuver"
+          v-on:runImport="runImport"
         ></GameDetails>
       </div>
     </div>
