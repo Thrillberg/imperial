@@ -104,6 +104,68 @@ export default {
     },
     // x() and y() approximate the center of a province for flag placement.
     x(index) {
+      switch (this.name) {
+        case "danzig":
+          return (
+            index * 2.5 +
+            this.$refs.province.children[0].getBBox().x +
+            this.$refs.province.children[0].getBBox().width / 2
+          ) - 20;
+        case "denmark":
+          return (
+            index * 2.5 +
+            this.$refs.province.children[0].getBBox().x +
+            this.$refs.province.children[0].getBBox().width / 2
+          ) + 30;
+        case "englishchannel":
+          return (
+            index * 2.5 +
+            this.$refs.province.children[0].getBBox().x +
+            this.$refs.province.children[0].getBBox().width / 2
+          ) - 10;
+        case "genoa":
+          return (
+            index * 2.5 +
+            this.$refs.province.children[0].getBBox().x +
+            this.$refs.province.children[0].getBBox().width / 2
+          ) - 15;
+        case "greece":
+          return (
+            index * 2.5 +
+            this.$refs.province.children[0].getBBox().x +
+            this.$refs.province.children[0].getBBox().width / 2
+          ) - 25;
+        case "ioniansea":
+          return (
+            index * 2.5 +
+            this.$refs.province.children[0].getBBox().x +
+            this.$refs.province.children[0].getBBox().width / 2
+          ) + 20;
+        case "norway":
+          return (
+            index * 2.5 +
+            this.$refs.province.children[0].getBBox().x +
+            this.$refs.province.children[0].getBBox().width / 2
+          ) - 45;
+        case "portugal":
+          return (
+            index * 2.5 +
+            this.$refs.province.children[0].getBBox().x +
+            this.$refs.province.children[0].getBBox().width / 2
+          ) - 15;
+        case "sweden":
+          return (
+            index * 2.5 +
+            this.$refs.province.children[0].getBBox().x +
+            this.$refs.province.children[0].getBBox().width / 2
+          ) - 20;
+        case "turkey":
+          return (
+            index * 2.5 +
+            this.$refs.province.children[0].getBBox().x +
+            this.$refs.province.children[0].getBBox().width / 2
+          ) - 50;
+      }
       return (
         index * 2.5 +
         this.$refs.province.children[0].getBBox().x +
@@ -111,6 +173,80 @@ export default {
       );
     },
     y(index) {
+      switch (this.name) {
+        case "bayofbiscay":
+          return (
+            index * 2.5 +
+            this.$refs.province.children[0].getBBox().y +
+            this.$refs.province.children[0].getBBox().height / 2
+          ) - 60;
+        case "belgium":
+          return (
+            index * 2.5 +
+            this.$refs.province.children[0].getBBox().y +
+            this.$refs.province.children[0].getBBox().height / 2
+          ) - 5;
+        case "blacksea":
+          return (
+            index * 2.5 +
+            this.$refs.province.children[0].getBBox().y +
+            this.$refs.province.children[0].getBBox().height / 2
+          ) + 15;
+        case "denmark":
+          return (
+            index * 2.5 +
+            this.$refs.province.children[0].getBBox().y +
+            this.$refs.province.children[0].getBBox().height / 2
+          ) + 40;
+        case "easternmediterraneansea":
+          return (
+            index * 2.5 +
+            this.$refs.province.children[0].getBBox().y +
+            this.$refs.province.children[0].getBBox().height / 2
+          ) + 30;
+        case "englishchannel":
+          return (
+            index * 2.5 +
+            this.$refs.province.children[0].getBBox().y +
+            this.$refs.province.children[0].getBBox().height / 2
+          ) + 7;
+        case "greece":
+          return (
+            index * 2.5 +
+            this.$refs.province.children[0].getBBox().y +
+            this.$refs.province.children[0].getBBox().height / 2
+          ) - 10;
+        case "ioniansea":
+          return (
+            index * 2.5 +
+            this.$refs.province.children[0].getBBox().y +
+            this.$refs.province.children[0].getBBox().height / 2
+          ) + 30;
+        case "lemberg":
+          return (
+            index * 2.5 +
+            this.$refs.province.children[0].getBBox().y +
+            this.$refs.province.children[0].getBBox().height / 2
+          ) - 10;
+        case "northatlantic":
+          return (
+            index * 2.5 +
+            this.$refs.province.children[0].getBBox().y +
+            this.$refs.province.children[0].getBBox().height / 2
+          ) - 20;
+        case "norway":
+          return (
+            index * 2.5 +
+            this.$refs.province.children[0].getBBox().y +
+            this.$refs.province.children[0].getBBox().height / 2
+          ) + 100;
+        case "sweden":
+          return (
+            index * 2.5 +
+            this.$refs.province.children[0].getBBox().y +
+            this.$refs.province.children[0].getBBox().height / 2
+          ) + 40;
+      }
       return (
         index * 2.5 +
         this.$refs.province.children[0].getBBox().y +
