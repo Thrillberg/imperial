@@ -62,6 +62,8 @@
             </div>
             <div v-if="!gameStarted(game.id)">
               {{ Object.keys(game.players).length }} / 6 players
+              ({{ game.players.join(", ") }})
+              
             </div>
             <router-link
               v-if="!gameStarted(game.id) && isHost(game.id)"
