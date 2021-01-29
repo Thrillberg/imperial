@@ -1,15 +1,16 @@
 <template>
   <div class="container mx-auto">
-    <div class="flex justify-between">
-      <div class="mt-4">
-        <div v-if="!profile.username">
-          Please submit a username above!
-        </div>
-        <div v-else-if="!profile.email">
+    <div class="mt-4">
+      <div v-if="!profile.email" class="absolute right-2">
+        <div v-if="!profile.registered && profile.username">
+          <div class="text-sm">
+            <p>All features are usable without submitting an email and password.</p>
+            <p>If you'd like to be able to log in again, please register below.</p>
+          </div>
           <div v-for="(error, index) in errors" v-bind:key="index">
             {{ error }}
           </div>
-          <form class="p-4 bg-green-500 rounded" @submit="submit">
+          <form class="p-4 bg-green-500 rounded" @submit="register">
             <input
               type="text"
               placeholder="email"
@@ -25,57 +26,56 @@
             <input
               type="submit"
               value="Register"
-              class="rounded p-2 bg-green-800 text-white"
+              class="rounded p-2 bg-green-800 text-white cursor-pointer"
             />
           </form>
         </div>
-        <div
-          v-if="profile.username"
-          v-on:click="openGame()"
-          class="rounded p-2 mt-2 bg-green-800 text-white cursor-pointer inline-block"
-        >
-          Open New Game
-        </div>
-        <ul v-for="game in games" v-bind:key="game.id">
-          <li class="py-3">
-            <div>
-              <Star v-if="game.currentPlayer === profile.username" />
-              <router-link
-                :to="{ path: '/game/' + game.id }"
-                class="text-lg font-bold"
-              >
-                {{ game.name }}
-              </router-link>
-              <span class="text-sm">Hosted by {{ game.host }}</span>
-            </div>
-            <span
-              v-if="gameStarted(game.id)"
-              class="rounded p-2 inline-block bg-red-600 text-white"
-              >Game Started!</span
-            >
-            <div
-              v-if="joinable(game.id)"
-              v-on:click="joinGame(game.id)"
-              class="rounded p-2 inline-block bg-green-400"
-            >
-              Join Game
-            </div>
-            <div v-if="!gameStarted(game.id)">
-              {{ Object.keys(game.players).length }} / 6 players
-              ({{ game.players.join(", ") }})
-              
-            </div>
-            <router-link
-              v-if="!gameStarted(game.id) && isHost(game.id)"
-              :to="{ path: '/game/' + game.id }"
-              v-on:click.native="startGame(game.id)"
-              class="rounded p-2 inline-block bg-green-600 text-white cursor-pointer"
-            >
-              Start Game
-            </router-link>
-          </li>
-        </ul>
       </div>
+      <div
+        v-if="profile.username"
+        v-on:click="openGame()"
+        class="rounded p-2 mt-2 bg-green-800 text-white cursor-pointer inline-block"
+      >
+        Open New Game
+      </div>
+      <ul v-for="game in games" v-bind:key="game.id">
+        <li class="py-3">
+          <div>
+            <Star v-if="game.currentPlayer === profile.username" />
+            <router-link
+              :to="{ path: '/game/' + game.id }"
+              class="text-lg font-bold"
+            >
+              {{ game.name }}
+            </router-link>
+            <span class="text-sm">Hosted by {{ game.host }}</span>
+          </div>
+          <span
+            v-if="gameStarted(game.id)"
+            class="rounded p-2 inline-block bg-red-600 text-white"
+            >Game Started!</span
+          >
+          <div
+            v-if="joinable(game.id)"
+            v-on:click="joinGame(game.id)"
+            class="rounded p-2 inline-block bg-green-400"
+          >
+            Join Game
+          </div>
+          <div v-if="!gameStarted(game.id)">
+            {{ Object.keys(game.players).length }} / 6 players
+            ({{ game.players.join(", ") }})
+          </div>
+          <router-link
+            v-if="!gameStarted(game.id) && isHost(game.id)"
+            :to="{ path: '/game/' + game.id }"
+            v-on:click.native="startGame(game.id)"
+            class="rounded p-2 inline-block bg-green-600 text-white cursor-pointer"
+          >
+            Start Game
+          </router-link>
+        </li>
+      </ul>
     </div>
   </div>
 </template>
@@ -203,7 +203,7 @@ export default {
           ];
       }
     },
-    submit: function(e) {
+    register: function(e) {
       fetch("/accounts", {
         method: "POST",
         headers: {

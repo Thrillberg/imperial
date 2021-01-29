@@ -1,7 +1,7 @@
 <template>
   <div id="app" class="font-serif">
-    <Header :profile="profile" />
-    <router-view :profile="profile" :users="users" :games="games" v-on:registered="register" />
+    <Header :profile="profile" v-on:signOut="signOut" v-on:signedIn="signIn" />
+    <router-view :profile="profile" :users="users" :games="games" v-on:registered="signIn" />
   </div>
 </template>
 
@@ -45,13 +45,16 @@ export default {
     // Fetch user profile
     fetch(`/users/${this.$cookies.get("user_id")}`, { method: "GET" })
       .then(response => response.json())
-      .then(({ name, email }) => {
-        this.profile = { username: name, email }
+      .then(({ name, email, registered }) => {
+        this.profile = { username: name, email, registered }
       })
   },
   methods: {
-    register: function ({username, email}) {
-      this.profile = { username, email };
+    signIn: function ({username, email}) {
+      this.profile = { username, email, registered: true };
+    },
+    signOut: function () {
+      this.profile = { username: this.profile.username, registered: true };
     }
   }
 };
