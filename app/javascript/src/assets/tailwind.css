@@ -26,6 +26,11 @@ button {
   font-size: 1.2rem;
 }
 
+.hoverable {
+  stroke-width: 2px;
+  filter: brightness(0.7);
+}
+
 .hoverable:hover {
   filter: url(#brightness);
 }
