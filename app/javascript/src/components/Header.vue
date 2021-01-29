@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="bg-green-500 flex flex-row-reverse">
+    <div class="bg-green-500 flex justify-between">
       <div class="float-left p-2 bg-green-100">
         <strong>This project is under active development!<br>User and game data may be lost at any given time.</strong>
       </div>
