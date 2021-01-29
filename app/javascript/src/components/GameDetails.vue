@@ -21,11 +21,26 @@
         :key="nation.value"
       ></NationComponent>
     </div>
-    <Rondel
-      v-bind:game="game"
-      v-bind:name="profile.username"
-      v-on:tick-with-action="tickWithAction"
-    ></Rondel>
+    <div v-if="purchasingBond">
+      <div class="text-lg">Purchase a bond</div>
+      <div class="flex">
+        <div v-for="action of game.availableActions">
+          <Bond
+            :bond="getBond(action)"
+            :nation="action.payload.nation.value"
+            @click.native="tickWithAction(action)"
+            class="cursor-pointer"
+          />
+        </div>
+      </div>
+    </div>
+    <div v-else>
+      <Rondel
+        v-bind:game="game"
+        v-bind:name="profile.username"
+        v-on:tick-with-action="tickWithAction"
+      ></Rondel>
+    </div>
     <div
       v-if="game.importing && (profile.username === controllingPlayerName || game.soloMode)"
       class="text-center text-lg"
@@ -69,7 +84,7 @@
         Fight
       </div>
     </div>
-    <div class="buttons" v-if="purchasingBond || canForceInvestor">
+    <div class="buttons" v-if="canForceInvestor">
       <ActionComponent
         v-for="action in game.availableActions"
         v-bind:key="JSON.stringify(action)"
@@ -84,6 +99,7 @@
 <script>
 import Action from "../../lib/action.js";
 import ActionComponent from "../components/ActionComponent.vue";
+import Bond from "../components/Bond.vue";
 import NationComponent from "../components/NationComponent.vue";
 import Player from "../components/Player.vue";
 import Rondel from "../components/Rondel.vue";
@@ -92,6 +108,7 @@ export default {
   name: "GameDetails",
   components: {
     ActionComponent,
+    Bond,
     NationComponent,
     Player,
     Rondel
@@ -169,6 +186,15 @@ export default {
         }
       }
       this.tickWithAction(fightAction);
+    },
+    getBond: function(action) {
+      let fetchedBond = {};
+      for (const bond of this.game.availableBonds) {
+        if (bond.cost === action.payload.cost && bond.nation === action.payload.nation) {
+          fetchedBond = bond;
+        }
+      }
+      return fetchedBond;
     }
   }
 };
