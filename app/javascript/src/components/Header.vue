@@ -1,5 +1,8 @@
 <template>
   <div class="h-16 bg-green-500">
+    <div class="float-left p-2 bg-green-100">
+      <strong>This project is under active development!<br>User and game data may be lost at any given time.</strong>
+    </div>
     <div class="float-right p-2">
       <div v-if="!profile.username">
         <form method="post" action="/users">
