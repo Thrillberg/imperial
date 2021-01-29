@@ -1,7 +1,7 @@
 <template>
   <div id="app" class="font-serif">
     <Header :profile="profile" v-on:signOut="signOut" v-on:signedIn="signIn" />
-    <router-view :profile="profile" :users="users" :games="games" v-on:registered="register" />
+    <router-view :profile="profile" :users="users" :games="games" v-on:registered="signIn" />
   </div>
 </template>
 
@@ -50,9 +50,6 @@ export default {
       })
   },
   methods: {
-    register: function ({username, email}) {
-      this.profile = { username, email, registered: true };
-    },
     signIn: function ({username, email}) {
       this.profile = { username, email, registered: true };
     },
