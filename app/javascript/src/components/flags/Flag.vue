@@ -1,14 +1,16 @@
 <template>
-  <component
-    :is="this.flag(nation)"
-    :width="width"
-    :height="height"
-    :transform="transform"
-    :x="x"
-    :y="y"
-    :fleet="this.fleet"
-    :filter="activeFilter"
-  ></component>
+  <g :transform="transform">
+    <component
+      :is="this.flag(nation)"
+      :width="width"
+      :height="height"
+      :transform="transform"
+      :x="x"
+      :y="y"
+      :fleet="this.fleet"
+      :filter="activeFilter"
+    ></component>
+  </g>
 </template>
 
 <script>

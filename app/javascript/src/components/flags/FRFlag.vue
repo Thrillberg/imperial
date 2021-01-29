@@ -1,18 +1,16 @@
 <template>
-  <g :transform="transform">
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 1500 1000"
-      :width="width"
-      :height="height"
-    >
-      <g v-bind:clip-path="this.fleet ? 'url(#fleetClip)' : ''">
-        <rect width="1500" height="1000" fill="#CE1126" />
-        <rect width="1000" height="1000" fill="#FFFFFF" />
-        <rect width="500" height="1000" fill="#002654" />
-      </g>
-    </svg>
-  </g>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 1500 1000"
+    :width="width"
+    :height="height"
+  >
+    <g v-bind:clip-path="this.fleet ? 'url(#fleetClip)' : ''">
+      <rect width="1500" height="1000" fill="#CE1126" />
+      <rect width="1000" height="1000" fill="#FFFFFF" />
+      <rect width="500" height="1000" fill="#002654" />
+    </g>
+  </svg>
 </template>
 
 <script>

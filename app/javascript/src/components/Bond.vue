@@ -3,7 +3,9 @@
     class="m-2 border border-gray-500 p-1"
     v-if="nation === bond.nation.value"
   >
-    <Flag :nation="bond.nation.value" :width="(30).toString()" />
+    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="20">
+      <Flag :nation="bond.nation.value" :width="(30).toString()" />
+    </svg>
     {{ bond.number }}:{{ bond.cost }}
   </div>
 </template>
