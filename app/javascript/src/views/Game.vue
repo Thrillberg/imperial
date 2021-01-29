@@ -1,6 +1,8 @@
 <template>
   <div>
-    <router-link to="/">Back</router-link>
+    <router-link to="/">
+      <p class="bg-green-200 cursor-pointer border border-green-200 rounded px-1 m-2 inline-block">Back</p>
+    </router-link>
     <div v-if="gameStarted" class="flex justify-between">
       <div class="w-1/2 border border-gray-500 rounded">
         <Board
