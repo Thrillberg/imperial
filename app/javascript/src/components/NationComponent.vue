@@ -2,12 +2,14 @@
   <div class="m-2">
     {{ stringify(nation) }}
     <div :class="current_nation" class="w-min">
-      <Flag
-        :nation="nation"
-        :height="(40).toString()"
-        :filter="is_controller ? '' : 'grayscale'"
-        class="border border-gray500"
-      ></Flag>
+      <svg xmlns="http://www.w3.org/2000/svg" height="40" width="60">
+        <Flag
+          :nation="nation"
+          :height="(40).toString()"
+          :filter="is_controller ? '' : 'grayscale'"
+          class="border border-gray500"
+        ></Flag>
+      </svg>
     </div>
     <div>{{ treasury }}m</div>
     <div>{{ power_points }} power points</div>
