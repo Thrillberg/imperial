@@ -1,36 +1,35 @@
 <template>
   <div class="container mx-auto">
     <div class="mt-4">
-      <div v-if="!profile.username">
-        Please submit a username above!
-      </div>
-      <div v-else-if="!profile.email" class="absolute right-2">
-        <div class="text-sm">
-          <p>All features are usable without submitting an email and password.</p>
-          <p>If you'd like to be able to log in again, please register below.</p>
+      <div v-if="!profile.email" class="absolute right-2">
+        <div v-if="!profile.registered && profile.username">
+          <div class="text-sm">
+            <p>All features are usable without submitting an email and password.</p>
+            <p>If you'd like to be able to log in again, please register below.</p>
+          </div>
+          <div v-for="(error, index) in errors" v-bind:key="index">
+            {{ error }}
+          </div>
+          <form class="p-4 bg-green-500 rounded" @submit="register">
+            <input
+              type="text"
+              placeholder="email"
+              v-model="email"
+              class="rounded p-2"
+            />
+            <input
+              type="password"
+              placeholder="password"
+              v-model="password"
+              class="rounded p-2"
+            />
+            <input
+              type="submit"
+              value="Register"
+              class="rounded p-2 bg-green-800 text-white cursor-pointer"
+            />
+          </form>
         </div>
-        <div v-for="(error, index) in errors" v-bind:key="index">
-          {{ error }}
-        </div>
-        <form class="p-4 bg-green-500 rounded" @submit="submit">
-          <input
-            type="text"
-            placeholder="email"
-            v-model="email"
-            class="rounded p-2"
-          />
-          <input
-            type="password"
-            placeholder="password"
-            v-model="password"
-            class="rounded p-2"
-          />
-          <input
-            type="submit"
-            value="Register"
-            class="rounded p-2 bg-green-800 text-white cursor-pointer"
-          />
-        </form>
       </div>
       <div
         v-if="profile.username"
@@ -204,7 +203,7 @@ export default {
           ];
       }
     },
-    submit: function(e) {
+    register: function(e) {
       fetch("/accounts", {
         method: "POST",
         headers: {
