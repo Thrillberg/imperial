@@ -5,7 +5,7 @@
         <div v-if="!profile.registered && profile.username">
           <div class="text-sm">
             <p>All features are usable without submitting an email and password.</p>
-            <p>If you'd like to be able to log in again, please register below.</p>
+            <p>If you'd like to be able to log in again, please register here.</p>
           </div>
           <div v-for="(error, index) in errors" v-bind:key="index">
             {{ error }}
@@ -41,7 +41,7 @@
       <ul v-for="game in games" v-bind:key="game.id">
         <li class="py-3">
           <div>
-            <Star v-if="game.currentPlayer === profile.username" />
+            <Star v-if="game.currentPlayer && game.currentPlayer === profile.username" />
             <router-link
               :to="{ path: '/game/' + game.id }"
               class="text-lg font-bold"
