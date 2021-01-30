@@ -4,14 +4,14 @@
       <div class="float-left p-2 bg-green-100">
         <strong>This project is under active development!<br>User and game data may be lost at any given time.</strong>
       </div>
+      <div v-for="(error, index) in errors" v-bind:key="index" class="text-red-700">
+        <b>{{ error }}</b>
+      </div>
       <div v-if="!profile.username || (profile.registered && !profile.email)">
         <span>
           Currently identified as <strong>{{ profile.username }}</strong>.
         </span>
         <span class="inline-block">
-          <div v-for="(error, index) in errors" v-bind:key="index">
-            {{ error }}
-          </div>
           <form class="p-4 bg-green-500 rounded" @submit="signIn">
             <input
               type="text"
@@ -44,7 +44,7 @@
     <div v-if="!profile.username" class="text-center p-2 bg-green-100">
       <p class="text-lg">Please submit a username to start playing!</p>
       <p class="text-sm">Or log in above if you already have an account.</p>
-      <form method="post" action="/users">
+      <form @submit="identify">
         <input
           class="mx-auto border-black border-solid border p-3 rounded"
           v-model="tempName"
@@ -76,6 +76,26 @@ export default {
     };
   },
   methods: {
+    identify: function(e) {
+      fetch("/users", {
+        method: "POST",
+        headers: {
+          "X-CSRF-Token": this.$cookies.get("CSRF-TOKEN"),
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ name: this.tempName })
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.username) {
+            this.$emit("identified", data);
+            this.errors = [];
+          } else {
+            this.errors = data.errors;
+          }
+        })
+      e.preventDefault();
+    },
     signIn: function(e) {
       fetch("/accounts/sign_in", {
         method: "POST",
