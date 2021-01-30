@@ -1,6 +1,6 @@
 <template>
   <svg
-    class="rondel self-center"
+    class="rondel"
     width="450px"
     height="450px"
     viewBox="-20 -20 240 240"

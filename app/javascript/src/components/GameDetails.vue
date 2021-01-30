@@ -34,7 +34,7 @@
         </div>
       </div>
     </div>
-    <div v-else>
+    <div v-else class="flex justify-around">
       <Rondel
         v-bind:game="game"
         v-bind:name="profile.username"
