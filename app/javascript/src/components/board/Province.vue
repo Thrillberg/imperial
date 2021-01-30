@@ -1,5 +1,18 @@
 <template>
   <component ref="province" :is="province" v-on:click="select_province(name)">
+    <text
+      v-if="this.mounted"
+      font-family="Baskerville"
+      font-size="8"
+      fill="#000000"
+      text-align="center"
+      :x="x(0)"
+      :y="y(0)"
+      text-anchor="middle"
+      alignment-baseline="central"
+    >
+      {{ this.name }}
+    </text>
     <circle
       v-if="dot && this.mounted"
       :cx="x(0) + 6"
