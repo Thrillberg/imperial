@@ -18,9 +18,14 @@ class UsersController < ApplicationController
   end
 
   def create
-    user = User.create(name: params[:name])
-    # This cookie will expire in 68 years!
-    cookies[:user_id] = {value: user.id, max_age: 2147483647}
-    redirect_to "/"
+    user = User.new(name: params[:name])
+
+    if user.save
+      # This cookie will expire in 68 years!
+      cookies[:user_id] = {value: user.id, max_age: 2147483647}
+      render(json: {username: user.name}) && return
+    else
+      render(json: {errors: user.errors.full_messages}) && return
+    end
   end
 end

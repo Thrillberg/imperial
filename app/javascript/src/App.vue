@@ -1,6 +1,6 @@
 <template>
   <div id="app" class="font-serif">
-    <Header :profile="profile" v-on:signOut="signOut" v-on:signedIn="signIn" />
+    <Header :profile="profile" v-on:signOut="signOut" v-on:signedIn="signIn" v-on:identified="identify" />
     <router-view :profile="profile" :users="users" :games="games" v-on:registered="signIn" />
   </div>
 </template>
@@ -50,6 +50,9 @@ export default {
       })
   },
   methods: {
+    identify: function ({username}) {
+      this.profile = { username };
+    },
     signIn: function ({username, email}) {
       this.profile = { username, email, registered: true };
     },
