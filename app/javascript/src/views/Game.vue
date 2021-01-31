@@ -4,7 +4,7 @@
       <p class="bg-green-200 cursor-pointer border border-green-200 rounded px-1 m-2 inline-block">Back</p>
     </router-link>
     <div v-if="gameStarted" class="flex justify-between">
-      <div class="w-1/2 border border-gray-500 rounded">
+      <div class="w-2/3 border border-gray-500 rounded">
         <Board
           :game="game"
           :gameStarted="gameStarted"
@@ -13,7 +13,7 @@
           :importing_units="importPlacements"
         ></Board>
       </div>
-      <div class="w-1/2 mx-2 border border-gray-500 rounded">
+      <div class="w-1/3 mx-2 border border-gray-500 rounded">
         <GameDetails
           :game="game"
           :controllingPlayerName="controllingPlayerName"
@@ -26,14 +26,14 @@
       </div>
     </div>
     <div v-else class="flex justify-between">
-      <div class="w-1/2 border border-gray-500 rounded">
+      <div class="w-2/3 border border-gray-500 rounded">
         <Board
           v-bind:game="game"
           v-bind:select_province="() => {}"
           v-bind:valid_provinces="[]"
         ></Board>
       </div>
-      <div class="w-1/2 mx-2 border border-gray-500 rounded">
+      <div class="w-1/3 mx-2 border border-gray-500 rounded">
         <div class="text-2xl">
           Game not yet started!
         </div>
