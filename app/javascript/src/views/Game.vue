@@ -115,7 +115,7 @@ export default {
           if (action.type === "maneuver" && this.game.maneuvering) {
             if (this.maneuverOrigin === action.payload.origin) {
               provinces.add(action.payload.destination);
-            } else {
+            } else if (!this.maneuverOrigin) {
               provinces.add(action.payload.origin);
             }
           } else if (action.type === "import" && this.game.importing) {

@@ -102,6 +102,18 @@ describe("GameBoard", () => {
         })
       ).toEqual(new Set(["2", "4"]));
     });
+
+    test("when occupied, railroad rule is not in effect", () => {
+      expect(
+        gameBoard.neighborsFor({
+          origin: "1",
+          nation: "a",
+          isFleet: false,
+          friendlyFleets: new Set(),
+          isOccupied: true
+        })
+      ).toEqual(new Set(["2"]));
+    });
   });
 
   describe("fleets", () => {

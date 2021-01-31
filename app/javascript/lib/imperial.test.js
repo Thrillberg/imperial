@@ -742,12 +742,17 @@ describe("imperial", () => {
               { name: "a", nation: null, isOcean: true },
               { name: "b", nation: null, isOcean: true },
               { name: "c", nation: null },
-              { name: "d", nation: null }
+              { name: "d", nation: null },
+              { name: "e", nation: Nation.AH },
+              { name: "f", nation: Nation.AH },
+              { name: "g", nation: Nation.AH }
             ],
             edges: [
               ["a", "b"],
               ["c", "d"],
-              ["b", "c"]
+              ["b", "c"],
+              ["e", "f"],
+              ["f", "g"]
             ]
           });
 
@@ -816,6 +821,26 @@ describe("imperial", () => {
                   origin: "c",
                   destination: "d"
                 })
+              ])
+            );
+          });
+
+          test("nation cannot use railroad rule when occupied", () => {
+            const game = newGame();
+            game.units.get(Nation.AH).get("e").armies++;
+            game.units.get(Nation.IT).get("g").armies++;
+
+            game.tick(
+              Action.rondel({ slot: maneuver, nation: Nation.AH, cost: 0 })
+            );
+
+            expect(game.availableActions).toEqual(
+              new Set([
+                Action.endManeuver(),
+                Action.maneuver({
+                  origin: "e",
+                  destination: "f"
+                }),
               ])
             );
           });
