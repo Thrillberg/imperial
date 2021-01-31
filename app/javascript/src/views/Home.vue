@@ -1,34 +1,20 @@
 <template>
   <div class="container mx-auto">
     <div class="mt-4">
-      <div v-if="!profile.email" class="absolute right-2">
-        <div v-if="!profile.registered && profile.username">
-          <div class="text-sm">
-            <p>All features are usable without submitting an email and password.</p>
-            <p>If you'd like to be able to log in again, please register here.</p>
-          </div>
-          <div v-for="(error, index) in errors" v-bind:key="index">
-            {{ error }}
-          </div>
-          <form class="p-4 bg-green-500 rounded" @submit="register">
-            <input
-              type="text"
-              placeholder="email"
-              v-model="email"
-              class="rounded p-2"
-            />
-            <input
-              type="password"
-              placeholder="password"
-              v-model="password"
-              class="rounded p-2"
-            />
-            <input
-              type="submit"
-              value="Register"
-              class="rounded p-2 bg-green-800 text-white cursor-pointer"
-            />
-          </form>
+      <div v-if="profile.username && !profile.registered" class="border-2 rounded border-red-500 p-4 w-1/3 absolute right-2">
+        <div class="text-lg text-red-500">
+          <b>Uh oh! You're not registered!</b>
+        </div>
+        <div>
+          You can play a game or two without registering but you might not keep access to your games. If you want to be sure to be able to access your games in the future, please register.
+        </div>
+        <div class="text-center mt-5">
+          <router-link
+            :to="{ path: '/register' }"
+            class="rounded p-2 mt-2 bg-green-800 text-white cursor-pointer text-lg"
+          >
+            Register
+          </router-link>
         </div>
       </div>
       <div
@@ -93,13 +79,6 @@ export default {
     Star
   },
   props: ["profile", "users", "games"],
-  data: function () {
-    return {
-      email: "",
-      errors: [],
-      password: ""
-    }
-  },
   beforeDestroy() {
     apiClient.clearHandlers();
   },
@@ -202,26 +181,6 @@ export default {
             { id: players[5], nation: Nation.RU }
           ];
       }
-    },
-    register: function(e) {
-      fetch("/accounts", {
-        method: "POST",
-        headers: {
-          "X-CSRF-Token": this.$cookies.get("CSRF-TOKEN"),
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ email: this.email, password: this.password })
-      })
-        .then(response => response.json())
-        .then(data => {
-          if (data.email) {
-            this.$emit("registered", data);
-            this.errors = [];
-          } else {
-            this.errors = data;
-          }
-        })
-      e.preventDefault();
     }
   }
 };

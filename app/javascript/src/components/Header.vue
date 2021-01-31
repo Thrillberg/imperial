@@ -1,8 +1,8 @@
 <template>
   <div>
     <div class="bg-green-500 flex justify-between">
-      <div class="float-left p-2 bg-green-100">
-        <strong>This project is under active development!<br>User and game data may be lost at any given time.</strong>
+      <div class="bg-white m-2 border-2 rounded border-red-500 p-4">
+        This project is under active development and data may be lost at any time!
       </div>
       <div v-for="(error, index) in errors" v-bind:key="index" class="text-red-700">
         <b>{{ error }}</b>
