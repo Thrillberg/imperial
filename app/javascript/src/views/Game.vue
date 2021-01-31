@@ -113,7 +113,7 @@ export default {
       if (this.game.currentPlayerName === this.profile.username || this.game.soloMode) {
         for (const action of this.game.availableActions) {
           if (action.type === "maneuver" && this.game.maneuvering) {
-            if (this.maneuverOrigin) {
+            if (this.maneuverOrigin === action.payload.origin) {
               provinces.add(action.payload.destination);
             } else {
               provinces.add(action.payload.origin);
