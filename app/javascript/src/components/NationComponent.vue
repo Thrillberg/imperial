@@ -12,8 +12,8 @@
       </svg>
     </div>
     <div>{{ treasury }}m</div>
-    <div>{{ power_points }} power points</div>
-    <div>{{ tax_chart_position }} tax chart position</div>
+    <div>{{ power_points }} power</div>
+    <div>{{ tax_chart_position }} tax</div>
   </div>
 </template>
 
