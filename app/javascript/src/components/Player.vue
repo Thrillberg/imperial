@@ -1,8 +1,6 @@
 <template>
-  <div class="p-2 m-1 bg-green-200 font-serif">
-    <span :class="player.name === current_player ? 'font-bold' : ''">
-      {{ player.name }}
-    </span>
+  <div class="p-2 m-1 font-serif" :class="player.name === current_player ? 'bg-green-300' : 'bg-gray-300'">
+    <span>{{ player.name }}</span>
     <span v-if="player.name === profile.username || game.soloMode"> - {{ player.cash }}m</span>
     <div class="flex flex-wrap">
       <Bond
