@@ -6,6 +6,7 @@
         v-bind:player="player"
         v-bind:current_player="controllingPlayerName"
         v-bind:game="game"
+        v-bind:profile="profile"
         v-bind:key="player.name"
       ></Player>
     </div>

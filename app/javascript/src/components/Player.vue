@@ -3,7 +3,7 @@
     <span :class="player.name === current_player ? 'font-bold' : ''">
       {{ player.name }}
     </span>
-    <span v-if="player.name === current_player"> - {{ player.cash }}m</span>
+    <span v-if="player.name === profile.username || game.soloMode"> - {{ player.cash }}m</span>
     <div class="flex flex-wrap">
       <Bond
         v-for="bond in player.bonds"
@@ -27,6 +27,7 @@ export default {
   props: {
     current_player: String,
     player: Object,
+    profile: Object,
     game: Object,
     name: String
   }
