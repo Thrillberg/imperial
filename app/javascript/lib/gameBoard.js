@@ -30,7 +30,7 @@ export default class GameBoard {
     });
   }
 
-  neighborsFor({ origin, nation, isFleet, friendlyFleets }) {
+  neighborsFor({ origin, nation, isFleet, friendlyFleets, isOccupied }) {
     this.validate(origin);
 
     const out = new Set();
@@ -41,7 +41,7 @@ export default class GameBoard {
     }
 
     // Add all home provinces if origin is in their home nation
-    if (nation === this.graph.get(origin).nation && !isFleet) {
+    if (nation === this.graph.get(origin).nation && !isFleet && !isOccupied) {
       for (const n of this.byNation.get(nation)) {
         for (const x of this.graph.get(n).neighbors) {
           out.add(x);

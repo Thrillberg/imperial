@@ -502,7 +502,8 @@ export default class Imperial {
             origin,
             nation: this.currentNation,
             isFleet: true,
-            friendlyFleets: new Set()
+            friendlyFleets: new Set(),
+            isOccupied: this.isOccupied(this.currentNation)
           })) {
             out.add(Action.maneuver({ origin, destination }));
           }
@@ -518,7 +519,8 @@ export default class Imperial {
             origin,
             nation: this.currentNation,
             isFleet: false,
-            friendlyFleets
+            friendlyFleets,
+            isOccupied: this.isOccupied(this.currentNation)
           })) {
             out.add(Action.maneuver({ origin, destination }));
           }
@@ -897,7 +899,8 @@ export default class Imperial {
           origin,
           nation: action.payload.nation,
           isFleet: true,
-          friendlyFleets: new Set()
+          friendlyFleets: new Set(),
+          isOccupied: this.isOccupied(this.currentNation)
         })) {
           destinations.add(
             Action.maneuver({
@@ -917,7 +920,8 @@ export default class Imperial {
           origin,
           nation: action.payload.nation,
           isFleet: false,
-          friendlyFleets
+          friendlyFleets,
+          isOccupied: this.isOccupied(this.currentNation)
         })) {
           destinations.add(
             Action.maneuver({
@@ -1205,6 +1209,21 @@ export default class Imperial {
         return ["import"].includes(to);
       }
     }
+  }
+
+  isOccupied(nation) {
+    let isOccupied = false;
+    if (!!this.board.byNation.get(nation)) {
+      for (const province of this.board.byNation.get(nation)) {
+        for (const [occupyingNation,] of this.nations) {
+          const units = this.units.get(occupyingNation).get(province);
+          if (units.armies > 0 && occupyingNation !== nation) {
+            isOccupied = true;
+          }
+        }
+      }
+    }
+    return isOccupied;
   }
 
   isEqual(action1, action2) {
