@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col text-sm">
-    <div class="flex justify-evenly">
+    <div class="flex flex-wrap justify-evenly">
       <Player
         v-for="player in game.players"
         v-bind:player="player"
@@ -10,7 +10,7 @@
         v-bind:key="player.name"
       ></Player>
     </div>
-    <div class="flex justify-evenly p-4 border border-gray-500 rounded">
+    <div class="flex flex-wrap justify-evenly p-4 border border-gray-500 rounded">
       <NationComponent
         v-for="[nation] of game.nations"
         :current_nation="game.currentNation === nation ? 'current_nation' : ''"
@@ -24,11 +24,11 @@
     </div>
     <div v-if="purchasingBond">
       <div class="text-lg">Purchase a bond</div>
-      <div class="flex">
+      <div class="flex flex-wrap">
         <div v-for="action of game.availableActions">
           <Bond
             :bond="getBond(action)"
-            :nation="action.payload.nation.value"
+            :tradedBond="tradedBond(action.payload)"
             @click.native="tickWithAction(action)"
             class="cursor-pointer"
           />
@@ -196,6 +196,20 @@ export default {
         }
       }
       return fetchedBond;
+    },
+    tradedBond: function({cost, nation, player}) {
+      const playerObj = this.game.players[player];
+      if (playerObj.cash < cost) {
+        let topBond = {cost: 0};
+        for (const bond of playerObj.bonds) {
+          if (bond.nation === nation) {
+            if (bond.cost > topBond.cost) {
+              topBond = bond;
+            }
+          }
+        }
+        return topBond;
+      }
     }
   }
 };
