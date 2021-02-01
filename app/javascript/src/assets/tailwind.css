@@ -16,16 +16,6 @@ button {
   justify-content: space-around;
 }
 
-.nations {
-  background-color: #c4d1a1;
-  padding: 2rem 0;
-}
-
-.nations div {
-  text-align: center;
-  font-size: 1.2rem;
-}
-
 .hoverable {
   stroke-width: 2px;
   filter: brightness(0.7);
@@ -37,4 +27,14 @@ button {
 
 .current_nation {
   box-shadow: 0 0 2rem 0.5rem #ffd700;
+}
+
+.tooltip .tooltip-text {
+  visibility: hidden;
+  position: absolute;
+  z-index: 100;
+}
+
+.tooltip:hover .tooltip-text {
+  visibility: visible;
 }
