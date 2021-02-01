@@ -57,6 +57,10 @@ export default class Imperial {
         this.bondPurchase(action);
         return;
       }
+      case "skipBondPurchase": {
+        this.skipBondPurchase(action);
+        return;
+      }
       case "endManeuver": {
         this.endManeuver();
         return;
@@ -211,6 +215,12 @@ export default class Imperial {
       this.advanceInvestorCard();
       this.availableActions = new Set(this.rondelActions(this.currentNation));
     }
+  }
+
+  skipBondPurchase(action) {
+    this.handleAdvancePlayer();
+    this.advanceInvestorCard();
+    this.availableActions = new Set(this.rondelActions(this.currentNation));
   }
 
   endManeuver() {
@@ -977,6 +987,7 @@ export default class Imperial {
           });
         })
     );
+    this.availableActions.add(Action.skipBondPurchase({ player: investor }));
   }
 
   playerBondsOfNation(player, nation) {
