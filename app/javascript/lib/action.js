@@ -66,5 +66,6 @@ export default {
   maneuver: makeAction("maneuver", ["origin", "destination"]),
   production: makeAction("production", ["province"]),
   rondel: makeAction("rondel", ["nation", "cost", "slot"]),
+  skipBondPurchase: makeAction("skipBondPurchase", ["player"]),
   skipForceInvestor: makeAction("skipForceInvestor", ["player"])
 };

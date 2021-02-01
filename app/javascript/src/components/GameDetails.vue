@@ -27,12 +27,16 @@
       <div class="flex flex-wrap">
         <div v-for="action of game.availableActions">
           <Bond
+            v-if="action.type === 'bondPurchase'"
             :bond="getBond(action)"
             :tradedBond="tradedBond(action.payload)"
             @click.native="tickWithAction(action)"
             class="cursor-pointer"
           />
         </div>
+      </div>
+      <div @click="skipBondPurchase" class="rounded p-2 bg-green-800 text-white cursor-pointer inline-block mt-8">
+        Do not buy a bond
       </div>
     </div>
     <div v-else class="flex justify-around">
@@ -117,7 +121,10 @@ export default {
   props: ["game", "controllingPlayerName", "profile", "importPlacements"],
   computed: {
     purchasingBond: function () {
-      return Array.from(this.game.availableActions).every((action) => action.type === "bondPurchase") && (this.profile.username === this.controllingPlayerName || this.game.soloMode);
+      const purchasingBond = Array.from(this.game.availableActions).every(
+        (action) => action.type === "bondPurchase" || action.type === "skipBondPurchase"
+      );
+      return purchasingBond && (this.profile.username === this.controllingPlayerName || this.game.soloMode);
     },
     canForceInvestor: function () {
       if (Array.from(this.game.availableActions).every((action) => action.type === "forceInvestor" || action.type === "skipForceInvestor")) {
@@ -169,6 +176,16 @@ export default {
     },
     endManeuver: function() {
       this.$emit("endManeuver", Action.endManeuver());
+    },
+    skipBondPurchase: function() {
+      let skipAction = {};
+      for (const action of this.game.availableActions) {
+        if (action.type === "skipBondPurchase") {
+          skipAction = action;
+        }
+      }
+      console.log(skipAction)
+      this.tickWithAction(skipAction);
     },
     coexist: function() {
       let coexistAction = {};
