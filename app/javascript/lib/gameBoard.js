@@ -77,6 +77,21 @@ export default class GameBoard {
     return out;
   }
 
+  convoyingFleetsUsed({ origin, destination }) {
+    validate(origin);
+    validate(destiantion);
+
+    if (this.cannotBeReachedByLand(origin, destination)) {
+      let fleets = new Set();
+
+      return fleets;
+    }
+  }
+
+  cannotBeReachedByLand(origin, destination) {
+    return true;
+  }
+
   validate(origin) {
     if (!this.graph.has(origin))
       throw new Error(

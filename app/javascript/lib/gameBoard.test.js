@@ -222,4 +222,34 @@ describe("GameBoard", () => {
       ).toEqual(new Set());
     });
   });
+
+  describe("convoyingFleetsUsed", () => {
+    const gameBoard = new GameBoard({
+      nodes: [
+        { name: "1", nation: "a", isOcean: false },
+        {
+          name: "2",
+          nation: null,
+          isOcean: true
+        },
+        {
+          name: "3",
+          nation: null,
+          isOcean: true
+        },
+        { name: "4", nation: "b", isOcean: false }
+      ],
+      edges: [
+        ["1", "2"],
+        ["2", "3"],
+        ["3", "4"]
+      ]
+    });
+
+    test("returns fleets when they are required for an army maneuver", () => {
+      expect(
+        gameBoard.convoyingFleetsUsed({ origin: "1", destination: "4" })
+      ).toEqual(new Set(["2", "3"]));
+    });
+  });
 });
