@@ -42,14 +42,30 @@ export default {
         };
       });
     });
-    // Fetch user profile
-    fetch(`/users/${this.$cookies.get("user_id")}`, { method: "GET" })
-      .then(response => response.json())
-      .then(({ name, email, registered }) => {
-        this.profile = { username: name, email, registered }
-      })
+    if (this.$cookies.get("user_id")) {
+      // Fetch user profile
+      fetch(`/users/${this.$cookies.get("user_id")}`, { method: "GET" })
+        .then(response => response.json())
+        .then(({ name, email, registered }) => {
+          if (!name) {
+            this.createUserProfile();
+          } else {
+            this.profile = { username: name, email, registered }
+          }
+        })
+    } else {
+      // Create user profile
+      this.createUserProfile();
+    }
   },
   methods: {
+    createUserProfile() {
+      fetch("/users", { method: "POST", credentials: "include" })
+        .then((response) => response.json())
+        .then(({ name }) => {
+          this.profile = { username: name }
+        });
+    },
     identify: function ({username}) {
       this.profile = { username };
     },

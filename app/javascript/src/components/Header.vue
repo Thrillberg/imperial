@@ -8,7 +8,7 @@
         <b>{{ error }}</b>
       </div>
       <div>
-        <span v-if="profile.username && !profile.email">
+        <span v-if="!profile.email">
           Currently identified as <strong>{{ profile.username }}</strong>.
         </span>
         <div v-if="profile.email" class="py-3 px-2">
@@ -41,23 +41,6 @@
         </span>
       </div>
     </div>
-    <div v-if="!profile.username" class="text-center p-2 bg-green-100">
-      <p class="text-lg">Please submit a username to start playing!</p>
-      <p class="text-sm">Or sign in above if you already have an account.</p>
-      <form @submit="identify">
-        <input
-          class="mx-auto border-black border-solid border p-3 rounded"
-          v-model="tempName"
-          name="name"
-          placeholder="name"
-        />
-        <input
-          type="submit"
-          value="Submit Username"
-          class="rounded p-4 ml-4 bg-green-800 text-white cursor-pointer"
-        />
-      </form>
-    </div>
   </div>
 </template>
 
@@ -76,26 +59,6 @@ export default {
     };
   },
   methods: {
-    identify: function(e) {
-      fetch("/users", {
-        method: "POST",
-        headers: {
-          "X-CSRF-Token": this.$cookies.get("CSRF-TOKEN"),
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ name: this.tempName })
-      })
-        .then(response => response.json())
-        .then(data => {
-          if (data.username) {
-            this.$emit("identified", data);
-            this.errors = [];
-          } else {
-            this.errors = data.errors;
-          }
-        })
-      e.preventDefault();
-    },
     signIn: function(e) {
       fetch("/accounts/sign_in", {
         method: "POST",
