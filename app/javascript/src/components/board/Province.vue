@@ -2,14 +2,14 @@
   <component ref="province" :is="province" v-on:click="select_province(name)">
     <text
       v-if="this.mounted"
-      font-family="Baskerville"
-      font-size="8"
+      font-size="10"
       fill="#000000"
       text-align="center"
       :x="x(0)"
       :y="y(0)"
       text-anchor="middle"
       alignment-baseline="central"
+      class="font-sans font-thin"
     >
       {{ this.name }}
     </text>
