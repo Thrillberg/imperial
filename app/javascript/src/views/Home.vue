@@ -1,7 +1,10 @@
 <template>
   <div class="container mx-auto">
     <div class="mt-4">
-      <div v-if="profile.username && !profile.registered" class="border-2 rounded border-red-500 p-4 w-1/3 absolute right-2">
+      <div
+        v-if="!profile.registered"
+        class="border-2 rounded border-red-500 p-4 w-1/3 absolute right-2"
+      >
         <div class="text-lg text-red-500">
           <b>Uh oh! You're not registered!</b>
         </div>
@@ -18,7 +21,6 @@
         </div>
       </div>
       <div
-        v-if="profile.username"
         v-on:click="openGame()"
         class="rounded p-2 mt-2 bg-green-800 text-white cursor-pointer inline-block"
       >

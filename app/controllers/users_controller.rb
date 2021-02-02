@@ -1,3 +1,5 @@
+require "faker"
+
 class UsersController < ApplicationController
   skip_before_action :verify_authenticity_token
 
@@ -18,14 +20,21 @@ class UsersController < ApplicationController
   end
 
   def create
-    user = User.new(name: params[:name])
+    user = User.find_by(id: cookies[:user_id])
+    return if user
 
-    if user.save
+    user = User.create(name: lovely_string)
+    cookies[:user_id] = {
+      value: user.id,
       # This cookie will expire in 68 years!
-      cookies[:user_id] = {value: user.id, max_age: 2147483647}
-      render(json: {username: user.name}) && return
-    else
-      render(json: {errors: user.errors.full_messages}) && return
-    end
+      max_age: 2147483647
+    }
+    render json: user
+  end
+
+  private
+
+  def lovely_string
+    Faker::Name.first_name + " the " + Faker::Creature::Animal.name.capitalize
   end
 end
