@@ -6,6 +6,12 @@
     <form class="flex flex-col w-1/4 mx-auto border-2 rounded border-green-800 p-5 mt-5" @submit="register">
       <input
         type="text"
+        :placeholder="profile.username"
+        v-model="username"
+        class="rounded p-5 border border-green-800 my-2"
+      />
+      <input
+        type="text"
         placeholder="email"
         v-model="email"
         class="rounded p-5 border border-green-800 my-2"
@@ -28,11 +34,13 @@
 <script>
 export default {
   name: "Register",
+  props: ["profile"],
   data: function () {
     return {
       email: "",
       errors: [],
-      password: ""
+      password: "",
+      username: ""
     }
   },
   methods: {
@@ -43,7 +51,7 @@ export default {
           "X-CSRF-Token": this.$cookies.get("CSRF-TOKEN"),
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ email: this.email, password: this.password })
+        body: JSON.stringify({ name: this.username, email: this.email, password: this.password })
       })
         .then(response => response.json())
         .then(data => {

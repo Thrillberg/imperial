@@ -16,11 +16,12 @@ class Accounts::RegistrationsController < Devise::RegistrationsController
       account.password = registration_params[:password]
       user = User.find(cookies[:user_id])
       account.user = user
-      if account.save
+      user.name = registration_params[:name]
+      if user.save && account.save
         sign_in account
         render(json: {username: user.name, email: account.email}) && return
       else
-        render(json: account.errors.full_messages) && return
+        render(json: account.errors.full_messages + user.errors.full_messages) && return
       end
     end
   end
@@ -74,6 +75,6 @@ class Accounts::RegistrationsController < Devise::RegistrationsController
   private
 
   def registration_params
-    params.require(:registration).permit(:email, :password)
+    params.require(:registration).permit(:email, :name, :password)
   end
 end
