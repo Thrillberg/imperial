@@ -12,7 +12,7 @@ module ApplicationCable
       payload = {
         kind: kind,
         data: {
-          games: Game.includes(:host, :users, :actions).all.map(&:to_json)
+          games: Game.includes(:host, :users, :actions).order(created_at: :desc).all.map(&:to_json)
         }
       }
       ActionCable.server.broadcast(channel, payload)
