@@ -5,7 +5,7 @@ class OpenGameChannel < ApplicationCable::Channel
   end
 
   def receive(data)
-    host = User.find_by(name: data["data"]["host"])
+    host = User.find_by(name: data["host"])
     host.games << Game.create(name: lovely_string, host: host)
     broadcast_games "open_game_channel", "updateGames"
   end

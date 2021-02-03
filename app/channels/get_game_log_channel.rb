@@ -1,8 +1,7 @@
 class GetGameLogChannel < ApplicationCable::Channel
   def subscribed
     stream_from "get_game_log_channel"
-    broadcast_users "get_game_log_channel", "updateUsers"
-    broadcast_games "get_game_log_channel", "updateGames"
+    broadcast_games "get_game_log_channel"
   end
 
   def receive(data)

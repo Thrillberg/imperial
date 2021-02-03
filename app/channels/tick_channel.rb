@@ -6,7 +6,7 @@ class TickChannel < ApplicationCable::Channel
 
   def receive(data)
     game = game_from_data(data)
-    data = data["data"]["action"]
+    data = data["action"]
     game.actions << Action.create(data: data)
 
     broadcast_update_game_log "tick_channel", "updateGameLog", game

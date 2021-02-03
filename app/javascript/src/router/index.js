@@ -81,44 +81,20 @@ class APIClient {
     this.handlers["updateGameLog"] = cb;
   }
 
-  joinGame(userId, gameId, userName) {
-    return this.send(
-      {
-        kind: "joinGame",
-        data: { userName, userId, gameId }
-      },
-      "JoinGameChannel"
-    );
+  openGame(host) {
+    return this.send({ host }, "OpenGameChannel");
   }
 
-  openGame(host) {
-    return this.send(
-      {
-        kind: "openGame",
-        data: { host }
-      },
-      "OpenGameChannel"
-    );
+  joinGame(userId, gameId, userName) {
+    return this.send({ userName, userId, gameId }, "JoinGameChannel");
   }
 
   getGameLog(gameId) {
-    return this.send(
-      {
-        kind: "getGameLog",
-        data: { gameId }
-      },
-      "GetGameLogChannel"
-    );
+    return this.send({ gameId }, "GetGameLogChannel");
   }
 
   tick(gameId, action) {
-    return this.send(
-      {
-        kind: "tick",
-        data: { gameId, action: JSON.stringify(action) }
-      },
-      "TickChannel"
-    );
+    return this.send({ gameId, action: JSON.stringify(action) }, "TickChannel");
   }
 }
 

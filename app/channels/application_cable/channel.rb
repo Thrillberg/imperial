@@ -32,7 +32,7 @@ module ApplicationCable
     private
 
     def game_from_data(data)
-      Game.includes(:actions).find(data["data"]["gameId"])
+      Game.includes(:actions).find(data["gameId"])
     end
   end
 end
