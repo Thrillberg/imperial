@@ -39,7 +39,7 @@
         Do not buy a bond
       </div>
     </div>
-    <div v-else class="flex justify-around">
+    <div v-else>
       <Rondel
         v-bind:game="game"
         v-bind:name="profile.username"

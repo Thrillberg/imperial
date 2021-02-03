@@ -1,23 +1,34 @@
 <template>
-  <svg
-    class="rondel"
-    width="450px"
-    height="450px"
-    viewBox="-20 -20 240 240"
-    version="1.1"
-    xmlns="http://www.w3.org/2000/svg"
-    xmlns:xlink="http://www.w3.org/1999/xlink"
-  >
-    <RondelSlot
-      v-for="(rondel_slot, index) in slots"
-      v-on:slot-clicked="slotClicked(rondel_slot.type)"
-      v-bind:index="index"
-      v-bind:is_valid="isValid(rondel_slot.type)"
-      v-bind:nations="nationsOnSlot(rondel_slot.type)"
-      v-bind:rondel_slot="rondel_slot"
-      v-bind:key="rondel_slot.type"
-    ></RondelSlot>
-  </svg>
+  <div>
+    <div class="flex justify-around">
+      <svg
+        width="450px"
+        height="450px"
+        viewBox="-20 -20 240 240"
+        version="1.1"
+        xmlns="http://www.w3.org/2000/svg"
+        xmlns:xlink="http://www.w3.org/1999/xlink"
+      >
+        <RondelSlot
+          v-for="(rondel_slot, index) in slots"
+          v-on:slot-clicked="slotClicked(rondel_slot.type)"
+          v-on:slot-hovered="slotHovered(rondel_slot.type)"
+          v-on:slot-silent="slotSilent(rondel_slot.type)"
+          :index="index"
+          :is_valid="isValid(rondel_slot.type)"
+          :nations="nationsOnSlot(rondel_slot.type)"
+          :rondel_slot="rondel_slot"
+          :key="rondel_slot.type"
+        ></RondelSlot>
+      </svg>
+    </div>
+    <div v-if="!!helperText" class="w-1/2 mx-auto border border-gray-600 rounded m-2 p-2">
+      <div>{{ helperText }}</div>
+      <div v-if="!!cost">
+        <b>Cost: {{ cost }}m</b>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -52,6 +63,47 @@ export default {
       }
       return nations;
     },
+    slotHovered(slot) {
+      switch(slot) {
+        case "investor": {
+          this.helperText = "Nation pays players interest, investor card holder receives 2m and may purchase a bond, Swiss Banks may invest."
+          break;
+        }
+        case "import": {
+          this.helperText = "Nation may purchase up to 3 units for 1m each, to be placed anywhere in their home territory."
+          break;
+        }
+        case "production1":
+        case "production2": {
+          this.helperText = "Unoccupied factories produce an army or fleet."
+          break;
+        }
+        case "maneuver1":
+        case "maneuver2": {
+          this.helperText = "Units may move. Fleets must move first, followed by armies."
+          break;
+        }
+        case "taxation": {
+          this.helperText = "Player receives tax (2m per unoccupied factory and 1m per dot) from the nation. Power points are increased and nation receives tax, less soldiers' pay (1m per unit)."
+          break;
+        }
+        case "factory": {
+          this.helperText = "Nation builds a factory for 5m."
+          break;
+        }
+      }
+      this.cost = ""
+      if (this.game.currentPlayerName === this.name || this.game.soloMode) {
+        for (const action of this.game.availableActions) {
+          if (action.payload.slot === slot) {
+            this.cost = action.payload.cost
+          }
+        }
+      }
+    },
+    slotSilent(slot) {
+      this.helperText = "";
+    },
     slotClicked: function(slot) {
       if (this.game.currentPlayerName === this.name || this.game.soloMode) {
         for (const action of this.game.availableActions) {
@@ -73,6 +125,8 @@ export default {
   },
   data() {
     return {
+      cost: "",
+      helperText: "",
       slots: [
         { type: "production1", label: "Production", color: "#8C8798" },
         { type: "maneuver1", label: "Maneuver", color: "#7EA850" },
