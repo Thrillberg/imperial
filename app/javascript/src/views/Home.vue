@@ -27,7 +27,7 @@
         Open New Game
       </div>
       <ul v-for="game in games" v-bind:key="game.id">
-        <li class="py-3">
+        <li class="my-3 p-3 border border-rounded max-w-md">
           <div>
             <Star v-if="game.currentPlayer && game.currentPlayer === profile.username" />
             <router-link
@@ -36,29 +36,35 @@
             >
               {{ game.name }}
             </router-link>
-            <span class="text-sm">Hosted by {{ game.host }}</span>
           </div>
-          <span
-            v-if="gameStarted(game.id)"
-            class="rounded p-2 inline-block bg-red-600 text-white"
-            >Game Started!</span
+          <div>
+            {{ game.players.join(", ") }}
+          </div>
+          <div
+            v-if="!gameStarted(game.id) && !isHost(game.id) && !joinable(game.id)"
+            class="rounded mt-2 p-2 inline-block bg-gray-300 cursor-not-allowed"
           >
+            Waiting for host to start game...
+          </div>
+          <router-link
+            :to="{ path: '/game/' + game.id }"
+            v-if="gameStarted(game.id) && game.players.includes(profile.username)"
+            class="rounded mt-2 p-2 inline-block bg-green-600 text-white cursor-pointer"
+          >
+            {{ game.currentPlayer }}'s turn
+          </router-link>
           <div
             v-if="joinable(game.id)"
             v-on:click="joinGame(game.id)"
-            class="rounded p-2 inline-block bg-green-400"
+            class="rounded p-2 inline-block bg-green-600 text-white cursor-pointer"
           >
             Join Game
-          </div>
-          <div v-if="!gameStarted(game.id)">
-            {{ Object.keys(game.players).length }} / 6 players
-            ({{ game.players.join(", ") }})
           </div>
           <router-link
             v-if="!gameStarted(game.id) && isHost(game.id)"
             :to="{ path: '/game/' + game.id }"
             v-on:click.native="startGame(game.id)"
-            class="rounded p-2 inline-block bg-green-600 text-white cursor-pointer"
+            class="rounded mt-2 p-2 inline-block bg-green-600 text-white cursor-pointer"
           >
             Start Game
           </router-link>
