@@ -14,10 +14,12 @@
         </feComponentTransfer>
       </filter>
       <path
-        v-bind:id="rondel_slot.type"
-        v-bind:fill="rondel_slot.color"
-        v-bind:d="svgPathData"
-        v-on:click="$emit('slot-clicked')"
+        :id="rondel_slot.type"
+        :fill="rondel_slot.color"
+        :d="svgPathData"
+        @click="$emit('slot-clicked')"
+        @mouseover="$emit('slot-hovered')"
+        @mouseleave="$emit('slot-silent')"
         stroke="#000000"
         vector-effect="non-scaling-stroke"
         stroke-width="1"
