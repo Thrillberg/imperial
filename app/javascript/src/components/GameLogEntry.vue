@@ -87,7 +87,7 @@ export default {
     },
     rondelAction(payload) {
       let nation = stringify(payload.nation.value);
-      let slot = this.capitalize(payload.slot);
+      let slot = this.capitalize(payload.slot).replace(/\d/g,"");
       return `${nation} advanced to the ${slot} rondel slot.`;
     },
     buildFactoryAction(payload) {
