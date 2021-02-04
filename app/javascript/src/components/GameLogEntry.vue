@@ -1,24 +1,36 @@
 <template>
-  <div class="border border-black rounded p-2 m-2">
-    <div>
-      <b>Type:</b> {{ action.type }}
-    </div>
-    <div>
-      <b>Payload:</b> {{ action.payload }}
-    </div>
-    <div>
-      <b>Text:</b>
-      <svg 
-        class="inline-block mr-1" 
-        v-if="action.type === 'rondel' && action.payload.nation" 
-        xmlns="http://www.w3.org/2000/svg" 
-        width="30" 
-        height="20"
-        >
-        <Flag :nation="action.payload.nation.value" :width="(30).toString()"></Flag>
-      </svg>{{ processAction(action) }}
+  <div v-if="Array.isArray(event)" class="border border-black rounded p-2 m-2 rondel">
+    <div v-for="(action, index) in event" :key="(index + Math.random()).toString()">
+      <div v-if="action.type === 'rondel'">
+        <div>
+          <svg 
+            class="inline-block mr-1" 
+            xmlns="http://www.w3.org/2000/svg" 
+            width="30" 
+            height="20"
+            >
+            <Flag :nation="action.payload.nation.value" :width="(30).toString()"></Flag>
+          </svg>{{ processAction(action) }}
+        </div>
+      </div>  
+      <div v-else>
+        <div>
+          - {{ processAction(action) }}
+        </div>
+      </div>
     </div>
   </div>
+  <div v-else>
+    <div>
+      <b>Type:</b> {{ event.type }}
+    </div>
+    <div>
+      <b>Payload:</b> {{ event.payload }}
+    </div>
+    <div>
+      <b>Text:</b> {{ processAction(event) }}
+    </div>
+  </div> 
 </template>
 
 <script>
@@ -26,7 +38,12 @@ import Flag from "./flags/Flag.vue";
 import stringify from "../stringify.js";
 export default {
   name: "GameLogEntry",
-  props: { action: Object },
+  props: { events: Object, index: Number },
+  computed: {
+    event: function() {
+      return this.events.event
+    }
+  },
   components: { Flag },
   methods: {
     capitalize(word) {
