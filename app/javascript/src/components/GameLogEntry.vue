@@ -1,36 +1,35 @@
 <template>
-  <div v-if="Array.isArray(event)" class="border border-black rounded p-2 m-2 rondel">
-    <div v-for="(action, index) in event" :key="(index + Math.random()).toString()">
-      <div v-if="action.type === 'rondel'">
-        <div>
+  <div class="border border-black bg-gray-100 rounded p-2 m-2 rondel">
+    <div v-for="(action, index) in event" :key="index">
+      <div v-if="action.type === 'initialize'">
+        <p>{{ action.payload.soloMode ? "Solo game started!" : "Game started!" }}</p>
+        <p v-for="(player, index) in action.payload.players" :key="index">
           <svg 
             class="inline-block mr-1" 
             xmlns="http://www.w3.org/2000/svg" 
             width="30" 
             height="20"
             >
-            <Flag :nation="action.payload.nation.value" :width="(30).toString()"></Flag>
-          </svg>{{ processAction(action) }}
-        </div>
+            <Flag :nation="player.nation.value" width="30"></Flag>
+          </svg>
+          <span v-html=initializeAction(player)></span>
+        </p>
+      </div>
+      <div v-else-if="action.type === 'rondel'">
+        <svg 
+          class="inline-block mr-1" 
+          xmlns="http://www.w3.org/2000/svg" 
+          width="30" 
+          height="20"
+          >
+          <Flag :nation="action.payload.nation.value" width="30"></Flag>
+        </svg>{{ processAction(action) }}
       </div>  
       <div v-else>
-        <div>
-          - {{ processAction(action) }}
-        </div>
+        - {{ processAction(action) }}
       </div>
     </div>
   </div>
-  <div v-else>
-    <div>
-      <b>Type:</b> {{ event.type }}
-    </div>
-    <div>
-      <b>Payload:</b> {{ event.payload }}
-    </div>
-    <div>
-      <b>Text:</b> {{ processAction(event) }}
-    </div>
-  </div> 
 </template>
 
 <script>
@@ -84,6 +83,11 @@ export default {
           return notImplemented;
       }
       return notImplemented;
+    },
+    initializeAction(player) {
+      let name = player.id;
+      let nation = stringify(player.nation.value);
+      return `<strong>${nation}</strong> is controlled by <strong>${name}</strong>`;
     },
     rondelAction(payload) {
       let nation = stringify(payload.nation.value);
