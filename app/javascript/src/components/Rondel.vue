@@ -64,42 +64,53 @@ export default {
       return nations;
     },
     slotHovered(slot) {
-      switch(slot) {
-        case "investor": {
-          this.helperText = "Nation pays players interest, investor card holder receives 2m and may purchase a bond, Swiss Banks may invest."
-          break;
+      if (this.showRondelHelperText()) {
+        switch(slot) {
+          case "investor": {
+            this.helperText = "Nation pays players interest, investor card holder receives 2m and may purchase a bond, Swiss Banks may invest."
+            break;
+          }
+          case "import": {
+            this.helperText = "Nation may purchase up to 3 units for 1m each, to be placed anywhere in their home territory."
+            break;
+          }
+          case "production1":
+          case "production2": {
+            this.helperText = "Unoccupied factories produce an army or fleet."
+            break;
+          }
+          case "maneuver1":
+          case "maneuver2": {
+            this.helperText = "Units may move. Fleets must move first, followed by armies."
+            break;
+          }
+          case "taxation": {
+            this.helperText = "Player receives tax (2m per unoccupied factory and 1m per dot) from the nation. Power points are increased and nation receives tax, less soldiers' pay (1m per unit)."
+            break;
+          }
+          case "factory": {
+            this.helperText = "Nation builds a factory for 5m."
+            break;
+          }
         }
-        case "import": {
-          this.helperText = "Nation may purchase up to 3 units for 1m each, to be placed anywhere in their home territory."
-          break;
-        }
-        case "production1":
-        case "production2": {
-          this.helperText = "Unoccupied factories produce an army or fleet."
-          break;
-        }
-        case "maneuver1":
-        case "maneuver2": {
-          this.helperText = "Units may move. Fleets must move first, followed by armies."
-          break;
-        }
-        case "taxation": {
-          this.helperText = "Player receives tax (2m per unoccupied factory and 1m per dot) from the nation. Power points are increased and nation receives tax, less soldiers' pay (1m per unit)."
-          break;
-        }
-        case "factory": {
-          this.helperText = "Nation builds a factory for 5m."
-          break;
-        }
-      }
-      this.cost = ""
-      if (this.game.currentPlayerName === this.name || this.game.soloMode) {
+        this.cost = ""
         for (const action of this.game.availableActions) {
           if (action.payload.slot === slot) {
             this.cost = action.payload.cost
           }
         }
       }
+    },
+    showRondelHelperText: function() {
+      let allActionsAreRondel = true;
+      for (const action of this.game.availableActions) {
+        if (action.type !== "rondel") {
+          allActionsAreRondel = false;
+        }
+      }
+      return allActionsAreRondel && (
+        this.game.currentPlayerName === this.name || this.game.soloMode
+      )
     },
     slotSilent(slot) {
       this.helperText = "";

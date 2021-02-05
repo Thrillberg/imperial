@@ -32,7 +32,7 @@
     <Flag
       v-for="(nation, index) in availableFleets()"
       :nation="nation"
-      :key="nation + index"
+      :key="nation + index + 'F'"
       :x="x(index)"
       :y="y(index)"
       :fleet="true"
@@ -42,7 +42,7 @@
     <Flag
       v-for="(nation, index) in availableArmies()"
       :nation="nation"
-      :key="nation + index"
+      :key="nation + index + 'A'"
       :x="x(index)"
       :y="y(index)"
       width="13"
