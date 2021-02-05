@@ -39,10 +39,8 @@
         </div>
       </div>
     </div>
-    <GameLogEntry
-      v-for="(action, index) in reversedGameLog"
-      :action="action"
-      :key="index"
+    <GameLog
+      :log="game.log"
     />
   </div>
 </template>
@@ -56,7 +54,7 @@ import { apiClient } from "../router/index.js";
 import Board from "../components/board/Board.vue";
 import Flag from "../components/flags/Flag.vue";
 import GameDetails from "../components/GameDetails.vue";
-import GameLogEntry from "../components/GameLogEntry.vue";
+import GameLog from "../components/GameLog.vue";
 
 import getGameLog from "../getGameLog.js";
 
@@ -66,7 +64,7 @@ export default {
     Board,
     Flag,
     GameDetails,
-    GameLogEntry
+    GameLog
   },
   props: ["profile", "users", "games"],
   data: () => {
