@@ -19,7 +19,7 @@ export default {
   components: { GameLogEntry },
   methods: {
     processedLog() {
-      let rawlog = this.log;
+      let rawlog = this.log || [];
       let entries = [];
       rawlog.forEach((action) => {
         if (action.type === "initialize") {
