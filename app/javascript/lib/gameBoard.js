@@ -77,19 +77,35 @@ export default class GameBoard {
     return out;
   }
 
-  convoyingFleetsUsed({ origin, destination }) {
-    validate(origin);
-    validate(destiantion);
+  pathsFrom({ origin, nation, isFleet, friendlyFleets, isOccupied }, out) {
+    this.validate(origin);
 
-    if (this.cannotBeReachedByLand(origin, destination)) {
-      let fleets = new Set();
-
-      return fleets;
+    // Add all immediate neighbors
+    for (const n of this.graph.get(origin).neighbors) {
+      // Don't repeat ourselves
+      if (origin === "london") {
+        console.log(isFleet, n, this.graph.get("london").neighbors)
+      }
+      if (out.includes(n)) {
+        return out;
+      }
+      // Fleet maneuvering to the ocean
+      if (isFleet && this.graph.get(n).isOcean) {
+        return out.concat([n]);
+      // Army maneuvering to its own land
+      } else if (!isFleet && !this.graph.get(n).isOcean && this.graph.get(n).nation === nation) {
+        return out.concat(this.pathsFrom({ origin: n, nation, isFleet, friendlyFleets, isOccupied }, out.concat([n])));
+      // Army maneuvering to foreign land
+      } else if (!isFleet && !this.graph.get(n).isOcean) {
+        return out.concat([n]);
+      // Army convoying over ocean
+      } else if (!isFleet && this.graph.get(n).isOcean && friendlyFleets.has(n)) {
+        console.log("HI")
+        return out.concat(this.pathsFrom({ origin: n, nation, isFleet, friendlyFleets, isOccupied }, out.concat([n])));
+      }
     }
-  }
 
-  cannotBeReachedByLand(origin, destination) {
-    return true;
+    return out;
   }
 
   validate(origin) {

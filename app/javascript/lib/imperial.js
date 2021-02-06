@@ -24,6 +24,7 @@ export default class Imperial {
     this.soloMode = false;
     this.swissBanks = [];
     this.passingThroughInvestor = false;
+    this.fleetConvoyCount = {};
   }
 
   tick(action) {
@@ -225,6 +226,7 @@ export default class Imperial {
 
   endManeuver() {
     this.unitsToMove = [];
+    this.usedFleets = {};
     this.maneuvering = false;
     this.handleAdvancePlayer();
     this.availableActions = new Set(this.rondelActions(this.currentNation));
@@ -432,6 +434,13 @@ export default class Imperial {
       this.units.get(this.currentNation).get(destination).fleets++;
     }
     if (unitType === "army") {
+      const paths = this.board.pathsFrom({ origin, nation: this.currentNation, isFleet: false, friendlyFleets: new Set(), isOccupied: false }, [origin]);
+      const ourPath = paths.filter(path => path[paths.length - 1] === destination)[0] || [];
+      const usedFleets = ourPath.filter(province => this.graph.get(province).isOcean);
+      for (const province of usedFleets) {
+        this.fleetConvoyCount[province] = (this.fleetConvoyCount[province] || 0) + 1
+      }
+
       this.units.get(this.currentNation).get(origin).armies--;
       this.units.get(this.currentNation).get(destination).armies++;
 
@@ -520,7 +529,7 @@ export default class Imperial {
         }
         const friendlyFleets = new Set();
         for (const [province, units] of this.units.get(this.currentNation)) {
-          if (units.fleets > 0) {
+          if (units.fleets - (this.fleetConvoyCount[province] || 0) > 0) {
             friendlyFleets.add(province);
           }
         }
@@ -922,7 +931,7 @@ export default class Imperial {
       } else if (type === "army") {
         const friendlyFleets = new Set();
         for (const [province, units] of this.units.get(this.currentNation)) {
-          if (units.fleets > 0) {
+          if (units.fleets - (this.fleetConvoyCount[province] || 0) > 0) {
             friendlyFleets.add(province);
           }
         }
