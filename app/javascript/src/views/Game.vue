@@ -7,6 +7,7 @@
       <div class="w-2/3 border border-gray-500 rounded">
         <Board
           :game="game"
+          :profile="profile"
           :gameStarted="gameStarted"
           :select_province="selectProvince"
           :valid_provinces="validProvinces()"
