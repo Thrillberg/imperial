@@ -31,81 +31,55 @@ export default class GameBoard {
   }
 
   neighborsFor({ origin, nation, isFleet, friendlyFleets, isOccupied }) {
-    this.validate(origin);
-
-    const out = new Set();
-
-    // Add all immediate neighbors
-    for (const n of this.graph.get(origin).neighbors) {
-      out.add(n);
-    }
-
-    // Add all home provinces if origin is in their home nation
-    if (nation === this.graph.get(origin).nation && !isFleet && !isOccupied) {
-      for (const n of this.byNation.get(nation)) {
-        for (const x of this.graph.get(n).neighbors) {
-          out.add(x);
-        }
-      }
-    }
-
-    // Convoy
-    if (!isFleet) {
-      for (const n of out) {
-        if (this.graph.get(n).isOcean) {
-          if (friendlyFleets.has(n)) {
-            for (const neighbor of this.graph.get(n).neighbors) {
-              out.add(neighbor);
-            }
-          }
-        }
-      }
-    }
-
-    // Armies can not swim
-    // We all dwell where we belong
-    // Navies can not walk
-    for (const n of out) {
-      if (this.graph.get(n).isOcean ^ isFleet) {
-        out.delete(n);
-      }
-    }
-
-    // Selflessness is a virtue
-    out.delete(origin);
-
-    return out;
+    const allPaths = this.pathsFrom({ origin, nation, isFleet, friendlyFleets, isOccupied}, [origin]);
+    return allPaths.map(path => path[path.length - 1])
   }
 
-  pathsFrom({ origin, nation, isFleet, friendlyFleets, isOccupied }, out) {
+  pathsFrom({ origin, nation, isFleet, friendlyFleets, isOccupied }, currentPath) {
     this.validate(origin);
+    let paths = [currentPath];
 
     // Add all immediate neighbors
-    for (const n of this.graph.get(origin).neighbors) {
+    for (const province of this.graph.get(origin).neighbors) {
       // Don't repeat ourselves
-      if (origin === "london") {
-        console.log(isFleet, n, this.graph.get("london").neighbors)
-      }
-      if (out.includes(n)) {
-        return out;
+      if (currentPath.includes(province)) {
+        continue;
       }
       // Fleet maneuvering to the ocean
-      if (isFleet && this.graph.get(n).isOcean) {
-        return out.concat([n]);
+      if (isFleet && this.graph.get(province).isOcean) {
+        paths.push(currentPath.concat([province]));
       // Army maneuvering to its own land
-      } else if (!isFleet && !this.graph.get(n).isOcean && this.graph.get(n).nation === nation) {
-        return out.concat(this.pathsFrom({ origin: n, nation, isFleet, friendlyFleets, isOccupied }, out.concat([n])));
+      } else if (!isFleet && !this.graph.get(province).isOcean && this.graph.get(province).nation === nation && !isOccupied) {
+        const newPaths = this.pathsFrom(
+          { origin: province, nation, isFleet, friendlyFleets, isOccupied },
+          currentPath.concat([province])
+        );
+        paths = paths.concat(newPaths);
       // Army maneuvering to foreign land
-      } else if (!isFleet && !this.graph.get(n).isOcean) {
-        return out.concat([n]);
+      } else if (!isFleet && !this.graph.get(province).isOcean) {
+        paths.push(currentPath.concat([province]));
       // Army convoying over ocean
-      } else if (!isFleet && this.graph.get(n).isOcean && friendlyFleets.has(n)) {
-        console.log("HI")
-        return out.concat(this.pathsFrom({ origin: n, nation, isFleet, friendlyFleets, isOccupied }, out.concat([n])));
+      } else if (!isFleet && this.graph.get(province).isOcean && friendlyFleets.has(province)) {
+        const newPaths = this.pathsFrom(
+          { origin: province, nation, isFleet, friendlyFleets, isOccupied },
+          currentPath.concat([province])
+        );
+        paths = paths.concat(newPaths);
       }
     }
 
-    return out;
+    // Armies cannot end up on the ocean
+    paths = paths.filter((path) => {
+      if (!isFleet && this.graph.get(path[path.length - 1]).isOcean) {
+        return false;
+      }
+      return true;
+    });
+
+    // Units cannot begin and end in the same spot
+    paths = paths.filter(path => path.length > 1);
+
+    return paths;
   }
 
   validate(origin) {

@@ -2358,9 +2358,9 @@ describe("imperial", () => {
             new Set([
               Action.endManeuver(),
               Action.maneuver({ origin: "b", destination: "a" }),
-              Action.maneuver({ origin: "d", destination: "c" }),
               Action.maneuver({ origin: "d", destination: "e" }),
-              Action.maneuver({ origin: "d", destination: "f" })
+              Action.maneuver({ origin: "d", destination: "c" }),
+              Action.maneuver({ origin: "d", destination: "f" }),
             ])
           );
 
@@ -2371,12 +2371,13 @@ describe("imperial", () => {
               Action.endManeuver(),
               Action.maneuver({ origin: "d", destination: "e" }),
               Action.maneuver({ origin: "d", destination: "c" }),
-              Action.maneuver({ origin: "d", destination: "f" })
+              Action.maneuver({ origin: "d", destination: "f" }),
+              Action.maneuver({ origin: "d", destination: "g" })
             ])
           );
         });
 
-        test.only("fleet can convoy only one army", () => {
+        test("fleet can convoy only one army", () => {
           const game = newGame();
           game.units.get(Nation.AH).get("b").fleets++;
           game.units.get(Nation.AH).get("c").armies++;
@@ -2403,8 +2404,8 @@ describe("imperial", () => {
               Action.endManeuver(),
               Action.maneuver({ origin: "c", destination: "d" }),
               Action.maneuver({ origin: "c", destination: "e" }),
+              Action.maneuver({ origin: "c", destination: "g" }),
               Action.maneuver({ origin: "c", destination: "f" }),
-              Action.maneuver({ origin: "c", destination: "g" })
             ])
           );
 
@@ -2844,8 +2845,8 @@ describe("imperial", () => {
 
           expect(game.availableActions).toEqual(
             new Set([
-              Action.maneuver({ origin: "b", destination: "a" }),
-              Action.endManeuver()
+              Action.endManeuver(),
+              Action.maneuver({ origin: "b", destination: "a" })
             ])
           );
         });
