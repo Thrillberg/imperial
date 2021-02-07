@@ -21,8 +21,7 @@ export default {
       rawlog.forEach((action) => {
         if (action.type === "initialize" || action.type === "rondel") {
           entries.push({event: [action]});
-        }
-        else {
+        } else {
           entries[entries.length - 1].event.push(action);
         }
       });
