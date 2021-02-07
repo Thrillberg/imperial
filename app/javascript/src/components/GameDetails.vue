@@ -52,7 +52,7 @@
     >
       <div>
         You have
-        <b>{{ 3 - importPlacements.length }}</b> imports left.
+        <b>{{ this.game.maxImports - importPlacements.length }}</b> imports left.
       </div>
       <div
         @click="$emit('runImport')"
