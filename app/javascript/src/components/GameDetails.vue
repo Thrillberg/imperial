@@ -121,17 +121,19 @@ export default {
   props: ["game", "controllingPlayerName", "profile", "importPlacements"],
   computed: {
     purchasingBond: function () {
-      const purchasingBond = Array.from(this.game.availableActions).every(
-        (action) => action.type === "bondPurchase" || action.type === "skipBondPurchase"
-      );
+      const purchasingBond = this.game.availableActions.size > 0 &&
+        Array.from(this.game.availableActions).every(
+          (action) => action.type === "bondPurchase" || action.type === "skipBondPurchase"
+        );
       return purchasingBond && (this.profile.username === this.controllingPlayerName || (this.game.soloMode && this.profile.username in this.game.players));
     },
     canForceInvestor: function () {
-      if (Array.from(this.game.availableActions).every((action) => action.type === "forceInvestor" || action.type === "skipForceInvestor")) {
-        this.controllingPlayerName = "";
-        if (this.game.swissBanks.includes(this.profile.username) || (this.game.soloMode && this.profile.username in this.game.players)) {
-          return true;
-        }
+      if (this.game.availableActions.size > 0 &&
+        Array.from(this.game.availableActions).every((action) => action.type === "forceInvestor" || action.type === "skipForceInvestor")) {
+          this.controllingPlayerName = "";
+          if (this.game.swissBanks.includes(this.profile.username) || (this.game.soloMode && this.profile.username in this.game.players)) {
+            return true;
+          }
       }
     }
   },
