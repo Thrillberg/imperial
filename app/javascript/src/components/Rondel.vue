@@ -47,7 +47,8 @@ export default {
     isValid(slot) {
       if (
         this.validSlots().includes(slot) &&
-        (this.game.currentPlayerName === this.name || this.game.soloMode)
+        (this.game.currentPlayerName === this.name ||
+        (this.game.soloMode && this.name in this.game.players))
       ) {
         return true;
       }
@@ -109,14 +110,14 @@ export default {
         }
       }
       return allActionsAreRondel && (
-        this.game.currentPlayerName === this.name || this.game.soloMode
+        this.game.currentPlayerName === this.name || (this.game.soloMode && this.name in this.game.players)
       )
     },
     slotSilent(slot) {
       this.helperText = "";
     },
     slotClicked: function(slot) {
-      if (this.game.currentPlayerName === this.name || this.game.soloMode) {
+      if (this.game.currentPlayerName === this.name || (this.game.soloMode && this.name in this.game.players)) {
         for (const action of this.game.availableActions) {
           if (action.payload.slot === slot) {
             this.$emit("tick-with-action", action);

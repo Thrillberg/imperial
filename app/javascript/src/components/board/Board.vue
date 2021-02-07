@@ -111,6 +111,7 @@ export default {
   name: "Board",
   props: {
     game: Object,
+    profile: Object,
     gameStarted: Boolean,
     importing_units: Array,
     select_province: Function,
@@ -227,7 +228,7 @@ export default {
       return flags;
     },
     isValid(province) {
-      if (this.valid_provinces.includes(province)) {
+      if (this.valid_provinces.includes(province) && (this.profile.username in this.game.players)) {
         return true;
       }
 
