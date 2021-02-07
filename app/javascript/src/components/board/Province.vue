@@ -48,15 +48,15 @@
       width="13"
       height="8"
     ></Flag>
-    <rect
+    <circle
       v-if="importingArmy"
-      :x="x(0)"
-      :y="y(0)"
-      width="13"
-      height="8"
-      fill="none"
+      :cx="x(0) + 6"
+      :cy="y(0) - 5"
+      r="4"
+      fill="red"
+      stroke="red"
       stroke-dasharray="1,1"
-    ></rect>
+    ></circle>
   </component>
 </template>
 
