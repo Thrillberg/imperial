@@ -30,8 +30,8 @@ export default class GameBoard {
     });
   }
 
-  neighborsFor({ origin, nation, isFleet, friendlyFleets, isOccupied }) {
-    const allPaths = this.pathsFrom({ origin, nation, isFleet, friendlyFleets, isOccupied}, [origin]);
+  neighborsFor(originData) {
+    const allPaths = this.pathsFrom(originData, [originData.origin]);
     return allPaths.map(path => path[path.length - 1])
   }
 
