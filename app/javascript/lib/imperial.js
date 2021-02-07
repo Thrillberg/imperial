@@ -25,6 +25,7 @@ export default class Imperial {
     this.swissBanks = [];
     this.passingThroughInvestor = false;
     this.fleetConvoyCount = {};
+    this.maxImports = 0;
   }
 
   tick(action) {
@@ -742,64 +743,31 @@ export default class Imperial {
   importRondel(action) {
     const availableActions = new Set([Action.import({ placements: [] })]);
     const homeProvinces = this.board.byNation.get(action.payload.nation);
+    const treasury = this.nations.get(action.payload.nation).treasury;
+    if (treasury < 3) {
+      this.maxImports = treasury;
+    } else {
+      this.maxImports = 3;
+    }
     for (const province of homeProvinces) {
-      availableActions.add(
-        Action.import({ placements: [{ province, type: "army" }] })
-      );
-      if (this.board.graph.get(province).factoryType === "shipyard") {
+      if (treasury >= 1) {
         availableActions.add(
-          Action.import({ placements: [{ province, type: "fleet" }] })
-        );
-      }
-
-      for (const province2 of homeProvinces) {
-        availableActions.add(
-          Action.import({
-            placements: [
-              { province, type: "army" },
-              { province: province2, type: "army" }
-            ]
-          })
+          Action.import({ placements: [{ province, type: "army" }] })
         );
         if (this.board.graph.get(province).factoryType === "shipyard") {
           availableActions.add(
-            Action.import({
-              placements: [
-                { province, type: "fleet" },
-                { province: province2, type: "army" }
-              ]
-            })
+            Action.import({ placements: [{ province, type: "fleet" }] })
           );
         }
-        if (this.board.graph.get(province2).factoryType === "shipyard") {
-          availableActions.add(
-            Action.import({
-              placements: [
-                { province, type: "army" },
-                { province: province2, type: "fleet" }
-              ]
-            })
-          );
-        }
-        if (
-          this.board.graph.get(province).factoryType === "shipyard" &&
-          this.board.graph.get(province2).factoryType === "shipyard"
-        ) {
-          availableActions.add(
-            Action.import(
-              { placements: [{ province, type: "fleet" }] },
-              { province: province2, type: "fleet" }
-            )
-          );
-        }
+      }
 
-        for (const province3 of homeProvinces) {
+      for (const province2 of homeProvinces) {
+        if (treasury >= 2) {
           availableActions.add(
             Action.import({
               placements: [
                 { province, type: "army" },
-                { province: province2, type: "army" },
-                { province: province3, type: "army" }
+                { province: province2, type: "army" }
               ]
             })
           );
@@ -808,8 +776,7 @@ export default class Imperial {
               Action.import({
                 placements: [
                   { province, type: "fleet" },
-                  { province: province2, type: "army" },
-                  { province: province3, type: "army" }
+                  { province: province2, type: "army" }
                 ]
               })
             );
@@ -819,19 +786,7 @@ export default class Imperial {
               Action.import({
                 placements: [
                   { province, type: "army" },
-                  { province: province2, type: "fleet" },
-                  { province: province3, type: "army" }
-                ]
-              })
-            );
-          }
-          if (this.board.graph.get(province3).factoryType === "shipyard") {
-            availableActions.add(
-              Action.import({
-                placements: [
-                  { province, type: "army" },
-                  { province: province2, type: "army" },
-                  { province: province3, type: "fleet" }
+                  { province: province2, type: "fleet" }
                 ]
               })
             );
@@ -841,57 +796,115 @@ export default class Imperial {
             this.board.graph.get(province2).factoryType === "shipyard"
           ) {
             availableActions.add(
-              Action.import({
-                placements: [
-                  { province, type: "fleet" },
-                  { province: province2, type: "fleet" },
-                  { province: province3, type: "army" }
-                ]
-              })
+              Action.import(
+                { placements: [{ province, type: "fleet" }] },
+                { province: province2, type: "fleet" }
+              )
             );
           }
-          if (
-            this.board.graph.get(province).factoryType === "shipyard" &&
-            this.board.graph.get(province3).factoryType === "shipyard"
-          ) {
-            availableActions.add(
-              Action.import({
-                placements: [
-                  { province, type: "fleet" },
-                  { province: province2, type: "army" },
-                  { province: province3, type: "fleet" }
-                ]
-              })
-            );
-          }
-          if (
-            this.board.graph.get(province2).factoryType === "shipyard" &&
-            this.board.graph.get(province3).factoryType === "shipyard"
-          ) {
+        }
+
+        for (const province3 of homeProvinces) {
+          if (treasury >= 3) {
             availableActions.add(
               Action.import({
                 placements: [
                   { province, type: "army" },
-                  { province: province2, type: "fleet" },
-                  { province: province3, type: "fleet" }
+                  { province: province2, type: "army" },
+                  { province: province3, type: "army" }
                 ]
               })
             );
-          }
-          if (
-            this.board.graph.get(province).factoryType === "shipyard" &&
-            this.board.graph.get(province2).factoryType === "shipyard" &&
-            this.board.graph.get(province3).factoryType === "shipyard"
-          ) {
-            availableActions.add(
-              Action.import({
-                placements: [
-                  { province, type: "fleet" },
-                  { province: province2, type: "fleet" },
-                  { province: province3, type: "fleet" }
-                ]
-              })
-            );
+            if (this.board.graph.get(province).factoryType === "shipyard") {
+              availableActions.add(
+                Action.import({
+                  placements: [
+                    { province, type: "fleet" },
+                    { province: province2, type: "army" },
+                    { province: province3, type: "army" }
+                  ]
+                })
+              );
+            }
+            if (this.board.graph.get(province2).factoryType === "shipyard") {
+              availableActions.add(
+                Action.import({
+                  placements: [
+                    { province, type: "army" },
+                    { province: province2, type: "fleet" },
+                    { province: province3, type: "army" }
+                  ]
+                })
+              );
+            }
+            if (this.board.graph.get(province3).factoryType === "shipyard") {
+              availableActions.add(
+                Action.import({
+                  placements: [
+                    { province, type: "army" },
+                    { province: province2, type: "army" },
+                    { province: province3, type: "fleet" }
+                  ]
+                })
+              );
+            }
+            if (
+              this.board.graph.get(province).factoryType === "shipyard" &&
+              this.board.graph.get(province2).factoryType === "shipyard"
+            ) {
+              availableActions.add(
+                Action.import({
+                  placements: [
+                    { province, type: "fleet" },
+                    { province: province2, type: "fleet" },
+                    { province: province3, type: "army" }
+                  ]
+                })
+              );
+            }
+            if (
+              this.board.graph.get(province).factoryType === "shipyard" &&
+              this.board.graph.get(province3).factoryType === "shipyard"
+            ) {
+              availableActions.add(
+                Action.import({
+                  placements: [
+                    { province, type: "fleet" },
+                    { province: province2, type: "army" },
+                    { province: province3, type: "fleet" }
+                  ]
+                })
+              );
+            }
+            if (
+              this.board.graph.get(province2).factoryType === "shipyard" &&
+              this.board.graph.get(province3).factoryType === "shipyard"
+            ) {
+              availableActions.add(
+                Action.import({
+                  placements: [
+                    { province, type: "army" },
+                    { province: province2, type: "fleet" },
+                    { province: province3, type: "fleet" }
+                  ]
+                })
+              );
+            }
+            if (
+              this.board.graph.get(province).factoryType === "shipyard" &&
+              this.board.graph.get(province2).factoryType === "shipyard" &&
+              this.board.graph.get(province3).factoryType === "shipyard"
+            ) {
+              availableActions.add(
+                Action.import({
+                  placements: [
+                    { province, type: "fleet" },
+                    { province: province2, type: "fleet" },
+                    { province: province3, type: "fleet" }
+                  ]
+                })
+              );
+            }
           }
         }
       }

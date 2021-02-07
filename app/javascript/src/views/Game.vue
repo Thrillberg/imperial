@@ -150,7 +150,7 @@ export default {
           // gets added to the placements.
         } else if (this.game.importing) {
           this.importPlacements.push(province);
-          if (this.importPlacements.length === 3) {
+          if (this.importPlacements.length === this.game.maxImports) {
             this.runImport();
           }
         } else if (this.game.buildingFactory) {
