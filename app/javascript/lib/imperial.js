@@ -267,6 +267,7 @@ export default class Imperial {
         }
       });
     }
+    this.availableActions = new Set();
   }
 
   fight(action) {
@@ -661,10 +662,10 @@ export default class Imperial {
           this.middleOfInvestorTurn();
           this.passingThroughInvestor = false;
         } else {
-          this.availableActions = new Set(
-            this.rondelActions(this.nextNation(this.currentNation))
-          );
           this.handleAdvancePlayer();
+          this.availableActions = new Set(
+            this.rondelActions(this.currentNation)
+          );
         }
         return;
       }

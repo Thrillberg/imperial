@@ -1,5 +1,15 @@
 <template>
   <div>
+    <div v-if="game.winner" class="bg-gray-200 h-30 w-screen fixed opacity-60 text-center py-20">
+      <div class="align-middle text-center text-7xl">
+        <div>
+          Game Over
+        </div>
+        <div>
+          {{ game.winner }} won!
+        </div>
+      </div>
+    </div>
     <router-link to="/">
       <p class="bg-green-200 cursor-pointer border border-green-200 rounded px-1 m-2 inline-block">Back</p>
     </router-link>

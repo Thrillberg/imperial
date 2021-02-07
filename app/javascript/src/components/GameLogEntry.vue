@@ -80,7 +80,7 @@ export default {
         case "skipForceInvestor":
           return notImplemented;
         case "endGame":
-          return notImplemented;
+          return "Game Over!";
       }
       return notImplemented;
     },
