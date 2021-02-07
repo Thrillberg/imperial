@@ -24,6 +24,7 @@ export default class Imperial {
     this.soloMode = false;
     this.swissBanks = [];
     this.passingThroughInvestor = false;
+    this.fleetConvoyCount = {};
   }
 
   tick(action) {
@@ -225,6 +226,7 @@ export default class Imperial {
 
   endManeuver() {
     this.unitsToMove = [];
+    this.fleetConvoyCount = {};
     this.maneuvering = false;
     this.handleAdvancePlayer();
     this.availableActions = new Set(this.rondelActions(this.currentNation));
@@ -432,6 +434,23 @@ export default class Imperial {
       this.units.get(this.currentNation).get(destination).fleets++;
     }
     if (unitType === "army") {
+      const friendlyFleets = new Set();
+      for (const [province, units] of this.units.get(this.currentNation)) {
+        if (units.fleets - (this.fleetConvoyCount[province] || 0) > 0) {
+          friendlyFleets.add(province);
+        }
+      }
+      const paths = this.board.pathsFrom({ origin, nation: this.currentNation, isFleet: false, friendlyFleets, isOccupied: false }, [origin]);
+      const validPaths = paths.filter(path => path[path.length - 1] === destination) || [];
+      const ourPath = validPaths.sort((pathA, pathB) => {
+        return pathA.filter(province => this.board.graph.get(province).isOcean).length -
+          pathB.filter(province => this.board.graph.get(province).isOcean).length
+      })[0];
+      const usedFleets = ourPath.filter(province => this.board.graph.get(province).isOcean);
+      for (const province of usedFleets) {
+        this.fleetConvoyCount[province] = (this.fleetConvoyCount[province] || 0) + 1
+      }
+
       this.units.get(this.currentNation).get(origin).armies--;
       this.units.get(this.currentNation).get(destination).armies++;
 
@@ -520,7 +539,7 @@ export default class Imperial {
         }
         const friendlyFleets = new Set();
         for (const [province, units] of this.units.get(this.currentNation)) {
-          if (units.fleets > 0) {
+          if (units.fleets - (this.fleetConvoyCount[province] || 0) > 0) {
             friendlyFleets.add(province);
           }
         }
@@ -540,6 +559,7 @@ export default class Imperial {
     } else {
       // No more units may be maneuvered on this turn.
       this.maneuvering = false;
+      this.fleetConvoyCount = {};
       if (this.passingThroughInvestor) {
         this.middleOfInvestorTurn();
         this.passingThroughInvestor = false;
@@ -922,7 +942,7 @@ export default class Imperial {
       } else if (type === "army") {
         const friendlyFleets = new Set();
         for (const [province, units] of this.units.get(this.currentNation)) {
-          if (units.fleets > 0) {
+          if (units.fleets - (this.fleetConvoyCount[province] || 0) > 0) {
             friendlyFleets.add(province);
           }
         }
@@ -940,7 +960,6 @@ export default class Imperial {
             })
           );
         }
-
       }
     });
 

@@ -2084,14 +2084,19 @@ describe("imperial", () => {
             { name: "d", nation: Nation.AH },
             { name: "e", nation: null },
             { name: "f", nation: Nation.IT },
+            { name: "g", nation: null },
           ],
+          //"g" - "a" - "e"
+          //     /   \  /
+          //   "b"   "d" - "c" - "f"
           edges: [
             ["a", "b"],
             ["c", "d"],
             ["a", "d"],
             ["a", "e"],
             ["c", "f"],
-            ["d", "e"]
+            ["d", "e"],
+            ["a", "g"]
           ]
         });
 
@@ -2353,9 +2358,9 @@ describe("imperial", () => {
             new Set([
               Action.endManeuver(),
               Action.maneuver({ origin: "b", destination: "a" }),
-              Action.maneuver({ origin: "d", destination: "c" }),
               Action.maneuver({ origin: "d", destination: "e" }),
-              Action.maneuver({ origin: "d", destination: "f" })
+              Action.maneuver({ origin: "d", destination: "c" }),
+              Action.maneuver({ origin: "d", destination: "f" }),
             ])
           );
 
@@ -2366,7 +2371,52 @@ describe("imperial", () => {
               Action.endManeuver(),
               Action.maneuver({ origin: "d", destination: "e" }),
               Action.maneuver({ origin: "d", destination: "c" }),
-              Action.maneuver({ origin: "d", destination: "f" })
+              Action.maneuver({ origin: "d", destination: "f" }),
+              Action.maneuver({ origin: "d", destination: "g" })
+            ])
+          );
+        });
+
+        test("fleet can convoy only one army", () => {
+          const game = newGame();
+          game.units.get(Nation.AH).get("b").fleets++;
+          game.units.get(Nation.AH).get("c").armies++;
+          game.units.get(Nation.AH).get("c").armies++;
+
+          game.tick(
+            Action.rondel({ slot: "maneuver1", nation: Nation.AH, cost: 0 })
+          );
+
+          expect(game.availableActions).toEqual(
+            new Set([
+              Action.endManeuver(),
+              Action.maneuver({ origin: "b", destination: "a" }),
+              Action.maneuver({ origin: "c", destination: "d" }),
+              Action.maneuver({ origin: "c", destination: "e" }),
+              Action.maneuver({ origin: "c", destination: "f" })
+            ])
+          );
+
+          game.tick(Action.maneuver({ origin: "b", destination: "a" }));
+
+          expect(game.availableActions).toEqual(
+            new Set([
+              Action.endManeuver(),
+              Action.maneuver({ origin: "c", destination: "d" }),
+              Action.maneuver({ origin: "c", destination: "e" }),
+              Action.maneuver({ origin: "c", destination: "g" }),
+              Action.maneuver({ origin: "c", destination: "f" }),
+            ])
+          );
+
+          game.tick(Action.maneuver({ origin: "c", destination: "g" }));
+
+          expect(game.availableActions).toEqual(
+            new Set([
+              Action.endManeuver(),
+              Action.maneuver({ origin: "c", destination: "d" }),
+              Action.maneuver({ origin: "c", destination: "e" }),
+              Action.maneuver({ origin: "c", destination: "f" })
             ])
           );
         });
@@ -2795,8 +2845,8 @@ describe("imperial", () => {
 
           expect(game.availableActions).toEqual(
             new Set([
-              Action.maneuver({ origin: "b", destination: "a" }),
-              Action.endManeuver()
+              Action.endManeuver(),
+              Action.maneuver({ origin: "b", destination: "a" })
             ])
           );
         });

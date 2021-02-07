@@ -31,7 +31,7 @@ describe("GameBoard", () => {
         isFleet: false,
         friendlyFleets: new Set()
       })
-    ).toEqual(new Set(["p2"]));
+    ).toEqual(["p2"]);
     expect(
       gameBoard.neighborsFor({
         origin: "p2",
@@ -39,7 +39,7 @@ describe("GameBoard", () => {
         isFleet: false,
         friendlyFleets: new Set()
       })
-    ).toEqual(new Set(["p1"]));
+    ).toEqual(["p1"]);
   });
 
   describe("railroad rule", () => {
@@ -67,7 +67,7 @@ describe("GameBoard", () => {
           isFleet: false,
           friendlyFleets: new Set()
         })
-      ).toEqual(new Set(["2", "3", "4"]));
+      ).toEqual(["2", "3", "4"]);
     });
 
     test("foreign unit cannot use railroads", () => {
@@ -78,7 +78,7 @@ describe("GameBoard", () => {
           isFleet: false,
           friendlyFleets: new Set()
         })
-      ).toEqual(new Set(["2"]));
+      ).toEqual(["2"]);
     });
 
     test("home unit in the middle can go places", () => {
@@ -89,7 +89,7 @@ describe("GameBoard", () => {
           isFleet: false,
           friendlyFleets: new Set()
         })
-      ).toEqual(new Set(["1", "2", "4"]));
+      ).toEqual(["2", "1", "4"]);
     });
 
     test("foreign unit in the middle can go fewer places", () => {
@@ -100,7 +100,7 @@ describe("GameBoard", () => {
           isFleet: false,
           friendlyFleets: new Set()
         })
-      ).toEqual(new Set(["2", "4"]));
+      ).toEqual(["2", "4", "5"]);
     });
 
     test("when occupied, railroad rule is not in effect", () => {
@@ -112,7 +112,7 @@ describe("GameBoard", () => {
           friendlyFleets: new Set(),
           isOccupied: true
         })
-      ).toEqual(new Set(["2"]));
+      ).toEqual(["2"]);
     });
   });
 
@@ -137,7 +137,7 @@ describe("GameBoard", () => {
           isFleet: true,
           friendlyFleets: new Set()
         })
-      ).toEqual(new Set(["2"]));
+      ).toEqual(["2"]);
     });
 
     test("fleets cannot use railroad rule", () => {
@@ -148,7 +148,7 @@ describe("GameBoard", () => {
           isFleet: true,
           friendlyFleets: new Set()
         })
-      ).toEqual(new Set());
+      ).toEqual([]);
     });
 
     test("army cannot move from land to sea", () => {
@@ -159,7 +159,7 @@ describe("GameBoard", () => {
           isFleet: false,
           friendlyFleets: new Set()
         })
-      ).toEqual(new Set(["3"]));
+      ).toEqual(["3"]);
     });
 
     test("fleet cannot move from sea to land", () => {
@@ -170,7 +170,7 @@ describe("GameBoard", () => {
           isFleet: true,
           friendlyFleets: new Set()
         })
-      ).toEqual(new Set());
+      ).toEqual([]);
     });
   });
 
@@ -205,7 +205,7 @@ describe("GameBoard", () => {
           isFleet: false,
           friendlyFleets: new Set(["2", "3"])
         })
-      ).toEqual(new Set(["4"]));
+      ).toEqual(["4"]);
     });
 
     test("army cannot move across ocean in the absence of a friendly fleet", () => {
@@ -219,7 +219,7 @@ describe("GameBoard", () => {
           },
           new Set()
         )
-      ).toEqual(new Set());
+      ).toEqual([]);
     });
   });
 });
