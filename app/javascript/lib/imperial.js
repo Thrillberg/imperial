@@ -313,8 +313,7 @@ export default class Imperial {
       this.availableActions = new Set(this.rondelActions(this.currentNation));
     } else {
       const reversedLog = this.log.slice().reverse();
-      const lastManeuverRondelAction = reversedLog
-        .find(this.actionIsRondelAndManeuver);
+      const lastManeuverRondelAction = reversedLog.find(this.actionIsRondelAndManeuver);
       this.beginManeuver(lastManeuverRondelAction);
     }
   }
@@ -333,9 +332,8 @@ export default class Imperial {
       this.handleAdvancePlayer();
       this.availableActions = new Set(this.rondelActions(this.currentNation));
     } else {
-      const lastManeuverRondelAction = this.log
-        .reverse()
-        .find(action => action.type === "rondel");
+      const reversedLog = this.log.slice().reverse();
+      const lastManeuverRondelAction = reversedLog.find(action => action.type === "rondel");
       const destinations = new Set([Action.endManeuver()]);
       const action = lastManeuverRondelAction;
       const provincesWithFleets = new Map();
