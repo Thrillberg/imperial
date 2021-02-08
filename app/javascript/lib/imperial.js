@@ -563,9 +563,9 @@ export default class Imperial {
       const provincesWithFleets = new Map();
       const provincesWithArmies = new Map();
       const out = new Set([Action.endManeuver()]);
-      this.unitsToMove.forEach(([origin]) => {
+      this.unitsToMove.forEach(([origin, type]) => {
         const units = this.units.get(this.currentNation).get(origin);
-        if (units.fleets > 0) {
+        if (units.fleets > 0 && type === "fleet") {
           provincesWithFleets.set(origin, units.fleets);
         } else if (units.armies > 0) {
           provincesWithArmies.set(origin, units.armies);
