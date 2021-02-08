@@ -1,5 +1,11 @@
 <template>
-  <component ref="province" :is="province" v-on:click="select_province(name)">
+  <component
+    ref="province"
+    :is="province"
+    @click="select_province(name)"
+    @mouseover="showFactory()"
+    @mouseleave="hideFactory()"
+  >
     <text
       v-if="this.mounted"
       font-size="10"
@@ -21,11 +27,11 @@
       v-bind:fill="nationFill(dot)"
     ></circle>
     <Factory
-      v-if="factory && this.mounted"
+      v-if="(factory || tempFactory) && this.mounted"
       :type="factory"
       :x="x(0) - 10"
       :y="y(0)"
-      :fill="this.fill(factory)"
+      :fill="this.fill(factory || tempFactory)"
       stroke="white"
       stroke-width="2px"
     ></Factory>
@@ -70,6 +76,7 @@ export default {
   props: {
     dot: String,
     factory: String,
+    factory_type: String,
     importingArmy: Boolean,
     is_valid: Boolean,
     name: String,
@@ -80,7 +87,8 @@ export default {
   },
   data: () => {
     return {
-      mounted: false
+      mounted: false,
+      tempFactory: false
     };
   },
   mounted() {
@@ -288,6 +296,14 @@ export default {
         case "RU":
           return "#9c6bae";
       }
+    },
+    showFactory() {
+      if (this.is_valid) {
+        this.tempFactory = this.factory_type
+      }
+    },
+    hideFactory() {
+      this.tempFactory = ""
     }
   }
 };
