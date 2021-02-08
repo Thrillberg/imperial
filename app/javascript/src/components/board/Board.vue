@@ -40,6 +40,7 @@
         :is_valid="isValid(name)"
         :dot="dot(name)"
         :factory="factory(name)"
+        :factory_type="factoryType(name)"
         :key="name"
       ></Province>
     </g>
@@ -165,6 +166,11 @@ export default {
         return factory.type;
       }
     },
+    factoryType(province) {
+      if (this.game.board && !["corsica", "sardinia", "switzerland"].includes(province)) {
+        return this.game.board.graph.get(province).factoryType
+      }
+    },
     dot(province) {
       let nation;
       this.dots().forEach(dot => {
@@ -206,10 +212,7 @@ export default {
 
       let factories = [];
       for (let [province, data] of this.game.provinces) {
-        const factory = data.factory;
-        if (factory) {
-          factories.push({ province, type: factory });
-        }
+        factories.push({ province, type: data.factory });
       }
       return factories;
     },
