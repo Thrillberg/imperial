@@ -228,9 +228,18 @@ export default class Imperial {
   }
 
   skipBondPurchase(action) {
-    this.handleAdvancePlayer();
-    this.advanceInvestorCard();
-    this.availableActions = new Set(this.rondelActions(this.currentNation));
+    let swissBanksToInvest = this.swissBanks;
+    if (
+      swissBanksToInvest.length > 0 &&
+      swissBanksToInvest[0] !== this.investorCardHolder &&
+      this.hasNotBoughtABondThisTurn(swissBanksToInvest[0])
+    ) {
+      this.endOfInvestorTurn(swissBanksToInvest[0]);
+    } else {
+      this.handleAdvancePlayer();
+      this.advanceInvestorCard();
+      this.availableActions = new Set(this.rondelActions(this.currentNation));
+    }
   }
 
   endManeuver() {
@@ -1241,7 +1250,7 @@ export default class Imperial {
     for (const action of reversedLog) {
       if (action.type === "rondel") {
         break;
-      } else if (action.payload && (action.payload.player === player && action.type === "bondPurchase")) {
+      } else if (action.payload && (action.payload.player === player && (action.type === "bondPurchase" || action.type === "skipBondPurchase"))) {
         hasNotBoughtABond = false
       }
     };
