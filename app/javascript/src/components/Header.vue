@@ -4,41 +4,49 @@
       <div class="bg-white m-2 border-2 rounded border-red-500 p-4">
         This project is under active development and data may be lost at any time!
       </div>
-      <div v-for="(error, index) in errors" v-bind:key="index" class="text-red-700">
-        <b>{{ error }}</b>
-      </div>
-      <div>
-        <span v-if="!profile.email">
-          Currently identified as <strong>{{ profile.username }}</strong>.
-        </span>
-        <div v-if="profile.email" class="py-3 px-2">
-          <p>Currently signed in as <strong>{{ profile.username }}</strong> ({{ profile.email }}).</p>
-          <p
-          class="bg-green-200 cursor-pointer border border-green-200 rounded px-1 inline-block"
-          @click="signOut"
-          >Sign out</p>
+      <div class="flex">
+        <router-link
+          :to="{ path: '/about' }"
+          class="self-center pr-8 underline"
+        >
+          About
+        </router-link>
+        <div v-for="(error, index) in errors" v-bind:key="index" class="text-red-700">
+          <b>{{ error }}</b>
         </div>
-        <span v-if="!profile.email" class="inline-block">
-          <form class="p-4 bg-green-500 rounded" @submit="signIn">
-            <input
-              type="text"
-              placeholder="email"
-              v-model="email"
-              class="rounded p-2"
-            />
-            <input
-              type="password"
-              placeholder="password"
-              v-model="password"
-              class="rounded p-2"
-            />
-            <input
-              type="submit"
-              value="Sign In"
-              class="rounded p-2 bg-green-800 text-white cursor-pointer"
-            />
-          </form>
-        </span>
+        <div class="flex flex-col justify-evenly">
+          <div v-if="profile.email" class="py-3 px-2">
+            <p>Currently signed in as <strong>{{ profile.username }}</strong> ({{ profile.email }}).</p>
+            <p
+            class="bg-green-200 cursor-pointer border border-green-200 rounded px-1 inline-block"
+            @click="signOut"
+            >Sign out</p>
+          </div>
+          <span v-if="!profile.email" class="inline-block">
+            <form class="pr-4 bg-green-500 rounded" @submit="signIn">
+              <input
+                type="text"
+                placeholder="email"
+                v-model="email"
+                class="rounded p-2"
+              />
+              <input
+                type="password"
+                placeholder="password"
+                v-model="password"
+                class="rounded p-2"
+              />
+              <input
+                type="submit"
+                value="Sign In"
+                class="rounded p-2 bg-green-800 text-white cursor-pointer"
+              />
+            </form>
+          </span>
+          <div v-if="!profile.email">
+            Currently identified as <strong>{{ profile.username }}</strong>.
+          </div>
+        </div>
       </div>
     </div>
   </div>
