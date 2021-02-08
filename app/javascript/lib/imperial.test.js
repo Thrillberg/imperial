@@ -2457,6 +2457,27 @@ describe("imperial", () => {
         });
       });
 
+      describe("destroying a factory", () => {
+        test("3 armies may destroy a foreign factory", () => {
+          const game = newGame();
+          game.provinces.get("f").factory = "armaments";
+          game.units.get(Nation.AH).get("f").armies++;
+          game.units.get(Nation.AH).get("f").armies++;
+          game.units.get(Nation.AH).get("c").armies++;
+          const availableActions = new Set([
+            Action.destroyFactory({ province: "f" }),
+            Action.skipDestroyFactory({ province: "f" })
+          ]);
+
+          game.tick(
+            Action.rondel({ slot: "maneuver1", nation: Nation.AH, cost: 0 })
+          );
+          game.tick(Action.maneuver({ origin: "c", destination: "f" }));
+
+          expect(game.availableActions).toEqual(availableActions);
+        });
+      });
+
       describe("updating the province flag", () => {
         test("maneuver army to neutral province adds a flag to the province", () => {
           const game = newGame();

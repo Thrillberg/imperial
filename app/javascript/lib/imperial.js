@@ -98,6 +98,14 @@ export default class Imperial {
         this.buildFactory(action);
         return;
       }
+      case "destroyFactory": {
+        this.destroyFactory(action);
+        return;
+      }
+      case "skipDestroyFactory": {
+        this.skipDestroyFactory(action);
+        return;
+      }
       case "import": {
         this.import(action);
         return;
@@ -400,6 +408,15 @@ export default class Imperial {
     }
   }
 
+  destroyFactory(action) {
+    this.provinces.get(action.payload.province).factory = "";
+    this.setManeuverAvailableActions();
+  }
+
+  skipDestroyFactory(action) {
+    this.setManeuverAvailableActions();
+  }
+
   import(action) {
     action.payload.placements.forEach(({ province, type }) => {
       const nation = this.board.graph.get(province).nation;
@@ -503,6 +520,20 @@ export default class Imperial {
       }
     }
 
+    // Allow destroyFactory if 3 foreign units attack a factory
+    const isOccupyingForeignFactoryWithThreeUnits =
+      !!this.provinces.get(destination).factory &&
+        this.board.graph.get(destination).nation !== this.currentNation &&
+        this.units.get(this.currentNation).get(destination).armies >= 3 &&
+        this.log[this.log.length - 1].type !== "skipDestroyFactory";
+    if (isOccupyingForeignFactoryWithThreeUnits) {
+      this.availableActions = new Set([
+        Action.destroyFactory({ province: destination }),
+        Action.skipDestroyFactory({ province: destination })
+      ]);
+      return;
+    }
+
     // Don't update the province flag if the province is a home province of a nation.
     let plantFlag = true;
     for (const [nation, provinces] of this.board.byNation) {
@@ -515,6 +546,10 @@ export default class Imperial {
       this.provinces.get(destination).flag = this.currentNation;
     }
 
+    this.setManeuverAvailableActions();
+  }
+
+  setManeuverAvailableActions() {
     if (this.unitsToMove.length > 0) {
       const provincesWithFleets = new Map();
       const provincesWithArmies = new Map();
