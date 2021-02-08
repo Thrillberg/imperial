@@ -23,7 +23,7 @@
       v-if="dot && this.mounted"
       :cx="x(0) + 6"
       :cy="y(0) - 5"
-      r="2"
+      r="3"
       v-bind:fill="nationFill(dot)"
     ></circle>
     <Factory
@@ -39,8 +39,8 @@
       v-for="(nation, index) in availableFleets()"
       :nation="nation"
       :key="nation + index + 'F'"
-      :x="x(index)"
-      :y="y(index)"
+      :x="x(index) + flagFleetXAdjustment(name)"
+      :y="y(index) + 10"
       :fleet="true"
       width="13"
       height="8"
@@ -126,6 +126,12 @@ export default {
     // x() and y() approximate the center of a province for flag placement.
     x(index) {
       switch (this.name) {
+        case "danzig":
+          return (
+            index * 2.5 +
+            this.$refs.province.children[0].getBBox().x +
+            this.$refs.province.children[0].getBBox().width / 2
+          ) - 20;
         case "danzig":
           return (
             index * 2.5 +
@@ -249,6 +255,12 @@ export default {
             this.$refs.province.children[0].getBBox().y +
             this.$refs.province.children[0].getBBox().height / 2
           ) - 10;
+        case "naples":
+          return (
+            index * 2.5 +
+            this.$refs.province.children[0].getBBox().y +
+            this.$refs.province.children[0].getBBox().height / 2
+          ) - 20;
         case "northatlantic":
           return (
             index * 2.5 +
@@ -273,6 +285,24 @@ export default {
         this.$refs.province.children[0].getBBox().y +
         this.$refs.province.children[0].getBBox().height / 2
       );
+    },
+    flagFleetXAdjustment() {
+      switch (this.name) {
+        case "bordeaux":
+          return -20
+        case "liverpool":
+          return -10
+        case "englishchannel":
+          return -20
+        case "marseille":
+        case "hamburg":
+          return -15
+        case "marseille":
+          return -15
+        case "stpetersburg":
+          return -20
+      }
+      return 0
     },
     fill(factory) {
       if (factory === "shipyard") {
