@@ -53,6 +53,7 @@ export default {
   bondPurchase: makeAction("bondPurchase", ["nation", "player", "cost"]),
   buildFactory: makeAction("buildFactory", ["province"]),
   coexist: makeAction("coexist", ["province", "incumbent", "challenger"]),
+  destroyFactory: makeAction("destroyFactory", ["province"]),
   endGame: makeAction("endGame", []),
   endManeuver: makeAction("endManeuver", []),
   fight: makeAction("fight", [
@@ -67,5 +68,6 @@ export default {
   production: makeAction("production", ["province"]),
   rondel: makeAction("rondel", ["nation", "cost", "slot"]),
   skipBondPurchase: makeAction("skipBondPurchase", ["player"]),
+  skipDestroyFactory: makeAction("skipDestroyFactory", ["province"]),
   skipForceInvestor: makeAction("skipForceInvestor", ["player"])
 };

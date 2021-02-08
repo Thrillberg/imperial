@@ -39,6 +39,17 @@
         Do not buy a bond
       </div>
     </div>
+    <div v-if="destroyingFactory">
+      <div class="text-lg">Do you want to destroy the factory at <b>{{ this.game.log[this.game.log.length - 1].payload.destination }}</b>?</div>
+      <div class="flex flex-wrap justify-evenly">
+        <div @click="destroyFactory" class="rounded p-2 bg-green-800 text-white cursor-pointer inline-block mt-8">
+          Yes
+        </div>
+        <div @click="skipDestroyFactory" class="rounded p-2 bg-green-800 text-white cursor-pointer inline-block mt-8">
+          No
+        </div>
+      </div>
+    </div>
     <div v-else>
       <Rondel
         v-bind:game="game"
@@ -62,7 +73,7 @@
       </div>
     </div>
     <div
-      v-if="game.maneuvering && (profile.username === controllingPlayerName || (game.soloMode && profile.username in game.players))"
+      v-if="game.maneuvering && !destroyingFactory && (profile.username === controllingPlayerName || (game.soloMode && profile.username in game.players))"
       class="text-center text-lg"
     >
       <div
@@ -127,6 +138,13 @@ export default {
         );
       return purchasingBond && (this.profile.username === this.controllingPlayerName || (this.game.soloMode && this.profile.username in this.game.players));
     },
+    destroyingFactory: function () {
+      const destroyingFactory = this.game.availableActions.size > 0 &&
+        Array.from(this.game.availableActions).every(
+          (action) => action.type === "destroyFactory" || action.type === "skipDestroyFactory"
+        );
+      return destroyingFactory && (this.profile.username === this.controllingPlayerName || (this.game.soloMode && this.profile.username in this.game.players));
+    },
     canForceInvestor: function () {
       if (this.game.availableActions.size > 0 &&
         Array.from(this.game.availableActions).every((action) => action.type === "forceInvestor" || action.type === "skipForceInvestor")) {
@@ -186,7 +204,24 @@ export default {
           skipAction = action;
         }
       }
-      console.log(skipAction)
+      this.tickWithAction(skipAction);
+    },
+    destroyFactory: function() {
+      let destroyAction = {};
+      for (const action of this.game.availableActions) {
+        if (action.type === "destroyFactory") {
+          destroyAction = action;
+        }
+      }
+      this.tickWithAction(destroyAction);
+    },
+    skipDestroyFactory: function() {
+      let skipAction = {};
+      for (const action of this.game.availableActions) {
+        if (action.type === "skipDestroyFactory") {
+          skipAction = action;
+        }
+      }
       this.tickWithAction(skipAction);
     },
     coexist: function() {
