@@ -38,7 +38,8 @@ export default {
           players: game.players,
           name: game.name,
           id: game.id,
-          currentPlayer: imperialGame.currentPlayerName
+          currentPlayer: imperialGame.currentPlayerName,
+          winner: imperialGame.winner
         };
       });
     });

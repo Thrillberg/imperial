@@ -26,6 +26,7 @@ export default class Imperial {
     this.passingThroughInvestor = false;
     this.fleetConvoyCount = {};
     this.maxImports = 0;
+    this.winner = "";
   }
 
   tick(action) {
