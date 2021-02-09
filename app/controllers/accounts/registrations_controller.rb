@@ -15,10 +15,12 @@ class Accounts::RegistrationsController < Devise::RegistrationsController
       account.email = registration_params[:email]
       account.password = registration_params[:password]
       user = User.find(cookies[:user_id])
+      old_name = user.name
       account.user = user
       user.name = registration_params[:name]
       if user.save && account.save
         sign_in account
+        user.convert_games(old_name)
         render(json: {username: user.name, email: account.email}) && return
       else
         render(json: account.errors.full_messages + user.errors.full_messages) && return
