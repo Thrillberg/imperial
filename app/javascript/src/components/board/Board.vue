@@ -39,6 +39,7 @@
         :importing-army="importingArmy(name)"
         :is_valid="isValid(name)"
         :dot="dot(name)"
+        :building_factory="buildingFactory()"
         :factory="factory(name)"
         :factory_type="factoryType(name)"
         :key="name"
@@ -233,6 +234,13 @@ export default {
     isValid(province) {
       if (this.valid_provinces.includes(province) && (this.profile.username in this.game.players)) {
         return true;
+      }
+
+      return false;
+    },
+    buildingFactory() {
+      if (this.game.availableActions) {
+        return [...this.game.availableActions].every(action => action.type === "buildFactory");
       }
 
       return false;
