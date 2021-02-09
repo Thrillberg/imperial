@@ -74,6 +74,7 @@ export default {
   name: "Province",
   components: { Factory, Flag },
   props: {
+    building_factory: Boolean,
     dot: String,
     factory: String,
     factory_type: String,
@@ -328,7 +329,7 @@ export default {
       }
     },
     showFactory() {
-      if (this.is_valid) {
+      if (this.is_valid && this.building_factory) {
         this.tempFactory = this.factory_type
       }
     },
