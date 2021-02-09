@@ -26,10 +26,10 @@
       >
         Open New Game
       </div>
-      <ul v-for="game in games" v-bind:key="game.id">
-        <li class="my-3 p-3 border border-rounded max-w-md">
+      <div class="flex flex-wrap w-1/2">
+        <div v-for="game in games" v-bind:key="game.id" class="mr-3 my-3 p-3 border border-rounded w-2/5" :class="game.winner ? 'bg-gray-300' : ''">
           <div>
-            <Star v-if="game.currentPlayer && game.currentPlayer === profile.username" />
+            <Star v-if="game.currentPlayer && game.currentPlayer === profile.username && !game.winner" />
             <router-link
               :to="{ path: '/game/' + game.id }"
               class="text-lg font-bold"
@@ -48,7 +48,14 @@
           </div>
           <router-link
             :to="{ path: '/game/' + game.id }"
-            v-if="gameStarted(game.id) && game.players.includes(profile.username)"
+            v-if="game.winner"
+            class="rounded mt-2 p-2 inline-block bg-green-600 text-white cursor-pointer"
+          >
+            {{ game.winner }} won!
+          </router-link>
+          <router-link
+            :to="{ path: '/game/' + game.id }"
+            v-if="gameStarted(game.id) && game.players.includes(profile.username) && !game.winner"
             class="rounded mt-2 p-2 inline-block bg-green-600 text-white cursor-pointer"
           >
             {{ game.currentPlayer }}'s turn
@@ -68,8 +75,8 @@
           >
             Start Game
           </router-link>
-        </li>
-      </ul>
+        </div>
+      </div>
     </div>
   </div>
 </template>
