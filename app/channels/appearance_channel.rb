@@ -7,7 +7,7 @@ class AppearanceChannel < ApplicationCable::Channel
     REDIS.set("online_users", online_users.to_json)
 
     stream_from "appearance_channel"
-    ActionCable.server.broadcast("appearance_channel", { kind: "updateUsers", data: { users: online_users }})
+    ActionCable.server.broadcast("appearance_channel", {kind: "updateUsers", data: {users: online_users}})
   end
 
   def unsubscribed
@@ -16,7 +16,7 @@ class AppearanceChannel < ApplicationCable::Channel
       online_users.delete(current_user.name)
     end
     REDIS.set("online_users", online_users.to_json)
-    
-    ActionCable.server.broadcast("appearance_channel", { kind: "updateUsers", data: { users: online_users }})
+
+    ActionCable.server.broadcast("appearance_channel", {kind: "updateUsers", data: {users: online_users}})
   end
 end
