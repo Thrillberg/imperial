@@ -1,7 +1,7 @@
 <template>
   <div id="app" class="font-serif">
     <Header :profile="profile" v-on:signOut="signOut" v-on:signedIn="signIn" v-on:identified="identify" />
-    <router-view :profile="profile" :users="users" :games="games" v-on:registered="signIn" />
+    <router-view :profile="profile" :users="onlineUsers" :games="games" v-on:registered="signIn" />
   </div>
 </template>
 
@@ -18,7 +18,7 @@ export default {
   name: "App",
   components: { Header },
   data: function () {
-    return { profile: {}, users: [], games: new Set() };
+    return { profile: {}, games: new Set(), onlineUsers: [] };
   },
   beforeDestroy() {
     apiClient.clearHandlers();
@@ -26,7 +26,7 @@ export default {
   },
   created() {
     apiClient.onUpdateUsers(({ users }) => {
-      this.users = users;
+      this.onlineUsers = users;
     });
     apiClient.onUpdateGames(({ games }) => {
       this.games = games.map(game => {

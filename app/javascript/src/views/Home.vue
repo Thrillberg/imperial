@@ -1,23 +1,28 @@
 <template>
   <div class="container mx-auto">
     <div class="mt-4">
-      <div
-        v-if="!profile.registered"
-        class="border-2 rounded border-red-500 p-4 w-1/3 absolute right-2"
-      >
-        <div class="text-lg text-red-500">
-          <b>Uh oh! You're not registered!</b>
+      <div class="w-1/3 absolute right-2">
+        <div v-if="!profile.registered" class="border-red-500 border-2 rounded p-4 mb-4">
+          <div class="text-lg text-red-500">
+            <b>Uh oh! You're not registered!</b>
+          </div>
+          <div>
+            You can play a game or two without registering but you might not keep access to your games. If you want to be sure to be able to access your games in the future, please register.
+          </div>
+          <div class="text-center mt-5">
+            <router-link
+              :to="{ path: '/register' }"
+              class="rounded p-2 mt-2 bg-green-800 text-white cursor-pointer text-lg"
+            >
+              Register
+            </router-link>
+          </div>
         </div>
-        <div>
-          You can play a game or two without registering but you might not keep access to your games. If you want to be sure to be able to access your games in the future, please register.
-        </div>
-        <div class="text-center mt-5">
-          <router-link
-            :to="{ path: '/register' }"
-            class="rounded p-2 mt-2 bg-green-800 text-white cursor-pointer text-lg"
-          >
-            Register
-          </router-link>
+        <div class="border-green-500 border-2 rounded p-4">
+          <b>Who's online?</b>
+          <div v-for="user in this.users" :key="user">
+            {{ user }}
+          </div>
         </div>
       </div>
       <div

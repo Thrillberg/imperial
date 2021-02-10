@@ -13,13 +13,23 @@ class APIClient {
 
   initws() {
     const ws = ActionCable.createConsumer("/ws");
-    ws.subscriptions.create("AppearanceChannel", {
+    ws.subscriptions.create("GameChannel", {
       connected: () => {
         this.messageQueue.forEach(data =>
-          this.send(data, "AppearanceChannel")
+          this.send(data, "GameChannel")
         );
         this.messageQueue = [];
       },
+      received: envelope => {
+        if (this.handlers[envelope.kind]) {
+          this.handlers[envelope.kind](envelope.data);
+        } else {
+          console.error(envelope);
+          throw new Error(`unhandled kind: ${envelope.kind}`);
+        }
+      }
+    });
+    ws.subscriptions.create("AppearanceChannel", {
       received: envelope => {
         if (this.handlers[envelope.kind]) {
           this.handlers[envelope.kind](envelope.data);
@@ -85,7 +95,7 @@ class APIClient {
         kind: "joinGame",
         data: { userName, userId, gameId }
       },
-      "AppearanceChannel"
+      "GameChannel"
     );
   }
 
@@ -95,7 +105,7 @@ class APIClient {
         kind: "openGame",
         data: { host }
       },
-      "AppearanceChannel"
+      "GameChannel"
     );
   }
 
@@ -105,7 +115,7 @@ class APIClient {
         kind: "getGameLog",
         data: { gameId }
       },
-      "AppearanceChannel"
+      "GameChannel"
     );
   }
 
@@ -115,7 +125,7 @@ class APIClient {
         kind: "tick",
         data: { gameId, action: JSON.stringify(action) }
       },
-      "AppearanceChannel"
+      "GameChannel"
     );
   }
 }
