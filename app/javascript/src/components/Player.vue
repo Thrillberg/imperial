@@ -1,5 +1,10 @@
 <template>
   <div class="p-2 m-1 font-serif" :class="player.name === current_player ? 'bg-green-300' : 'bg-gray-300'">
+    <span
+      v-if="online_users.includes(player.name)"
+      class="h-2 w-2 bg-blue-700 border-blue-700 border-2 rounded-full inline-block"
+    >
+    </span>
     <span>{{ player.name }}</span>
     <span v-if="player.name === profile.username || game.soloMode"> - {{ player.cash }}m</span>
     <div class="flex flex-wrap">
@@ -24,6 +29,7 @@ export default {
   },
   props: {
     current_player: String,
+    online_users: Array,
     player: Object,
     profile: Object,
     game: Object,

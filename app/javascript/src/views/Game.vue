@@ -30,6 +30,7 @@
           :controllingPlayerName="controllingPlayerName"
           :profile="profile"
           :importPlacements="importPlacements"
+          :online_users="users"
           v-on:tick="tickWithAction"
           v-on:endManeuver="endManeuver"
           v-on:runImport="runImport"

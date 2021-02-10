@@ -3,11 +3,12 @@
     <div class="flex flex-wrap justify-evenly">
       <Player
         v-for="player in game.players"
-        v-bind:player="player"
-        v-bind:current_player="controllingPlayerName"
-        v-bind:game="game"
-        v-bind:profile="profile"
-        v-bind:key="player.name"
+        :player="player"
+        :current_player="controllingPlayerName"
+        :game="game"
+        :profile="profile"
+        :online_users="online_users"
+        :key="player.name"
       ></Player>
     </div>
     <div class="flex flex-wrap justify-evenly p-4 border border-gray-500 rounded">
@@ -129,7 +130,7 @@ export default {
     Player,
     Rondel
   },
-  props: ["game", "controllingPlayerName", "profile", "importPlacements"],
+  props: ["game", "controllingPlayerName", "profile", "importPlacements", "online_users"],
   computed: {
     purchasingBond: function () {
       const purchasingBond = this.game.availableActions.size > 0 &&
