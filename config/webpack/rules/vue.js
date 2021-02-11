@@ -25,7 +25,9 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      alwaysWriteToDisk: true
+      alwaysWriteToDisk: true,
+      favicon: "favicon.ico",
+      title: "Imperial"
     }),
     new HtmlWebpackHarddiskPlugin({
       outputPath: path.resolve(__dirname, '../../../public/packs')
