@@ -89,21 +89,7 @@ export default {
       maneuverOrigin: ""
     };
   },
-  beforeDestroy() {
-    apiClient.clearHandlers();
-  },
-  mounted() {
-    apiClient.onUpdateGameLog(({ gameId, log }) => {
-      if (gameId === this.$route.params.id) {
-        const gameLog = getGameLog(log);
-        this.game = Imperial.fromLog(gameLog);
-        if (this.game.players) {
-          this.gameStarted = true;
-          this.currentPlayer = this.game.players[this.profile.username] || {};
-          this.controllingPlayerName = this.game.currentPlayerName;
-        }
-      }
-    });
+  created() {
     apiClient.getGameLog(this.$route.params.id);
   },
   computed: {

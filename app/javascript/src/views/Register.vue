@@ -56,7 +56,7 @@ export default {
         .then(response => response.json())
         .then(data => {
           if (data.email) {
-            this.$emit("registered", data);
+            this.$emit("registered", { ...data, oldUsername: this.profile.username });
             this.errors = [];
             this.$router.push("/");
           } else {

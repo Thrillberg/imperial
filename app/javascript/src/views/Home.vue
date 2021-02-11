@@ -43,7 +43,7 @@
             </router-link>
           </div>
           <div>
-            {{ game.players.join(", ") }}
+            {{ playersInGame(game.id).join(", ") }}
           </div>
           <div
             v-if="!gameStarted(game.id) && !isHost(game.id) && !joinable(game.id)"
@@ -99,13 +99,10 @@ export default {
     Star
   },
   props: ["profile", "users", "games"],
-  beforeDestroy() {
-    apiClient.clearHandlers();
-  },
-  mounted() {
-    apiClient.onUpdateGameLog(() => {});
-  },
   methods: {
+    playersInGame: function(gameId) {
+      return this.games.find(game => game.id === gameId).players;
+    },
     openGame: function() {
       apiClient.openGame(this.profile.username);
     },
