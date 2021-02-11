@@ -36,6 +36,10 @@ jobs:
     - name: Install PostgreSQL client
       run: |
         sudo apt-get -yqq install libpq-dev
+    - name: Start Redis
+      uses: supercharge/redis-github-action@1.2.0
+      with:
+        redis-version: 4
     - name: Build App
       env:
         PGHOST: localhost
