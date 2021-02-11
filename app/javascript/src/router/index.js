@@ -129,6 +129,16 @@ class APIClient {
     );
   }
 
+  updateGames() {
+    return this.send(
+      {
+        kind: "updateGames",
+        data: {}
+      },
+      "GameChannel"
+    );
+  }
+
   tick(gameId, action) {
     return this.send(
       {

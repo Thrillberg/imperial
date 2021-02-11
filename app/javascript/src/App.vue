@@ -43,6 +43,17 @@ export default {
         };
       });
     });
+    apiClient.onUpdateGameLog(({ gameId, log }) => {
+      if (gameId === this.$route.params.id) {
+        const gameLog = getGameLog(log);
+        this.game = Imperial.fromLog(gameLog);
+        if (this.game.players) {
+          this.gameStarted = true;
+          this.currentPlayer = this.game.players[this.profile.username] || {};
+          this.controllingPlayerName = this.game.currentPlayerName;
+        }
+      }
+    });
     if (this.$cookies.get("user_id")) {
       // Fetch user profile
       fetch(`/users/${this.$cookies.get("user_id")}`, { method: "GET" })
@@ -73,7 +84,7 @@ export default {
     signIn: function ({username, email, oldUsername}) {
       this.profile = { username, email, registered: true };
       apiClient.updateUser(username, oldUsername);
-      apiClient.updateGames
+      apiClient.updateGames();
     },
     signOut: function () {
       this.profile = { username: this.profile.username, registered: true };
