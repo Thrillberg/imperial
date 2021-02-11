@@ -1,7 +1,7 @@
 <template>
   <div id="app" class="font-serif">
     <Header :profile="profile" v-on:signOut="signOut" v-on:signedIn="signIn" v-on:identified="identify" />
-    <router-view :profile="profile" :users="onlineUsers" :games="games" v-on:registered="signIn" />
+    <router-view :profile="profile" :users="onlineUsers" :games="games" v-on:registered="signIn" ref="game" />
   </div>
 </template>
 
@@ -45,13 +45,7 @@ export default {
     });
     apiClient.onUpdateGameLog(({ gameId, log }) => {
       if (gameId === this.$route.params.id) {
-        const gameLog = getGameLog(log);
-        this.game = Imperial.fromLog(gameLog);
-        if (this.game.players) {
-          this.gameStarted = true;
-          this.currentPlayer = this.game.players[this.profile.username] || {};
-          this.controllingPlayerName = this.game.currentPlayerName;
-        }
+        this.$refs.game.updateGameLog(log);
       }
     });
     if (this.$cookies.get("user_id")) {

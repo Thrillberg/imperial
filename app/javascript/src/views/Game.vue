@@ -102,6 +102,15 @@ export default {
     }
   },
   methods: {
+    updateGameLog(log) {
+      const gameLog = getGameLog(log);
+      this.game = Imperial.fromLog(gameLog);
+      if (this.game.players) {
+        this.gameStarted = true;
+        this.currentPlayer = this.game.players[this.profile.username] || {};
+        this.controllingPlayerName = this.game.currentPlayerName;
+      }
+    },
     validProvinces() {
       // This function returns all provinces that a unit can move
       // or be imported to.

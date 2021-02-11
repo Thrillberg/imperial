@@ -67,7 +67,7 @@
           </router-link>
           <div
             v-if="joinable(game.id)"
-            v-on:click="joinGame(game.id)"
+            v-on:click.once="joinGame(game.id)"
             class="rounded p-2 inline-block bg-green-600 text-white cursor-pointer"
           >
             Join Game
