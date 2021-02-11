@@ -70,8 +70,10 @@ export default {
     identify: function ({username}) {
       this.profile = { username };
     },
-    signIn: function ({username, email}) {
+    signIn: function ({username, email, oldUsername}) {
       this.profile = { username, email, registered: true };
+      apiClient.updateUser(username, oldUsername);
+      apiClient.updateGames
     },
     signOut: function () {
       this.profile = { username: this.profile.username, registered: true };

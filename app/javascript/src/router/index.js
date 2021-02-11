@@ -119,6 +119,16 @@ class APIClient {
     );
   }
 
+  updateUser(username, oldUsername) {
+    return this.send(
+      {
+        kind: "updateUser",
+        data: { username, oldUsername }
+      },
+      "AppearanceChannel"
+    );
+  }
+
   tick(gameId, action) {
     return this.send(
       {
