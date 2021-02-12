@@ -25,10 +25,6 @@ button {
   filter: url(#brightness);
 }
 
-.current_nation {
-  box-shadow: 0 0 2rem 0.5rem #ffd700;
-}
-
 .tooltip .tooltip-text {
   visibility: hidden;
   position: absolute;

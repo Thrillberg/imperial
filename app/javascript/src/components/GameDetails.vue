@@ -11,18 +11,6 @@
         :key="player.name"
       ></Player>
     </div>
-    <div class="flex flex-wrap justify-evenly p-4 border border-gray-500 rounded">
-      <NationComponent
-        v-for="[nation] of game.nations"
-        :current_nation="game.currentNation === nation ? 'current_nation' : ''"
-        :nation="nation.value"
-        :treasury="game.nations.get(nation).treasury"
-        :power_points="game.nations.get(nation).powerPoints"
-        :tax_chart_position="game.nations.get(nation).taxChartPosition"
-        :is_controller="game.nations.get(nation).controller === profile.username"
-        :key="nation.value"
-      ></NationComponent>
-    </div>
     <div v-if="purchasingBond">
       <div class="text-lg">Purchase a bond</div>
       <div class="flex flex-wrap">
@@ -117,7 +105,6 @@
 import Action from "../../lib/action.js";
 import ActionComponent from "../components/ActionComponent.vue";
 import Bond from "../components/Bond.vue";
-import NationComponent from "../components/NationComponent.vue";
 import Player from "../components/Player.vue";
 import Rondel from "../components/Rondel.vue";
 
@@ -126,7 +113,6 @@ export default {
   components: {
     ActionComponent,
     Bond,
-    NationComponent,
     Player,
     Rondel
   },
