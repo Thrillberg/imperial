@@ -10,31 +10,43 @@
         </div>
       </div>
     </div>
-    <router-link to="/">
-      <p class="bg-green-200 cursor-pointer border border-green-200 rounded px-1 m-2 inline-block">Back</p>
-    </router-link>
-    <div v-if="gameStarted" class="flex justify-between">
-      <div class="w-2/3 border border-gray-500 rounded">
-        <Board
-          :game="game"
-          :profile="profile"
-          :gameStarted="gameStarted"
-          :select_province="selectProvince"
-          :valid_provinces="validProvinces()"
-          :importing_units="importPlacements"
-        ></Board>
+    <div v-if="gameStarted" class="flex flex-col">
+      <div class="flex">
+        <NationComponent
+          v-for="[nation] of game.nations"
+          :current_nation="game.currentNation.value"
+          :nation="nation.value"
+          :treasury="game.nations.get(nation).treasury"
+          :power_points="game.nations.get(nation).powerPoints"
+          :tax_chart_position="game.nations.get(nation).taxChartPosition"
+          :controller="game.nations.get(nation).controller"
+          :current_player="profile.username"
+          :key="nation.value"
+        ></NationComponent>
       </div>
-      <div class="w-1/3 mx-2 border border-gray-500 rounded">
-        <GameDetails
-          :game="game"
-          :controllingPlayerName="controllingPlayerName"
-          :profile="profile"
-          :importPlacements="importPlacements"
-          :online_users="users"
-          v-on:tick="tickWithAction"
-          v-on:endManeuver="endManeuver"
-          v-on:runImport="runImport"
-        ></GameDetails>
+      <div class="flex justify-between">
+        <div class="w-2/3 border border-gray-500 rounded">
+          <Board
+            :game="game"
+            :profile="profile"
+            :gameStarted="gameStarted"
+            :select_province="selectProvince"
+            :valid_provinces="validProvinces()"
+            :importing_units="importPlacements"
+          ></Board>
+        </div>
+        <div class="w-1/3 mx-2 border border-gray-500 rounded">
+          <GameDetails
+            :game="game"
+            :controllingPlayerName="controllingPlayerName"
+            :profile="profile"
+            :importPlacements="importPlacements"
+            :online_users="users"
+            v-on:tick="tickWithAction"
+            v-on:endManeuver="endManeuver"
+            v-on:runImport="runImport"
+          ></GameDetails>
+        </div>
       </div>
     </div>
     <div v-else class="flex justify-between">
@@ -67,6 +79,7 @@ import Board from "../components/board/Board.vue";
 import Flag from "../components/flags/Flag.vue";
 import GameDetails from "../components/GameDetails.vue";
 import GameLog from "../components/GameLog.vue";
+import NationComponent from "../components/NationComponent.vue";
 
 import getGameLog from "../getGameLog.js";
 
@@ -76,7 +89,8 @@ export default {
     Board,
     Flag,
     GameDetails,
-    GameLog
+    GameLog,
+    NationComponent
   },
   props: ["profile", "users", "games"],
   data: () => {
