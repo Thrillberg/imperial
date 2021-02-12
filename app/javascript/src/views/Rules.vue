@@ -28,13 +28,21 @@
           Units may move. Fleets must move first, followed by armies.
         </p>
         <b>Maneuver - Railroad Rule</b>
-        <p></p>
+        <p>
+          On a maneuver turn, an army may move inside their own home territory for free, in addition to being able to move to one adjacent land region. If a home province is occupied by a foreign power, the railroad network is not operational and armies may only move to one adjacent land region.
+        </p>
         <b>Manuever - Convoy</b>
-        <p></p>
-        <b>Maneuver - Battles and Coexisting</b>
-        <p></p>
+        <p>
+          Armies may use fleets to cross ocean regions. One fleet may only convoy one army per turn.
+        </p>
+        <b>Maneuver - Fighting and Coexisting</b>
+        <p>
+          When moving into a region occupied by another power, you will be given a choice of either <b>fighting</b> or <b>coexisting</b>. If you fight, your unit and one of their units will be removed from the board. If you coexist, both units remain but the dot on the region will not change.
+        </p>
         <b>Maneuver - Placing a Dot</b>
-        <p></p>
+        <p>
+          If a nation has the only units in a neutral region (ie, one which is not a home province of another nation), the neutral region will acquire a dot in the color representing that nation.
+        </p>
         <b>Investor</b>
         <p>
           Nation pays players interest, investor card holder receives 2m and may purchase a bond, Swiss Banks may invest.
