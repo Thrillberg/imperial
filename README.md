@@ -10,7 +10,7 @@ By participating in this project you agree to abide by its terms._
 
 ## Local development setup
 
-Imperial uses Ruby version 2.7.1.
+Imperial uses Ruby version 2.7.1, Redis (> 4.0) and PostgreSQL.
 
 To run Imperial on your local machine, please follow these instructions:
 
@@ -25,6 +25,10 @@ cd imperial
 3. Run the Rails setup command:
 ```
 bin/setup
+```
+- If you get the error `PG::InsufficientPrivilege: ERROR:  permission denied to create extension "pgcrypto"` run this command:
+```
+sudo su postgres -c "psql rails_server_development -c 'CREATE EXTENSION pgcrypto;'"
 ```
 4. Run the npm install command:
 ```
