@@ -26,6 +26,26 @@
       r="3"
       v-bind:fill="nationFill(dot)"
     ></circle>
+    <circle
+      v-if="(factory === 'shipyard' || tempFactory === 'shipyard') && this.mounted"
+      :cx="x(0) - 6"
+      :cy="y(0) + 5"
+      r="10"
+      fill-opacity="0.3"
+      fill="blue"
+      stroke="none"
+    ></circle>
+    <rect
+      v-else-if="(factory === 'armaments' || tempFactory === 'armaments') && this.mounted"
+      width="12"
+      height="12"
+      :x="x(0) - 12"
+      :y="y(0) - 1"
+      fill-opacity="0.3"
+      fill="black"
+      stroke="none"
+      >
+    </rect>
     <Factory
       v-if="(factory || tempFactory) && this.mounted"
       :type="factory"
@@ -34,6 +54,7 @@
       :fill="this.fill(factory || tempFactory)"
       stroke="white"
       stroke-width="2px"
+      :fill-opacity="tempFactory ? 0.3 : 1"
     ></Factory>
     <Flag
       v-for="(nation, index) in availableFleets()"
@@ -42,8 +63,8 @@
       :x="x(index) + flagFleetXAdjustment(name)"
       :y="y(index) + 10"
       :fleet="true"
-      width="13"
-      height="8"
+      width="21"
+      height="11"
     ></Flag>
     <Flag
       v-for="(nation, index) in availableArmies()"
