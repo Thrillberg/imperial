@@ -73,6 +73,8 @@ export default {
           return this.coexistAction(action.payload);
         case "fight":
           return this.fightAction(action.payload);
+        case "destroyFactory":
+          return this.destroyFactoryAction(action.payload);
         case "endManeuver":
           return this.endManeuverAction(action.payload);
         case "forceInvestor":
@@ -127,6 +129,10 @@ export default {
       let incumbent = stringify(payload.incumbent.value);
       let challenger = stringify(payload.challenger.value);
       return `The armies from ${challenger} have picked a fight with ${incumbent} in ${province}.`;
+    },
+    destroyFactoryAction(payload) {
+      let province = this.capitalize(payload.province);
+      return `Factory destroyed in ${province}.`;
     },
     endManeuverAction(payload) {
       return `Military maneuvers have ended for now.`
