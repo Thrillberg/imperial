@@ -6,6 +6,18 @@
       </div>
       <div class="flex">
         <router-link
+          :to="{ path: '/' }"
+          class="self-center pr-8 underline"
+        >
+          Home
+        </router-link>
+        <router-link
+          :to="{ path: '/rules' }"
+          class="self-center pr-8 underline"
+        >
+          How to play
+        </router-link>
+        <router-link
           :to="{ path: '/about' }"
           class="self-center pr-8 underline"
         >
