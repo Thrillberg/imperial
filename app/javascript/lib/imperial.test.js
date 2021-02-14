@@ -264,6 +264,7 @@ describe("imperial", () => {
         ]);
         game.players["player2"].cash = 4;
         game.players["player1"].cash = 10;
+        game.updateRawScores();
 
         game.tick(Action.endGame());
 

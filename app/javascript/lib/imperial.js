@@ -200,6 +200,8 @@ export default class Imperial {
     }
     this.investorCardActive = false;
 
+    this.updateRawScores();
+
     for (const player in this.players) {
       if (this.nationsUnderControl(player).length > 0) {
         const playerIndex = this.swissBanks.indexOf(player);
@@ -254,11 +256,7 @@ export default class Imperial {
   endGame() {
     const scores = {};
     Object.keys(this.players).forEach(player => {
-      let score = 0;
-      for (const bond of this.players[player].bonds) {
-        const powerPoints = this.nations.get(bond.nation).powerPoints;
-        score += bond.number * parseInt(powerPoints / 5);
-      }
+      let score = this.players[player].rawScore;
       score += this.players[player].cash;
       scores[player] = score;
     });
@@ -698,6 +696,9 @@ export default class Imperial {
         let powerPoints = taxes - 5;
         if (powerPoints < 0) powerPoints = 0;
         nation.powerPoints += powerPoints;
+
+        this.updateRawScores();
+
         if (nation.powerPoints + taxes >= 25) {
           nation.powerPoints = 25;
           this.tick(Action.endGame());
@@ -1312,6 +1313,17 @@ export default class Imperial {
       }
     }
     return isOccupied;
+  }
+
+  updateRawScores() {
+    Object.keys(this.players).forEach((player) => {
+      let score = 0;
+      for (const bond of this.players[player].bonds) {
+        const powerPoints = this.nations.get(bond.nation).powerPoints;
+        score += bond.number * parseInt(powerPoints / 5);
+      }
+      this.players[player].rawScore = score;
+    });
   }
 
   isEqual(action1, action2) {
