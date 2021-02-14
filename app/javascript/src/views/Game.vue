@@ -1,12 +1,18 @@
 <template>
   <div>
-    <div v-if="game.winner" class="bg-gray-200 h-30 w-screen fixed opacity-60 text-center py-20">
-      <div class="align-middle text-center text-7xl">
-        <div>
-          Game Over
+    <div v-if="game.winner">
+      <div class="bg-gray-200 h-full w-screen absolute opacity-60 text-center py-20">
+      </div>
+      <div class="absolute w-full text-center">
+        <div class="text-7xl">
+          <p>Game Over</p>
+          <p>{{ game.winner }} won!</p>
         </div>
-        <div>
-          {{ game.winner }} won!
+        <div v-for="(player, index) of playersSortedByScore()" class="text-2xl">
+          <div class="my-5">
+            <p><b>{{ index + 1 }}: {{ game.players[player].name }}</b></p>
+            <p>{{ game.players[player].rawScore }} raw score + {{ game.players[player].cash }} cash = <b>{{ game.players[player].rawScore + game.players[player].cash }}</b> total points</p>
+          </div>
         </div>
       </div>
     </div>
@@ -201,6 +207,11 @@ export default {
     endManeuver: function() {
       this.tickWithAction(Action.endManeuver());
       this.maneuverOrigin = "";
+    },
+    playersSortedByScore: function() {
+      return Object.keys(this.game.players).sort((a, b) => {
+        return this.game.players[a].rawScore + this.game.players[a].cash < this.game.players[b].rawScore + this.game.players[b].cash
+      });
     }
   }
 };
