@@ -697,10 +697,10 @@ export default class Imperial {
         if (powerPoints < 0) powerPoints = 0;
         nation.powerPoints += powerPoints;
 
-        this.updateRawScores();
-
         if (nation.powerPoints + taxes >= 25) {
           nation.powerPoints = 25;
+          this.updateRawScores();
+
           this.tick(Action.endGame());
           return;
         }
@@ -714,6 +714,7 @@ export default class Imperial {
             this.rondelActions(this.currentNation)
           );
         }
+        this.updateRawScores();
         return;
       }
       case "maneuver1":
