@@ -26,32 +26,38 @@ describe("Imperial", () => {
           a: {
             name: "a",
             cash: 2,
-            bonds: new Set([Bond(Nation.RU, 4), Bond(Nation.FR, 1)])
+            bonds: new Set([Bond(Nation.RU, 4), Bond(Nation.FR, 1)]),
+            rawScore: 0
           },
           b: {
             name: "b",
             cash: 2,
-            bonds: new Set([Bond(Nation.FR, 4), Bond(Nation.AH, 1)])
+            bonds: new Set([Bond(Nation.FR, 4), Bond(Nation.AH, 1)]),
+            rawScore: 0
           },
           c: {
             name: "c",
             cash: 2,
-            bonds: new Set([Bond(Nation.GB, 4), Bond(Nation.RU, 1)])
+            bonds: new Set([Bond(Nation.GB, 4), Bond(Nation.RU, 1)]),
+            rawScore: 0
           },
           d: {
             name: "d",
             cash: 2,
-            bonds: new Set([Bond(Nation.AH, 4), Bond(Nation.GE, 1)])
+            bonds: new Set([Bond(Nation.AH, 4), Bond(Nation.GE, 1)]),
+            rawScore: 0
           },
           e: {
             name: "e",
             cash: 2,
-            bonds: new Set([Bond(Nation.IT, 4), Bond(Nation.GB, 1)])
+            bonds: new Set([Bond(Nation.IT, 4), Bond(Nation.GB, 1)]),
+            rawScore: 0
           },
           f: {
             name: "f",
             cash: 2,
-            bonds: new Set([Bond(Nation.GE, 4), Bond(Nation.IT, 1)])
+            bonds: new Set([Bond(Nation.GE, 4), Bond(Nation.IT, 1)]),
+            rawScore: 0
           }
         });
       });
@@ -140,27 +146,32 @@ describe("Imperial", () => {
           a: {
             name: "a",
             cash: 2,
-            bonds: new Set([Bond(Nation.RU, 4), Bond(Nation.FR, 1)])
+            bonds: new Set([Bond(Nation.RU, 4), Bond(Nation.FR, 1)]),
+            rawScore: 0
           },
           b: {
             name: "b",
             cash: 2,
-            bonds: new Set([Bond(Nation.FR, 4), Bond(Nation.AH, 1)])
+            bonds: new Set([Bond(Nation.FR, 4), Bond(Nation.AH, 1)]),
+            rawScore: 0
           },
           c: {
             name: "c",
             cash: 2,
-            bonds: new Set([Bond(Nation.GB, 4), Bond(Nation.RU, 1)])
+            bonds: new Set([Bond(Nation.GB, 4), Bond(Nation.RU, 1)]),
+            rawScore: 0
           },
           d: {
             name: "d",
             cash: 2,
-            bonds: new Set([Bond(Nation.GE, 4), Bond(Nation.IT, 1)])
+            bonds: new Set([Bond(Nation.GE, 4), Bond(Nation.IT, 1)]),
+            rawScore: 0
           },
           e: {
             name: "e",
             cash: 2,
-            bonds: new Set([Bond(Nation.IT, 4), Bond(Nation.GB, 1)])
+            bonds: new Set([Bond(Nation.IT, 4), Bond(Nation.GB, 1)]),
+            rawScore: 0
           }
         });
       });
@@ -248,22 +259,26 @@ describe("Imperial", () => {
           a: {
             name: "a",
             cash: 2,
-            bonds: new Set([Bond(Nation.IT, 4), Bond(Nation.GB, 1)])
+            bonds: new Set([Bond(Nation.IT, 4), Bond(Nation.GB, 1)]),
+            rawScore: 0
           },
           b: {
             name: "b",
             cash: 2,
-            bonds: new Set([Bond(Nation.FR, 4), Bond(Nation.AH, 1)])
+            bonds: new Set([Bond(Nation.FR, 4), Bond(Nation.AH, 1)]),
+            rawScore: 0
           },
           c: {
             name: "c",
             cash: 2,
-            bonds: new Set([Bond(Nation.AH, 4), Bond(Nation.GE, 1)])
+            bonds: new Set([Bond(Nation.AH, 4), Bond(Nation.GE, 1)]),
+            rawScore: 0
           },
           d: {
             name: "d",
             cash: 2,
-            bonds: new Set([Bond(Nation.GE, 4), Bond(Nation.IT, 1)])
+            bonds: new Set([Bond(Nation.GE, 4), Bond(Nation.IT, 1)]),
+            rawScore: 0
           }
         });
       });
@@ -355,7 +370,8 @@ describe("Imperial", () => {
               Bond(Nation.GB, 1),
               Bond(Nation.RU, 4),
               Bond(Nation.FR, 1)
-            ])
+            ]),
+            rawScore: 0
           },
           b: {
             name: "b",
@@ -365,7 +381,8 @@ describe("Imperial", () => {
               Bond(Nation.AH, 1),
               Bond(Nation.GE, 4),
               Bond(Nation.IT, 1)
-            ])
+            ]),
+            rawScore: 0
           },
           c: {
             name: "c",
@@ -375,7 +392,8 @@ describe("Imperial", () => {
               Bond(Nation.GE, 1),
               Bond(Nation.GB, 4),
               Bond(Nation.RU, 1)
-            ])
+            ]),
+            rawScore: 0
           }
         });
       });
@@ -471,7 +489,8 @@ describe("Imperial", () => {
               Bond(Nation.FR, 1),
               Bond(Nation.GB, 4),
               Bond(Nation.RU, 1)
-            ])
+            ]),
+            rawScore: 0
           },
           b: {
             name: "b",
@@ -483,7 +502,8 @@ describe("Imperial", () => {
               Bond(Nation.AH, 1),
               Bond(Nation.GE, 4),
               Bond(Nation.IT, 1)
-            ])
+            ]),
+            rawScore: 0
           }
         });
       });

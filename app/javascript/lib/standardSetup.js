@@ -62,7 +62,8 @@ export default ({ players, provinceNames }) => {
         out.players[id] = {
           name: id,
           cash: 2,
-          bonds: new Set()
+          bonds: new Set(),
+          rawScore: 0
         };
       }
 
