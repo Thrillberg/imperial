@@ -172,6 +172,11 @@ export default class Imperial {
       this.availableBonds.add(bondToTrade);
       this.players[action.payload.player].cash -= netCost;
       this.players[action.payload.player].bonds.delete(bondToTrade);
+      this.annotatedLog.push(Action.playerTradedInForABond({
+        player: action.payload.player,
+        bondNation: action.payload.nation,
+        bondCost: bondToTrade.cost
+      }));
     } else {
       this.nations.get(action.payload.nation).treasury += action.payload.cost;
       this.players[action.payload.player].cash -= action.payload.cost;
@@ -628,14 +633,19 @@ export default class Imperial {
         this.allowSwissBanksToForceInvestor();
         if (this.availableActions.size > 0) {
           return;
-        //} else {
-        //  this.passingThroughInvestor = false;
         }
       }
     }
     currentNation.previousRondelPosition = currentNation.rondelPosition;
     currentNation.rondelPosition = action.payload.slot;
     this.players[this.currentPlayerName].cash -= action.payload.cost;
+    if (action.payload.cost > 0) {
+      this.annotatedLog.push(Action.playerPaysForRondel({
+        player: this.currentPlayerName,
+        cost: action.payload.cost,
+        slot: action.payload.slot
+      }));
+    }
 
     switch (action.payload.slot) {
       case "investor": {
@@ -1057,6 +1067,7 @@ export default class Imperial {
     this.currentPlayerName = this.investorCardHolder;
     // 2. Investor card holder gets 2m cash
     this.players[this.investorCardHolder].cash += 2;
+    this.annotatedLog.push(Action.playerInvests({player: this.investorCardHolder}));
     this.endOfInvestorTurn(this.investorCardHolder);
   }
 

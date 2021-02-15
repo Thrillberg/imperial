@@ -84,11 +84,18 @@ export default {
         case "endGame":
           return "Game Over!";
         case "playerGainsCash":
-          return `${action.payload.player} gained ${action.payload.amount}m cash`;
+          return `${action.payload.player} gained ${action.payload.amount}m in taxes.`;
         case "nationGainsTreasury":
-          return `${stringify(action.payload.nation.value)} gained ${action.payload.amount}m in its treasury`;
+          return `${stringify(action.payload.nation.value)} gained ${action.payload.amount}m in taxes.`;
         case "nationGainsPowerPoints":
-          return `${stringify(action.payload.nation.value)} gained ${action.payload.powerPoints} power points`;
+          return `${stringify(action.payload.nation.value)} gained ${action.payload.powerPoints} power points.`;
+        case "playerTradedInForABond":
+          return `${action.payload.player} traded in their ${stringify(action.payload.bondNation.value)} bond for ${action.payload.bondCost}m.`;
+        case "playerPaysForRondel":
+          let slot = this.capitalize(action.payload.slot).replace(/\d/g,"");
+          return `${action.payload.player} paid ${action.payload.cost}m to move to the ${slot} slot on the rondel.`;
+        case "playerInvests":
+          return `${action.payload.player} received 2m for holding the investor card.`;
       }
       return notImplemented;
     },
@@ -104,13 +111,13 @@ export default {
     },
     buildFactoryAction(payload) {
       let province = this.capitalize(payload.province);
-      return `Built a factory in ${province}.`;
+      return `Built a factory in ${province} for 5m.`;
     },
     bondPurchaseAction(payload) {
       let player = payload.player;
       let cost = payload.cost;
       let nation = stringify(payload.nation.value);
-      return `${player} bought ${cost}M in bonds from ${nation}.`;
+      return `${player} bought the ${cost}m bond from ${nation}.`;
     },
     importAction(payload) {
       let provincesList = payload.placements.map((item) => { return this.capitalize(item.province) });

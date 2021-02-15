@@ -51,6 +51,9 @@ export default {
   noop,
   // The following are only for annotations
   playerGainsCash: makeAction("playerGainsCash", ["player", "amount"]),
+  playerTradedInForABond: makeAction("playerTradedInForABond", ["player", "bondNation", "bondCost"]),
+  playerPaysForRondel: makeAction("playerPaysForRondel", ["player", "cost", "slot"]),
+  playerInvests: makeAction("playerInvests", ["player"]),
   nationGainsTreasury: makeAction("nationGainsTreasury", ["nation", "amount"]),
   nationGainsPowerPoints: makeAction("nationGainsPowerPoints", ["nation", "powerPoints"]),
   // The remaining actions are for the main log
