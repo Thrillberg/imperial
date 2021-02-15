@@ -11,6 +11,7 @@
         :key="player.name"
       ></Player>
     </div>
+    <TurnStatus :game="game"></TurnStatus>
     <div v-if="purchasingBond">
       <div class="text-lg">Purchase a bond</div>
       <div class="flex flex-wrap">
@@ -62,7 +63,7 @@
       </div>
     </div>
     <div
-      v-if="game.maneuvering && !destroyingFactory && (profile.username === controllingPlayerName || (game.soloMode && profile.username in game.players))"
+      v-if="game.maneuvering && !destroyingFactory && !game.handlingConflict && (profile.username === controllingPlayerName || (game.soloMode && profile.username in game.players))"
       class="text-center text-lg"
     >
       <div
@@ -107,6 +108,7 @@ import ActionComponent from "../components/ActionComponent.vue";
 import Bond from "../components/Bond.vue";
 import Player from "../components/Player.vue";
 import Rondel from "../components/Rondel.vue";
+import TurnStatus from "../components/TurnStatus.vue";
 
 export default {
   name: "GameDetails",
@@ -114,7 +116,8 @@ export default {
     ActionComponent,
     Bond,
     Player,
-    Rondel
+    Rondel,
+    TurnStatus
   },
   props: ["game", "controllingPlayerName", "profile", "importPlacements", "online_users"],
   computed: {
