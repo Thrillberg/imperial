@@ -16,6 +16,7 @@
         </div>
       </div>
     </div>
+    <div class="m-2"><b>{{ games.find(game => game.id === this.$route.params.id).name }}</b></div>
     <div v-if="gameStarted" class="flex flex-col">
       <div class="flex">
         <NationComponent
