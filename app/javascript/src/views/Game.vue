@@ -16,7 +16,7 @@
         </div>
       </div>
     </div>
-    <div class="m-2"><b>{{ games.find(game => game.id === this.$route.params.id).name }}</b></div>
+    <div class="m-2"><b>{{ gameName() }}</b></div>
     <div v-if="gameStarted" class="flex flex-col">
       <div class="flex">
         <NationComponent
@@ -123,6 +123,13 @@ export default {
     }
   },
   methods: {
+    gameName() {
+      if (this.games.length > 0) {
+        return this.games.find(game => game.id === this.$route.params.id).name
+      } else {
+        return ""
+      }
+    },
     updateGameLog(log) {
       const gameLog = getGameLog(log);
       this.game = Imperial.fromLog(gameLog);
