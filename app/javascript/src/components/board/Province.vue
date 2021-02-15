@@ -7,7 +7,7 @@
     @mouseleave="hideFactory()"
   >
     <text
-      v-if="this.mounted"
+      v-if="this.mounted && !['sardinia', 'corsica', 'switzerland'].includes(this.name)"
       font-size="10"
       fill="#000000"
       text-align="center"
