@@ -12,7 +12,11 @@ export default class Imperial {
 
   constructor(board) {
     this.board = board || standardGameBoard;
+    // This is the canonical log from which game state is derived.
     this.log = [];
+    // This includes everything from this.log plus extra actions that are
+    // useful for display purposes. Do not rely on this log for game state
+    // calculations.
     this.annotatedLog = [];
     this.unitsToMove = [];
     this.units = new Set();
