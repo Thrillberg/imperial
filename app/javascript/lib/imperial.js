@@ -12,7 +12,12 @@ export default class Imperial {
 
   constructor(board) {
     this.board = board || standardGameBoard;
+    // This is the canonical log from which game state is derived.
     this.log = [];
+    // This includes everything from this.log plus extra actions that are
+    // useful for display purposes. Do not rely on this log for game state
+    // calculations.
+    this.annotatedLog = [];
     this.unitsToMove = [];
     this.units = new Set();
     this.provinces = new Map();
@@ -33,10 +38,12 @@ export default class Imperial {
     // Initialize and endGame actions are always valid.
     if (action.type === "initialize") {
       this.log.push(action);
+      this.annotatedLog.push(action);
       this.initialize(action);
       return;
     } else if (action.type === "endGame") {
       this.log.push(action);
+      this.annotatedLog.push(action);
       this.endGame();
       return;
     }
@@ -52,6 +59,7 @@ export default class Imperial {
     if (!validAction) { return; }
 
     this.log.push(action);
+    this.annotatedLog.push(action);
 
     switch (action.type) {
       case "noop":
@@ -168,6 +176,11 @@ export default class Imperial {
       this.availableBonds.add(bondToTrade);
       this.players[action.payload.player].cash -= netCost;
       this.players[action.payload.player].bonds.delete(bondToTrade);
+      this.annotatedLog.push(Action.playerTradedInForABond({
+        player: action.payload.player,
+        bondNation: action.payload.nation,
+        bondCost: bondToTrade.cost
+      }));
     } else {
       this.nations.get(action.payload.nation).treasury += action.payload.cost;
       this.players[action.payload.player].cash -= action.payload.cost;
@@ -624,14 +637,19 @@ export default class Imperial {
         this.allowSwissBanksToForceInvestor();
         if (this.availableActions.size > 0) {
           return;
-        //} else {
-        //  this.passingThroughInvestor = false;
         }
       }
     }
     currentNation.previousRondelPosition = currentNation.rondelPosition;
     currentNation.rondelPosition = action.payload.slot;
     this.players[this.currentPlayerName].cash -= action.payload.cost;
+    if (action.payload.cost > 0) {
+      this.annotatedLog.push(Action.playerPaysForRondel({
+        player: this.currentPlayerName,
+        cost: action.payload.cost,
+        slot: action.payload.slot
+      }));
+    }
 
     switch (action.payload.slot) {
       case "investor": {
@@ -683,6 +701,10 @@ export default class Imperial {
         }
         // Player receives full excess taxes
         this.players[this.currentPlayerName].cash += excessTaxes;
+        this.annotatedLog.push(Action.playerGainsCash({
+          player: this.currentPlayerName,
+          amount: excessTaxes
+        }));
         // Nation's taxChartPosition increases to match taxes
         nation.taxChartPosition += excessTaxes;
         // The tax chart maxes out at 15
@@ -692,6 +714,10 @@ export default class Imperial {
         // Nations cannot be paid less than 0m
         if (payment < 0) payment = 0;
         nation.treasury += payment;
+        this.annotatedLog.push(Action.nationGainsTreasury({
+          nation: nationName,
+          amount: payment
+        }));
         // 3. Adding power points
         let powerPoints = taxes - 5;
         if (powerPoints < 0) powerPoints = 0;
@@ -704,6 +730,11 @@ export default class Imperial {
           this.tick(Action.endGame());
           return;
         }
+
+        this.annotatedLog.push(Action.nationGainsPowerPoints({
+          nation: nationName,
+          powerPoints
+        }));
 
         if (this.passingThroughInvestor) {
           this.middleOfInvestorTurn();
@@ -1040,6 +1071,7 @@ export default class Imperial {
     this.currentPlayerName = this.investorCardHolder;
     // 2. Investor card holder gets 2m cash
     this.players[this.investorCardHolder].cash += 2;
+    this.annotatedLog.push(Action.playerInvests({player: this.investorCardHolder}));
     this.endOfInvestorTurn(this.investorCardHolder);
   }
 
