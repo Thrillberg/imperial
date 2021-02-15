@@ -71,7 +71,7 @@
       </div>
     </div>
     <GameLog
-      :log="game.log"
+      :log="game.annotatedLog"
     />
   </div>
 </template>

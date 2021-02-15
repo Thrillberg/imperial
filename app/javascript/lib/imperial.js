@@ -13,6 +13,7 @@ export default class Imperial {
   constructor(board) {
     this.board = board || standardGameBoard;
     this.log = [];
+    this.annotatedLog = [];
     this.unitsToMove = [];
     this.units = new Set();
     this.provinces = new Map();
@@ -33,10 +34,12 @@ export default class Imperial {
     // Initialize and endGame actions are always valid.
     if (action.type === "initialize") {
       this.log.push(action);
+      this.annotatedLog.push(action);
       this.initialize(action);
       return;
     } else if (action.type === "endGame") {
       this.log.push(action);
+      this.annotatedLog.push(action);
       this.endGame();
       return;
     }
@@ -52,6 +55,7 @@ export default class Imperial {
     if (!validAction) { return; }
 
     this.log.push(action);
+    this.annotatedLog.push(action);
 
     switch (action.type) {
       case "noop":
@@ -683,6 +687,10 @@ export default class Imperial {
         }
         // Player receives full excess taxes
         this.players[this.currentPlayerName].cash += excessTaxes;
+        this.annotatedLog.push(Action.playerGainsCash({
+          player: this.currentPlayerName,
+          amount: excessTaxes
+        }));
         // Nation's taxChartPosition increases to match taxes
         nation.taxChartPosition += excessTaxes;
         // The tax chart maxes out at 15
@@ -692,6 +700,10 @@ export default class Imperial {
         // Nations cannot be paid less than 0m
         if (payment < 0) payment = 0;
         nation.treasury += payment;
+        this.annotatedLog.push(Action.nationGainsTreasury({
+          nation: nationName,
+          amount: payment
+        }));
         // 3. Adding power points
         let powerPoints = taxes - 5;
         if (powerPoints < 0) powerPoints = 0;
@@ -704,6 +716,11 @@ export default class Imperial {
           this.tick(Action.endGame());
           return;
         }
+
+        this.annotatedLog.push(Action.nationGainsPowerPoints({
+          nation: nationName,
+          powerPoints
+        }));
 
         if (this.passingThroughInvestor) {
           this.middleOfInvestorTurn();

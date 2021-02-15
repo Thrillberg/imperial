@@ -83,6 +83,12 @@ export default {
           return notImplemented;
         case "endGame":
           return "Game Over!";
+        case "playerGainsCash":
+          return `${action.payload.player} gained ${action.payload.amount}m cash`;
+        case "nationGainsTreasury":
+          return `${stringify(action.payload.nation.value)} gained ${action.payload.amount}m in its treasury`;
+        case "nationGainsPowerPoints":
+          return `${stringify(action.payload.nation.value)} gained ${action.payload.powerPoints} power points`;
       }
       return notImplemented;
     },

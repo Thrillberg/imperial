@@ -49,6 +49,11 @@ const noop = Object.freeze({ type: "noop" });
 
 export default {
   noop,
+  // The following are only for annotations
+  playerGainsCash: makeAction("playerGainsCash", ["player", "amount"]),
+  nationGainsTreasury: makeAction("nationGainsTreasury", ["nation", "amount"]),
+  nationGainsPowerPoints: makeAction("nationGainsPowerPoints", ["nation", "powerPoints"]),
+  // The remaining actions are for the main log
   initialize: makeAction("initialize", ["players", "soloMode"]),
   bondPurchase: makeAction("bondPurchase", ["nation", "player", "cost"]),
   buildFactory: makeAction("buildFactory", ["province"]),
