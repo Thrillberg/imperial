@@ -1088,7 +1088,14 @@ export default class Imperial {
             })
             .map(x => x.cost);
           const topBondCost = Math.max(exchangeableBondCosts) || 0;
-          return bond.cost <= this.players[player].cash + topBondCost;
+          return(
+            // Player can buy outright
+            bond.cost <= this.players[player].cash || (
+              // Player can trade up but not down
+              bond.cost <= this.players[player].cash + topBondCost &&
+              bond.cost > topBondCost
+            )
+          )
         })
         .map(bond => {
           return Action.bondPurchase({
