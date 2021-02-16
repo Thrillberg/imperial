@@ -1,9 +1,14 @@
 module.exports = {
-  purge: [
-    "./app/javascript/src/**/*.vue",
-    "./app/javascript/src/**/*.js",
-    "./app/javascript/src/**/*.svg"
-  ],
+  purge: {
+    content: [
+      "./app/javascript/src/**/*.vue",
+      "./app/javascript/src/**/*.js",
+      "./app/javascript/src/**/*.svg"
+    ],
+    options: {
+      safelist: ['bg-AH', 'bg-IT', 'bg-FR', 'bg-GB', 'bg-GE', 'bg-RU']
+    }
+  },
   theme: {
     backgroundColor: theme => ({
       ...theme('colors'),
