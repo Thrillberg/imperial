@@ -12,23 +12,13 @@
       ></Player>
     </div>
     <TurnStatus :game="game"></TurnStatus>
-    <div v-if="purchasingBond">
-      <div class="text-lg">Purchase a bond</div>
-      <div class="flex flex-wrap">
-        <div v-for="action of game.availableActions">
-          <Bond
-            v-if="action.type === 'bondPurchase'"
-            :bond="getBond(action)"
-            :tradedBond="tradedBond(action.payload)"
-            @click.native="tickWithAction(action)"
-            class="cursor-pointer"
-          />
-        </div>
-      </div>
-      <div @click="skipBondPurchase" class="rounded p-2 bg-green-800 text-white cursor-pointer inline-block mt-8">
-        Do not buy a bond
-      </div>
-    </div>
+    <BondPurchase
+      :game="game"
+      :current_player="controllingPlayerName"
+      :profile="profile"
+      v-on:purchaseBond="purchaseBond"
+      v-on:skip="this.skipPurchaseBond"
+    ></BondPurchase>
     <div v-if="destroyingFactory">
       <div class="text-lg">Do you want to destroy the factory at <b>{{ this.game.log[this.game.log.length - 1].payload.destination }}</b>?</div>
       <div class="flex flex-wrap justify-evenly">
@@ -105,7 +95,7 @@
 <script>
 import Action from "../../lib/action.js";
 import ActionComponent from "../components/ActionComponent.vue";
-import Bond from "../components/Bond.vue";
+import BondPurchase from "../components/BondPurchase.vue";
 import Player from "../components/Player.vue";
 import Rondel from "../components/Rondel.vue";
 import TurnStatus from "../components/TurnStatus.vue";
@@ -114,20 +104,13 @@ export default {
   name: "GameDetails",
   components: {
     ActionComponent,
-    Bond,
+    BondPurchase,
     Player,
     Rondel,
     TurnStatus
   },
   props: ["game", "controllingPlayerName", "profile", "importPlacements", "online_users"],
   computed: {
-    purchasingBond: function () {
-      const purchasingBond = this.game.availableActions.size > 0 &&
-        Array.from(this.game.availableActions).every(
-          (action) => action.type === "bondPurchase" || action.type === "skipBondPurchase"
-        );
-      return purchasingBond && (this.profile.username === this.controllingPlayerName || (this.game.soloMode && this.profile.username in this.game.players));
-    },
     destroyingFactory: function () {
       const destroyingFactory = this.game.availableActions.size > 0 &&
         Array.from(this.game.availableActions).every(
@@ -171,10 +154,22 @@ export default {
     tickWithAction: function(action) {
       this.$emit("tick", action);
     },
+    purchaseBond(bond) {
+      for (const action of this.game.availableActions) {
+        if (bond.cost === action.payload.cost && bond.nation.value === action.payload.nation.value) {
+          this.tickWithAction(action);
+        }
+      }
+    },
+    skipPurchaseBond() {
+      for (const action in this.game.availableActions) {
+        if (action.type === "skipBondPurchase") {
+          this.tickWithAction(action);
+        }
+      }
+    },
     actionToText: function(action) {
-      if (action.type === "bondPurchase") {
-        return `Purchase a ${action.payload.nation.value} bond for ${action.payload.cost}`;
-      } else if (action.type === "coexist") {
+      if (action.type === "coexist") {
         return `Coexist`;
       } else if (action.type === "fight") {
         return `Fight`;
@@ -186,15 +181,6 @@ export default {
     },
     endManeuver: function() {
       this.$emit("endManeuver", Action.endManeuver());
-    },
-    skipBondPurchase: function() {
-      let skipAction = {};
-      for (const action of this.game.availableActions) {
-        if (action.type === "skipBondPurchase") {
-          skipAction = action;
-        }
-      }
-      this.tickWithAction(skipAction);
     },
     destroyFactory: function() {
       let destroyAction = {};
@@ -232,29 +218,6 @@ export default {
       }
       this.tickWithAction(fightAction);
     },
-    getBond: function(action) {
-      let fetchedBond = {};
-      for (const bond of this.game.availableBonds) {
-        if (bond.cost === action.payload.cost && bond.nation === action.payload.nation) {
-          fetchedBond = bond;
-        }
-      }
-      return fetchedBond;
-    },
-    tradedBond: function({cost, nation, player}) {
-      const playerObj = this.game.players[player];
-      if (playerObj.cash < cost) {
-        let topBond = {cost: 0};
-        for (const bond of playerObj.bonds) {
-          if (bond.nation === nation) {
-            if (bond.cost > topBond.cost) {
-              topBond = bond;
-            }
-          }
-        }
-        return topBond;
-      }
-    }
   }
 };
 </script>
