@@ -821,7 +821,7 @@ describe("imperial", () => {
           expect(game.importing).toEqual(true);
         });
 
-        test.only("nation cannot import into an occupied province", () => {
+        test("nation cannot import into an occupied province", () => {
           const board = new GameBoard({
             nodes: [{ name: "a", nation: Nation.AH }],
             edges: []

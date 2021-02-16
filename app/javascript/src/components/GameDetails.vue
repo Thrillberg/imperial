@@ -162,7 +162,7 @@ export default {
       }
     },
     skipPurchaseBond() {
-      for (const action in this.game.availableActions) {
+      for (const action of this.game.availableActions) {
         if (action.type === "skipBondPurchase") {
           this.tickWithAction(action);
         }
