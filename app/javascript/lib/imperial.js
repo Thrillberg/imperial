@@ -821,13 +821,22 @@ export default class Imperial {
   importRondel(action) {
     const availableActions = new Set([Action.import({ placements: [] })]);
     const homeProvinces = this.board.byNation.get(action.payload.nation);
+    const unoccupiedHomeProvinces = [...homeProvinces].filter(province => {
+      let unoccupied = true;
+      for (const [nation] of this.nations) {
+        if (this.units.get(nation).get(province).armies > 0) {
+          unoccupied = false
+        }
+      }
+      return unoccupied;
+    });
     const treasury = this.nations.get(action.payload.nation).treasury;
     if (treasury < 3) {
       this.maxImports = treasury;
     } else {
       this.maxImports = 3;
     }
-    for (const province of homeProvinces) {
+    for (const province of unoccupiedHomeProvinces) {
       if (treasury >= 1) {
         availableActions.add(
           Action.import({ placements: [{ province, type: "army" }] })
@@ -839,7 +848,7 @@ export default class Imperial {
         }
       }
 
-      for (const province2 of homeProvinces) {
+      for (const province2 of unoccupiedHomeProvinces) {
         if (treasury >= 2) {
           availableActions.add(
             Action.import({
@@ -882,7 +891,7 @@ export default class Imperial {
           }
         }
 
-        for (const province3 of homeProvinces) {
+        for (const province3 of unoccupiedHomeProvinces) {
           if (treasury >= 3) {
             availableActions.add(
               Action.import({
