@@ -820,6 +820,36 @@ describe("imperial", () => {
           expect(game.nations.get(Nation.AH).rondelPosition).toEqual("import");
           expect(game.importing).toEqual(true);
         });
+
+        test.only("nation cannot import into an occupied province", () => {
+          const board = new GameBoard({
+            nodes: [{ name: "a", nation: Nation.AH }],
+            edges: []
+          });
+
+          const game = new Imperial(board);
+          game.tick(
+            Action.initialize({
+              players: [
+                { id: "player1", nation: Nation.AH },
+                { id: "player2", nation: Nation.IT }
+              ],
+              soloMode: false
+            })
+          );
+          game.units.get(Nation.IT).get("a").armies++;
+          game.nations.get(Nation.AH).treasury = 1;
+
+          const availableActions = new Set([Action.import({ placements: [] })]);
+
+          game.tick(
+            Action.rondel({ slot: "import", cost: 0, nation: Nation.AH })
+          );
+
+          expect(game.availableActions).toEqual(availableActions);
+          expect(game.nations.get(Nation.AH).rondelPosition).toEqual("import");
+          expect(game.importing).toEqual(true);
+        });
       });
 
       describe("maneuver1 or manuever2", () => {
