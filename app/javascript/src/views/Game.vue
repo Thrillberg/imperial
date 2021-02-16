@@ -1,22 +1,7 @@
 <template>
   <div>
-    <div v-if="game.winner">
-      <div class="bg-gray-200 h-full w-screen absolute opacity-60 text-center py-20">
-      </div>
-      <div class="absolute w-full text-center">
-        <div class="text-7xl">
-          <p>Game Over</p>
-          <p>{{ game.winner }} won!</p>
-        </div>
-        <div v-for="(player, index) of playersSortedByScore()" class="text-2xl">
-          <div class="my-5">
-            <p><b>{{ index + 1 }}: {{ game.players[player].name }}</b></p>
-            <p>{{ game.players[player].rawScore }} raw score + {{ game.players[player].cash }} cash = <b>{{ game.players[player].rawScore + game.players[player].cash }}</b> total points</p>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="m-2"><b>{{ gameName() }}</b></div>
+    <EndGame :game="game" />
+    <div class="p-2"><b>{{ gameName() }}</b></div>
     <div v-if="gameStarted" class="flex flex-col">
       <div class="flex">
         <NationComponent
@@ -83,6 +68,7 @@ import { Nation } from "../../lib/constants.js";
 import { apiClient } from "../router/index.js";
 
 import Board from "../components/board/Board.vue";
+import EndGame from "../components/EndGame.vue";
 import Flag from "../components/flags/Flag.vue";
 import GameDetails from "../components/GameDetails.vue";
 import GameLog from "../components/GameLog.vue";
@@ -94,6 +80,7 @@ export default {
   name: "Game",
   components: {
     Board,
+    EndGame,
     Flag,
     GameDetails,
     GameLog,
@@ -216,11 +203,6 @@ export default {
       this.tickWithAction(Action.endManeuver());
       this.maneuverOrigin = "";
     },
-    playersSortedByScore: function() {
-      return Object.keys(this.game.players).sort((a, b) => {
-        return this.game.players[a].rawScore + this.game.players[a].cash < this.game.players[b].rawScore + this.game.players[b].cash
-      });
-    }
   }
 };
 </script>
