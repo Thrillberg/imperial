@@ -1740,11 +1740,6 @@ describe("imperial", () => {
                     Action.bondPurchase({
                       nation: Nation.AH,
                       player: "player1",
-                      cost: 6
-                    }),
-                    Action.bondPurchase({
-                      nation: Nation.AH,
-                      player: "player1",
                       cost: 12
                     }),
                     Action.bondPurchase({
@@ -1761,11 +1756,6 @@ describe("imperial", () => {
                       nation: Nation.GB,
                       player: "player1",
                       cost: 4
-                    }),
-                    Action.bondPurchase({
-                      nation: Nation.GB,
-                      player: "player1",
-                      cost: 6
                     }),
                     Action.bondPurchase({
                       nation: Nation.GB,
