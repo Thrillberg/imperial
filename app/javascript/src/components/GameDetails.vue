@@ -38,7 +38,7 @@
       ></Rondel>
     </div>
     <div
-      v-if="game.importing && (profile.username === controllingPlayerName || (game.soloMode && profile.username in game.players))"
+      v-if="game.importing && !chooseImportType && (profile.username === controllingPlayerName || (game.soloMode && profile.username in game.players))"
       class="text-center text-lg"
     >
       <div>
@@ -50,6 +50,24 @@
         class="rounded p-2 bg-green-800 text-white cursor-pointer"
       >
         End import
+      </div>
+    </div>
+    <div
+      v-if="game.importing && !!chooseImportType && (profile.username === controllingPlayerName || (game.soloMode && profile.username in game.players))"
+      class="text-center text-lg"
+    >
+      <div>Please choose if you want to import an <b>army</b> or a <b>fleet</b>.</div>
+      <div
+        @click="$emit('chooseImportType', 'army')"
+        class="rounded p-2 bg-green-800 text-white cursor-pointer"
+      >
+        Army
+      </div>
+      <div
+        @click="$emit('chooseImportType', 'fleet')"
+        class="rounded p-2 bg-green-800 text-white cursor-pointer"
+      >
+        Fleet
       </div>
     </div>
     <div
@@ -109,7 +127,7 @@ export default {
     Rondel,
     TurnStatus
   },
-  props: ["game", "controllingPlayerName", "profile", "importPlacements", "online_users"],
+  props: ["game", "chooseImportType", "controllingPlayerName", "profile", "importPlacements", "online_users"],
   computed: {
     destroyingFactory: function () {
       const destroyingFactory = this.game.availableActions.size > 0 &&
