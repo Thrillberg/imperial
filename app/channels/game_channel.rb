@@ -25,8 +25,9 @@ class GameChannel < ApplicationCable::Channel
       game = game_from_data(data)
       data = data["data"]["action"]
       game.actions << Action.create(data: data)
-
       broadcast_update_game_log "game_channel", "updateGameLog", game
+      broadcast_games "game_channel", "updateGames"
+
     when "updateGames"
       broadcast_games "game_channel", "updateGames"
     end

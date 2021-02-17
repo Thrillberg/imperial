@@ -95,9 +95,7 @@ import Star from "../components/Star.vue";
 
 export default {
   name: "Home",
-  components: {
-    Star
-  },
+  components: { Star },
   props: ["profile", "users", "games"],
   methods: {
     playersInGame: function(gameId) {
