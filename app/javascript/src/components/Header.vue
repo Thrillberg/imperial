@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <header>
     <div class="bg-green-500 flex justify-between">
       <div class="bg-white m-2 border-2 rounded border-red-500 p-4">
         This project is under active development and data may be lost at any time!
@@ -35,24 +35,32 @@
             >Sign out</p>
           </div>
           <span v-if="!profile.email" class="inline-block">
-            <form class="pr-4 bg-green-500 rounded" @submit="signIn">
-              <input
-                type="text"
-                placeholder="email"
-                v-model="email"
-                class="rounded p-2"
-              />
-              <input
-                type="password"
-                placeholder="password"
-                v-model="password"
-                class="rounded p-2"
-              />
-              <input
-                type="submit"
-                value="Sign In"
-                class="rounded p-2 bg-green-800 text-white cursor-pointer"
-              />
+            <form class="pr-4 bg-green-500 rounded flex" @submit="signIn">
+              <div class="flex flex-col mr-2">
+                <label class="text-sm">email</label>
+                <input
+                  type="text"
+                  placeholder="email"
+                  v-model="email"
+                  class="rounded p-2"
+                />
+              </div>
+              <div class="flex flex-col mr-2">
+                <label class="text-sm">password</label>
+                <input
+                  type="password"
+                  placeholder="password"
+                  v-model="password"
+                  class="rounded p-2"
+                />
+              </div>
+              <div class="flex flex-col justify-end">
+                <input
+                  type="submit"
+                  value="Sign In"
+                  class="rounded p-2 bg-green-800 text-white cursor-pointer"
+                />
+              </div>
             </form>
           </span>
           <div v-if="!profile.email">
@@ -61,7 +69,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </header>
 </template>
 
 <script>

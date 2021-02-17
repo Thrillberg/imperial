@@ -27,9 +27,9 @@
       </div>
       <div
         v-on:click="openGame()"
-        class="rounded p-2 mt-2 bg-green-800 text-white cursor-pointer inline-block"
+        class="border-2 border-green-800 rounded p-4 mt-2 cursor-pointer inline-block text-lg hover:bg-green-100"
       >
-        Open New Game
+        <b>Open New Game</b>
       </div>
       <div class="flex flex-wrap w-1/2">
         <div v-for="game in games" v-bind:key="game.id" class="mr-3 my-3 p-3 border border-rounded w-2/5" :class="game.winner ? 'bg-gray-300' : ''">
@@ -54,21 +54,21 @@
           <router-link
             :to="{ path: '/game/' + game.id }"
             v-if="game.winner"
-            class="rounded mt-2 p-2 inline-block bg-green-600 text-white cursor-pointer"
+            class="rounded mt-2 p-2 inline-block bg-green-800 text-white cursor-pointer"
           >
             {{ game.winner }} won!
           </router-link>
           <router-link
             :to="{ path: '/game/' + game.id }"
             v-if="gameStarted(game.id) && game.players.includes(profile.username) && !game.winner"
-            class="rounded mt-2 p-2 inline-block bg-green-600 text-white cursor-pointer"
+            class="rounded mt-2 p-2 inline-block bg-green-800 text-white cursor-pointer"
           >
             {{ game.currentPlayer }}'s turn
           </router-link>
           <div
             v-if="joinable(game.id)"
             v-on:click.once="joinGame(game.id)"
-            class="rounded p-2 inline-block bg-green-600 text-white cursor-pointer"
+            class="rounded p-2 inline-block bg-green-800 text-white cursor-pointer"
           >
             Join Game
           </div>
@@ -76,7 +76,7 @@
             v-if="!gameStarted(game.id) && isHost(game.id)"
             :to="{ path: '/game/' + game.id }"
             v-on:click.native="startGame(game.id)"
-            class="rounded mt-2 p-2 inline-block bg-green-600 text-white cursor-pointer"
+            class="rounded mt-2 p-2 inline-block bg-green-800 text-white cursor-pointer"
           >
             Start Game
           </router-link>

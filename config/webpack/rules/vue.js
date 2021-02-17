@@ -26,13 +26,17 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       alwaysWriteToDisk: true,
+      appMountId: "app",
       favicon: "favicon.ico",
+      inject: "body",
+      lang: 'en-US',
       meta: {
         charset: "UTF-8",
         description: "Play Imperial online",
         keywords: "imperial, board game, game, online, play",
         viewport: "width=device-width, initial-scale=1"
       },
+      template: require('html-webpack-template'),
       title: "Imperial"
     }),
     new HtmlWebpackHarddiskPlugin({
