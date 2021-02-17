@@ -1,6 +1,6 @@
 <template>
   <div v-if="purchasingBond">
-    <div class="text-lg m-2">Purchase a bond</div>
+    <div class="text-lg m-2">Purchase a bond - You have {{ game.players[current_player].cash }}m in cash.</div>
     <div class="flex flex-wrap">
       <div v-for="bond of game.availableBonds">
         <Bond
