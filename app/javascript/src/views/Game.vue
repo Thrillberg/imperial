@@ -30,11 +30,13 @@
         <div class="w-1/3 mx-2 border border-gray-500 rounded">
           <GameDetails
             :game="game"
+            :chooseImportType="importProvince"
             :controllingPlayerName="controllingPlayerName"
             :profile="profile"
             :importPlacements="importPlacements"
             :online_users="users"
             v-on:tick="tickWithAction"
+            v-on:chooseImportType="makeImportTypeChoice"
             v-on:endManeuver="endManeuver"
             v-on:runImport="runImport"
           ></GameDetails>
@@ -89,6 +91,7 @@ export default {
   props: ["profile", "users", "games"],
   data: () => {
     return {
+      importProvince: "",
       controllingPlayerName: "",
       currentPlayer: {},
       game: {},
@@ -171,7 +174,11 @@ export default {
           // If the game is in an import, then each specified province
           // gets added to the placements.
         } else if (this.game.importing) {
-          this.importPlacements.push(province);
+          if (this.game.board.graph.get(province).factoryType === "shipyard") {
+            this.importProvince = province;
+          } else {
+            this.importPlacements.push({ province, type: "army" });
+          }
           if (this.importPlacements.length === this.game.maxImports) {
             this.runImport();
           }
@@ -190,11 +197,15 @@ export default {
       this.controllingPlayerName = this.game.currentPlayerName;
       apiClient.tick(this.$route.params.id, action);
     },
+    makeImportTypeChoice: function(type) {
+      this.importPlacements.push({ province: this.importProvince, type });
+      this.importProvince = "";
+      if (this.importPlacements.length === this.game.maxImports) {
+        this.runImport();
+      }
+    },
     runImport: function() {
-      // TODO: Allow imports of fleets too.
-      const placements = this.importPlacements.map(placement => {
-        return { province: placement, type: "army" };
-      });
+      const placements = this.importPlacements;
       this.tickWithAction(Action.import({ placements }));
       this.importPlacements = [];
       return;
