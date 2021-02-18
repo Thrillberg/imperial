@@ -8,8 +8,8 @@
   >
     <text
       v-if="this.mounted && !['sardinia', 'corsica', 'switzerland'].includes(this.name)"
-      font-size="10"
-      fill="#000000"
+      font-size="7"
+      stroke="#303030"
       text-align="center"
       :x="x(0)"
       :y="y(0)"
