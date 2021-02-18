@@ -26,6 +26,34 @@
             :valid_provinces="validProvinces()"
             :importing_units="importPlacements"
           ></Board>
+          <div class="flex justify-center my-2">
+            <div
+              v-if="this.game.log.length > 1"
+              class="rounded p-2 mx-2 bg-green-800 text-white cursor-pointer"
+              @click="back"
+            >
+              ◀
+            </div>
+            <div
+              v-else
+              class="rounded p-2 mx-2 bg-gray-600 text-white cursor-not-allowed"
+            >
+              ◀
+            </div>
+            <div
+              v-if="poppedTurns.length > 0"
+              class="rounded p-2 mx-2 bg-green-800 text-white cursor-pointer"
+              @click="forward"
+            >
+              ▶
+            </div>
+            <div
+              v-else
+              class="rounded p-2 mx-2 bg-gray-600 text-white cursor-not-allowed"
+            >
+              ▶
+            </div>
+          </div>
         </div>
         <div class="w-1/3 mx-2 border border-gray-500 rounded">
           <GameDetails
@@ -97,7 +125,8 @@ export default {
       game: {},
       gameStarted: false,
       importPlacements: [],
-      maneuverOrigin: ""
+      maneuverOrigin: "",
+      poppedTurns: []
     };
   },
   created() {
@@ -121,6 +150,7 @@ export default {
       }
     },
     updateGameLog(log) {
+      this.poppedTurns = [];
       const gameLog = getGameLog(log);
       this.game = Imperial.fromLog(gameLog);
       if (this.game.players) {
@@ -214,6 +244,15 @@ export default {
       this.tickWithAction(Action.endManeuver());
       this.maneuverOrigin = "";
     },
+    back: function() {
+      this.poppedTurns.push(this.game.log.pop());
+      this.game = Imperial.fromLog(this.game.log);
+    },
+    forward: function() {
+      const nextTurn = this.poppedTurns.pop();
+      this.game.log.push(nextTurn);
+      this.game = Imperial.fromLog(this.game.log);
+    }
   }
 };
 </script>
