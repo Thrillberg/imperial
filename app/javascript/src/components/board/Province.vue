@@ -30,8 +30,8 @@
       v-if="(factory === 'shipyard' || tempFactory === 'shipyard') && this.mounted"
       :cx="x(0) - 6"
       :cy="y(0) + 5"
-      r="10"
-      fill-opacity="0.3"
+      r="8"
+      fill-opacity="0.5"
       fill="blue"
       stroke="none"
     ></circle>
@@ -41,8 +41,8 @@
       height="12"
       :x="x(0) - 12"
       :y="y(0) - 1"
-      fill-opacity="0.3"
-      fill="black"
+      fill-opacity="0.5"
+      fill="brown"
       stroke="none"
       >
     </rect>
@@ -330,7 +330,7 @@ export default {
       if (factory === "shipyard") {
         return "blue";
       } else {
-        return "black";
+        return "brown";
       }
     },
     nationFill(nation) {
