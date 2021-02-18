@@ -225,7 +225,9 @@ export default {
     },
     tickWithAction: function(action) {
       this.controllingPlayerName = this.game.currentPlayerName;
-      apiClient.tick(this.$route.params.id, action);
+      if (this.poppedTurns.length === 0) {
+        apiClient.tick(this.$route.params.id, action);
+      }
     },
     makeImportTypeChoice: function(type) {
       this.importPlacements.push({ province: this.importProvince, type });
