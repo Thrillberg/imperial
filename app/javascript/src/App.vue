@@ -39,7 +39,8 @@ export default {
           name: game.name,
           id: game.id,
           currentPlayer: imperialGame.currentPlayerName,
-          winner: imperialGame.winner
+          winner: imperialGame.winner,
+          forceEndedAt: game.force_ended_at
         };
       });
     });
