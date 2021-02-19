@@ -18,7 +18,7 @@ export default {
   name: "App",
   components: { Header },
   data: function () {
-    return { profile: {}, games: new Set(), onlineUsers: [] };
+    return { profile: {}, games: [], onlineUsers: [] };
   },
   beforeDestroy() {
     apiClient.clearHandlers();
