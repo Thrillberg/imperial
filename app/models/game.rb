@@ -20,6 +20,6 @@ class Game < ActiveRecord::Base
       return actions.order(:created_at).last.created_at < 3.days.ago
     end
 
-    return false
+    false
   end
 end

@@ -5,9 +5,9 @@ RSpec.describe User, "#convert_games" do
     user = create(:user, name: "old name")
     game = create(:game, host: user)
     create(:player, game: game, user: user)
-    initialize_action = create(:action, data: "old name", game: game)
+    create(:action, data: "old name", game: game)
     user.update(name: "new name")
-    
+
     user.convert_games("old name")
 
     expect(game.actions.first.data).to include("new name")
