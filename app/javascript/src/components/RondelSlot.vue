@@ -45,14 +45,15 @@
     <g
       :transform="'translate(100, 100) rotate(' + this.rotation +')'"
     >
-      <Flag
+      <circle
         v-for="(nation, index) in nations"
-        :nation="nation"
-        :key="nation"
-        :transform="flagPosition(index)"
-        width="15"
-        height="10"
-      ></Flag>
+        :cx="xPosition(index)"
+        :cy="yPosition(index)"
+        r="7"
+        stroke-width="0.5"
+        stroke="black"
+        :fill="fill(nation)"
+      ></circle>
     </g>
   </g>
 </template>
@@ -105,13 +106,11 @@ export default {
         return "";
       }
     },
-    flagPosition: function(flagIndex) {
-      const xTranslate = 30 + 15 * flagIndex;
-      if (this.index < 4) {
-        return `rotate(22.5) translate(${xTranslate}, -7.5) rotate(-90) translate(-15, -10)`
-      } else {
-        return `rotate(22.5) translate(${xTranslate}, -7.5) rotate(90)`
-      }
+    xPosition: function(index) {
+      return 25 + 15 * index;
+    },
+    yPosition: function(index) {
+      return 10 + 6 * index;
     },
     getTextRotation: function() {
       const slotCount = 8;
@@ -119,6 +118,22 @@ export default {
         return `${-(360.0 / slotCount) * 1.5} 150 40`;
       } else {
         return `${(360.0 / slotCount) * 2.5} 100 10`;
+      }
+    },
+    fill: function(nation) {
+      switch (nation) {
+        case "AH":
+          return "#EBE084"
+        case "IT":
+          return "#6E8D4E"
+        case "FR":
+          return "#54BFF9"
+        case "GB":
+          return "#EF7F72"
+        case "GE":
+          return "#8F8F8F"
+        case "RU":
+          return "#9C6BAE"
       }
     }
   }
