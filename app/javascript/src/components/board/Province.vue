@@ -27,21 +27,21 @@
       v-bind:fill="nationFill(dot)"
     ></circle>
     <circle
-      v-if="(factory === 'shipyard' || tempFactory === 'shipyard') && this.mounted"
-      :cx="x(0) - 6"
-      :cy="y(0) + 5"
+      v-if="(factory_type === 'shipyard') && this.mounted"
+      :cx="x(0) - 6 + factoryXAdjustment()"
+      :cy="y(0) + 5 + factoryYAdjustment()"
       r="8"
-      fill-opacity="0.5"
+      fill-opacity="0.4"
       fill="blue"
       stroke="none"
     ></circle>
     <rect
-      v-else-if="(factory === 'armaments' || tempFactory === 'armaments') && this.mounted"
+      v-else-if="(factory_type === 'armaments') && this.mounted"
       width="12"
       height="12"
       :x="x(0) - 12"
       :y="y(0) - 1"
-      fill-opacity="0.5"
+      fill-opacity="0.4"
       fill="brown"
       stroke="none"
       >
@@ -49,8 +49,8 @@
     <Factory
       v-if="(factory || tempFactory) && this.mounted"
       :type="factory"
-      :x="x(0) - 10"
-      :y="y(0)"
+      :x="x(0) - 10 + factoryXAdjustment()"
+      :y="y(0) + factoryYAdjustment()"
       :fill="this.fill(factory || tempFactory)"
       stroke="white"
       stroke-width="2px"
@@ -60,8 +60,8 @@
       v-for="(nation, index) in availableFleets()"
       :nation="nation"
       :key="nation + index + 'F'"
-      :x="x(index) + flagFleetXAdjustment(name)"
-      :y="y(index) + 10"
+      :x="x(index) + flagFleetXAdjustment()"
+      :y="y(index) + 10 + flagFleetYAdjustment()"
       :fleet="true"
       width="21"
       height="11"
@@ -315,7 +315,7 @@ export default {
         case "liverpool":
           return -10
         case "englishchannel":
-          return -20
+          return -30
         case "marseille":
         case "hamburg":
           return -15
@@ -323,6 +323,43 @@ export default {
           return -15
         case "stpetersburg":
           return -20
+      }
+      return 0
+    },
+    flagFleetYAdjustment() {
+      switch (this.name) {
+        case "brest":
+          return -30
+        case "englishchannel":
+          return -10
+      }
+      return 0
+    },
+    factoryXAdjustment() {
+      switch (this.name) {
+        case "danzig":
+          return 20
+        case "genoa":
+          return 15
+        case "stpetersburg":
+          return -20
+        case "venice":
+          return 15
+      }
+      return 0
+    },
+    factoryYAdjustment() {
+      switch (this.name) {
+        case "brest":
+          return -20
+        case "danzig":
+          return -30
+        case "genoa":
+          return 10
+        case "stpetersburg":
+          return -25
+        case "trieste":
+          return 10
       }
       return 0
     },
