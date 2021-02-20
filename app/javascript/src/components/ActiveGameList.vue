@@ -46,6 +46,10 @@
 </template>
 
 <script>
+import Action from "../../lib/action.js";
+import { apiClient } from "../router/index.js";
+import { Nation } from "../../lib/constants.js";
+
 import Star from "../components/Star.vue";
 
 export default {

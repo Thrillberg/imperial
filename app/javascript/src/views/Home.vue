@@ -38,8 +38,6 @@
 </template>
 
 <script>
-import Action from "../../lib/action.js";
-import { Nation } from "../../lib/constants.js";
 import { apiClient } from "../router/index.js";
 
 import ActiveGameList from "../components/ActiveGameList.vue";
