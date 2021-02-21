@@ -142,7 +142,7 @@ export default class Imperial {
     this.order = s.order;
     this.players = s.players;
     this.provinces = s.provinces;
-    this.units = s.units;
+    this.units = this.initializeUnits(s.units);
     this.currentPlayerName = this.nations.get(this.currentNation).controller;
     this.availableActions = new Set(this.rondelActions(this.currentNation));
     this.soloMode = action.payload.soloMode;
@@ -1404,6 +1404,19 @@ export default class Imperial {
       }
       this.players[player].rawScore = score;
     });
+  }
+
+  initializeUnits(units) {
+    let out = new Map();
+    for (const [nation, provinces] of units) {
+      for (const [province, data] of provinces) {
+        if (this.board.byNation.get(nation)?.has(province)) {
+          provinces.set(province, Object.assign({}, data, { friendly: true })); 
+        }
+      }
+      out.set(nation, provinces);
+    }
+    return out;
   }
 
   isEqual(action1, action2) {

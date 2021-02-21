@@ -150,7 +150,7 @@ export default ({ players, provinceNames }) => {
   const emptyProvinces = () => {
     const provinces = new Map();
     for (const province of provinceNames) {
-      provinces.set(province, { armies: 0, fleets: 0 });
+      provinces.set(province, { armies: 0, fleets: 0, friendly: false });
     }
     return provinces;
   };
