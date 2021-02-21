@@ -2,7 +2,6 @@
   <div class="flex flex-grow justify-center" :class="currentNation()">
     <div class="p-3">
       <p><b>{{ stringify(nation) }}</b></p>
-      <p>{{ controller }}</p>
       <svg xmlns="http://www.w3.org/2000/svg" height="40" width="60">
         <Flag
           :nation="nation"
@@ -10,8 +9,9 @@
           :filter="controller === current_player ? '' : 'grayscale'"
         ></Flag>
       </svg>
+      <p>{{ controller }}</p>
     </div>
-    <div>
+    <div class="flex flex-col justify-center">
       <div>{{ treasury }}m</div>
       <div>{{ power_points }} power</div>
       <div>{{ tax_chart_position }} tax</div>
@@ -39,11 +39,11 @@ export default {
   methods: {
     currentNation() {
       if (this.current_nation === this.nation && this.controller === this.current_player) {
-        return "bg-yellow-300"
+        return `bg-${this.nation} border-4 border-black`
       };
 
       if (this.current_nation === this.nation) {
-        return "bg-green-300"
+        return `bg-${this.nation}`
       };
 
       return ""
