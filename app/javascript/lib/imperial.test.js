@@ -1643,7 +1643,8 @@ describe("imperial", () => {
                 // AH was forced to stay on investor so production never got triggered.
                 expect(game.units.get(Nation.AH).get("a")).toEqual({
                   armies: 0,
-                  fleets: 0
+                  fleets: 0,
+                  friendly: true
                 });
                 expect(game.nations.get(Nation.AH).rondelPosition).toEqual("investor");
                 expect(game.availableActions).toEqual(
@@ -2589,11 +2590,13 @@ describe("imperial", () => {
 
           expect(game.units.get(Nation.AH).get("a")).toEqual({
             armies: 0,
-            fleets: 0
+            fleets: 0,
+            friendly: false
           });
           expect(game.units.get(Nation.IT).get("a")).toEqual({
             armies: 0,
-            fleets: 0
+            fleets: 0,
+            friendly: false
           });
         });
 
@@ -2615,11 +2618,13 @@ describe("imperial", () => {
 
           expect(game.units.get(Nation.AH).get("b")).toEqual({
             armies: 0,
-            fleets: 0
+            fleets: 0,
+            friendly: false
           });
           expect(game.units.get(Nation.IT).get("b")).toEqual({
             armies: 0,
-            fleets: 0
+            fleets: 0,
+            friendly: false
           });
         });
       });
@@ -2665,11 +2670,13 @@ describe("imperial", () => {
 
           expect(game.units.get(Nation.IT).get("a")).toEqual({
             armies: 1,
-            fleets: 0
+            fleets: 0,
+            friendly: false
           });
           expect(game.units.get(Nation.AH).get("a")).toEqual({
             armies: 0,
-            fleets: 0
+            fleets: 0,
+            friendly: false
           });
         });
       });
@@ -2694,15 +2701,18 @@ describe("imperial", () => {
 
           expect(game.units.get(Nation.IT).get("a")).toEqual({
             armies: 1,
-            fleets: 0
+            fleets: 0,
+            friendly: false
           });
           expect(game.units.get(Nation.AH).get("b")).toEqual({
             armies: 0,
-            fleets: 0
+            fleets: 0,
+            friendly: false
           });
           expect(game.units.get(Nation.AH).get("a")).toEqual({
             armies: 0,
-            fleets: 0
+            fleets: 0,
+            friendly: false
           });
         });
 
@@ -2725,15 +2735,18 @@ describe("imperial", () => {
 
           expect(game.units.get(Nation.IT).get("a")).toEqual({
             armies: 0,
-            fleets: 1
+            fleets: 1,
+            friendly: false
           });
           expect(game.units.get(Nation.AH).get("b")).toEqual({
             armies: 0,
-            fleets: 0
+            fleets: 0,
+            friendly: false
           });
           expect(game.units.get(Nation.AH).get("a")).toEqual({
             armies: 0,
-            fleets: 0
+            fleets: 0,
+            friendly: false
           });
         });
       });
@@ -2842,11 +2855,13 @@ describe("imperial", () => {
 
         expect(game.units.get(Nation.AH).get("a")).toEqual({
           armies: 1,
-          fleets: 0
+          fleets: 0,
+          friendly: false
         });
         expect(game.units.get(Nation.IT).get("a")).toEqual({
           armies: 1,
-          fleets: 0
+          fleets: 0,
+          friendly: false
         });
       });
 
