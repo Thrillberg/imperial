@@ -330,8 +330,18 @@ export default class Imperial {
     const totalChallengerUnitsAtProvince =
       challengerUnitsAtProvince.armies + challengerUnitsAtProvince.fleets;
 
-    // Change flags, if challenger wins
-    if (totalChallengerUnitsAtProvince > totalIncumbentUnitsAtProvince) {
+    let isNeutralProvince = true;
+    for (const [nation, provinces] of this.board.byNation) {
+      if (provinces.has(action.payload.province) && !!nation) {
+        isNeutralProvince = false;
+      }
+    }
+
+    // Change flags, if challenger wins and province is not a home province
+    if (
+      totalChallengerUnitsAtProvince > totalIncumbentUnitsAtProvince &&
+      isNeutralProvince
+    ) {
       this.provinces.get(action.payload.province).flag =
         action.payload.challenger;
     }
