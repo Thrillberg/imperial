@@ -15,7 +15,7 @@ export default {
       } else if (actions.every(action => action.type === "buildFactory")) {
         return "choosing where to build a factory"
       } else if (actions.every(action => action.type === "maneuver" || action.type === "endManeuver")) {
-        return "choosing where to maneuver their military units"
+        return "choosing where to maneuver their military units. Fleets move first, then armies"
       } else if (actions.every(action => action.type === "bondPurchase" || action.type === "skipBondPurchase")) {
         return "choosing a bond to purchase"
       } else if (actions.every(action => action.type === "import")) {
