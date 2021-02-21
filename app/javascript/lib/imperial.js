@@ -764,14 +764,11 @@ export default class Imperial {
 
         this.availableActions = new Set();
         for (const province of this.board.byNation.get(action.payload.nation)) {
-          if (!this.provinces.get(province).factory) {
-            let occupied = false;
-            for (const [nation] of this.nations) {
-              if (this.units.get(nation).get(province).armies > 0)
-                occupied = true;
-            }
-            if (occupied === false)
-              this.availableActions.add(Action.buildFactory({ province }));
+          if (
+            !this.provinces.get(province).factory &&
+            this.nobodyIsOccupying(province, this.currentNation)
+          ) {
+            this.availableActions.add(Action.buildFactory({ province }));
           }
         }
         this.buildingFactory = true;
