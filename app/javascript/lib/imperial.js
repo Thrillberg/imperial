@@ -81,7 +81,7 @@ export default class Imperial {
         return;
       }
       case "coexist": {
-        this.coexist();
+        this.coexist(action);
         return;
       }
       case "forceInvestor": {
@@ -365,9 +365,10 @@ export default class Imperial {
       (slot === "maneuver1" || slot === "maneuver2");
   }
 
-  coexist() {
+  coexist(action) {
     this.handlingConflict = false;
     if (this.unitsToMove.length === 0) {
+      this.units.get(action.payload.challenger).get(action.payload.province).friendly = true;
       this.unitsToMove = [];
       this.maneuvering = false;
       this.handleAdvancePlayer();
