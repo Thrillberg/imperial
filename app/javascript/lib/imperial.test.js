@@ -2306,6 +2306,31 @@ describe("imperial", () => {
             ])
           );
         });
+
+        test("maneuver army to home province of another nation allows challenger to decide whether to be friendly or not", () => {
+          const game = newGame();
+          game.units.get(Nation.AH).get("e").armies++;
+
+          game.tick(
+            Action.rondel({ slot: "maneuver1", nation: Nation.AH, cost: 0 })
+          );
+          game.tick(Action.maneuver({ origin: "e", destination: "f" }));
+
+          expect(game.availableActions).toEqual(
+            new Set([
+              Action.friendlyEntrance({
+                province: "f",
+                incumbent: Nation.IT,
+                challenger: Nation.AH
+              }),
+              Action.unfriendlyEntrance({
+                province: "f",
+                incumbent: Nation.IT,
+                challenger: Nation.AH
+              })
+            ])
+          );
+        });
       });
 
       describe("nation controls two armies", () => {
@@ -2495,6 +2520,13 @@ describe("imperial", () => {
             Action.rondel({ slot: "maneuver1", nation: Nation.AH, cost: 0 })
           );
           game.tick(Action.maneuver({ origin: "c", destination: "f" }));
+          game.tick(
+            Action.unfriendlyEntrance({
+              challenger: Nation.AH,
+              incumbent: Nation.IT,
+              province: "f"
+            })
+          );
 
           expect(game.availableActions).toEqual(availableActions);
         });

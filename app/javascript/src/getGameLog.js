@@ -17,7 +17,12 @@ export default function(rawLog) {
       action.type === "bondPurchase"
     ) {
       action.payload.nation = Nation[action.payload.nation.value];
-    } else if (action.type === "fight" || action.type === "coexist") {
+    } else if (
+      action.type === "fight" ||
+      action.type === "coexist" ||
+      action.type === "unfriendlyEntrance" ||
+      action.type === "friendlyEntrance"
+    ) {
       action.payload.incumbent = Nation[action.payload.incumbent.value];
       action.payload.challenger = Nation[action.payload.challenger.value];
     }

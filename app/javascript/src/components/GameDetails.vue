@@ -81,23 +81,7 @@
         End maneuver
       </div>
     </div>
-    <div
-      v-if="game.handlingConflict && (profile.username === controllingPlayerName || (game.soloMode && profile.username in game.players))"
-      class="text-center text-lg"
-    >
-      <div
-        v-on:click="coexist"
-        class="rounded p-2 bg-green-800 text-white cursor-pointer"
-      >
-        Coexist
-      </div>
-      <div
-        v-on:click="fight"
-        class="rounded p-2 bg-green-800 text-white cursor-pointer"
-      >
-        Fight
-      </div>
-    </div>
+    <ConflictHandler :game="game" :profile="profile" :controllingPlayerName="controllingPlayerName" v-on:tick-with-action="tickWithAction"></ConflictHandler>
     <div class="buttons" v-if="canForceInvestor">
       <ActionComponent
         v-for="action in game.availableActions"
@@ -114,6 +98,7 @@
 import Action from "../../lib/action.js";
 import ActionComponent from "../components/ActionComponent.vue";
 import BondPurchase from "../components/BondPurchase.vue";
+import ConflictHandler from "../components/ConflictHandler.vue";
 import Player from "../components/Player.vue";
 import Rondel from "../components/Rondel.vue";
 import TurnStatus from "../components/TurnStatus.vue";
@@ -123,6 +108,7 @@ export default {
   components: {
     ActionComponent,
     BondPurchase,
+    ConflictHandler,
     Player,
     Rondel,
     TurnStatus
@@ -217,25 +203,7 @@ export default {
         }
       }
       this.tickWithAction(skipAction);
-    },
-    coexist: function() {
-      let coexistAction = {};
-      for (const action of this.game.availableActions) {
-        if (action.type === "coexist") {
-          coexistAction = action;
-        }
-      }
-      this.tickWithAction(coexistAction);
-    },
-    fight: function() {
-      let fightAction = {};
-      for (const action of this.game.availableActions) {
-        if (action.type === "fight") {
-          fightAction = action;
-        }
-      }
-      this.tickWithAction(fightAction);
-    },
+    }
   }
 };
 </script>

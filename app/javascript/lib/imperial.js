@@ -84,6 +84,14 @@ export default class Imperial {
         this.coexist(action);
         return;
       }
+      case "unfriendlyEntrance": {
+        this.unfriendlyEntrance(action);
+        return;
+      }
+      case "friendlyEntrance": {
+        this.friendlyEntrance(action);
+        return;
+      }
       case "forceInvestor": {
         this.nations.get(this.currentNation).rondelPosition = "investor";
         const investorAction = Action.rondel({
@@ -300,12 +308,13 @@ export default class Imperial {
   }
 
   fight(action) {
+    const province = action.payload.province;
     const incumbentUnitsAtProvince = this.units
       .get(action.payload.incumbent)
-      .get(action.payload.province);
+      .get(province);
     const challengerUnitsAtProvince = this.units
       .get(action.payload.challenger)
-      .get(action.payload.province);
+      .get(province);
 
     // Remove units at the fight
     if (incumbentUnitsAtProvince.fleets > 0) {
@@ -320,7 +329,7 @@ export default class Imperial {
           challengerUnitsAtProvince.fleets -= 1;
         }
       }
-    } else {
+    } else if (incumbentUnitsAtProvince.armies > 0) {
       incumbentUnitsAtProvince.armies -= 1;
       challengerUnitsAtProvince.armies -= 1;
     }
@@ -332,7 +341,7 @@ export default class Imperial {
 
     let isNeutralProvince = true;
     for (const [nation, provinces] of this.board.byNation) {
-      if (provinces.has(action.payload.province) && !!nation) {
+      if (provinces.has(province) && !!nation) {
         isNeutralProvince = false;
       }
     }
@@ -342,8 +351,7 @@ export default class Imperial {
       totalChallengerUnitsAtProvince > totalIncumbentUnitsAtProvince &&
       isNeutralProvince
     ) {
-      this.provinces.get(action.payload.province).flag =
-        action.payload.challenger;
+      this.provinces.get(province).flag = action.payload.challenger;
     }
 
     this.handlingConflict = false;
@@ -422,6 +430,50 @@ export default class Imperial {
       }
 
       this.availableActions = destinations;
+    }
+  }
+
+  unfriendlyEntrance(action) {
+    const province = action.payload.province
+    // Allow destroyFactory if 3 foreign units attack a factory
+    const isOccupyingForeignFactoryWithThreeUnits =
+      !!this.provinces.get(province).factory &&
+        this.board.graph.get(province).nation !== this.currentNation &&
+        this.units.get(this.currentNation).get(province).armies >= 3 &&
+        this.log[this.log.length - 1].type !== "skipDestroyFactory";
+    if (isOccupyingForeignFactoryWithThreeUnits) {
+      this.availableActions = new Set([
+        Action.destroyFactory({ province }),
+        Action.skipDestroyFactory({ province })
+      ]);
+      return;
+    }
+
+    this.handlingConflict = false;
+    if (this.unitsToMove.length === 0) {
+      this.unitsToMove = [];
+      this.maneuvering = false;
+      this.handleAdvancePlayer();
+      this.availableActions = new Set(this.rondelActions(this.currentNation));
+    } else {
+      const reversedLog = this.log.slice().reverse();
+      const lastManeuverRondelAction = reversedLog.find(this.actionIsRondelAndManeuver);
+      this.beginManeuver(lastManeuverRondelAction);
+    }
+  }
+
+  friendlyEntrance(action) {
+    this.handlingConflict = false;
+    this.units.get(action.payload.challenger).get(action.payload.province).friendly = true;
+    if (this.unitsToMove.length === 0) {
+      this.unitsToMove = [];
+      this.maneuvering = false;
+      this.handleAdvancePlayer();
+      this.availableActions = new Set(this.rondelActions(this.currentNation));
+    } else {
+      const reversedLog = this.log.slice().reverse();
+      const lastManeuverRondelAction = reversedLog.find(this.actionIsRondelAndManeuver);
+      this.beginManeuver(lastManeuverRondelAction);
     }
   }
 
@@ -550,6 +602,32 @@ export default class Imperial {
           this.handlingConflict = true;
           return;
         }
+      }
+    }
+
+    // Interrupt maneuvers when entering another nation's home province!
+    for (const [nation] of this.nations) {
+      if (
+        nation !== this.currentNation &&
+        this.board.byNation.get(nation)?.has(destination)
+      ) {
+        this.availableActions = new Set();
+        this.availableActions.add(
+          Action.unfriendlyEntrance({
+            incumbent: nation,
+            challenger: this.currentNation,
+            province: destination
+          }),
+        );
+        this.availableActions.add(
+          Action.friendlyEntrance({
+            incumbent: nation,
+            challenger: this.currentNation,
+            province: destination
+          })
+        )
+        this.handlingConflict = true;
+        return;
       }
     }
 
@@ -1363,7 +1441,7 @@ export default class Imperial {
       for (const province of this.board.byNation.get(nation)) {
         for (const [occupyingNation,] of this.nations) {
           const units = this.units.get(occupyingNation).get(province);
-          if (units.armies > 0 && occupyingNation !== nation) {
+          if (units.armies > 0 && occupyingNation !== nation && units.friendly === false) {
             isOccupied = true;
           }
         }
