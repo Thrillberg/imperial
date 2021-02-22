@@ -63,6 +63,8 @@ export default {
           return this.buildFactoryAction(action.payload);
         case "bondPurchase":
           return this.bondPurchaseAction(action.payload);
+        case "skipBondPurchase":
+          return `${action.payload.player} chose not to buy a bond.`;
         case "import":
           return this.importAction(action.payload);
         case "production":
