@@ -892,15 +892,14 @@ export default class Imperial {
   }
 
   investor(action) {
+    const nation = action.payload.nation;
     // 1. Nation pays bond-holders interest
     for (const player of Object.keys(this.players)) {
       if (player !== this.currentPlayerName) {
-        this.playerBondsOfNation(player, action.payload.nation).forEach(
+        this.playerBondsOfNation(player, nation).forEach(
           bond => {
-            if (
-              this.nations.get(action.payload.nation).treasury >= bond.number
-            ) {
-              this.nations.get(action.payload.nation).treasury -= bond.number;
+            if (this.nations.get(nation).treasury >= bond.number) {
+              this.nations.get(nation).treasury -= bond.number;
             } else {
               this.players[this.currentPlayerName].cash -= bond.number;
             }
@@ -913,15 +912,15 @@ export default class Imperial {
     const amountOwedToController = [
       ...this.players[this.currentPlayerName].bonds
     ]
-      .filter(bond => bond.nation === action.payload.nation)
+      .filter(bond => bond.nation === nation)
       .reduce((x, y) => x + y.number, 0);
-    if (
-      this.nations.get(action.payload.nation).treasury > amountOwedToController
-    ) {
+    if (this.nations.get(nation).treasury > amountOwedToController) {
       this.players[this.currentPlayerName].cash += amountOwedToController;
-      this.nations.get(
-        action.payload.nation
-      ).treasury -= amountOwedToController;
+      this.nations.get(nation).treasury -= amountOwedToController;
+    } else {
+      const payment = this.nations.get(nation).treasury;
+      this.players[this.currentPlayerName].cash += payment;
+      this.nations.get(nation).treasury -= payment;
     }
     this.investorCardActive = true;
     this.middleOfInvestorTurn();
