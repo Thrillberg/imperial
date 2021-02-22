@@ -71,11 +71,13 @@ export default {
     "targetType"
   ]),
   forceInvestor: makeAction("forceInvestor", ["player"]),
+  friendlyEntrance: makeAction("friendlyEntrance", ["incumbent", "challenger", "province"]),
   import: makeAction("import", ["placements"]), // placement : { province: string, type: "army"|"fleet" }
   maneuver: makeAction("maneuver", ["origin", "destination"]),
   production: makeAction("production", ["province"]),
   rondel: makeAction("rondel", ["nation", "cost", "slot"]),
   skipBondPurchase: makeAction("skipBondPurchase", ["player"]),
   skipDestroyFactory: makeAction("skipDestroyFactory", ["province"]),
-  skipForceInvestor: makeAction("skipForceInvestor", ["player"])
+  skipForceInvestor: makeAction("skipForceInvestor", ["player"]),
+  unfriendlyEntrance: makeAction("unfriendlyEntrance", ["incumbent", "challenger", "province"])
 };
