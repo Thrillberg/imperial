@@ -23,10 +23,16 @@
       </svg>
     </div>
     <div v-if="!!helperText" class="w-1/2 mx-auto border border-gray-600 rounded m-2 p-2">
-      <div>{{ helperText }}</div>
+      <div v-if="onInvestorSlot" class="mb-2">
+        <div v-for="bearer of bondBearers" :bearer="bearer">
+          <b>{{ bearer.player }}</b> would receive {{ bearer.dividend }}m
+        </div>
+        <b>{{ game.investorCardHolder }}</b> has the investor card
+      </div>
       <div v-if="!!cost">
         <b>Cost: {{ cost }}m</b>
       </div>
+      <div>{{ helperText }}</div>
     </div>
   </div>
 </template>
@@ -42,6 +48,19 @@ export default {
   props: {
     game: Object,
     name: String
+  },
+  computed: {
+    bondBearers() {
+      let bearers = [];
+      for (const player of Object.keys(this.game.players)) {
+        for (const bond of this.game.players[player].bonds) {
+          if (bond.nation === this.game.currentNation) {
+            bearers.push({ player, dividend: bond.number });
+          }
+        }
+      }
+      return bearers;
+    }
   },
   methods: {
     isValid(slot) {
@@ -68,28 +87,34 @@ export default {
       if (this.showRondelHelperText()) {
         switch(slot) {
           case "investor": {
+            this.onInvestorSlot = true;
             this.helperText = "Nation pays players interest, investor card holder receives 2m and may purchase a bond, Swiss Banks may invest."
             break;
           }
           case "import": {
+            this.onInvestorSlot = false;
             this.helperText = "Nation may purchase up to 3 units for 1m each, to be placed anywhere in their home territory."
             break;
           }
           case "production1":
           case "production2": {
+            this.onInvestorSlot = false;
             this.helperText = "Unoccupied factories produce an army or fleet."
             break;
           }
           case "maneuver1":
           case "maneuver2": {
+            this.onInvestorSlot = false;
             this.helperText = "Units may move. Fleets must move first, followed by armies."
             break;
           }
           case "taxation": {
+            this.onInvestorSlot = false;
             this.helperText = "Player receives tax (2m per unoccupied factory and 1m per dot) from the nation. Power points are increased and nation receives tax, less soldiers' pay (1m per unit)."
             break;
           }
           case "factory": {
+            this.onInvestorSlot = false;
             this.helperText = "Nation builds a factory for 5m."
             break;
           }
@@ -139,6 +164,7 @@ export default {
     return {
       cost: "",
       helperText: "",
+      onInvestorSlot: false,
       slots: [
         { type: "production1", label: "Production", color: "#8C8798" },
         { type: "maneuver1", label: "Maneuver", color: "#7EA850" },
