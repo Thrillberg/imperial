@@ -1424,6 +1424,7 @@ describe("imperial", () => {
                 game.nations.get(Nation.GE).controller = "player1";
                 game.nations.get(Nation.RU).controller = "player1";
                 game.players["player2"].bonds = new Set();
+                game.swissBanks = ["player2"]
                 // Set AH's rondel position to be something *before* investor
                 game.nations.get(Nation.AH).rondelPosition = startingPosition;
 
@@ -1531,7 +1532,7 @@ describe("imperial", () => {
               test("multiple players with a Swiss Bank may invest in clockwise order, starting with the current bearer of the investor card", () => {
                 const game = newGame();
                 game.investorCardHolder = "player3";
-                // Make player1 control all countries
+                // Make player3 control all countries
                 game.nations.get(Nation.AH).controller = "player3";
                 game.nations.get(Nation.IT).controller = "player3";
                 game.nations.get(Nation.FR).controller = "player3";
@@ -1542,6 +1543,7 @@ describe("imperial", () => {
                 game.players["player2"].bonds = new Set();
                 game.players["player1"].cash = 30;
                 game.players["player2"].cash = 30;
+                game.swissBanks = ["player2", "player1"]
                 // Set AH's rondel position to be something *before* investor
                 game.nations.get(Nation.AH).rondelPosition = startingPosition;
 
