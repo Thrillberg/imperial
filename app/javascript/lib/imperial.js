@@ -216,12 +216,15 @@ export default class Imperial {
     this.updateRawScores();
 
     let swissBanksToInvest = this.swissBanks;
-    if (
-      swissBanksToInvest.length > 0 &&
-      swissBanksToInvest[0] !== this.investorCardHolder &&
-      this.hasNotBoughtABondThisTurn(swissBanksToInvest[0])
-    ) {
-      this.endOfInvestorTurn(swissBanksToInvest[0]);
+    if (swissBanksToInvest.length > 0 && swissBanksToInvest.some(bank => this.hasNotBoughtABondThisTurn(bank) === true)) {
+      for (const player of swissBanksToInvest) {
+        if (
+          player !== this.investorCardHolder &&
+          this.hasNotBoughtABondThisTurn(player)
+        ) {
+          this.endOfInvestorTurn(player);
+        }
+      }
     } else {
       for (const player in this.players) {
         if (this.nationsUnderControl(player).length > 0) {
