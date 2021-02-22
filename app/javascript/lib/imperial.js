@@ -215,20 +215,6 @@ export default class Imperial {
 
     this.updateRawScores();
 
-    for (const player in this.players) {
-      if (this.nationsUnderControl(player).length > 0) {
-        const playerIndex = this.swissBanks.indexOf(player);
-        if (playerIndex !== -1) {
-          this.swissBanks.splice(playerIndex, 1)
-        }
-      } else {
-        const playerIndex = this.swissBanks.indexOf(player);
-        if (playerIndex === -1) {
-          this.swissBanks.push(player);
-        }
-      }
-    }
-
     let swissBanksToInvest = this.swissBanks;
     if (
       swissBanksToInvest.length > 0 &&
@@ -237,6 +223,19 @@ export default class Imperial {
     ) {
       this.endOfInvestorTurn(swissBanksToInvest[0]);
     } else {
+      for (const player in this.players) {
+        if (this.nationsUnderControl(player).length > 0) {
+          const playerIndex = this.swissBanks.indexOf(player);
+          if (playerIndex !== -1) {
+            this.swissBanks.splice(playerIndex, 1)
+          }
+        } else {
+          const playerIndex = this.swissBanks.indexOf(player);
+          if (playerIndex === -1) {
+            this.swissBanks.push(player);
+          }
+        }
+      }
       this.handleAdvancePlayer();
       this.advanceInvestorCard();
       this.availableActions = new Set(this.rondelActions(this.currentNation));
