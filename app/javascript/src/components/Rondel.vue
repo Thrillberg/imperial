@@ -29,6 +29,20 @@
         </div>
         <b>{{ game.investorCardHolder }}</b> has the investor card
       </div>
+      <div v-if="onTaxationSlot" class="mb-2">
+        <div>
+          <b>Current Tax Chart Position:</b> {{ game.nations.get(game.currentNation).taxChartPosition }}
+        </div>
+        <div>
+          <b>Next Tax Chart Position:</b> {{ nextTaxChartPosition() }}
+        </div>
+        <div>
+          <b>{{ game.currentPlayerName }}</b> would receive {{ nextTaxChartPosition() - game.nations.get(game.currentNation).taxChartPosition }}m
+        </div>
+        <div>
+          <b>{{ stringify(game.currentNation.value) }}</b> would receive {{ nationTaxes() }}m
+        </div>
+      </div>
       <div v-if="!!cost">
         <b>Cost: {{ cost }}m</b>
       </div>
@@ -38,6 +52,9 @@
 </template>
 
 <script>
+import Imperial from "../../lib/imperial.js";
+import stringify from "../stringify.js";
+
 import RondelSlot from "./RondelSlot.vue";
 
 export default {
@@ -88,33 +105,39 @@ export default {
         switch(slot) {
           case "investor": {
             this.onInvestorSlot = true;
+            this.onTaxationSlot = false;
             this.helperText = "Nation pays players interest, investor card holder receives 2m and may purchase a bond, Swiss Banks may invest."
             break;
           }
           case "import": {
             this.onInvestorSlot = false;
+            this.onTaxationSlot = false;
             this.helperText = "Nation may purchase up to 3 units for 1m each, to be placed anywhere in their home territory."
             break;
           }
           case "production1":
           case "production2": {
             this.onInvestorSlot = false;
+            this.onTaxationSlot = false;
             this.helperText = "Unoccupied factories produce an army or fleet."
             break;
           }
           case "maneuver1":
           case "maneuver2": {
             this.onInvestorSlot = false;
+            this.onTaxationSlot = false;
             this.helperText = "Units may move. Fleets must move first, followed by armies."
             break;
           }
           case "taxation": {
             this.onInvestorSlot = false;
+            this.onTaxationSlot = true;
             this.helperText = "Player receives tax (2m per unoccupied factory and 1m per dot) from the nation. Power points are increased and nation receives tax, less soldiers' pay (1m per unit)."
             break;
           }
           case "factory": {
             this.onInvestorSlot = false;
+            this.onTaxationSlot = false;
             this.helperText = "Nation builds a factory for 5m."
             break;
           }
@@ -158,6 +181,28 @@ export default {
         }
       }
       return slots;
+    },
+    nextTaxChartPosition() {
+      const calculatedGame = Imperial.fromLog(this.game.log)
+      const nation = this.game.currentNation;
+      const factories = calculatedGame.unoccupiedFactoryCount(nation);
+      const flags = calculatedGame.flagCount(nation);
+      const currentTaxChartPosition = this.game.nations.get(nation).taxChartPosition;
+
+      let taxChartPosition = factories * 2 + flags;
+      if (taxChartPosition > 20) taxChartPosition = 20;
+      if (taxChartPosition < currentTaxChartPosition) taxChartPosition = currentTaxChartPosition;
+
+      return taxChartPosition;
+    },
+    nationTaxes() {
+      const nation = this.game.currentNation;
+      let taxes = this.nextTaxChartPosition() - Imperial.fromLog(this.game.log).unitCount(nation)
+      if (taxes < 0) taxes = 0;
+      return taxes;
+    },
+    stringify(string) {
+      return stringify(string)
     }
   },
   data() {
@@ -165,6 +210,7 @@ export default {
       cost: "",
       helperText: "",
       onInvestorSlot: false,
+      onTaxationSlot: false,
       slots: [
         { type: "production1", label: "Production", color: "#8C8798" },
         { type: "maneuver1", label: "Maneuver", color: "#7EA850" },
