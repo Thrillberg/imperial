@@ -64,7 +64,7 @@ export default {
           coexistAction = action;
         }
       }
-      this.tickWithAction(coexistAction);
+      this.$emit("tick-with-action", coexistAction);
     },
     fight: function() {
       let fightAction = {};
@@ -73,7 +73,7 @@ export default {
           fightAction = action;
         }
       }
-      this.tickWithAction(fightAction);
+      this.$emit("tick-with-action", fightAction);
     },
     friendlyEntrance: function() {
       let friendlyEntranceAction = {};
