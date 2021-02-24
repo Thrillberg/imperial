@@ -2,7 +2,7 @@
   <header>
     <div class="bg-green-500 flex justify-between">
       <div class="bg-white m-2 border-2 rounded border-red-500 p-4">
-        Please fill out our <a href="https://forms.gle/kwqzuQwfJ7QBRipz8">feedback form</a> so we can keep improving the site!
+        Please fill out our <a href="https://forms.gle/kwqzuQwfJ7QBRipz8" class="underline">feedback form</a> so we can keep improving the site!
       </div>
       <div class="flex">
         <router-link
