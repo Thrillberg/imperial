@@ -1123,6 +1123,25 @@ describe("imperial", () => {
             expect(game.players["player2"].cash).toEqual(6);
             expect(game.nations.get(Nation.AH).treasury).toEqual(0);
           });
+
+          test("controlling player cannot go into negative cash if they cannot afford to pay other investors", () => {
+            const game = newGame();
+            game.players["player2"].bonds.add(Bond(Nation.AH, 2));
+            game.nations.get(Nation.AH).treasury = 0;
+
+            game.players["player1"].cash = 1;
+            expect(game.players["player2"].cash).toEqual(2);
+            expect(game.nations.get(Nation.AH).treasury).toEqual(0);
+
+            game.tick(
+              Action.rondel({ slot: "investor", nation: Nation.AH, cost: 0 })
+            );
+
+            expect(game.players["player1"].cash).toEqual(0);
+            // player2 has an "extra" 2m because they hold the investor card
+            expect(game.players["player2"].cash).toEqual(5);
+            expect(game.nations.get(Nation.AH).treasury).toEqual(0);
+          });
         });
 
         describe("2. Investor is activated", () => {

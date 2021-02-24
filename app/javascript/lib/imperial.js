@@ -898,12 +898,16 @@ export default class Imperial {
       if (player !== this.currentPlayerName) {
         this.playerBondsOfNation(player, nation).forEach(
           bond => {
-            if (this.nations.get(nation).treasury >= bond.number) {
-              this.nations.get(nation).treasury -= bond.number;
+            let payment = bond.number;
+            if (this.nations.get(nation).treasury >= payment) {
+              this.nations.get(nation).treasury -= payment;
+            } else if (this.players[this.currentPlayerName].cash >= payment) {
+              this.players[this.currentPlayerName].cash -= payment;
             } else {
-              this.players[this.currentPlayerName].cash -= bond.number;
+              payment = this.players[this.currentPlayerName].cash;
+              this.players[this.currentPlayerName].cash = 0;
             }
-            this.players[player].cash += bond.number;
+            this.players[player].cash += payment;
           }
         );
       }
