@@ -69,8 +69,9 @@ export default {
     createUserProfile() {
       fetch("/users", { method: "POST", credentials: "include" })
         .then((response) => response.json())
-        .then(({ name }) => {
-          this.profile = { username: name }
+        .then(({ id, name }) => {
+          this.profile = { username: name };
+          apiClient.updateUser(name);
         });
     },
     identify: function ({username}) {
