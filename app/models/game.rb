@@ -1,6 +1,6 @@
 class Game < ActiveRecord::Base
-  has_many :actions
-  has_many :players
+  has_many :actions, dependent: :destroy
+  has_many :players, dependent: :destroy
   has_many :users, through: :players
   belongs_to :host, class_name: "User"
 

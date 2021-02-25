@@ -1,5 +1,5 @@
 class User < ActiveRecord::Base
-  has_many :players
+  has_many :players, dependent: :destroy
   has_many :games, through: :players
   belongs_to :account, optional: true
 
