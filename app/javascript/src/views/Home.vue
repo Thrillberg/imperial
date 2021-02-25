@@ -50,19 +50,14 @@ export default {
   components: { EndedGameList, StartedGameList, UnstartedGameList },
   props: { profile: Object, users: Array, games: Array },
   computed: {
-    activeGames() {
-      return this.games.filter(game => {
-        return !game.winner && !game.forceEndedAt
-      })
-    },
     unstartedGames() {
       return this.games.filter(game => {
-        return game.log.length === 0
+        return game.log.length === 0 && !game.forceEndedAt
       })
     },
     startedGames() {
       return this.games.filter(game => {
-        return game.log.length > 0
+        return game.log.length > 0 && !game.winner && !game.forceEndedAt
       })
     },
     endedGames() {
