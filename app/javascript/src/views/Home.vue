@@ -31,7 +31,8 @@
       >
         <b>Open New Game</b>
       </div>
-      <ActiveGameList :games="activeGames" :profile="profile"></ActiveGameList>
+      <UnstartedGameList :games="unstartedGames" :profile="profile"></UnstartedGameList>
+      <StartedGameList :games="startedGames" :profile="profile"></StartedGameList>
       <EndedGameList :games="endedGames" :profile="profile"></EndedGameList>
     </div>
   </div>
@@ -40,17 +41,28 @@
 <script>
 import { apiClient } from "../router/index.js";
 
-import ActiveGameList from "../components/ActiveGameList.vue";
 import EndedGameList from "../components/EndedGameList.vue";
+import StartedGameList from "../components/StartedGameList.vue";
+import UnstartedGameList from "../components/UnstartedGameList.vue";
 
 export default {
   name: "Home",
-  components: { ActiveGameList, EndedGameList },
+  components: { EndedGameList, StartedGameList, UnstartedGameList },
   props: { profile: Object, users: Array, games: Array },
   computed: {
     activeGames() {
       return this.games.filter(game => {
         return !game.winner && !game.forceEndedAt
+      })
+    },
+    unstartedGames() {
+      return this.games.filter(game => {
+        return game.log.length === 0
+      })
+    },
+    startedGames() {
+      return this.games.filter(game => {
+        return game.log.length > 0
       })
     },
     endedGames() {

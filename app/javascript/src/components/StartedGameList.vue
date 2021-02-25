@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-wrap w-1/2">
-    <div v-for="game of games" v-bind:key="game.id" class="mr-3 my-3 p-3 border border-rounded w-2/5" :class="game.winner || game.forceEndedAt ? 'bg-gray-300' : ''">
+    <div v-for="game of games" v-bind:key="game.id" class="mr-3 my-3 p-3 border border-rounded w-2/5">
       <div>
         <Star v-if="game.currentPlayer && game.currentPlayer === profile.username && !game.winner" />
         <router-link
@@ -15,33 +15,30 @@
       </div>
       <router-link
         :to="{ path: '/game/' + game.id }"
-        v-if="game.winner"
+        v-if="game.players.includes(profile.username)"
         class="rounded mt-2 p-2 inline-block bg-green-800 text-white cursor-pointer"
       >
-        {{ game.winner }} won!
-      </router-link>
-      <router-link
-        :to="{ path: '/game/' + game.id }"
-        v-if="game.forceEndedAt"
-        class="rounded mt-2 p-2 inline-block bg-gray-800 text-white cursor-pointer"
-      >
-        Game was abandoned
+        {{ game.currentPlayer }}'s turn
       </router-link>
     </div>
   </div>
 </template>
 
 <script>
+import Action from "../../lib/action.js";
+import { apiClient } from "../router/index.js";
+import { Nation } from "../../lib/constants.js";
+
 import Star from "../components/Star.vue";
 
 export default {
-  name: "EndedGameList",
+  name: "StartedGameList",
   components: { Star },
   props: { games: Array, profile: Object },
   methods: {
     playersInGame: function(gameId) {
       return this.games.find(game => game.id === gameId).players;
-    },
+    }
   }
 }
 </script>
