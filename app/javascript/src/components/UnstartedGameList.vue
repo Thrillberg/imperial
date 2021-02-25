@@ -19,7 +19,7 @@
       <div
         v-if="joinable(game.id)"
         v-on:click.once="joinGame(game.id)"
-        class="rounded p-2 inline-block bg-green-800 text-white cursor-pointer"
+        class="rounded p-2 inline-block border border-green-800 cursor-pointer hover:bg-green-100"
       >
         Join Game
       </div>
@@ -27,7 +27,7 @@
         v-if="isHost(game.id)"
         :to="{ path: '/game/' + game.id }"
         v-on:click.native="startGame(game.id)"
-        class="rounded mt-2 p-2 inline-block bg-green-800 text-white cursor-pointer"
+        class="rounded mt-2 p-2 inline-block border border-green-800 cursor-pointer hover:bg-green-100"
       >
         {{ startGameButtonText(game.players.length) }}
       </router-link>
