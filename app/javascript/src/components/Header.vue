@@ -1,9 +1,6 @@
 <template>
   <header>
-    <div class="bg-green-500 flex justify-between">
-      <div class="bg-white m-2 border-2 rounded border-red-500 p-4">
-        Please fill out our <a href="https://forms.gle/kwqzuQwfJ7QBRipz8" class="underline">feedback form</a> so we can keep improving the site!
-      </div>
+    <div class="bg-green-200 flex justify-between px-8">
       <div class="flex">
         <router-link
           :to="{ path: '/' }"
@@ -26,47 +23,20 @@
         <div v-for="(error, index) in errors" v-bind:key="index" class="text-red-700">
           <b>{{ error }}</b>
         </div>
-        <div class="flex flex-col justify-evenly">
-          <div v-if="profile.email" class="py-3 px-2">
-            <p>Currently signed in as <strong>{{ profile.username }}</strong> ({{ profile.email }}).</p>
-            <p
-            class="bg-green-200 cursor-pointer border border-green-200 rounded px-1 inline-block"
-            @click="signOut"
-            >Sign out</p>
-          </div>
-          <span v-if="!profile.email" class="inline-block">
-            <form class="pr-4 bg-green-500 rounded flex" @submit="signIn">
-              <div class="flex flex-col mr-2">
-                <label class="text-sm">email</label>
-                <input
-                  type="text"
-                  placeholder="email"
-                  v-model="email"
-                  class="rounded p-2"
-                />
-              </div>
-              <div class="flex flex-col mr-2">
-                <label class="text-sm">password</label>
-                <input
-                  type="password"
-                  placeholder="password"
-                  v-model="password"
-                  class="rounded p-2"
-                />
-              </div>
-              <div class="flex flex-col justify-end">
-                <input
-                  type="submit"
-                  value="Sign In"
-                  class="rounded p-2 bg-green-800 text-white cursor-pointer"
-                />
-              </div>
-            </form>
-          </span>
-          <div v-if="!profile.email">
-            Currently identified as <strong>{{ profile.username }}</strong>.
-          </div>
+      </div>
+      <div class="flex flex-col justify-evenly">
+        <div v-if="profile.email" class="py-3 px-2">
+          <p>Currently signed in as <strong>{{ profile.username }}</strong> ({{ profile.email }}).</p>
+          <p
+          class="bg-green-200 cursor-pointer border border-green-200 rounded px-1 inline-block"
+          @click="signOut"
+          >Sign out</p>
         </div>
+        <span v-if="!profile.email" class="py-3 px-2">
+          <div class="rounded py-4 px-6 bg-green-800 text-white cursor-pointer">
+            Not Signed In
+          </div>
+        </span>
       </div>
     </div>
   </header>

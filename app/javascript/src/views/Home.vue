@@ -1,29 +1,13 @@
 <template>
   <div class="container mx-auto">
-    <div class="mt-4">
-      <div class="w-1/3 absolute right-2">
-        <div v-if="!profile.registered" class="border-red-500 border-2 rounded p-4 mb-4">
-          <div class="text-lg text-red-500">
-            <b>Uh oh! You're not registered!</b>
-          </div>
-          <div>
-            You can play a game or two without registering but you might not keep access to your games. If you want to be sure to be able to access your games in the future, please register.
-          </div>
-          <div class="text-center mt-5">
-            <router-link
-              :to="{ path: '/register' }"
-              class="rounded p-2 mt-2 bg-green-800 text-white cursor-pointer text-lg"
-            >
-              Register
-            </router-link>
-          </div>
-        </div>
-        <div class="border-green-500 border-2 rounded p-4">
-          <b>Who's online?</b>
-          <div v-for="user in this.users" :key="user">
-            {{ user }}
-          </div>
-        </div>
+    <div class="mt-10">
+      <div v-if="!profile.registered" class="rounded p-10 mx-auto max-w-4xl bg-green-200">
+        <button class="rounded bg-green-800 text-white cursor-pointer text-2xl block mb-10 w-1/2">
+          Play as {{ profile.username }}
+        </button>
+        <button class="rounded bg-green-800 text-white cursor-pointer text-2xl block w-1/2">
+          Register an Account
+        </button>
       </div>
       <div
         v-on:click="openGame()"

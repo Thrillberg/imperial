@@ -1,5 +1,5 @@
 <template>
-  <div id="app" class="font-serif">
+  <div id="app"> 
     <Header :profile="profile" v-on:signOut="signOut" v-on:signedIn="signIn" v-on:identified="identify" />
     <router-view :profile="profile" :users="onlineUsers" :games="games" v-on:registered="signIn" ref="game" />
   </div>
