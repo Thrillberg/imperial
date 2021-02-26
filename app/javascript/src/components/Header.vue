@@ -24,7 +24,7 @@
           <b>{{ error }}</b>
         </div>
       </div>
-      <div class="flex flex-col justify-evenly">
+      <div class="flex justify-evenly">
         <div v-if="profile.email" class="py-3 px-2">
           <p>Currently signed in as <strong>{{ profile.username }}</strong> ({{ profile.email }}).</p>
           <p
@@ -32,11 +32,10 @@
           @click="signOut"
           >Sign out</p>
         </div>
-        <span v-if="!profile.email" class="py-3 px-2">
-          <div class="rounded py-4 px-6 bg-green-800 text-white cursor-pointer">
-            Not Signed In
-          </div>
-        </span>
+        <span v-if="profile.anonymity_confirmed_at" class="self-center mr-10">Playing as {{ profile.username }}</span>
+        <button v-if="!profile.email" class="rounded py-5 px-6 bg-green-800 text-white cursor-pointer">
+          Not Signed In
+        </button>
       </div>
     </div>
   </header>

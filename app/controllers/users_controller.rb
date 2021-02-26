@@ -15,6 +15,7 @@ class UsersController < ApplicationController
         end
       end
       profile[:name] = user.name
+      profile[:anonymity_confirmed_at] = user.anonymity_confirmed_at
     end
     render json: profile
   end

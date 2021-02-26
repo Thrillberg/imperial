@@ -1,7 +1,7 @@
 <template>
   <div id="app"> 
     <Header :profile="profile" v-on:signOut="signOut" v-on:signedIn="signIn" v-on:identified="identify" />
-    <router-view :profile="profile" :users="onlineUsers" :games="games" v-on:registered="signIn" ref="game" />
+    <router-view :profile="profile" :users="onlineUsers" :games="games" v-on:registered="signIn" ref="game" v-if="profileReady" />
   </div>
 </template>
 
@@ -18,7 +18,7 @@ export default {
   name: "App",
   components: { Header },
   data: function () {
-    return { profile: {}, games: [], onlineUsers: [] };
+    return { profile: {}, profileReady: false, games: [], onlineUsers: [] };
   },
   beforeDestroy() {
     apiClient.clearHandlers();
@@ -53,11 +53,12 @@ export default {
       // Fetch user profile
       fetch(`/users/${this.$cookies.get("user_id")}`, { method: "GET" })
         .then(response => response.json())
-        .then(({ name, email, registered }) => {
+        .then(({ name, email, registered, anonymity_confirmed_at }) => {
           if (!name) {
             this.createUserProfile();
           } else {
-            this.profile = { username: name, email, registered }
+            this.profile = { username: name, email, registered, anonymity_confirmed_at }
+            this.profileReady = true;
           }
         })
     } else {
@@ -72,6 +73,7 @@ export default {
         .then(({ id, name }) => {
           this.profile = { username: name };
           apiClient.updateUser(name);
+          this.profileReady = true;
         });
     },
     identify: function ({username}) {
