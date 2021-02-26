@@ -37,5 +37,8 @@ module RailsServer
     config.api_only = true
     config.middleware.use ActionDispatch::Cookies
     config.middleware.use ActionDispatch::Session::CookieStore
+
+    config.hosts << "imperial-staging.herokuapp.com"
+    config.hosts << "imperial-game.herokuapp.com"
   end
 end
