@@ -11,9 +11,6 @@ gem "puma", "~> 4.1"
 gem "rack-cors"
 gem "rails", "~> 6.0.3", ">= 6.0.3.4"
 gem "redis", "~> 4.0"
-gem "scout_apm"
-gem "sentry-rails"
-gem "sentry-ruby"
 gem "webpacker", git: "https://github.com/rails/webpacker.git"
 
 group :development, :test do

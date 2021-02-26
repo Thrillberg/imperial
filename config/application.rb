@@ -37,11 +37,5 @@ module RailsServer
     config.api_only = true
     config.middleware.use ActionDispatch::Cookies
     config.middleware.use ActionDispatch::Session::CookieStore
-
-    Sentry.init do |config|
-      config.dsn = "https://a4ab064bc74d4bc395c9ac17610700ad@o527978.ingest.sentry.io/5645002"
-      config.breadcrumbs_logger = [:active_support_logger]
-      config.traces_sample_rate = 0.5
-    end
   end
 end
