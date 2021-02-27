@@ -22,11 +22,11 @@
         >
           Open a New Game
         </button>
-        <div class="w-full" v-if="gamesFetched">
+        <div class="w-3/4" v-if="gamesFetched">
           <YourGames :games="yourGames" :profile="profile"></YourGames>
           <UnstartedGameList :games="unstartedGames" :profile="profile"></UnstartedGameList>
         </div>
-        <div v-else class="text-center text-2xl mt-8">
+        <div v-else class="w-3/4 text-center text-2xl mt-8">
           Loading games
         </div>
       </div>
