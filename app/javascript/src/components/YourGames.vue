@@ -1,17 +1,23 @@
 <template>
   <div class="p-4">
-    <b>Open Games</b>
-    <div class="flex justify-between border-b border-black mt-2">
+    <b>Your Games</b>
+    <div class="flex border-b border-black mt-2">
       <div class="w-1/4"><b>Name</b></div>
       <div class="w-1/2"><b>Players</b></div>
-      <div class="w-1/4"><b>Host</b></div>
+      <div class="w-1/4"><b>Current Player</b></div>
     </div>
     <div v-for="game of games" v-bind:key="game.id">
       <router-link :to="{ path: '/game/' + game.id }" class="flex justify-between hover:bg-gray-200 py-2">
-        <div class="w-1/4">{{ game.name }}</div>
+        <div class="w-1/4">
+          <Star v-if="game.currentPlayer && game.currentPlayer === profile.username && !game.winner" />
+          <span>{{ game.name }}</span>
+        </div>
         <div class="w-1/2">{{ playersInGame(game.id).join(", ") }}</div>
-        <div class="w-1/4">{{ game.host }}</div>
+        <div class="w-1/4">{{ game.currentPlayer }}'s turn</div>
       </router-link>
+    </div>
+    <div v-if="games.length === 0">
+      Uh oh! You aren't in any active games.
     </div>
   </div>
 </template>
@@ -24,7 +30,7 @@ import { Nation } from "../../lib/constants.js";
 import Star from "../components/Star.vue";
 
 export default {
-  name: "UnstartedGameList",
+  name: "YourGames",
   components: { Star },
   props: { games: Array, profile: Object },
   methods: {

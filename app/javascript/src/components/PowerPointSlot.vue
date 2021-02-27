@@ -1,7 +1,7 @@
 <template>
   <span>
     <span
-      class="block p-4 border border-solid border-black font-serif bg-teal-200"
+      class="block p-4 border border-solid border-black bg-teal-200"
       v-bind:class="display()"
     >
       {{ powerPointSlot }}

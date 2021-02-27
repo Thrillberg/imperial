@@ -1,5 +1,5 @@
 <template>
-  <div class="p-2 m-1 font-serif" :class="player.name === current_player ? 'bg-green-300' : 'bg-gray-300'">
+  <div class="p-2 m-1" :class="player.name === current_player ? 'bg-green-300' : 'bg-gray-300'">
     <p>
       <span
         v-if="online_users.includes(player.name)"

@@ -1,39 +1,32 @@
 <template>
   <div class="container mx-auto">
-    <div class="mt-4">
-      <div class="w-1/3 absolute right-2">
-        <div v-if="!profile.registered" class="border-red-500 border-2 rounded p-4 mb-4">
-          <div class="text-lg text-red-500">
-            <b>Uh oh! You're not registered!</b>
-          </div>
-          <div>
-            You can play a game or two without registering but you might not keep access to your games. If you want to be sure to be able to access your games in the future, please register.
-          </div>
-          <div class="text-center mt-5">
-            <router-link
-              :to="{ path: '/register' }"
-              class="rounded p-2 mt-2 bg-green-800 text-white cursor-pointer text-lg"
-            >
-              Register
-            </router-link>
-          </div>
-        </div>
-        <div class="border-green-500 border-2 rounded p-4">
-          <b>Who's online?</b>
-          <div v-for="user in this.users" :key="user">
-            {{ user }}
-          </div>
+    <div class="mt-10">
+      <div v-if="!profile.anonymity_confirmed_at && !profile.registered" class="flex flex-col items-center rounded p-20 mx-auto max-w-4xl bg-green-200">
+        <button
+          class="rounded bg-green-800 text-white cursor-pointer text-2xl block w-1/2 hover:bg-green-900 p-10 m-10"
+          @click="setAnonymous"
+        >
+          Play as {{ profile.username }}
+        </button>
+        <button
+          class="rounded bg-green-800 text-white cursor-pointer text-2xl block w-1/2 hover:bg-green-900 p-10 m-10"
+          @click="register"
+          >
+          Register an Account
+        </button>
+      </div>
+      <div v-else class="flex justify-around items-start">
+        <button
+          @click="openGame"
+          class="rounded bg-green-800 text-white cursor-pointer block w-1/4 text-2xl hover:bg-green-900 p-10 m-10"
+        >
+          Open a New Game
+        </button>
+        <div class="w-full">
+          <YourGames :games="yourGames" :profile="profile"></YourGames>
+          <UnstartedGameList :games="unstartedGames" :profile="profile"></UnstartedGameList>
         </div>
       </div>
-      <div
-        v-on:click="openGame()"
-        class="border-2 border-green-800 rounded p-4 mt-2 cursor-pointer inline-block text-lg hover:bg-green-100"
-      >
-        <b>Open New Game</b>
-      </div>
-      <UnstartedGameList :games="unstartedGames" :profile="profile"></UnstartedGameList>
-      <StartedGameList :games="startedGames" :profile="profile"></StartedGameList>
-      <EndedGameList :games="endedGames" :profile="profile"></EndedGameList>
     </div>
   </div>
 </template>
@@ -42,34 +35,50 @@
 import { apiClient } from "../router/index.js";
 
 import EndedGameList from "../components/EndedGameList.vue";
-import StartedGameList from "../components/StartedGameList.vue";
 import UnstartedGameList from "../components/UnstartedGameList.vue";
+import YourGames from "../components/YourGames.vue";
 
 export default {
   name: "Home",
-  components: { EndedGameList, StartedGameList, UnstartedGameList },
+  components: { UnstartedGameList, YourGames },
   props: { profile: Object, users: Array, games: Array },
   computed: {
+    yourGames() {
+      return this.games.filter(game => {
+        return(
+          game.players.includes(this.profile.username) &&
+          game.log.length > 0 &&
+          !game.forceEndedAt
+        )
+      })
+    },
     unstartedGames() {
       return this.games.filter(game => {
         return game.log.length === 0 && !game.forceEndedAt
       })
-    },
-    startedGames() {
-      return this.games.filter(game => {
-        return game.log.length > 0 && !game.winner && !game.forceEndedAt
-      })
-    },
-    endedGames() {
-      return this.games.filter(game => {
-        return game.winner || game.forceEndedAt
-      })
     }
   },
   methods: {
-    openGame: function() {
+    openGame() {
       apiClient.openGame(this.profile.username);
     },
+    setAnonymous() {
+      fetch(
+        "/anonymity_confirmations",
+        {
+          method: "POST",
+          body: JSON.stringify({ id: this.$cookies.get("user_id") }),
+          headers: { "Content-Type": "application/json" }
+        }
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          this.$emit("anonymity_confirmed", data.anonymity_confirmed_at)
+        })
+    },
+    register() {
+      this.$router.push("/register");
+    }
   }
 };
 </script>

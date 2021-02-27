@@ -7,6 +7,7 @@ Rails.application.routes.draw do
   get "/health", to: "health#index"
 
   post "/session", to: "sessions#create"
+  post "/anonymity_confirmations", to: "anonymity_confirmations#create"
   resources :users, only: [:show, :create]
 
   root "pages#index", as: :pages_index
