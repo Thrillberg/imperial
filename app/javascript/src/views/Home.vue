@@ -22,9 +22,12 @@
         >
           Open a New Game
         </button>
-        <div class="w-full">
+        <div class="w-full" v-if="gamesFetched">
           <YourGames :games="yourGames" :profile="profile"></YourGames>
           <UnstartedGameList :games="unstartedGames" :profile="profile"></UnstartedGameList>
+        </div>
+        <div v-else class="text-center text-2xl mt-8">
+          Loading games
         </div>
       </div>
     </div>
@@ -41,7 +44,7 @@ import YourGames from "../components/YourGames.vue";
 export default {
   name: "Home",
   components: { UnstartedGameList, YourGames },
-  props: { profile: Object, users: Array, games: Array },
+  props: { profile: Object, users: Array, games: Array, gamesFetched: Boolean },
   computed: {
     yourGames() {
       return this.games.filter(game => {

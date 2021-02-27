@@ -1,8 +1,22 @@
 <template>
   <div id="app">
     <div v-if="profileFetched">
-      <Header :profile="profile" v-on:signOut="signOut" v-on:signedIn="signIn" v-on:identified="identify" />
-      <router-view :profile="profile" :users="onlineUsers" :games="games" v-on:registered="register" v-on:signedIn="signIn" ref="game" v-on:anonymity_confirmed="anonymityConfirmed"/>
+      <Header
+        :profile="profile"
+        v-on:signOut="signOut"
+        v-on:signedIn="signIn"
+        v-on:identified="identify"
+      />
+      <router-view
+        :profile="profile"
+        :users="onlineUsers"
+        :games="games"
+        :gamesFetched="gamesFetched"
+        v-on:registered="register"
+        v-on:signedIn="signIn"
+        v-on:anonymity_confirmed="anonymityConfirmed"
+        ref="game"
+      />
     </div>
     <div v-else class="text-center text-2xl mt-8">
       Loading
@@ -27,7 +41,8 @@ export default {
       profile: {},
       games: [],
       onlineUsers: [],
-      profileFetched: false
+      profileFetched: false,
+      gamesFetched: false
     };
   },
   beforeDestroy() {
@@ -54,6 +69,7 @@ export default {
           createdAt: game.created_at
         };
       });
+      this.gamesFetched = true;
     });
     apiClient.onUpdateGameLog(({ gameId, log }) => {
       if (gameId === this.$route.params.id) {
