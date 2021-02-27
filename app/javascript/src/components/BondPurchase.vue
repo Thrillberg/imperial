@@ -31,12 +31,12 @@ export default {
   components: { Bond },
   props: { game: Object, current_player: String, profile: Object },
   computed: {
-    purchasingBond: function () {
+    purchasingBond() {
       const purchasingBond = this.game.availableActions.size > 0 &&
         Array.from(this.game.availableActions).every(
           (action) => action.type === "bondPurchase" || action.type === "skipBondPurchase"
         );
-      return purchasingBond && (this.profile.username === this.controllingPlayerName || (this.game.soloMode && this.profile.username in this.game.players));
+      return purchasingBond && (this.profile.username === this.current_player || (this.game.soloMode && this.profile.username in this.game.players));
     },
   },
   methods: {
