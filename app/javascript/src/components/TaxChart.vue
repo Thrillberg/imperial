@@ -1,6 +1,6 @@
 <template>
   <div
-    class="w-40 float-right border border border-solid border-black font-serif bg-teal-200"
+    class="w-40 float-right border border border-solid border-black bg-teal-200"
   >
     <div class="flex justify-evenly text-2xl">
       <span class="m-2">Tax</span>

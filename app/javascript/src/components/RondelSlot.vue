@@ -27,7 +27,6 @@
         v-bind:class="hoverable(is_valid)"
       ></path>
       <text
-        font-family="Baskerville"
         font-weight="normal"
         font-size="10"
         letter-spacing="0.3"
