@@ -19,6 +19,8 @@ class Game < ActiveRecord::Base
   def abandoned?
     if actions.length > 0 && !force_ended_at
       return actions.order(:created_at).last.created_at < 3.days.ago
+    elsif !force_ended_at
+      return created_at < 3.days.ago
     end
 
     false
