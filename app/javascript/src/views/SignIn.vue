@@ -48,7 +48,13 @@ export default {
       })
         .then(response => response.json())
         .then(data => {
-          // TODO: Ensure sign in works
+          if (data.email) {
+            this.$emit("signedIn", { username: data.username, email: data.email });
+            this.errors = [];
+            this.$router.push("/");
+          } else {
+            this.errors = data;
+          }
         })
       e.preventDefault();
     }

@@ -1,7 +1,7 @@
 <template>
   <div id="app"> 
     <Header :profile="profile" v-on:signOut="signOut" v-on:signedIn="signIn" v-on:identified="identify" />
-    <router-view :profile="profile" :users="onlineUsers" :games="games" v-on:registered="signIn" ref="game" v-if="profileReady" v-on:anonymity_confirmed="anonymityConfirmed"/>
+    <router-view :profile="profile" :users="onlineUsers" :games="games" v-on:registered="register" v-on:signedIn="signIn" ref="game" v-if="profileReady" v-on:anonymity_confirmed="anonymityConfirmed"/>
   </div>
 </template>
 
@@ -79,9 +79,13 @@ export default {
     identify: function ({username}) {
       this.profile = { username };
     },
-    signIn: function ({username, email, oldUsername}) {
+    register: function ({username, email, oldUsername}) {
       this.profile = { username, email, registered: true };
       apiClient.updateUser(username, oldUsername);
+      apiClient.updateGames();
+    },
+    signIn({username, email}) {
+      this.profile = { username, email, registered: true };
       apiClient.updateGames();
     },
     signOut: function () {

@@ -1,7 +1,7 @@
 <template>
   <div class="container mx-auto">
     <div class="mt-10">
-      <div v-if="!profile.email && !profile.anonymity_confirmed_at" class="flex flex-col items-center rounded p-20 mx-auto max-w-4xl bg-green-200">
+      <div v-if="!profile.anonymity_confirmed_at && !profile.registered" class="flex flex-col items-center rounded p-20 mx-auto max-w-4xl bg-green-200">
         <button
           class="rounded bg-green-800 text-white cursor-pointer text-2xl block w-1/2 hover:bg-green-900 p-10 m-10"
           @click="setAnonymous"
@@ -15,9 +15,9 @@
           Register an Account
         </button>
       </div>
-      <div v-else class="flex justify-around items-start">
+      <div v-else-if="profile.email" class="flex justify-around items-start">
         <button
-          @click="openGame()"
+          @click="openGame"
           class="rounded bg-green-800 text-white cursor-pointer block w-1/4 text-2xl hover:bg-green-900 p-10 m-10"
         >
           Open a New Game

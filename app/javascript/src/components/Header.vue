@@ -25,14 +25,21 @@
         </div>
       </div>
       <div class="flex justify-evenly">
-        <span v-if="profile.anonymity_confirmed_at" class="self-center mr-10">Playing as {{ profile.username }}</span>
+        <span v-if="profile.anonymity_confirmed_at && !profile.registered" class="self-center mr-10">Playing as {{ profile.username }}</span>
         <span v-if="profile.email" class="self-center mr-10">Signed in as {{ profile.username }}</span>
         <button
           v-if="!profile.email"
           class="rounded py-2 px-6 my-4 bg-green-800 text-white cursor-pointer"
           @click="signIn"
         >
-          Not Signed In
+          Sign In
+        </button>
+        <button
+          v-if="!profile.email"
+          class="rounded py-2 px-6 my-4 bg-green-800 text-white cursor-pointer ml-5"
+          @click="register"
+        >
+          Register
         </button>
         <button
           v-if="profile.email"
@@ -90,6 +97,11 @@ export default {
       })
       this.$emit("signOut");
       e.preventDefault();
+    },
+    register() {
+      if (this.$route.path !== "/register") {
+        this.$router.push("/register");
+      }
     },
     signIn() {
       if (this.$route.path !== "/sign_in") {
