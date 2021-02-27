@@ -1,7 +1,12 @@
 <template>
-  <div id="app"> 
-    <Header :profile="profile" v-on:signOut="signOut" v-on:signedIn="signIn" v-on:identified="identify" />
-    <router-view :profile="profile" :users="onlineUsers" :games="games" v-on:registered="register" v-on:signedIn="signIn" ref="game" v-if="profileReady" v-on:anonymity_confirmed="anonymityConfirmed"/>
+  <div id="app">
+    <div v-if="profileFetched">
+      <Header :profile="profile" v-on:signOut="signOut" v-on:signedIn="signIn" v-on:identified="identify" />
+      <router-view :profile="profile" :users="onlineUsers" :games="games" v-on:registered="register" v-on:signedIn="signIn" ref="game" v-on:anonymity_confirmed="anonymityConfirmed"/>
+    </div>
+    <div v-else class="text-center text-2xl mt-8">
+      Loading
+    </div>
   </div>
 </template>
 
@@ -18,7 +23,12 @@ export default {
   name: "App",
   components: { Header },
   data: function () {
-    return { profile: {}, profileReady: false, games: [], onlineUsers: [] };
+    return {
+      profile: {},
+      games: [],
+      onlineUsers: [],
+      profileFetched: false
+    };
   },
   beforeDestroy() {
     apiClient.clearHandlers();
@@ -58,7 +68,7 @@ export default {
             this.createUserProfile();
           } else {
             this.profile = { username: name, email, registered, anonymity_confirmed_at }
-            this.profileReady = true;
+            this.profileFetched = true;
           }
         })
     } else {
@@ -73,7 +83,7 @@ export default {
         .then(({ id, name }) => {
           this.profile = { username: name };
           apiClient.updateUser(name);
-          this.profileReady = true;
+          this.profileFetched = true;
         });
     },
     identify: function ({username}) {
