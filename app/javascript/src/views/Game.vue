@@ -70,6 +70,9 @@
           ></GameDetails>
         </div>
       </div>
+      <GameLog
+        :log="game.annotatedLog"
+      />
     </div>
     <div v-else class="flex justify-between">
       <div class="w-2/3 border border-gray-500 rounded">
@@ -80,14 +83,35 @@
         ></Board>
       </div>
       <div class="w-1/3 mx-2 border border-gray-500 rounded">
-        <div class="text-2xl">
+        <div v-if="hostingThisGame">
+          <div class="mx-auto p-2 text-center">
+            <b>Players:</b>
+            <span>{{ playersInGame(game.id).join(", ") }}</span>
+          </div>
+          <button
+            @click="startGame"
+            class="rounded bg-green-800 text-white cursor-pointer block text-2xl hover:bg-green-900 p-10 m-10 mx-auto"
+          >
+            Start Game
+          </button>
+        </div>
+        <div v-else-if="playingInThisGame" class="text-2xl m-2">
           Game not yet started!
+        </div>
+        <div v-else>
+          <div class="mx-auto p-2 text-center">
+            <b>Players:</b>
+            <span>{{ playersInGame(game.id).join(", ") }}</span>
+          </div>
+          <button
+            @click="joinGame"
+            class="rounded bg-green-800 text-white cursor-pointer block text-2xl hover:bg-green-900 p-10 m-10 mx-auto"
+          >
+            Join This Game
+          </button>
         </div>
       </div>
     </div>
-    <GameLog
-      :log="game.annotatedLog"
-    />
   </div>
 </template>
 
@@ -139,6 +163,22 @@ export default {
       } else {
         return [];
       }
+    },
+    playingInThisGame() {
+      const game = this.games.find(game => game.id === this.$route.params.id);
+      if (game.players.includes(this.profile.username)) {
+        return true
+      } else {
+        return false
+      }
+    },
+    hostingThisGame() {
+      const game = this.games.find(game => game.id === this.$route.params.id);
+      if (game.host === this.profile.username) {
+        return true
+      } else {
+        return false
+      }
     }
   },
   methods: {
@@ -147,6 +187,85 @@ export default {
         return this.games.find(game => game.id === this.$route.params.id).name
       } else {
         return ""
+      }
+    },
+    playersInGame() {
+      return this.games.find(game => game.id === this.$route.params.id).players;
+    },
+    joinGame() {
+      apiClient.joinGame(this.$cookies.get("user_id"), this.$route.params.id, this.profile.username);
+    },
+    startGame() {
+      const game = this.games.find(game => game.id === this.$route.params.id);
+      const playerNames = this.playerNames(game);
+      const shuffledPlayers = this.shuffle(playerNames);
+      const players = this.assignNations(shuffledPlayers);
+      const soloMode = game.soloMode;
+      const action = Action.initialize({ players, soloMode });
+      apiClient.tick(game.id, action);
+    },
+    playerNames: function(game) {
+      if (game.players.length === 1) {
+        game.soloMode = true;
+        game.players.push("Charles", "Louis", "Otto", "Henry", "Conrad");
+        return game.players;
+      }
+      game.soloMode = false;
+      return game.players;
+    },
+    shuffle: function(players) {
+      let currentIndex = players.length,
+        temporaryValue,
+        randomIndex;
+
+      while (currentIndex !== 0) {
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex -= 1;
+
+        temporaryValue = players[currentIndex];
+        players[currentIndex] = players[randomIndex];
+        players[randomIndex] = temporaryValue;
+      }
+
+      return players;
+    },
+    assignNations: function(players) {
+      switch (players.length) {
+        case 2:
+          return [
+            { id: players[0], nation: Nation.AH },
+            { id: players[1], nation: Nation.IT }
+          ];
+        case 3:
+          return [
+            { id: players[0], nation: Nation.AH },
+            { id: players[1], nation: Nation.IT },
+            { id: players[2], nation: Nation.FR }
+          ];
+        case 4:
+          return [
+            { id: players[0], nation: Nation.AH },
+            { id: players[1], nation: Nation.IT },
+            { id: players[2], nation: Nation.FR },
+            { id: players[3], nation: Nation.GB }
+          ];
+        case 5:
+          return [
+            { id: players[0], nation: Nation.AH },
+            { id: players[1], nation: Nation.IT },
+            { id: players[2], nation: Nation.FR },
+            { id: players[3], nation: Nation.GB },
+            { id: players[4], nation: Nation.GE }
+          ];
+        case 6:
+          return [
+            { id: players[0], nation: Nation.AH },
+            { id: players[1], nation: Nation.IT },
+            { id: players[2], nation: Nation.FR },
+            { id: players[3], nation: Nation.GB },
+            { id: players[4], nation: Nation.GE },
+            { id: players[5], nation: Nation.RU }
+          ];
       }
     },
     updateGameLog(log) {

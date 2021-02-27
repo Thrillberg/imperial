@@ -1,7 +1,7 @@
 <template>
   <div id="app"> 
     <Header :profile="profile" v-on:signOut="signOut" v-on:signedIn="signIn" v-on:identified="identify" />
-    <router-view :profile="profile" :users="onlineUsers" :games="games" v-on:registered="signIn" ref="game" v-if="profileReady" />
+    <router-view :profile="profile" :users="onlineUsers" :games="games" v-on:registered="signIn" ref="game" v-if="profileReady" v-on:anonymity_confirmed="anonymityConfirmed"/>
   </div>
 </template>
 
@@ -86,6 +86,10 @@ export default {
     },
     signOut: function () {
       this.profile = { username: this.profile.username, registered: true };
+    },
+    anonymityConfirmed(date) {
+      let profile = Object.assign({}, this.profile, { "anonymity_confirmed_at": date });
+      this.profile = profile;
     }
   }
 };

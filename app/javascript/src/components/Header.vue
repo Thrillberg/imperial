@@ -25,16 +25,21 @@
         </div>
       </div>
       <div class="flex justify-evenly">
-        <div v-if="profile.email" class="py-3 px-2">
-          <p>Currently signed in as <strong>{{ profile.username }}</strong> ({{ profile.email }}).</p>
-          <p
-          class="bg-green-200 cursor-pointer border border-green-200 rounded px-1 inline-block"
-          @click="signOut"
-          >Sign out</p>
-        </div>
         <span v-if="profile.anonymity_confirmed_at" class="self-center mr-10">Playing as {{ profile.username }}</span>
-        <button v-if="!profile.email" class="rounded py-5 px-6 bg-green-800 text-white cursor-pointer">
+        <span v-if="profile.email" class="self-center mr-10">Signed in as {{ profile.username }}</span>
+        <button
+          v-if="!profile.email"
+          class="rounded py-2 px-6 my-4 bg-green-800 text-white cursor-pointer"
+          @click="signIn"
+        >
           Not Signed In
+        </button>
+        <button
+          v-if="profile.email"
+          class="rounded py-2 px-6 my-4 bg-green-800 text-white cursor-pointer"
+          @click="signOut"
+          >
+          Sign Out
         </button>
       </div>
     </div>
@@ -85,6 +90,11 @@ export default {
       })
       this.$emit("signOut");
       e.preventDefault();
+    },
+    signIn() {
+      if (this.$route.path !== "/sign_in") {
+        this.$router.push("/sign_in");
+      }
     }
   }
 };

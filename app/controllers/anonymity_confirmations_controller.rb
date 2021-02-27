@@ -4,5 +4,6 @@ class AnonymityConfirmationsController < ApplicationController
   def create
     user = User.find(params[:id])
     user.update(anonymity_confirmed_at: Time.now)
+    render json: user
   end
 end

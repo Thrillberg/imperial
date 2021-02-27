@@ -3,13 +3,7 @@
     <div v-for="(error, index) in errors" v-bind:key="index">
       {{ error }}
     </div>
-    <form class="flex flex-col mx-auto rounded bg-green-200 max-w-4xl mt-10 p-20" @submit="register">
-      <input
-        type="text"
-        :placeholder="profile.username"
-        v-model="username"
-        class="rounded p-5 border border-green-800 my-2 w-1/2 self-center"
-      />
+    <form class="flex flex-col mx-auto rounded bg-green-200 max-w-4xl mt-10 p-20" @submit="signIn">
       <input
         type="text"
         placeholder="email"
@@ -24,7 +18,7 @@
       />
       <input
         type="submit"
-        value="Register"
+        value="Sign In"
         class="rounded p-10 bg-green-800 text-white cursor-pointer my-2 text-2xl w-1/2 self-center"
       />
     </form>
@@ -33,35 +27,28 @@
 
 <script>
 export default {
-  name: "Register",
+  name: "SignIn",
   props: ["profile"],
   data: function () {
     return {
       email: "",
       errors: [],
-      password: "",
-      username: ""
+      password: ""
     }
   },
   methods: {
-    register: function(e) {
-      fetch("/accounts", {
+    signIn: function(e) {
+      fetch("/accounts/sign_in", {
         method: "POST",
         headers: {
           "X-CSRF-Token": this.$cookies.get("CSRF-TOKEN"),
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ name: this.username, email: this.email, password: this.password })
+        body: JSON.stringify({ email: this.email, password: this.password })
       })
         .then(response => response.json())
         .then(data => {
-          if (data.email) {
-            this.$emit("registered", { ...data, oldUsername: this.profile.username });
-            this.errors = [];
-            this.$router.push("/");
-          } else {
-            this.errors = data;
-          }
+          // TODO: Ensure sign in works
         })
       e.preventDefault();
     }

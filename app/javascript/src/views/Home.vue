@@ -1,27 +1,31 @@
 <template>
   <div class="container mx-auto">
     <div class="mt-10">
-      <div v-if="!anonymous" class="rounded p-20 mx-auto max-w-4xl bg-green-200">
+      <div v-if="!profile.email && !profile.anonymity_confirmed_at" class="flex flex-col items-center rounded p-20 mx-auto max-w-4xl bg-green-200">
         <button
-          class="rounded bg-green-800 text-white cursor-pointer text-2xl block mb-10 w-1/2 hover:bg-green-900"
+          class="rounded bg-green-800 text-white cursor-pointer text-2xl block w-1/2 hover:bg-green-900 p-10 m-10"
           @click="setAnonymous"
         >
           Play as {{ profile.username }}
         </button>
-        <button class="rounded bg-green-800 text-white cursor-pointer text-2xl block w-1/2 hover:bg-green-900">
+        <button
+          class="rounded bg-green-800 text-white cursor-pointer text-2xl block w-1/2 hover:bg-green-900 p-10 m-10"
+          @click="register"
+          >
           Register an Account
         </button>
       </div>
-      <div v-else>
+      <div v-else class="flex justify-around items-start">
         <button
           @click="openGame()"
-          class="rounded bg-green-800 text-white cursor-pointer block w-1/4 text-2xl hover:bg-green-900"
+          class="rounded bg-green-800 text-white cursor-pointer block w-1/4 text-2xl hover:bg-green-900 p-10 m-10"
         >
           Open a New Game
         </button>
-        <UnstartedGameList :games="unstartedGames" :profile="profile"></UnstartedGameList>
-        <StartedGameList :games="startedGames" :profile="profile"></StartedGameList>
-        <EndedGameList :games="endedGames" :profile="profile"></EndedGameList>
+        <div class="w-full">
+          <YourGames :games="yourGames" :profile="profile"></YourGames>
+          <UnstartedGameList :games="unstartedGames" :profile="profile"></UnstartedGameList>
+        </div>
       </div>
     </div>
   </div>
@@ -31,37 +35,26 @@
 import { apiClient } from "../router/index.js";
 
 import EndedGameList from "../components/EndedGameList.vue";
-import StartedGameList from "../components/StartedGameList.vue";
 import UnstartedGameList from "../components/UnstartedGameList.vue";
+import YourGames from "../components/YourGames.vue";
 
 export default {
   name: "Home",
-  components: { EndedGameList, StartedGameList, UnstartedGameList },
+  components: { UnstartedGameList, YourGames },
   props: { profile: Object, users: Array, games: Array },
-  data() {
-    return {
-      anonymous: false
-    }
-  },
-  mounted() {
-    if (this.profile.anonymity_confirmed_at) {
-      this.anonymous = true;
-    }
-  },
   computed: {
+    yourGames() {
+      return this.games.filter(game => {
+        return(
+          game.players.includes(this.profile.username) &&
+          game.log.length > 0 &&
+          !game.forceEndedAt
+        )
+      })
+    },
     unstartedGames() {
       return this.games.filter(game => {
         return game.log.length === 0 && !game.forceEndedAt
-      })
-    },
-    startedGames() {
-      return this.games.filter(game => {
-        return game.log.length > 0 && !game.winner && !game.forceEndedAt
-      })
-    },
-    endedGames() {
-      return this.games.filter(game => {
-        return game.winner || game.forceEndedAt
       })
     }
   },
@@ -78,9 +71,13 @@ export default {
           headers: { "Content-Type": "application/json" }
         }
       )
-        .then(() => {
-          this.anonymous = true;
-        });
+        .then((response) => response.json())
+        .then((data) => {
+          this.$emit("anonymity_confirmed", data.anonymity_confirmed_at)
+        })
+    },
+    register() {
+      this.$router.push("/register");
     }
   }
 };
