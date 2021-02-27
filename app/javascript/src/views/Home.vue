@@ -15,7 +15,7 @@
           Register an Account
         </button>
       </div>
-      <div v-else-if="profile.email" class="flex justify-around items-start">
+      <div v-else class="flex justify-around items-start">
         <button
           @click="openGame"
           class="rounded bg-green-800 text-white cursor-pointer block w-1/4 text-2xl hover:bg-green-900 p-10 m-10"

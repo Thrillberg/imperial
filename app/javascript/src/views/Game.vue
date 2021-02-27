@@ -166,7 +166,7 @@ export default {
     },
     playingInThisGame() {
       const game = this.games.find(game => game.id === this.$route.params.id);
-      if (game.players.includes(this.profile.username)) {
+      if (game?.players.includes(this.profile.username)) {
         return true
       } else {
         return false
@@ -174,7 +174,7 @@ export default {
     },
     hostingThisGame() {
       const game = this.games.find(game => game.id === this.$route.params.id);
-      if (game.host === this.profile.username) {
+      if (game?.host === this.profile.username) {
         return true
       } else {
         return false
@@ -190,7 +190,12 @@ export default {
       }
     },
     playersInGame() {
-      return this.games.find(game => game.id === this.$route.params.id).players;
+      const game = this.games.find(game => game.id === this.$route.params.id);
+      if (game) {
+        return game.players
+      } else {
+        return []
+      }
     },
     joinGame() {
       apiClient.joinGame(this.$cookies.get("user_id"), this.$route.params.id, this.profile.username);
