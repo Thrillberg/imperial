@@ -36,22 +36,6 @@ export default {
   methods: {
     playersInGame: function(gameId) {
       return this.games.find(game => game.id === gameId).players;
-    },
-    joinable: function(gameId) {
-      const game = this.games.find(game => game.id === gameId);
-      const inGame = Object.values(game.players).includes(this.profile.username);
-      return !inGame && this.profile.username;
-    },
-    isHost: function(gameId) {
-      const game = this.games.find(game => game.id === gameId);
-      return game.host === this.profile.username;
-    },
-    startGameButtonText(playerCount) {
-      if (playerCount === 1) {
-        return "Start Solo Game"
-      } else {
-        return `Start Game With ${playerCount} Players`
-      }
     }
   }
 }
