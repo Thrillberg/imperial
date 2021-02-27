@@ -11,7 +11,8 @@ class Game < ActiveRecord::Base
       host: host.name,
       players: users.map(&:name),
       log: actions.map(&:data),
-      force_ended_at: force_ended_at
+      force_ended_at: force_ended_at,
+      created_at: created_at
     }
   end
 

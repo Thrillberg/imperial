@@ -50,7 +50,8 @@ export default {
           id: game.id,
           currentPlayer: imperialGame.currentPlayerName,
           winner: imperialGame.winner,
-          forceEndedAt: game.force_ended_at
+          forceEndedAt: game.force_ended_at,
+          createdAt: game.created_at
         };
       });
     });

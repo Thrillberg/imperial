@@ -16,7 +16,8 @@ RSpec.describe Game, "#to_json" do
       host: host_user.name,
       players: player_names,
       log: log,
-      force_ended_at: nil
+      force_ended_at: nil,
+      created_at: game.created_at
     })
   end
 end

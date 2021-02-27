@@ -53,9 +53,12 @@ export default {
       })
     },
     unstartedGames() {
-      return this.games.filter(game => {
+      let games = this.games.filter(game => {
         return game.log.length === 0 && !game.forceEndedAt
-      })
+      });
+      return games.sort((a, b) => {
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      });
     }
   },
   methods: {
