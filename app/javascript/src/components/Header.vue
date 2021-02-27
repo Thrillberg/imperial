@@ -20,6 +20,9 @@
         >
           About
         </router-link>
+        <a href="https://forms.gle/oW4wZeco91HUqeDg8" class="self-center pr-8 underline">
+          Feedback survey
+        </a>
         <div v-for="(error, index) in errors" v-bind:key="index" class="text-red-700">
           <b>{{ error }}</b>
         </div>
