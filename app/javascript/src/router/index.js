@@ -99,14 +99,20 @@ class APIClient {
     );
   }
 
-  openGame(host) {
-    return this.send(
+  openGame(id) {
+    return fetch(
+      "/games",
       {
-        kind: "openGame",
-        data: { host }
-      },
-      "GameChannel"
-    );
+        method: "POST",
+        body: JSON.stringify({ id }),
+        headers: { "Content-Type": "application/json" }
+      }
+    )
+      .then(response => response.json())
+      .then(game => {
+        this.send({ kind: "openGame" }, "GameChannel");
+        return game
+      });
   }
 
   getGameLog(gameId) {

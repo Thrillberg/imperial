@@ -1,7 +1,7 @@
 <template>
   <div>
     <EndGame :game="game" />
-    <div class="p-2"><b>{{ gameName() }}</b></div>
+    <div class="p-2"><b>{{ gameName }}</b></div>
     <div v-if="gameStarted" class="flex flex-col">
       <div class="flex">
         <NationComponent
@@ -157,6 +157,14 @@ export default {
     apiClient.getGameLog(this.$route.params.id);
   },
   computed: {
+    gameName() {
+      const game = this.games.find(game => game.id === this.$route.params.id);
+      if (game) {
+        return game.name
+      } else {
+        return ""
+      }
+    },
     reversedGameLog: function () {
       if (this.game.log) {
         return this.game.log.slice().reverse();
@@ -182,13 +190,6 @@ export default {
     }
   },
   methods: {
-    gameName() {
-      if (this.games.length > 0) {
-        return this.games.find(game => game.id === this.$route.params.id).name
-      } else {
-        return ""
-      }
-    },
     playersInGame() {
       const game = this.games.find(game => game.id === this.$route.params.id);
       if (game) {
