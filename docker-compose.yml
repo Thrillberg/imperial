@@ -1,0 +1,48 @@
+version: '3'
+services:
+  db:
+    image: "postgres:alpine"
+    volumes:
+      - .\pgdata:/pgdata
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=rails_server_development
+      - PGDATA=/pgdata
+    expose:
+      - "5432"
+
+  redis:
+    image: "redis:alpine"
+  
+  webpacker:
+    build: .
+    environment:
+      REDIS_URL: redis://redis:6379
+      NODE_ENV: development
+      RAILS_ENV: development
+      WEBPACKER_DEV_SERVER_HOST: 0.0.0.0
+      WEBPACKER_DEV_SERVER_PORT: 3035
+    command: /imperial/bin/webpack --watch
+    volumes:
+      - .:/imperial
+    ports:
+      - "3035:3035"
+  
+  web:
+    build: .
+    environment:
+      REDIS_URL: redis://redis:6379
+      RAILS_ENV: development
+      WEBPACKER_DEV_SERVER_HOST: webpacker
+      WEBPACKER_DEV_SERVER_PORT: 3035
+      WEBPACKER_DEV_SERVER_PUBLIC: 0.0.0.0:3035
+      DATABASE_URL: "postgres://postgres:postgres@db/rails_server_development"
+    command: /bin/sh -c "rm -f /imperial/tmp/pids/server.pid && rails s -b 0.0.0.0"
+    volumes:
+      - .:/imperial
+    ports:
+      - "3000:3000"
+    depends_on: 
+      - db
+      - redis
