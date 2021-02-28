@@ -66,7 +66,10 @@ export default {
   },
   methods: {
     openGame() {
-      apiClient.openGame(this.profile.username);
+      apiClient.openGame(this.$cookies.get("user_id"))
+        .then(game => {
+          this.$router.push(`/game/${game.id}`);
+        });
     },
     setAnonymous() {
       fetch(
