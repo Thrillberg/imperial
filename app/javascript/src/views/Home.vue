@@ -19,6 +19,9 @@
         <div class="w-3/4" v-if="gamesFetched">
           <YourGames :games="yourGames" :profile="profile"></YourGames>
           <UnstartedGameList :games="unstartedGames" :profile="profile"></UnstartedGameList>
+          <router-link to="/games">
+            <b class="p-4 underline">All Games</b>
+          </router-link>
         </div>
         <div v-else class="w-3/4 text-center text-2xl mt-8">
           Loading games

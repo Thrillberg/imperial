@@ -190,12 +190,20 @@ const routes = [
     path: "/game/:id",
     name: "Game",
     component: () => import("../views/Game.vue")
+  },
+  {
+    path: "/games",
+    name: "Games",
+    component: () => import("../views/Games.vue")
   }
 ];
 
 const router = new VueRouter({
   mode: "history",
-  routes
+  routes,
+  scrollBehavior (to, from, savedPosition) {
+    return { x: 0, y: 0 };
+  }
 });
 
 export default router;
