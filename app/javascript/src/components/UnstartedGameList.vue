@@ -9,16 +9,16 @@
       <div class="w-1/5"></div>
     </div>
     <div v-for="game of games" v-bind:key="game.id">
-      <router-link :to="{ path: '/game/' + game.id }" class="flex justify-between hover:bg-gray-200 py-2">
+      <router-link :to="{ path: '/game/' + game.id }" class="flex justify-between items-center hover:bg-gray-200 py-2">
         <div class="w-1/5">{{ game.name }}</div>
         <div class="w-1/5">{{ game.players.length }}</div>
         <div class="w-1/5">{{ game.host }}</div>
         <div class="w-1/5">{{ openSince(game.createdAt) }}</div>
         <div class="w-1/5">
-          <button v-if="game.players.length < 6" class="rounded bg-green-800 text-white cursor-pointer block hover:bg-green-900 p-2 my-2">
+          <button v-if="game.players.length < 6" class="rounded bg-green-800 text-white cursor-pointer block hover:bg-green-900 p-2">
             Join Game
           </button>
-          <button v-else class="rounded bg-gray-800 text-white cursor-not-allowed block p-2 my-2">
+          <button v-else class="rounded bg-gray-800 text-white cursor-not-allowed block p-2">
             Game Full
           </button>
         </div>

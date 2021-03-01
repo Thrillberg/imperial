@@ -14,7 +14,7 @@
       Open a New Game
     </button>
     <div v-for="game of games" v-bind:key="game.id">
-      <router-link :to="{ path: '/game/' + game.id }" class="flex justify-between hover:bg-gray-200 py-2">
+      <router-link :to="{ path: '/game/' + game.id }" class="flex justify-between items-center hover:bg-gray-200 py-2">
         <div class="w-1/4">
           <Star v-if="game.currentPlayer && game.currentPlayer === profile.username && !game.winner" />
           <span>{{ game.name }}</span>
@@ -23,10 +23,10 @@
         <div v-if="game.log.length > 0" class="w-1/4">{{ game.currentPlayer }}'s turn</div>
         <div v-else class="w-1/4" />
         <div class="w-1/4">
-          <button v-if="game.log.length > 0 || game.host !== profile.username" class="rounded bg-green-800 text-white cursor-pointer block hover:bg-green-900 p-2 my-2">
+          <button v-if="game.log.length > 0 || game.host !== profile.username" class="rounded bg-green-800 text-white cursor-pointer block hover:bg-green-900 p-2">
             View Game
           </button>
-          <button v-else class="rounded bg-green-800 text-white cursor-pointer block hover:bg-green-900 p-2 my-2">
+          <button v-else class="rounded bg-green-800 text-white cursor-pointer block hover:bg-green-900 p-2">
             Start Game
           </button>
         </div>
