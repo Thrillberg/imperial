@@ -1,6 +1,7 @@
 import { Nation, Bond } from "./constants.js";
 import Action from "./action.js";
 import standardGameBoard from "./board.js";
+import auctionSetup from "./auctionSetup.js";
 import standardSetup from "./standardSetup.js";
 
 export default class Imperial {
@@ -140,7 +141,9 @@ export default class Imperial {
 
   initialize(action) {
     let setup;
-    if (action.payload.variant === "standard") {
+    if (action.payload.variant === "auction") {
+      setup = auctionSetup
+    } else {
       setup = standardSetup
     }
     const s = setup({
