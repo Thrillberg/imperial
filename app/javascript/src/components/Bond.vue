@@ -5,7 +5,10 @@
     </svg>
     {{ bond.number }}:{{ bond.cost }}
     <div v-if="!!tradedBond" class="tooltip-text border border-red-500 p-1 rounded mt-3 bg-white">
-      Trade in for {{ this.tradedBondString() }}.
+      Purchase for {{ this.tradedBondString() }}.
+    </div>
+    <div v-else-if="canBePurchased" class="tooltip-text border border-green-500 p-1 rounded mt-3 bg-white">
+      Purchase for {{ bond.cost }}m.
     </div>
   </div>
 </template>
@@ -17,18 +20,31 @@ import stringify from "../stringify.js";
 
 export default {
   name: "Bond",
-  props: { bond: Object, filter: String, tradedBond: Object },
+  props: {
+    bond: Object,
+    filter: String,
+    tradedBond: Object,
+    canBePurchased: Boolean
+  },
   components: { Flag },
   methods: {
-    border: function() {
+    border() {
       if (!!this.tradedBond) {
         return "red";
       } else {
         return "green";
       }
     },
-    tradedBondString: function() {
-      return `${stringify(this.tradedBond.nation.value)} - ${this.tradedBond.number}:${this.tradedBond.cost}`;
+    tradedBondString() {
+      return `${stringify(this.tradedBond.nation.value)} - ${this.tradedBond.number}:${this.tradedBond.cost}(trade in)${this.extraCashString()}`;
+    },
+    extraCashString() {
+      const difference = this.bond.cost - this.tradedBond.cost;
+      if (difference > 0) {
+        return ` and ${difference}m cash`
+      } else {
+        return ""
+      }
     }
   }
 };

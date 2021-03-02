@@ -6,6 +6,7 @@
         <Bond
           v-if="canBePurchased(bond)"
           :bond="bond"
+          :canBePurchased="true"
           :tradedBond="tradedBond({cost: bond.cost, nation: bond.nation, player: game.currentPlayerName})"
           @click.native="purchase(bond)"
           class="cursor-pointer"
