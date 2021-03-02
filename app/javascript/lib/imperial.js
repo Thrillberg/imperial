@@ -176,7 +176,7 @@ export default class Imperial {
 
   getStartingAvailableActions() {
     if (this.variant === "auction") {
-      return Auction.fromLog(this.log).availableActions;
+      return Auction.fromLog(this.log, this).availableActions;
     } else if (this.variant === "standard") {
       return new Set(this.rondelActions(this.currentNation));
     }
@@ -264,21 +264,25 @@ export default class Imperial {
       }
     } else {
       for (const player in this.players) {
-        if (this.nationsUnderControl(player).length > 0) {
-          const playerIndex = this.swissBanks.indexOf(player);
-          if (playerIndex !== -1) {
-            this.swissBanks.splice(playerIndex, 1)
-          }
-        } else {
-          const playerIndex = this.swissBanks.indexOf(player);
-          if (playerIndex === -1) {
-            this.swissBanks.push(player);
-          }
-        }
+        this.checkForSwissBank(player);
       }
       this.handleAdvancePlayer();
       this.advanceInvestorCard();
       this.availableActions = new Set(this.rondelActions(this.currentNation));
+    }
+  }
+
+  checkForSwissBank(player) {
+    if (this.nationsUnderControl(player).length > 0) {
+      const playerIndex = this.swissBanks.indexOf(player);
+      if (playerIndex !== -1) {
+        this.swissBanks.splice(playerIndex, 1)
+      }
+    } else {
+      const playerIndex = this.swissBanks.indexOf(player);
+      if (playerIndex === -1) {
+        this.swissBanks.push(player);
+      }
     }
   }
 
