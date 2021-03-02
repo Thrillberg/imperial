@@ -1,7 +1,7 @@
 import { Nation, Bond } from "./constants.js";
 import Action from "./action.js";
 import standardGameBoard from "./board.js";
-import setup from "./standardSetup.js";
+import standardSetup from "./standardSetup.js";
 
 export default class Imperial {
   static fromLog(log) {
@@ -139,6 +139,10 @@ export default class Imperial {
   }
 
   initialize(action) {
+    let setup;
+    if (action.payload.variant === "standard") {
+      setup = standardSetup
+    }
     const s = setup({
       players: action.payload.players,
       provinceNames: Array.from(this.board.graph.keys())
