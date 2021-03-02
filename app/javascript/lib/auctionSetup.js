@@ -83,6 +83,7 @@ export default ({ players, provinceNames }) => {
     provinces.set(province, { factory });
   }
   out.provinces = provinces;
+  out.currentNation = Nation.AH;
 
   return out;
 };

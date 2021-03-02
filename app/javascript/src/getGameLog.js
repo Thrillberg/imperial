@@ -14,7 +14,8 @@ export default function(rawLog) {
       });
     } else if (
       action.type === "rondel" ||
-      action.type === "bondPurchase"
+      action.type === "bondPurchase" ||
+      action.type === "skipBondPurchase"
     ) {
       action.payload.nation = Nation[action.payload.nation.value];
     } else if (

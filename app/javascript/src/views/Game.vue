@@ -89,10 +89,16 @@
             <span>{{ playersInGame(game.id).join(", ") }}</span>
           </div>
           <button
-            @click="startGame"
+            @click="startGame('standard')"
             class="rounded bg-green-800 text-white cursor-pointer block text-2xl hover:bg-green-900 p-10 m-10 mx-auto"
           >
-            Start Game
+            Start Standard Game
+          </button>
+          <button
+            @click="startGame('auction')"
+            class="rounded bg-green-800 text-white cursor-pointer block text-2xl hover:bg-green-900 p-10 m-10 mx-auto"
+          >
+            Start Auction Variant Game
           </button>
         </div>
         <div v-else-if="playingInThisGame" class="text-2xl m-2">
@@ -201,13 +207,13 @@ export default {
     joinGame() {
       apiClient.joinGame(this.$cookies.get("user_id"), this.$route.params.id, this.profile.username);
     },
-    startGame() {
+    startGame(variant) {
       const game = this.games.find(game => game.id === this.$route.params.id);
       const playerNames = this.playerNames(game);
       const shuffledPlayers = this.shuffle(playerNames);
       const players = this.assignNations(shuffledPlayers);
       const soloMode = game.soloMode;
-      const action = Action.initialize({ players, soloMode });
+      const action = Action.initialize({ players, soloMode, variant });
       apiClient.tick(game.id, action);
     },
     playerNames: function(game) {

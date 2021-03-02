@@ -67,11 +67,21 @@ export default class Imperial {
       case "noop":
         return;
       case "bondPurchase": {
-        this.bondPurchase(action);
+        const inAuction = this.variant === "auction" && Auction.fromLog(this.log, this).inAuction;
+        if (inAuction) {
+          this.handleAuctionBondPurchase();
+        } else {
+          this.bondPurchase(action);
+        }
         return;
       }
       case "skipBondPurchase": {
-        this.skipBondPurchase(action);
+        const inAuction = this.variant === "auction" && Auction.fromLog(this.log, this).inAuction;
+        if (inAuction) {
+          this.handleAuctionBondPurchase();
+        } else {
+          this.skipBondPurchase(action);
+        }
         return;
       }
       case "endManeuver": {
@@ -138,6 +148,14 @@ export default class Imperial {
         return;
       }
     }
+  }
+
+  handleAuctionBondPurchase() {
+    const auction = Auction.fromLog(this.log, this);
+    this.currentPlayerName = auction.currentPlayerName;
+    this.currentNation = auction.currentNation;
+    this.investorCardHolder = auction.investorCardHolder;
+    this.availableActions = auction.availableActions;
   }
 
   initialize(action) {
@@ -1257,7 +1275,7 @@ export default class Imperial {
           });
         })
     );
-    this.availableActions.add(Action.skipBondPurchase({ player: investor }));
+    this.availableActions.add(Action.skipBondPurchase({ player: investor, nation: null }));
   }
 
   playerBondsOfNation(player, nation) {
