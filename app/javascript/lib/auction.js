@@ -1,5 +1,6 @@
 import { Nation, Bond } from "./constants.js";
 import Action from "./action.js";
+import board from "./board.js";
 import setup from "./auctionSetup.js";
 
 export default class Auction {
@@ -28,7 +29,10 @@ export default class Auction {
   }
 
   initialize(action) {
-    const s = setup({ players: action.payload.players, provinceNames: [] });
+    const s = setup({
+      players: action.payload.players,
+      provinceNames: Array.from(board.graph.keys())
+    });
     this.inAuction = true;
     this.order = s.order;
     this.players = s.players;
@@ -100,11 +104,7 @@ export default class Auction {
 
     game.availableBonds = this.availableBonds;
     game.nations = this.nations;
-    game.order = this.order;
     game.players = this.players;
-    game.provinces = this.provinces;
-    game.units = game.initializeUnits(this.units);
-    game.currentPlayerName = this.currentPlayerName;
 
     this.setAvailableActions(action, game);
   }
@@ -122,19 +122,20 @@ export default class Auction {
       nextNation = nations[nationIndex + 1]
 
       if (!nextNation) {
-        this.inAuction = false;
         for (const player in game.players) {
           game.checkForSwissBank(player);
         }
 
         this.currentNation = Nation.AH;
+        game.currentPlayerName = this.nations.get(Nation.AH).controller;
         this.availableActions = new Set(game.rondelActions(Nation.AH));
+        this.inAuction = false;
         return;
       }
     }
     this.currentNation = nextNation;
     const ahControllerIndex = this.order.indexOf(game.nations.get(Nation.AH).controller);
-    this.investorCardHolder = this.order[ahControllerIndex];
+    this.investorCardHolder = this.order[ahControllerIndex - 1] || this.order[this.order.length - 1];
     this.availableActions = this.availableBondPurchases(nextNation);
   }
 

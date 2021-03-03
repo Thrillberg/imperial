@@ -134,7 +134,7 @@ describe("imperial", () => {
           Action.rondel({ nation: Nation.AH, cost: 0, slot: "investor" })
         );
         game.tick(
-          Action.skipBondPurchase({ player: "player1" })
+          Action.skipBondPurchase({ player: "player1", nation: null })
         );
 
         expect(game.availableActions).toEqual(
@@ -1076,7 +1076,7 @@ describe("imperial", () => {
 
             expect(game.availableActions).toEqual(
               new Set([
-                Action.skipBondPurchase({ player: "player2" }),
+                Action.skipBondPurchase({ player: "player2", nation: null }),
                 Action.bondPurchase({
                   nation: Nation.AH,
                   player: "player2",
@@ -1128,7 +1128,7 @@ describe("imperial", () => {
             // from their AH, 2 bond to buy the AH, 3 bond
             expect(game.availableActions).toEqual(
               new Set([
-                Action.skipBondPurchase({ player: "player2" }),
+                Action.skipBondPurchase({ player: "player2", nation: null }),
                 Action.bondPurchase({
                   nation: Nation.AH,
                   player: "player2",
@@ -1238,7 +1238,7 @@ describe("imperial", () => {
 
                 expect(game.availableActions).toEqual(
                   new Set([
-                    Action.skipBondPurchase({ player: "player1" }),
+                    Action.skipBondPurchase({ player: "player1", nation: null }),
                     Action.bondPurchase({
                       nation: Nation.AH,
                       player: "player1",
@@ -1296,7 +1296,7 @@ describe("imperial", () => {
                 // from their AH, 2 bond to buy the AH, 3 bond
                 expect(game.availableActions).toEqual(
                   new Set([
-                    Action.skipBondPurchase({ player: "player2" }),
+                    Action.skipBondPurchase({ player: "player2", nation: null }),
                     Action.bondPurchase({
                       nation: Nation.AH,
                       player: "player2",
@@ -1369,7 +1369,7 @@ describe("imperial", () => {
                 );
 
                 // For testing purposes, we delete the skip  bond purchase action
-                game.availableActions.delete(Action.skipBondPurchase({ player: "player2" }));
+                game.availableActions.delete(Action.skipBondPurchase({ player: "player2", nation: null }));
                 game.availableActions.forEach((action) => {
                   expect(action.type).toEqual("bondPurchase");
                   expect(action.payload.player).toEqual("player2");
@@ -1489,7 +1489,7 @@ describe("imperial", () => {
                 );
 
                 // For testing purposes, we delete the skip  bond purchase action
-                game.availableActions.delete(Action.skipBondPurchase({ player: "player1" }));
+                game.availableActions.delete(Action.skipBondPurchase({ player: "player1", nation: null }));
                 game.availableActions.forEach((action) => {
                   expect(action.type).toEqual("bondPurchase");
                   expect(action.payload.player).toEqual("player1");
@@ -1505,7 +1505,7 @@ describe("imperial", () => {
                 );
 
                 // For testing purposes, we delete the skip  bond purchase action
-                game.availableActions.delete(Action.skipBondPurchase({ player: "player2" }));
+                game.availableActions.delete(Action.skipBondPurchase({ player: "player2", nation: null }));
                 game.availableActions.forEach((action) => {
                   expect(action.type).toEqual("bondPurchase");
                   expect(action.payload.player).toEqual("player2");
@@ -1573,7 +1573,7 @@ describe("imperial", () => {
                 expect(game.nations.get(Nation.AH).rondelPosition).toEqual("investor");
                 expect(game.availableActions).toEqual(
                   new Set([
-                    Action.skipBondPurchase({ player: "player1" }),
+                    Action.skipBondPurchase({ player: "player1", nation: null }),
                     Action.bondPurchase({
                       nation: Nation.AH,
                       player: "player1",
@@ -1686,7 +1686,7 @@ describe("imperial", () => {
 
                 expect(game.availableActions).toEqual(
                   new Set([
-                    Action.skipBondPurchase({ player: "player1" }),
+                    Action.skipBondPurchase({ player: "player1", nation: null }),
                     Action.bondPurchase({
                       nation: Nation.AH,
                       player: "player1",

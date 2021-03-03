@@ -67,18 +67,26 @@ export default class Imperial {
       case "noop":
         return;
       case "bondPurchase": {
-        const inAuction = this.variant === "auction" && Auction.fromLog(this.log, this).inAuction;
+        const inAuction = this.variant === "auction" && this.inAuction;
         if (inAuction) {
           this.handleAuctionBondPurchase();
+          if (!Auction.fromLog(this.log, this).inAuction) {
+            this.inAuction = false;
+            this.currentPlayerName = this.nations.get(this.currentNation).controller;
+          }
         } else {
           this.bondPurchase(action);
         }
         return;
       }
       case "skipBondPurchase": {
-        const inAuction = this.variant === "auction" && Auction.fromLog(this.log, this).inAuction;
+        const inAuction = this.variant === "auction" && this.inAuction;
         if (inAuction) {
           this.handleAuctionBondPurchase();
+          if (!Auction.fromLog(this.log, this).inAuction) {
+            this.inAuction = false;
+            this.currentPlayerName = this.nations.get(this.currentNation).controller;
+          }
         } else {
           this.skipBondPurchase(action);
         }
@@ -162,6 +170,7 @@ export default class Imperial {
     let setup;
     if (action.payload.variant === "auction") {
       this.variant = "auction";
+      this.inAuction = true;
       setup = auctionSetup;
     } else {
       this.variant = "standard";
