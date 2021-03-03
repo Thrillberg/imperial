@@ -210,8 +210,10 @@ export default {
     startGame(variant) {
       const game = this.games.find(game => game.id === this.$route.params.id);
       const playerNames = this.playerNames(game);
-      const shuffledPlayers = this.shuffle(playerNames);
-      const players = this.assignNations(shuffledPlayers);
+      let players = this.shuffle(playerNames);
+      if (variant === "standard") {
+        players = this.assignNations(players);
+      }
       const soloMode = game.soloMode;
       const action = Action.initialize({ players, soloMode, variant });
       apiClient.tick(game.id, action);
@@ -239,44 +241,46 @@ export default {
         players[randomIndex] = temporaryValue;
       }
 
-      return players;
+      return players.map(player => {
+        return { id: player }
+      });
     },
     assignNations: function(players) {
       switch (players.length) {
         case 2:
           return [
-            { id: players[0], nation: Nation.AH },
-            { id: players[1], nation: Nation.IT }
+            { id: players[0].id, nation: Nation.AH },
+            { id: players[1].id, nation: Nation.IT }
           ];
         case 3:
           return [
-            { id: players[0], nation: Nation.AH },
-            { id: players[1], nation: Nation.IT },
-            { id: players[2], nation: Nation.FR }
+            { id: players[0].id, nation: Nation.AH },
+            { id: players[1].id, nation: Nation.IT },
+            { id: players[2].id, nation: Nation.FR }
           ];
         case 4:
           return [
-            { id: players[0], nation: Nation.AH },
-            { id: players[1], nation: Nation.IT },
-            { id: players[2], nation: Nation.FR },
-            { id: players[3], nation: Nation.GB }
+            { id: players[0].id, nation: Nation.AH },
+            { id: players[1].id, nation: Nation.IT },
+            { id: players[2].id, nation: Nation.FR },
+            { id: players[3].id, nation: Nation.GB }
           ];
         case 5:
           return [
-            { id: players[0], nation: Nation.AH },
-            { id: players[1], nation: Nation.IT },
-            { id: players[2], nation: Nation.FR },
-            { id: players[3], nation: Nation.GB },
-            { id: players[4], nation: Nation.GE }
+            { id: players[0].id, nation: Nation.AH },
+            { id: players[1].id, nation: Nation.IT },
+            { id: players[2].id, nation: Nation.FR },
+            { id: players[3].id, nation: Nation.GB },
+            { id: players[4].id, nation: Nation.GE }
           ];
         case 6:
           return [
-            { id: players[0], nation: Nation.AH },
-            { id: players[1], nation: Nation.IT },
-            { id: players[2], nation: Nation.FR },
-            { id: players[3], nation: Nation.GB },
-            { id: players[4], nation: Nation.GE },
-            { id: players[5], nation: Nation.RU }
+            { id: players[0].id, nation: Nation.AH },
+            { id: players[1].id, nation: Nation.IT },
+            { id: players[2].id, nation: Nation.FR },
+            { id: players[3].id, nation: Nation.GB },
+            { id: players[4].id, nation: Nation.GE },
+            { id: players[5].id, nation: Nation.RU }
           ];
       }
     },

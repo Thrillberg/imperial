@@ -66,7 +66,8 @@ export default {
           currentPlayer: imperialGame.currentPlayerName,
           winner: imperialGame.winner,
           forceEndedAt: game.force_ended_at,
-          createdAt: game.created_at
+          createdAt: game.created_at,
+          variant: imperialGame.variant
         };
       });
       this.gamesFetched = true;
