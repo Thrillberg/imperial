@@ -5,7 +5,7 @@ export default function(rawLog) {
   // has weirdness when we attempt nation.when() in the setup file.
   return rawLog.map(rawAction => {
     const action = JSON.parse(rawAction);
-    if (action.type === "initialize" && action.payload.variant === "standard") {
+    if (action.type === "initialize" && action.payload.variant !== "auction") {
       action.payload.players = action.payload.players.map(player => {
         return {
           id: player.id,
