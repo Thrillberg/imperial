@@ -67,11 +67,10 @@ export default class Imperial {
       case "noop":
         return;
       case "bondPurchase": {
-        const inAuction = this.variant === "auction" && this.inAuction;
+        const inAuction = this.auction?.inAuction;
         if (inAuction) {
-          this.handleAuctionBondPurchase();
-          if (!Auction.fromLog(this.log, this).inAuction) {
-            this.inAuction = false;
+          this.handleAuctionBondPurchase(action);
+          if (!this.auction.inAuction) {
             this.currentPlayerName = this.nations.get(this.currentNation).controller;
           }
         } else {
@@ -80,11 +79,10 @@ export default class Imperial {
         return;
       }
       case "skipBondPurchase": {
-        const inAuction = this.variant === "auction" && this.inAuction;
+        const inAuction = this.auction?.inAuction;
         if (inAuction) {
-          this.handleAuctionBondPurchase();
-          if (!Auction.fromLog(this.log, this).inAuction) {
-            this.inAuction = false;
+          this.handleAuctionBondPurchase(action);
+          if (!this.auction.inAuction) {
             this.currentPlayerName = this.nations.get(this.currentNation).controller;
           }
         } else {
@@ -158,19 +156,19 @@ export default class Imperial {
     }
   }
 
-  handleAuctionBondPurchase() {
-    const auction = Auction.fromLog(this.log, this);
-    this.currentPlayerName = auction.currentPlayerName;
-    this.currentNation = auction.currentNation;
-    this.investorCardHolder = auction.investorCardHolder;
-    this.availableActions = auction.availableActions;
+  handleAuctionBondPurchase(action) {
+    this.auction.tick(action, this);
+    this.currentPlayerName = this.auction.currentPlayerName;
+    this.currentNation = this.auction.currentNation;
+    this.investorCardHolder = this.auction.investorCardHolder;
+    this.availableActions = this.auction.availableActions;
   }
 
   initialize(action) {
     let setup;
     if (action.payload.variant === "auction") {
       this.variant = "auction";
-      this.inAuction = true;
+      this.auction = Auction.fromLog(this.log, this);
       setup = auctionSetup;
     } else {
       this.variant = "standard";

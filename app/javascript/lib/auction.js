@@ -126,9 +126,10 @@ export default class Auction {
           game.checkForSwissBank(player);
         }
 
-        this.currentNation = Nation.AH;
-        game.currentPlayerName = this.nations.get(Nation.AH).controller;
-        this.availableActions = new Set(game.rondelActions(Nation.AH));
+        const [startingPlayer, startingNation] = this.getStartingPlayerAndNation();
+        game.currentPlayerName = startingPlayer;
+        this.currentNation = startingNation;
+        this.availableActions = new Set(game.rondelActions(startingNation));
         this.inAuction = false;
         return;
       }
@@ -152,5 +153,31 @@ export default class Auction {
     return [...this.players[player].bonds]
       .filter(bond => bond.nation === nation)
       .reduce((x, y) => x + y.cost, 0);
+  }
+
+  getStartingPlayerAndNation() {
+    let nation = Nation.AH;
+    let player = this.nations.get(nation).controller;
+    if (!player) {
+      nation = Nation.IT;
+      player = this.nations.get(nation).controller;
+    }
+    if (!player) {
+      nation = Nation.FR;
+      player = this.nations.get(nation).controller;
+    }
+    if (!player) {
+      nation = Nation.GB;
+      player = this.nations.get(nation).controller;
+    }
+    if (!player) {
+      nation = Nation.GE;
+      player = this.nations.get(nation).controller;
+    }
+    if (!player) {
+      nation = Nation.RU;
+      player = this.nations.get(nation).controller;
+    }
+    return [player, nation];
   }
 };
