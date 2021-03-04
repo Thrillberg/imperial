@@ -161,15 +161,17 @@ export default {
     },
     factory(province) {
       const factory = this.factories().find(factory => {
-        return factory.province === province;
+        const normalizedProvince = province.replace(/\.*\s/gm, "").toLowerCase();
+        return factory.province === normalizedProvince;
       });
       if (factory) {
         return factory.type;
       }
     },
     factoryType(province) {
-      if (this.game.board && !["corsica", "sardinia", "switzerland"].includes(province)) {
-        return this.game.board.graph.get(province).factoryType
+      if (this.game.board && !["Corsica", "Sardinia", "Switzerland"].includes(province)) {
+        const normalizedProvince = province.replace(/\.*\s/gm, "").toLowerCase();
+        return this.game.board.graph.get(normalizedProvince).factoryType
       }
     },
     dot(province) {
@@ -249,65 +251,65 @@ export default {
   data() {
     return {
       sea_provinces: {
-        balticsea,
-        bayofbiscay,
-        blacksea,
-        easternmediterraneansea,
-        englishchannel,
-        ioniansea,
-        northatlantic,
-        northsea,
-        westernmediterraneansea
+        "Baltic Sea": balticsea,
+        "Bay of Biscay": bayofbiscay,
+        "Black Sea": blacksea,
+        "Eastern Mediterranean Sea": easternmediterraneansea,
+        "English Channel": englishchannel,
+        "Ionian Sea": ioniansea,
+        "North Atlantic Sea": northatlantic,
+        "North Sea": northsea,
+        "Western Mediterranean Sea": westernmediterraneansea
       },
       land_provinces: {
-        warsaw,
-        venice,
-        algeria,
-        belgium,
-        berlin,
-        brest,
-        budapest,
-        bulgaria,
-        cologne,
-        corsica,
-        danzig,
-        denmark,
-        dijon,
-        dublin,
-        edinburgh,
-        florence,
-        genoa,
-        greece,
-        hamburg,
-        holland,
-        kiev,
-        lemberg,
-        liverpool,
-        london,
-        marseille,
-        morocco,
-        moscow,
-        munich,
-        naples,
-        norway,
-        odessa,
-        paris,
-        portugal,
-        prague,
-        romania,
-        rome,
-        sardinia,
-        sheffield,
-        spain,
-        stpetersburg,
-        sweden,
-        switzerland,
-        trieste,
-        tunis,
-        turkey,
-        vienna,
-        westbalkan,
-        bordeaux
+        "Warsaw": warsaw,
+        "Venice": venice,
+        "Algeria": algeria,
+        "Belgium": belgium,
+        "Berlin": berlin,
+        "Brest": brest,
+        "Budapest": budapest,
+        "Bulgaria": bulgaria,
+        "Cologne": cologne,
+        "Corsica": corsica,
+        "Danzig": danzig,
+        "Denmark": denmark,
+        "Dijon": dijon,
+        "Dublin": dublin,
+        "Edinburgh": edinburgh,
+        "Florence": florence,
+        "Genoa": genoa,
+        "Greece": greece,
+        "Hamburg": hamburg,
+        "Holland": holland,
+        "Kiev": kiev,
+        "Lemberg": lemberg,
+        "Liverpool": liverpool,
+        "London": london,
+        "Marseille": marseille,
+        "Morocco": morocco,
+        "Moscow": moscow,
+        "Munich": munich,
+        "Naples": naples,
+        "Norway": norway,
+        "Odessa": odessa,
+        "Paris": paris,
+        "Portugal": portugal,
+        "Prague": prague,
+        "Romania": romania,
+        "Rome": rome,
+        "Sardinia": sardinia,
+        "Sheffield": sheffield,
+        "Spain": spain,
+        "St. Petersburg": stpetersburg,
+        "Sweden": sweden,
+        "Switzerland": switzerland,
+        "Trieste": trieste,
+        "Tunis": tunis,
+        "Turkey": turkey,
+        "Vienna": vienna,
+        "West Balkan": westbalkan,
+        "Bordeaux": bordeaux
       }
     };
   },
