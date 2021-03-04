@@ -14,6 +14,19 @@ const cloneUnits = units => {
   return out;
 };
 
+const initialize = game => {
+  game.tick(
+    Action.initialize({
+      players: [
+        { id: "player1", nation: Nation.AH },
+        { id: "player2", nation: Nation.IT }
+      ],
+      soloMode: false,
+      variant: "standard"
+    })
+  );
+};
+
 describe("imperial", () => {
   describe("#tick", () => {
     describe("bondPurchase", () => {
@@ -27,15 +40,7 @@ describe("imperial", () => {
         });
 
         const game = new Imperial(board);
-        game.tick(
-          Action.initialize({
-            players: [
-              { id: "player1", nation: Nation.AH },
-              { id: "player2", nation: Nation.IT }
-            ],
-            soloMode: false
-          })
-        );
+        initialize(game);
         return game;
       };
 
@@ -117,15 +122,7 @@ describe("imperial", () => {
         });
 
         const game = new Imperial(board);
-        game.tick(
-          Action.initialize({
-            players: [
-              { id: "player1", nation: Nation.AH },
-              { id: "player2", nation: Nation.IT }
-            ],
-            soloMode: false
-          })
-        );
+        initialize(game);
         return game;
       };
 
@@ -137,7 +134,7 @@ describe("imperial", () => {
           Action.rondel({ nation: Nation.AH, cost: 0, slot: "investor" })
         );
         game.tick(
-          Action.skipBondPurchase({ player: "player1" })
+          Action.skipBondPurchase({ player: "player1", nation: null })
         );
 
         expect(game.availableActions).toEqual(
@@ -165,15 +162,7 @@ describe("imperial", () => {
         });
 
         const game = new Imperial(board);
-        game.tick(
-          Action.initialize({
-            players: [
-              { id: "player1", nation: Nation.AH },
-              { id: "player2", nation: Nation.IT }
-            ],
-            soloMode: false
-          })
-        );
+        initialize(game);
         return game;
       };
 
@@ -214,15 +203,7 @@ describe("imperial", () => {
         });
 
         const game = new Imperial(board);
-        game.tick(
-          Action.initialize({
-            players: [
-              { id: "player1", nation: Nation.AH },
-              { id: "player2", nation: Nation.IT }
-            ],
-            soloMode: false
-          })
-        );
+        initialize(game);
         return game;
       };
 
@@ -286,15 +267,7 @@ describe("imperial", () => {
         });
 
         const game = new Imperial(board);
-        game.tick(
-          Action.initialize({
-            players: [
-              { id: "player1", nation: Nation.AH },
-              { id: "player2", nation: Nation.IT }
-            ],
-            soloMode: false
-          })
-        );
+        initialize(game);
         return game;
       };
 
@@ -335,15 +308,7 @@ describe("imperial", () => {
         });
 
         const game = new Imperial(board);
-        game.tick(
-          Action.initialize({
-            players: [
-              { id: "player1", nation: Nation.AH },
-              { id: "player2", nation: Nation.IT }
-            ],
-            soloMode: false
-          })
-        );
+        initialize(game);
         return game;
       };
 
@@ -458,7 +423,8 @@ describe("imperial", () => {
               { id: "player1", nation: Nation.AH },
               { id: "player2", nation: Nation.IT }
             ],
-            soloMode: false
+            soloMode: false,
+            variant: "standard"
           })
         );
 
@@ -495,15 +461,7 @@ describe("imperial", () => {
           });
 
           const game = new Imperial(board);
-          game.tick(
-            Action.initialize({
-              players: [
-                { id: "player1", nation: Nation.AH },
-                { id: "player2", nation: Nation.IT }
-              ],
-              soloMode: false
-            })
-          );
+          initialize(game);
           return game;
         };
 
@@ -604,15 +562,7 @@ describe("imperial", () => {
           });
 
           const game = new Imperial(board);
-          game.tick(
-            Action.initialize({
-              players: [
-                { id: "player1", nation: Nation.AH },
-                { id: "player2", nation: Nation.IT }
-              ],
-              soloMode: false
-            })
-          );
+          initialize(game);
 
           const availableActions = new Set([Action.import({ placements: [] })]);
           availableActions.add(
@@ -656,15 +606,7 @@ describe("imperial", () => {
           });
 
           const game = new Imperial(board);
-          game.tick(
-            Action.initialize({
-              players: [
-                { id: "player1", nation: Nation.AH },
-                { id: "player2", nation: Nation.IT }
-              ],
-              soloMode: false
-            })
-          );
+          initialize(game);
 
           const availableActions = new Set([Action.import({ placements: [] })]);
           availableActions.add(
@@ -793,15 +735,7 @@ describe("imperial", () => {
           });
 
           const game = new Imperial(board);
-          game.tick(
-            Action.initialize({
-              players: [
-                { id: "player1", nation: Nation.AH },
-                { id: "player2", nation: Nation.IT }
-              ],
-              soloMode: false
-            })
-          );
+          initialize(game);
           game.nations.get(Nation.AH).treasury = 1;
 
           const availableActions = new Set([Action.import({ placements: [] })]);
@@ -828,15 +762,7 @@ describe("imperial", () => {
           });
 
           const game = new Imperial(board);
-          game.tick(
-            Action.initialize({
-              players: [
-                { id: "player1", nation: Nation.AH },
-                { id: "player2", nation: Nation.IT }
-              ],
-              soloMode: false
-            })
-          );
+          initialize(game);
           game.units.get(Nation.IT).get("a").armies++;
           game.nations.get(Nation.AH).treasury = 1;
 
@@ -874,15 +800,7 @@ describe("imperial", () => {
           });
 
           const game = new Imperial(board);
-          game.tick(
-            Action.initialize({
-              players: [
-                { id: "player1", nation: Nation.AH },
-                { id: "player2", nation: Nation.IT }
-              ],
-              soloMode: false
-            })
-          );
+          initialize(game);
           return game;
         };
 
@@ -972,15 +890,7 @@ describe("imperial", () => {
           });
 
           const game = new Imperial(board);
-          game.tick(
-            Action.initialize({
-              players: [
-                { id: "player1", nation: Nation.AH },
-                { id: "player2", nation: Nation.IT }
-              ],
-              soloMode: false
-            })
-          );
+          initialize(game);
           return game;
         };
 
@@ -1055,15 +965,7 @@ describe("imperial", () => {
           });
 
           const game = new Imperial(board);
-          game.tick(
-            Action.initialize({
-              players: [
-                { id: "player1", nation: Nation.AH },
-                { id: "player2", nation: Nation.IT }
-              ],
-              soloMode: false
-            })
-          );
+          initialize(game);
           return game;
         };
 
@@ -1174,7 +1076,7 @@ describe("imperial", () => {
 
             expect(game.availableActions).toEqual(
               new Set([
-                Action.skipBondPurchase({ player: "player2" }),
+                Action.skipBondPurchase({ player: "player2", nation: null }),
                 Action.bondPurchase({
                   nation: Nation.AH,
                   player: "player2",
@@ -1226,7 +1128,7 @@ describe("imperial", () => {
             // from their AH, 2 bond to buy the AH, 3 bond
             expect(game.availableActions).toEqual(
               new Set([
-                Action.skipBondPurchase({ player: "player2" }),
+                Action.skipBondPurchase({ player: "player2", nation: null }),
                 Action.bondPurchase({
                   nation: Nation.AH,
                   player: "player2",
@@ -1282,7 +1184,8 @@ describe("imperial", () => {
                 { id: "player2", nation: Nation.IT },
                 { id: "player3", nation: Nation.FR }
               ],
-              soloMode: false
+              soloMode: false,
+              variant: "standard"
             })
           );
           return game;
@@ -1335,7 +1238,7 @@ describe("imperial", () => {
 
                 expect(game.availableActions).toEqual(
                   new Set([
-                    Action.skipBondPurchase({ player: "player1" }),
+                    Action.skipBondPurchase({ player: "player1", nation: null }),
                     Action.bondPurchase({
                       nation: Nation.AH,
                       player: "player1",
@@ -1393,7 +1296,7 @@ describe("imperial", () => {
                 // from their AH, 2 bond to buy the AH, 3 bond
                 expect(game.availableActions).toEqual(
                   new Set([
-                    Action.skipBondPurchase({ player: "player2" }),
+                    Action.skipBondPurchase({ player: "player2", nation: null }),
                     Action.bondPurchase({
                       nation: Nation.AH,
                       player: "player2",
@@ -1466,7 +1369,7 @@ describe("imperial", () => {
                 );
 
                 // For testing purposes, we delete the skip  bond purchase action
-                game.availableActions.delete(Action.skipBondPurchase({ player: "player2" }));
+                game.availableActions.delete(Action.skipBondPurchase({ player: "player2", nation: null }));
                 game.availableActions.forEach((action) => {
                   expect(action.type).toEqual("bondPurchase");
                   expect(action.payload.player).toEqual("player2");
@@ -1586,7 +1489,7 @@ describe("imperial", () => {
                 );
 
                 // For testing purposes, we delete the skip  bond purchase action
-                game.availableActions.delete(Action.skipBondPurchase({ player: "player1" }));
+                game.availableActions.delete(Action.skipBondPurchase({ player: "player1", nation: null }));
                 game.availableActions.forEach((action) => {
                   expect(action.type).toEqual("bondPurchase");
                   expect(action.payload.player).toEqual("player1");
@@ -1602,7 +1505,7 @@ describe("imperial", () => {
                 );
 
                 // For testing purposes, we delete the skip  bond purchase action
-                game.availableActions.delete(Action.skipBondPurchase({ player: "player2" }));
+                game.availableActions.delete(Action.skipBondPurchase({ player: "player2", nation: null }));
                 game.availableActions.forEach((action) => {
                   expect(action.type).toEqual("bondPurchase");
                   expect(action.payload.player).toEqual("player2");
@@ -1670,7 +1573,7 @@ describe("imperial", () => {
                 expect(game.nations.get(Nation.AH).rondelPosition).toEqual("investor");
                 expect(game.availableActions).toEqual(
                   new Set([
-                    Action.skipBondPurchase({ player: "player1" }),
+                    Action.skipBondPurchase({ player: "player1", nation: null }),
                     Action.bondPurchase({
                       nation: Nation.AH,
                       player: "player1",
@@ -1783,7 +1686,7 @@ describe("imperial", () => {
 
                 expect(game.availableActions).toEqual(
                   new Set([
-                    Action.skipBondPurchase({ player: "player1" }),
+                    Action.skipBondPurchase({ player: "player1", nation: null }),
                     Action.bondPurchase({
                       nation: Nation.AH,
                       player: "player1",
@@ -1867,15 +1770,7 @@ describe("imperial", () => {
           });
 
           const game = new Imperial(board);
-          game.tick(
-            Action.initialize({
-              players: [
-                { id: "player1", nation: Nation.AH },
-                { id: "player2", nation: Nation.IT }
-              ],
-              soloMode: false
-            })
-          );
+          initialize(game);
           return game;
         };
 
@@ -2094,15 +1989,7 @@ describe("imperial", () => {
           });
 
           const game = new Imperial(board);
-          game.tick(
-            Action.initialize({
-              players: [
-                { id: "player1", nation: Nation.AH },
-                { id: "player2", nation: Nation.IT }
-              ],
-              soloMode: false
-            })
-          );
+          initialize(game);
           return game;
         };
 
@@ -2179,15 +2066,7 @@ describe("imperial", () => {
         });
 
         const game = new Imperial(board);
-        game.tick(
-          Action.initialize({
-            players: [
-              { id: "player1", nation: Nation.AH },
-              { id: "player2", nation: Nation.IT }
-            ],
-            soloMode: false
-          })
-        );
+        initialize(game);
         // Allow Italy to be able to afford a factory
         game.nations.get(Nation.IT).treasury = 5;
         return game;
@@ -2592,15 +2471,7 @@ describe("imperial", () => {
         });
 
         const game = new Imperial(board);
-        game.tick(
-          Action.initialize({
-            players: [
-              { id: "player1", nation: Nation.AH },
-              { id: "player2", nation: Nation.IT }
-            ],
-            soloMode: false
-          })
-        );
+        initialize(game);
         // Allow Italy to be able to afford a factory
         game.nations.get(Nation.IT).treasury = 5;
         return game;
@@ -2879,15 +2750,7 @@ describe("imperial", () => {
         });
 
         const game = new Imperial(board);
-        game.tick(
-          Action.initialize({
-            players: [
-              { id: "player1", nation: Nation.AH },
-              { id: "player2", nation: Nation.IT }
-            ],
-            soloMode: false
-          })
-        );
+        initialize(game);
         // Allow Italy to be able to afford a factory
         game.nations.get(Nation.IT).treasury = 5;
         return game;
@@ -3009,15 +2872,7 @@ describe("imperial", () => {
         });
 
         const game = new Imperial(board);
-        game.tick(
-          Action.initialize({
-            players: [
-              { id: "player1", nation: Nation.AH },
-              { id: "player2", nation: Nation.IT }
-            ],
-            soloMode: false
-          })
-        );
+        initialize(game);
         return game;
       };
 
@@ -3046,15 +2901,7 @@ describe("imperial", () => {
         });
 
         const game = new Imperial(board);
-        game.tick(
-          Action.initialize({
-            players: [
-              { id: "player1", nation: Nation.AH },
-              { id: "player2", nation: Nation.IT }
-            ],
-            soloMode: false
-          })
-        );
+        initialize(game);
         return game;
       };
 
@@ -3071,7 +2918,8 @@ describe("imperial", () => {
               { id: "player1", nation: Nation.AH },
               { id: "player2", nation: Nation.IT }
             ],
-            soloMode: false
+            soloMode: false,
+            variant: "standard"
           }),
           Action.rondel({nation: Nation.AH, cost: 0, slot: "maneuver1"})
         ]);

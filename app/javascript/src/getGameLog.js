@@ -5,7 +5,10 @@ export default function(rawLog) {
   // has weirdness when we attempt nation.when() in the setup file.
   return rawLog.map(rawAction => {
     const action = JSON.parse(rawAction);
-    if (action.type === "initialize") {
+    if (
+      action.type === "initialize" &&
+      (!action.payload.variant || action.payload.variant === "standard")
+    ) {
       action.payload.players = action.payload.players.map(player => {
         return {
           id: player.id,
@@ -13,8 +16,11 @@ export default function(rawLog) {
         };
       });
     } else if (
-      action.type === "rondel" ||
-      action.type === "bondPurchase"
+      (
+        action.type === "rondel" ||
+        action.type === "bondPurchase" ||
+        action.type === "skipBondPurchase"
+      ) && action.payload.nation
     ) {
       action.payload.nation = Nation[action.payload.nation.value];
     } else if (

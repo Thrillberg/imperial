@@ -57,7 +57,7 @@ export default {
   nationGainsTreasury: makeAction("nationGainsTreasury", ["nation", "amount"]),
   nationGainsPowerPoints: makeAction("nationGainsPowerPoints", ["nation", "powerPoints"]),
   // The remaining actions are for the main log
-  initialize: makeAction("initialize", ["players", "soloMode"]),
+  initialize: makeAction("initialize", ["players", "soloMode", "variant"]),
   bondPurchase: makeAction("bondPurchase", ["nation", "player", "cost"]),
   buildFactory: makeAction("buildFactory", ["province"]),
   coexist: makeAction("coexist", ["province", "incumbent", "challenger"]),
@@ -76,7 +76,7 @@ export default {
   maneuver: makeAction("maneuver", ["origin", "destination"]),
   production: makeAction("production", ["province"]),
   rondel: makeAction("rondel", ["nation", "cost", "slot"]),
-  skipBondPurchase: makeAction("skipBondPurchase", ["player"]),
+  skipBondPurchase: makeAction("skipBondPurchase", ["player", "nation"]),
   skipDestroyFactory: makeAction("skipDestroyFactory", ["province"]),
   skipForceInvestor: makeAction("skipForceInvestor", ["player"]),
   unfriendlyEntrance: makeAction("unfriendlyEntrance", ["incumbent", "challenger", "province"])

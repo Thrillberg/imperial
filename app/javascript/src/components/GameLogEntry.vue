@@ -3,8 +3,10 @@
     <div v-for="(action, index) in event" :key="index">
       <div v-if="action.type === 'initialize'">
         <p>{{ action.payload.soloMode ? "Solo game started!" : "Game started!" }}</p>
+        <p>Variant: {{ action.payload.variant || "standard" }}</p>
         <p v-for="(player, index) in action.payload.players" :key="index">
           <svg 
+            v-if="!!player.nation"
             class="inline-block mr-1" 
             xmlns="http://www.w3.org/2000/svg" 
             width="30" 
@@ -12,7 +14,7 @@
             >
             <Flag :nation="player.nation.value" width="30"></Flag>
           </svg>
-          <span v-html=initializeAction(player)></span>
+          <span v-if="!action.payload.variant || action.payload.variant === 'standard'" v-html=initializeAction(player)></span>
         </p>
       </div>
       <div v-else-if="action.type === 'rondel'">

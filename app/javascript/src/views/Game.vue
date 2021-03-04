@@ -89,10 +89,16 @@
             <span>{{ playersInGame(game.id).join(", ") }}</span>
           </div>
           <button
-            @click="startGame"
+            @click="startGame('standard')"
             class="rounded bg-green-800 text-white cursor-pointer block text-2xl hover:bg-green-900 p-10 m-10 mx-auto"
           >
-            Start Game
+            Start Standard Game
+          </button>
+          <button
+            @click="startGame('auction')"
+            class="rounded bg-green-800 text-white cursor-pointer block text-2xl hover:bg-green-900 p-10 m-10 mx-auto"
+          >
+            Start Auction Variant Game
           </button>
         </div>
         <div v-else-if="playingInThisGame" class="text-2xl m-2">
@@ -201,13 +207,15 @@ export default {
     joinGame() {
       apiClient.joinGame(this.$cookies.get("user_id"), this.$route.params.id, this.profile.username);
     },
-    startGame() {
+    startGame(variant) {
       const game = this.games.find(game => game.id === this.$route.params.id);
       const playerNames = this.playerNames(game);
-      const shuffledPlayers = this.shuffle(playerNames);
-      const players = this.assignNations(shuffledPlayers);
+      let players = this.shuffle(playerNames);
+      if (variant === "standard") {
+        players = this.assignNations(players);
+      }
       const soloMode = game.soloMode;
-      const action = Action.initialize({ players, soloMode });
+      const action = Action.initialize({ players, soloMode, variant });
       apiClient.tick(game.id, action);
     },
     playerNames: function(game) {
@@ -233,44 +241,46 @@ export default {
         players[randomIndex] = temporaryValue;
       }
 
-      return players;
+      return players.map(player => {
+        return { id: player }
+      });
     },
     assignNations: function(players) {
       switch (players.length) {
         case 2:
           return [
-            { id: players[0], nation: Nation.AH },
-            { id: players[1], nation: Nation.IT }
+            { id: players[0].id, nation: Nation.AH },
+            { id: players[1].id, nation: Nation.IT }
           ];
         case 3:
           return [
-            { id: players[0], nation: Nation.AH },
-            { id: players[1], nation: Nation.IT },
-            { id: players[2], nation: Nation.FR }
+            { id: players[0].id, nation: Nation.AH },
+            { id: players[1].id, nation: Nation.IT },
+            { id: players[2].id, nation: Nation.FR }
           ];
         case 4:
           return [
-            { id: players[0], nation: Nation.AH },
-            { id: players[1], nation: Nation.IT },
-            { id: players[2], nation: Nation.FR },
-            { id: players[3], nation: Nation.GB }
+            { id: players[0].id, nation: Nation.AH },
+            { id: players[1].id, nation: Nation.IT },
+            { id: players[2].id, nation: Nation.FR },
+            { id: players[3].id, nation: Nation.GB }
           ];
         case 5:
           return [
-            { id: players[0], nation: Nation.AH },
-            { id: players[1], nation: Nation.IT },
-            { id: players[2], nation: Nation.FR },
-            { id: players[3], nation: Nation.GB },
-            { id: players[4], nation: Nation.GE }
+            { id: players[0].id, nation: Nation.AH },
+            { id: players[1].id, nation: Nation.IT },
+            { id: players[2].id, nation: Nation.FR },
+            { id: players[3].id, nation: Nation.GB },
+            { id: players[4].id, nation: Nation.GE }
           ];
         case 6:
           return [
-            { id: players[0], nation: Nation.AH },
-            { id: players[1], nation: Nation.IT },
-            { id: players[2], nation: Nation.FR },
-            { id: players[3], nation: Nation.GB },
-            { id: players[4], nation: Nation.GE },
-            { id: players[5], nation: Nation.RU }
+            { id: players[0].id, nation: Nation.AH },
+            { id: players[1].id, nation: Nation.IT },
+            { id: players[2].id, nation: Nation.FR },
+            { id: players[3].id, nation: Nation.GB },
+            { id: players[4].id, nation: Nation.GE },
+            { id: players[5].id, nation: Nation.RU }
           ];
       }
     },

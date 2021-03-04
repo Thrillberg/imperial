@@ -1,7 +1,9 @@
 import { Nation, Bond } from "./constants.js";
 import Action from "./action.js";
+import Auction from "./auction.js";
 import standardGameBoard from "./board.js";
-import setup from "./standardSetup.js";
+import auctionSetup from "./auctionSetup.js";
+import standardSetup from "./standardSetup.js";
 
 export default class Imperial {
   static fromLog(log) {
@@ -65,11 +67,27 @@ export default class Imperial {
       case "noop":
         return;
       case "bondPurchase": {
-        this.bondPurchase(action);
+        const inAuction = this.auction?.inAuction;
+        if (inAuction) {
+          this.handleAuctionBondPurchase(action);
+          if (!this.auction.inAuction) {
+            this.currentPlayerName = this.nations.get(this.currentNation).controller;
+          }
+        } else {
+          this.bondPurchase(action);
+        }
         return;
       }
       case "skipBondPurchase": {
-        this.skipBondPurchase(action);
+        const inAuction = this.auction?.inAuction;
+        if (inAuction) {
+          this.handleAuctionBondPurchase(action);
+          if (!this.auction.inAuction) {
+            this.currentPlayerName = this.nations.get(this.currentNation).controller;
+          }
+        } else {
+          this.skipBondPurchase(action);
+        }
         return;
       }
       case "endManeuver": {
@@ -138,7 +156,24 @@ export default class Imperial {
     }
   }
 
+  handleAuctionBondPurchase(action) {
+    this.auction.tick(action, this);
+    this.currentPlayerName = this.auction.currentPlayerName;
+    this.currentNation = this.auction.currentNation;
+    this.investorCardHolder = this.auction.investorCardHolder;
+    this.availableActions = this.auction.availableActions;
+  }
+
   initialize(action) {
+    let setup;
+    if (action.payload.variant === "auction") {
+      this.variant = "auction";
+      this.auction = Auction.fromLog(this.log, this);
+      setup = auctionSetup;
+    } else {
+      this.variant = "standard";
+      setup = standardSetup;
+    }
     const s = setup({
       players: action.payload.players,
       provinceNames: Array.from(this.board.graph.keys())
@@ -151,9 +186,25 @@ export default class Imperial {
     this.players = s.players;
     this.provinces = s.provinces;
     this.units = this.initializeUnits(s.units);
-    this.currentPlayerName = this.nations.get(this.currentNation).controller;
-    this.availableActions = new Set(this.rondelActions(this.currentNation));
+    this.currentPlayerName = this.getStartingPlayer();
+    this.availableActions = this.getStartingAvailableActions();
     this.soloMode = action.payload.soloMode;
+  }
+
+  getStartingPlayer() {
+    if (this.variant === "auction") {
+      return this.order[0];
+    } else if (this.variant === "standard") {
+      return this.nations.get(this.currentNation).controller;
+    }
+  }
+
+  getStartingAvailableActions() {
+    if (this.variant === "auction") {
+      return Auction.fromLog(this.log, this).availableActions;
+    } else if (this.variant === "standard") {
+      return new Set(this.rondelActions(this.currentNation));
+    }
   }
 
   bondPurchase(action) {
@@ -238,21 +289,25 @@ export default class Imperial {
       }
     } else {
       for (const player in this.players) {
-        if (this.nationsUnderControl(player).length > 0) {
-          const playerIndex = this.swissBanks.indexOf(player);
-          if (playerIndex !== -1) {
-            this.swissBanks.splice(playerIndex, 1)
-          }
-        } else {
-          const playerIndex = this.swissBanks.indexOf(player);
-          if (playerIndex === -1) {
-            this.swissBanks.push(player);
-          }
-        }
+        this.checkForSwissBank(player);
       }
       this.handleAdvancePlayer();
       this.advanceInvestorCard();
       this.availableActions = new Set(this.rondelActions(this.currentNation));
+    }
+  }
+
+  checkForSwissBank(player) {
+    if (this.nationsUnderControl(player).length > 0) {
+      const playerIndex = this.swissBanks.indexOf(player);
+      if (playerIndex !== -1) {
+        this.swissBanks.splice(playerIndex, 1)
+      }
+    } else {
+      const playerIndex = this.swissBanks.indexOf(player);
+      if (playerIndex === -1) {
+        this.swissBanks.push(player);
+      }
     }
   }
 
@@ -1227,7 +1282,7 @@ export default class Imperial {
           });
         })
     );
-    this.availableActions.add(Action.skipBondPurchase({ player: investor }));
+    this.availableActions.add(Action.skipBondPurchase({ player: investor, nation: null }));
   }
 
   playerBondsOfNation(player, nation) {
