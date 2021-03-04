@@ -7,12 +7,12 @@
     @mouseleave="hideFactory()"
   >
     <text
-      v-if="this.mounted && !['sardinia', 'corsica', 'switzerland'].includes(this.name)"
+      v-if="this.mounted && !['Sardinia', 'Corsica', 'Switzerland'].includes(this.name)"
       font-size="7"
       stroke="#303030"
       text-align="center"
-      :x="x(0)"
-      :y="y(0)"
+      :x="x(0) + labelXAdjustment()"
+      :y="y(0) + labelYAdjustment()"
       text-anchor="middle"
       alignment-baseline="central"
       class="font-sans font-thin"
@@ -148,67 +148,61 @@ export default {
     // x() and y() approximate the center of a province for flag placement.
     x(index) {
       switch (this.name) {
-        case "danzig":
+        case "Danzig":
           return (
             index * 2.5 +
             this.$refs.province.children[0].getBBox().x +
             this.$refs.province.children[0].getBBox().width / 2
           ) - 20;
-        case "danzig":
-          return (
-            index * 2.5 +
-            this.$refs.province.children[0].getBBox().x +
-            this.$refs.province.children[0].getBBox().width / 2
-          ) - 20;
-        case "denmark":
+        case "Denmark":
           return (
             index * 2.5 +
             this.$refs.province.children[0].getBBox().x +
             this.$refs.province.children[0].getBBox().width / 2
           ) + 30;
-        case "englishchannel":
+        case "English Channel":
           return (
             index * 2.5 +
             this.$refs.province.children[0].getBBox().x +
             this.$refs.province.children[0].getBBox().width / 2
           ) - 10;
-        case "genoa":
+        case "Genoa":
           return (
             index * 2.5 +
             this.$refs.province.children[0].getBBox().x +
             this.$refs.province.children[0].getBBox().width / 2
           ) - 15;
-        case "greece":
+        case "Greece":
           return (
             index * 2.5 +
             this.$refs.province.children[0].getBBox().x +
             this.$refs.province.children[0].getBBox().width / 2
           ) - 25;
-        case "ioniansea":
+        case "Ionian Sea":
           return (
             index * 2.5 +
             this.$refs.province.children[0].getBBox().x +
             this.$refs.province.children[0].getBBox().width / 2
           ) + 20;
-        case "norway":
+        case "Norway":
           return (
             index * 2.5 +
             this.$refs.province.children[0].getBBox().x +
             this.$refs.province.children[0].getBBox().width / 2
           ) - 45;
-        case "portugal":
+        case "Portugal":
           return (
             index * 2.5 +
             this.$refs.province.children[0].getBBox().x +
             this.$refs.province.children[0].getBBox().width / 2
           ) - 15;
-        case "sweden":
+        case "Sweden":
           return (
             index * 2.5 +
             this.$refs.province.children[0].getBBox().x +
             this.$refs.province.children[0].getBBox().width / 2
           ) - 20;
-        case "turkey":
+        case "Turkey":
           return (
             index * 2.5 +
             this.$refs.province.children[0].getBBox().x +
@@ -223,79 +217,79 @@ export default {
     },
     y(index) {
       switch (this.name) {
-        case "bayofbiscay":
+        case "Bay of Biscay":
           return (
             index * 2.5 +
             this.$refs.province.children[0].getBBox().y +
             this.$refs.province.children[0].getBBox().height / 2
           ) - 60;
-        case "belgium":
+        case "Belgium":
           return (
             index * 2.5 +
             this.$refs.province.children[0].getBBox().y +
             this.$refs.province.children[0].getBBox().height / 2
           ) - 5;
-        case "blacksea":
+        case "Black Sea":
           return (
             index * 2.5 +
             this.$refs.province.children[0].getBBox().y +
             this.$refs.province.children[0].getBBox().height / 2
           ) + 15;
-        case "denmark":
+        case "Denmark":
           return (
             index * 2.5 +
             this.$refs.province.children[0].getBBox().y +
             this.$refs.province.children[0].getBBox().height / 2
           ) + 40;
-        case "easternmediterraneansea":
+        case "Eastern Mediterranean Sea":
           return (
             index * 2.5 +
             this.$refs.province.children[0].getBBox().y +
             this.$refs.province.children[0].getBBox().height / 2
           ) + 30;
-        case "englishchannel":
+        case "English Channel":
           return (
             index * 2.5 +
             this.$refs.province.children[0].getBBox().y +
             this.$refs.province.children[0].getBBox().height / 2
           ) + 7;
-        case "greece":
+        case "Greece":
           return (
             index * 2.5 +
             this.$refs.province.children[0].getBBox().y +
             this.$refs.province.children[0].getBBox().height / 2
           ) - 10;
-        case "ioniansea":
+        case "Ionian Sea":
           return (
             index * 2.5 +
             this.$refs.province.children[0].getBBox().y +
             this.$refs.province.children[0].getBBox().height / 2
           ) + 30;
-        case "lemberg":
+        case "Lemberg":
           return (
             index * 2.5 +
             this.$refs.province.children[0].getBBox().y +
             this.$refs.province.children[0].getBBox().height / 2
           ) - 10;
-        case "naples":
+        case "Naples":
           return (
             index * 2.5 +
             this.$refs.province.children[0].getBBox().y +
             this.$refs.province.children[0].getBBox().height / 2
           ) - 20;
-        case "northatlantic":
+        case "North Atlantic Sea":
           return (
             index * 2.5 +
             this.$refs.province.children[0].getBBox().y +
             this.$refs.province.children[0].getBBox().height / 2
           ) - 20;
-        case "norway":
+        case "Norway":
           return (
             index * 2.5 +
             this.$refs.province.children[0].getBBox().y +
             this.$refs.province.children[0].getBBox().height / 2
           ) + 100;
-        case "sweden":
+        case "Sweden":
           return (
             index * 2.5 +
             this.$refs.province.children[0].getBBox().y +
@@ -310,55 +304,87 @@ export default {
     },
     flagFleetXAdjustment() {
       switch (this.name) {
-        case "bordeaux":
+        case "Bordeaux":
           return -20
-        case "liverpool":
+        case "Liverpool":
           return -10
-        case "englishchannel":
+        case "English Channel":
           return -30
-        case "marseille":
-        case "hamburg":
+        case "Marseille":
+        case "Hamburg":
           return -15
-        case "marseille":
+        case "Marseille":
           return -15
-        case "stpetersburg":
+        case "St. Petersburg":
           return -20
       }
       return 0
     },
     flagFleetYAdjustment() {
       switch (this.name) {
-        case "brest":
+        case "Brest":
           return -30
-        case "englishchannel":
+        case "English Channel":
           return -10
+      }
+      return 0
+    },
+    labelXAdjustment() {
+      switch (this.name) {
+        case "Danzig":
+          return 10
+        case "Vienna":
+          return 10
+        case "Venice":
+          return -5
+        case "Genoa":
+          return 10
+      }
+      return 0
+    },
+    labelYAdjustment() {
+      switch (this.name) {
+        case "Western Mediterranean Sea":
+          return 30
+        case "Morocco":
+          return 10
+        case "Ionian Sea":
+          return 30
+        case "Turkey":
+          return 30
+        case "Romania":
+          return 20
+        case "Odessa":
+          return -10
+        case "Venice":
+          return 14
       }
       return 0
     },
     factoryXAdjustment() {
       switch (this.name) {
-        case "danzig":
+        case "Danzig":
           return 20
-        case "genoa":
+        case "Genoa":
           return 15
-        case "stpetersburg":
+        case "St. Petersburg":
           return -20
-        case "venice":
+        case "Venice":
           return 15
       }
       return 0
     },
     factoryYAdjustment() {
       switch (this.name) {
-        case "brest":
+        case "Brest":
           return -20
-        case "danzig":
+        case "Danzig":
           return -30
-        case "genoa":
+        case "Genoa":
           return 10
-        case "stpetersburg":
+        case "St. Petersburg":
           return -25
-        case "trieste":
+        case "Trieste":
           return 10
       }
       return 0
