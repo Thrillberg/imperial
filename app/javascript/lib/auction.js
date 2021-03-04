@@ -39,7 +39,7 @@ export default class Auction {
     this.nations = s.nations;
     this.provinces = s.provinces;
     this.units = s.units;
-    this.firstPlayer = this.order[0];
+    this.firstPlayerIndex = 0;
     this.currentPlayerName = this.order[0];
     this.soloMode = s.soloMode;
     this.availableBonds = s.availableBonds;
@@ -118,8 +118,13 @@ export default class Auction {
     const nations = [Nation.AH, Nation.IT, Nation.FR, Nation.GB, Nation.GE, Nation.RU];
     let nextNation = action.payload.nation;
     const nationIndex = nations.indexOf(nextNation);
-    if (this.currentPlayerName === this.firstPlayer) {
+    if (this.currentPlayerName === this.order[this.firstPlayerIndex]) {
       nextNation = nations[nationIndex + 1]
+      this.firstPlayerIndex++;
+      if (!this.order[this.firstPlayerIndex]) {
+        this.firstPlayerIndex = 0;
+      }
+      this.currentPlayerName = this.order[this.firstPlayerIndex];
 
       if (!nextNation) {
         for (const player in game.players) {

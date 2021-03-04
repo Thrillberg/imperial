@@ -84,14 +84,14 @@ describe("auction", () => {
     test("all players have had an opportunity to buy an AH bond", () => {
       const auction = newAuction();
       let expectedActions = new Set([
-        Action.skipBondPurchase({ player: "player1", nation: Nation.IT })
+        Action.skipBondPurchase({ player: "player2", nation: Nation.IT })
       ]);
       [2, 4, 6, 9, 12, 16, 20, 25, 30].map(cost => {
         expectedActions.add(
           Action.bondPurchase({
             nation: Nation.IT,
             cost,
-            player: "player1"
+            player: "player2"
           })
         )
       })
@@ -126,16 +126,16 @@ describe("auction", () => {
         }),
         Action.bondPurchase({ player: "player1", cost: 4, nation: Nation.AH }),
         Action.bondPurchase({ player: "player2", cost: 2, nation: Nation.AH }),
-        Action.bondPurchase({ player: "player1", cost: 4, nation: Nation.IT }),
         Action.bondPurchase({ player: "player2", cost: 2, nation: Nation.IT }),
+        Action.bondPurchase({ player: "player1", cost: 4, nation: Nation.IT }),
         Action.bondPurchase({ player: "player1", cost: 4, nation: Nation.FR }),
         Action.bondPurchase({ player: "player2", cost: 2, nation: Nation.FR }),
-        Action.bondPurchase({ player: "player1", cost: 4, nation: Nation.GB }),
         Action.bondPurchase({ player: "player2", cost: 2, nation: Nation.GB }),
+        Action.bondPurchase({ player: "player1", cost: 4, nation: Nation.GB }),
         Action.bondPurchase({ player: "player1", cost: 4, nation: Nation.GE }),
         Action.bondPurchase({ player: "player2", cost: 2, nation: Nation.GE }),
-        Action.bondPurchase({ player: "player1", cost: 4, nation: Nation.RU }),
-        Action.bondPurchase({ player: "player2", cost: 2, nation: Nation.RU })
+        Action.bondPurchase({ player: "player2", cost: 2, nation: Nation.RU }),
+        Action.bondPurchase({ player: "player1", cost: 4, nation: Nation.RU })
       ];
 
       const auction = Auction.fromLog(log, game);
