@@ -1,122 +1,127 @@
 <template>
   <div>
-    <EndGame :game="game" />
-    <div class="p-2"><b>{{ gameName }}</b></div>
-    <div v-if="gameStarted" class="flex flex-col">
-      <div class="flex">
-        <NationComponent
-          v-for="[nation] of game.nations"
-          :current_nation="game.currentNation.value"
-          :nation="nation.value"
-          :treasury="game.nations.get(nation).treasury"
-          :power_points="game.nations.get(nation).powerPoints"
-          :tax_chart_position="game.nations.get(nation).taxChartPosition"
-          :controller="game.nations.get(nation).controller"
-          :current_player="profile.username"
-          :key="nation.value"
-        ></NationComponent>
+    <div v-if="this.gameLoaded">
+      <EndGame :game="game" />
+      <div class="p-2"><b>{{ gameName }}</b></div>
+      <div v-if="gameStarted" class="flex flex-col">
+        <div class="flex">
+          <NationComponent
+            v-for="[nation] of game.nations"
+            :current_nation="game.currentNation.value"
+            :nation="nation.value"
+            :treasury="game.nations.get(nation).treasury"
+            :power_points="game.nations.get(nation).powerPoints"
+            :tax_chart_position="game.nations.get(nation).taxChartPosition"
+            :controller="game.nations.get(nation).controller"
+            :current_player="profile.username"
+            :key="nation.value"
+          ></NationComponent>
+        </div>
+        <div class="flex justify-between">
+          <div class="w-2/3 border border-gray-500 rounded">
+            <Board
+              :game="game"
+              :profile="profile"
+              :gameStarted="gameStarted"
+              :select_province="selectProvince"
+              :valid_provinces="validProvinces()"
+              :importing_units="importPlacements"
+            ></Board>
+            <div class="flex justify-center my-2">
+              <div
+                v-if="this.game.log.length > 1"
+                class="rounded p-2 mx-2 bg-green-800 text-white cursor-pointer"
+                @click="back"
+              >
+                ◀
+              </div>
+              <div
+                v-else
+                class="rounded p-2 mx-2 bg-gray-600 text-white cursor-not-allowed"
+              >
+                ◀
+              </div>
+              <div
+                v-if="poppedTurns.length > 0"
+                class="rounded p-2 mx-2 bg-green-800 text-white cursor-pointer"
+                @click="forward"
+              >
+                ▶
+              </div>
+              <div
+                v-else
+                class="rounded p-2 mx-2 bg-gray-600 text-white cursor-not-allowed"
+              >
+                ▶
+              </div>
+            </div>
+          </div>
+          <div class="w-1/3 mx-2 border border-gray-500 rounded">
+            <GameDetails
+              :game="game"
+              :chooseImportType="importProvince"
+              :controllingPlayerName="controllingPlayerName"
+              :profile="profile"
+              :importPlacements="importPlacements"
+              :online_users="users"
+              v-on:tick="tickWithAction"
+              v-on:chooseImportType="makeImportTypeChoice"
+              v-on:endManeuver="endManeuver"
+              v-on:runImport="runImport"
+            ></GameDetails>
+          </div>
+        </div>
+        <GameLog
+          :log="game.annotatedLog"
+        />
       </div>
-      <div class="flex justify-between">
+      <div v-else class="flex justify-between">
         <div class="w-2/3 border border-gray-500 rounded">
           <Board
-            :game="game"
-            :profile="profile"
-            :gameStarted="gameStarted"
-            :select_province="selectProvince"
-            :valid_provinces="validProvinces()"
-            :importing_units="importPlacements"
+            v-bind:game="game"
+            v-bind:select_province="() => {}"
+            v-bind:valid_provinces="[]"
           ></Board>
-          <div class="flex justify-center my-2">
-            <div
-              v-if="this.game.log.length > 1"
-              class="rounded p-2 mx-2 bg-green-800 text-white cursor-pointer"
-              @click="back"
-            >
-              ◀
-            </div>
-            <div
-              v-else
-              class="rounded p-2 mx-2 bg-gray-600 text-white cursor-not-allowed"
-            >
-              ◀
-            </div>
-            <div
-              v-if="poppedTurns.length > 0"
-              class="rounded p-2 mx-2 bg-green-800 text-white cursor-pointer"
-              @click="forward"
-            >
-              ▶
-            </div>
-            <div
-              v-else
-              class="rounded p-2 mx-2 bg-gray-600 text-white cursor-not-allowed"
-            >
-              ▶
-            </div>
-          </div>
         </div>
         <div class="w-1/3 mx-2 border border-gray-500 rounded">
-          <GameDetails
-            :game="game"
-            :chooseImportType="importProvince"
-            :controllingPlayerName="controllingPlayerName"
-            :profile="profile"
-            :importPlacements="importPlacements"
-            :online_users="users"
-            v-on:tick="tickWithAction"
-            v-on:chooseImportType="makeImportTypeChoice"
-            v-on:endManeuver="endManeuver"
-            v-on:runImport="runImport"
-          ></GameDetails>
+          <div v-if="hostingThisGame">
+            <div class="mx-auto p-2 text-center">
+              <b>Players:</b>
+              <span>{{ playersInGame(game.id).join(", ") }}</span>
+            </div>
+            <button
+              @click="startGame('standard')"
+              class="rounded bg-green-800 text-white cursor-pointer block text-2xl hover:bg-green-900 p-10 m-10 mx-auto"
+            >
+              Start Standard Game
+            </button>
+            <button
+              @click="startGame('auction')"
+              class="rounded bg-green-800 text-white cursor-pointer block text-2xl hover:bg-green-900 p-10 m-10 mx-auto"
+            >
+              Start Auction Variant Game
+            </button>
+          </div>
+          <div v-else-if="playingInThisGame" class="text-2xl m-2">
+            Game not yet started!
+          </div>
+          <div v-else>
+            <div class="mx-auto p-2 text-center">
+              <b>Players:</b>
+              <span>{{ playersInGame(game.id).join(", ") }}</span>
+            </div>
+            <button
+              @click="joinGame"
+              class="rounded bg-green-800 text-white cursor-pointer block text-2xl hover:bg-green-900 p-10 m-10 mx-auto"
+            >
+              Join This Game
+            </button>
+          </div>
         </div>
       </div>
-      <GameLog
-        :log="game.annotatedLog"
-      />
     </div>
-    <div v-else class="flex justify-between">
-      <div class="w-2/3 border border-gray-500 rounded">
-        <Board
-          v-bind:game="game"
-          v-bind:select_province="() => {}"
-          v-bind:valid_provinces="[]"
-        ></Board>
-      </div>
-      <div class="w-1/3 mx-2 border border-gray-500 rounded">
-        <div v-if="hostingThisGame">
-          <div class="mx-auto p-2 text-center">
-            <b>Players:</b>
-            <span>{{ playersInGame(game.id).join(", ") }}</span>
-          </div>
-          <button
-            @click="startGame('standard')"
-            class="rounded bg-green-800 text-white cursor-pointer block text-2xl hover:bg-green-900 p-10 m-10 mx-auto"
-          >
-            Start Standard Game
-          </button>
-          <button
-            @click="startGame('auction')"
-            class="rounded bg-green-800 text-white cursor-pointer block text-2xl hover:bg-green-900 p-10 m-10 mx-auto"
-          >
-            Start Auction Variant Game
-          </button>
-        </div>
-        <div v-else-if="playingInThisGame" class="text-2xl m-2">
-          Game not yet started!
-        </div>
-        <div v-else>
-          <div class="mx-auto p-2 text-center">
-            <b>Players:</b>
-            <span>{{ playersInGame(game.id).join(", ") }}</span>
-          </div>
-          <button
-            @click="joinGame"
-            class="rounded bg-green-800 text-white cursor-pointer block text-2xl hover:bg-green-900 p-10 m-10 mx-auto"
-          >
-            Join This Game
-          </button>
-        </div>
-      </div>
+    <div v-else class="text-center text-2xl mt-8">
+      Loading game
     </div>
   </div>
 </template>
@@ -153,6 +158,7 @@ export default {
       controllingPlayerName: "",
       currentPlayer: {},
       game: {},
+      gameLoaded: false,
       gameStarted: false,
       importPlacements: [],
       maneuverOrigin: "",
@@ -293,6 +299,7 @@ export default {
         this.currentPlayer = this.game.players[this.profile.username] || {};
         this.controllingPlayerName = this.game.currentPlayerName;
       }
+      this.gameLoaded = true;
     },
     validProvinces() {
       // This function returns all provinces that a unit can move
