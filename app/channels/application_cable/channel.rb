@@ -9,7 +9,7 @@ module ApplicationCable
     end
 
     def broadcast_games(channel, kind)
-      games = Game.includes(:host, :users, :actions).order(created_at: :desc)
+      games = Game.current
       payload_games = []
       games.find_each do |game|
         payload_games << game.to_json

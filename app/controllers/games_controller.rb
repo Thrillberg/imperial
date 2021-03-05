@@ -1,6 +1,11 @@
 class GamesController < ApplicationController
   skip_before_action :verify_authenticity_token
 
+  def index
+    games = Game.includes(:host, :users, :actions).order(created_at: :desc)
+    render json: games
+  end
+
   def create
     host = User.find(params[:id])
     game = Game.create(name: lovely_string, host: host)

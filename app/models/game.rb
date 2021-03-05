@@ -4,6 +4,12 @@ class Game < ActiveRecord::Base
   has_many :users, through: :players
   belongs_to :host, class_name: "User"
 
+  scope :current, -> {
+    includes(:host, :users, :actions)
+      .where("created_at > ?", 3.days.ago)
+      .order(created_at: :desc)
+  }
+
   def to_json
     {
       name: name,
