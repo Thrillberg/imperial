@@ -327,7 +327,8 @@ export default {
       }
       return Array.from(provinces);
     },
-    selectProvince(province) {
+    selectProvince(inputProvince) {
+      const province = inputProvince.replace(/\.*\s/gm, "").toLowerCase();
       if (this.game.currentPlayerName === this.profile.username || this.game.soloMode) {
         // If the game is in a maneuver and an origin is specified,
         // then the next specified province is the destination

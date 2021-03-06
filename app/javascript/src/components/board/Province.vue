@@ -277,7 +277,7 @@ export default {
             this.$refs.province.children[0].getBBox().y +
             this.$refs.province.children[0].getBBox().height / 2
           ) - 20;
-        case "North Atlantic Sea":
+        case "North Atlantic":
           return (
             index * 2.5 +
             this.$refs.province.children[0].getBBox().y +

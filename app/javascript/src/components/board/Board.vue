@@ -124,7 +124,8 @@ export default {
       let armies = [];
       for (const [provinceWithUnits, allUnitsInProvince] of this.allUnits()) {
         for (const [nation, provinceUnits] of allUnitsInProvince) {
-          if (province.toLowerCase() === provinceWithUnits) {
+          const normalizedProvince = province.replace(/\.*\s/gm, "").toLowerCase();
+          if (normalizedProvince === provinceWithUnits) {
             for (let i = 0; i < provinceUnits.armies; i++) {
               armies.push(nation);
             }
@@ -141,7 +142,8 @@ export default {
       let fleets = [];
       for (const [provinceWithUnits, allUnitsInProvince] of this.allUnits()) {
         for (const [nation, provinceUnits] of allUnitsInProvince) {
-          if (province.toLowerCase() === provinceWithUnits) {
+          const normalizedProvince = province.replace(/\.*\s/gm, "").toLowerCase();
+          if (normalizedProvince === provinceWithUnits) {
             for (let i = 0; i < provinceUnits.fleets; i++) {
               fleets.push(nation);
             }
@@ -151,9 +153,10 @@ export default {
       return fleets;
     },
     importingArmy(province) {
+      const normalizedProvince = province.replace(/\.*\s/gm, "").toLowerCase();
       if (!this.gameStarted) {
         return false;
-      } else if (this.importing_units.find(unit => unit === province)) {
+      } else if (this.importing_units.find(unit => unit === normalizedProvince)) {
         return true;
       }
 
@@ -162,7 +165,7 @@ export default {
     factory(province) {
       const factory = this.factories().find(factory => {
         const normalizedProvince = province.replace(/\.*\s/gm, "").toLowerCase();
-        return factory.province === normalizedProvince;
+        return factory.normalizedProvince === normalizedProvince;
       });
       if (factory) {
         return factory.type;
@@ -177,7 +180,8 @@ export default {
     dot(province) {
       let nation;
       this.dots().forEach(dot => {
-        if (province === dot.province) {
+        const normalizedProvince = province.replace(/\.*\s/gm, "").toLowerCase();
+        if (normalizedProvince === dot.province) {
           nation = dot.flag.value;
         }
       });
@@ -192,16 +196,17 @@ export default {
       let allUnits = new Map();
       for (const [nation, unitsByNation] of this.game.units) {
         for (const [province, units] of unitsByNation) {
+          const normalizedProvince = province.replace(/\.*\s/gm, "").toLowerCase();
           let allUnitsInProvince = new Map();
           if (units.armies > 0 || units.fleets > 0) {
             allUnitsInProvince.set(nation.value, units);
-            if (allUnits.get(province)) {
+            if (allUnits.get(normalizedProvince)) {
               allUnits.set(
-                province,
-                new Set([...allUnitsInProvince, ...allUnits.get(province)])
+                normalizedProvince,
+                new Set([...allUnitsInProvince, ...allUnits.get(normalizedProvince)])
               );
             } else {
-              allUnits.set(province, allUnitsInProvince);
+              allUnits.set(normalizedProvince, allUnitsInProvince);
             }
           }
         }
@@ -215,7 +220,8 @@ export default {
 
       let factories = [];
       for (let [province, data] of this.game.provinces) {
-        factories.push({ province, type: data.factory });
+        const normalizedProvince = province.replace(/\.*\s/gm, "").toLowerCase();
+        factories.push({ normalizedProvince, type: data.factory });
       }
       return factories;
     },
@@ -228,13 +234,15 @@ export default {
       for (const [province, data] of this.game.provinces) {
         const flag = data.flag;
         if (flag) {
-          flags.push({ province, flag });
+          const normalizedProvince = province.replace(/\.*\s/gm, "").toLowerCase();
+          flags.push({ normalizedProvince, flag });
         }
       }
       return flags;
     },
     isValid(province) {
-      if (this.valid_provinces.includes(province) && (this.profile.username in this.game.players)) {
+      const normalizedProvince = province.replace(/\.*\s/gm, "").toLowerCase();
+      if (this.valid_provinces.includes(normalizedProvince) && (this.profile.username in this.game.players)) {
         return true;
       }
 
@@ -257,7 +265,7 @@ export default {
         "Eastern Mediterranean Sea": easternmediterraneansea,
         "English Channel": englishchannel,
         "Ionian Sea": ioniansea,
-        "North Atlantic Sea": northatlantic,
+        "North Atlantic": northatlantic,
         "North Sea": northsea,
         "Western Mediterranean Sea": westernmediterraneansea
       },
