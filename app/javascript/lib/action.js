@@ -79,5 +79,6 @@ export default {
   skipBondPurchase: makeAction("skipBondPurchase", ["player", "nation"]),
   skipDestroyFactory: makeAction("skipDestroyFactory", ["province"]),
   skipForceInvestor: makeAction("skipForceInvestor", ["player"]),
+  undo: makeAction("undo", ["player"]),
   unfriendlyEntrance: makeAction("unfriendlyEntrance", ["incumbent", "challenger", "province"])
 };

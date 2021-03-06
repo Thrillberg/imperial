@@ -6,8 +6,8 @@ import auctionSetup from "./auctionSetup.js";
 import standardSetup from "./standardSetup.js";
 
 export default class Imperial {
-  static fromLog(log) {
-    let game = new Imperial();
+  static fromLog(log, board) {
+    let game = new Imperial(board);
     log.forEach(entry => game.tick(entry));
     return game;
   }
@@ -31,6 +31,7 @@ export default class Imperial {
     this.soloMode = false;
     this.swissBanks = [];
     this.passingThroughInvestor = false;
+    this.previousPlayerName = "";
     this.fleetConvoyCount = {};
     this.maxImports = 0;
     this.winner = "";
@@ -52,7 +53,7 @@ export default class Imperial {
 
     // Check if the requested action is invalid.
     let validAction = false;
-    for (const availableAction of this.availableActions) {
+    for (const availableAction of this.availableActionsWithUndo()) {
       if (this.isEqual(availableAction, action)) {
         validAction = true;
       }
@@ -66,6 +67,26 @@ export default class Imperial {
     switch (action.type) {
       case "noop":
         return;
+      case "undo": {
+        const correctedGame = Imperial.fromLog(this.log.slice(0, -2), this.board);
+        this.currentNation = correctedGame.currentNation;
+        this.currentPlayerName = correctedGame.currentPlayerName;
+        this.units = correctedGame.units;
+        this.unitsToMove = correctedGame.unitsToMove;
+        this.provinces = correctedGame.provinces;
+        this.nations = correctedGame.nations;
+        this.maneuvering = correctedGame.maneuvering;
+        this.handlingConflict = correctedGame.handlingConflict;
+        this.swissBanks = correctedGame.swissBanks;
+        this.passingThroughInvestor = correctedGame.passingThroughInvestor;
+        this.previousPlayerName = correctedGame.previousPlayerName;
+        this.fleetConvoyCount = correctedGame.fleetConvoyCount;
+        this.maxImports = correctedGame.maxImports;
+        this.availableBonds = correctedGame.availableBonds;
+        this.investorCardHolder = correctedGame.investorCardHolder;
+        this.players = correctedGame.players;
+        return;
+      }
       case "bondPurchase": {
         const inAuction = this.auction?.inAuction;
         if (inAuction) {
@@ -1296,6 +1317,7 @@ export default class Imperial {
   }
 
   handleAdvancePlayer() {
+    this.previousPlayerName = this.currentPlayerName;
     this.currentNation = this.nextNation(this.currentNation);
     this.currentPlayerName = this.nations.get(this.currentNation).controller;
   }
@@ -1554,6 +1576,12 @@ export default class Imperial {
       out.set(nation, provinces);
     }
     return out;
+  }
+
+  availableActionsWithUndo() {
+    let availableActions = this.availableActions;
+    availableActions.add(Action.undo({ player: this.previousPlayerName }));
+    return availableActions;
   }
 
   isEqual(action1, action2) {
