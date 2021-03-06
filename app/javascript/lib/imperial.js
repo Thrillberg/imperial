@@ -68,7 +68,16 @@ export default class Imperial {
       case "noop":
         return;
       case "undo": {
-        const correctedGame = Imperial.fromLog(this.log.slice(0, -2), this.board);
+        const reversedGameLog = this.log.slice().reverse();
+        let lastRondelActionIndex = -1;
+        for (const action of reversedGameLog) {
+          if (action.type !== "rondel" && action.type !== "bondPurchase") {
+            lastRondelActionIndex--;
+          } else {
+            break;
+          }
+        }
+        const correctedGame = Imperial.fromLog(this.log.slice(0, lastRondelActionIndex), this.board);
         this.currentNation = correctedGame.currentNation;
         this.currentPlayerName = correctedGame.currentPlayerName;
         this.units = correctedGame.units;
@@ -172,6 +181,7 @@ export default class Imperial {
         return;
       }
       case "rondel": {
+        this.previousPlayerName = this.currentPlayerName;
         this.rondel(action);
         return;
       }
@@ -1581,8 +1591,10 @@ export default class Imperial {
 
   availableActionsWithUndo() {
     let availableActions = this.availableActions;
-    if (this.log.slice(-1)[0].type !== "undo") {
-      availableActions.add(Action.undo({ player: this.previousPlayerName }));
+    if (this.log.length > 1) {
+      if (this.log.slice(-1)[0].type !== "undo") {
+        availableActions.add(Action.undo({ player: this.previousPlayerName }));
+      }
     }
     return availableActions;
   }
