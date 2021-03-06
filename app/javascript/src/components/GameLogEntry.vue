@@ -59,6 +59,8 @@ export default {
       switch (action.type) {
         case "initialize":
           return notImplemented;
+        case "undo":
+          return `${action.payload.player} performed an undo on their last action.`;
         case "rondel":
           return this.rondelAction(action.payload);
         case "buildFactory":

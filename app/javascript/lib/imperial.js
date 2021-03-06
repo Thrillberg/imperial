@@ -83,6 +83,7 @@ export default class Imperial {
         this.fleetConvoyCount = correctedGame.fleetConvoyCount;
         this.maxImports = correctedGame.maxImports;
         this.availableBonds = correctedGame.availableBonds;
+        this.availableActions = correctedGame.availableActions;
         this.investorCardHolder = correctedGame.investorCardHolder;
         this.players = correctedGame.players;
         return;
@@ -1580,7 +1581,9 @@ export default class Imperial {
 
   availableActionsWithUndo() {
     let availableActions = this.availableActions;
-    availableActions.add(Action.undo({ player: this.previousPlayerName }));
+    if (this.log.slice(-1)[0].type !== "undo") {
+      availableActions.add(Action.undo({ player: this.previousPlayerName }));
+    }
     return availableActions;
   }
 

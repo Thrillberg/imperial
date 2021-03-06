@@ -12,6 +12,13 @@
       ></Player>
     </div>
     <TurnStatus :game="game"></TurnStatus>
+    <button
+      v-if="canUndo()"
+      class="rounded py-2 px-6 my-4 bg-green-800 text-white cursor-pointer"
+      @click="undo"
+    >
+      Undo
+    </button>
     <BondPurchase
       :game="game"
       :current_player="controllingPlayerName"
@@ -203,6 +210,30 @@ export default {
         }
       }
       this.tickWithAction(skipAction);
+    },
+    canUndo() {
+      let canUndo = false;
+      for (const action of this.game.availableActionsWithUndo()) {
+        if (
+          this.game.log.length > 1 && action.type === "undo" && (
+            action.payload.player === this.profile.username || this.game.soloMode
+          )
+        ) {
+          canUndo = true;
+        }
+      }
+      return canUndo;
+    },
+    undo() {
+      for (const action of this.game.availableActionsWithUndo()) {
+        if (
+          action.type === "undo" && (
+            action.payload.player === this.profile.username || this.game.soloMode
+          )
+        ) {
+          this.tickWithAction(action);
+        }
+      }
     }
   }
 };
