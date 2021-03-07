@@ -77,24 +77,36 @@ export default class Imperial {
             break;
           }
         }
-        const correctedGame = Imperial.fromLog(this.log.slice(0, lastRondelActionIndex), this.board);
-        this.currentNation = correctedGame.currentNation;
-        this.currentPlayerName = correctedGame.currentPlayerName;
-        this.units = correctedGame.units;
-        this.unitsToMove = correctedGame.unitsToMove;
-        this.provinces = correctedGame.provinces;
-        this.nations = correctedGame.nations;
-        this.maneuvering = correctedGame.maneuvering;
-        this.handlingConflict = correctedGame.handlingConflict;
-        this.swissBanks = correctedGame.swissBanks;
-        this.passingThroughInvestor = correctedGame.passingThroughInvestor;
-        this.previousPlayerName = correctedGame.previousPlayerName;
-        this.fleetConvoyCount = correctedGame.fleetConvoyCount;
-        this.maxImports = correctedGame.maxImports;
-        this.availableBonds = correctedGame.availableBonds;
-        this.availableActions = correctedGame.availableActions;
-        this.investorCardHolder = correctedGame.investorCardHolder;
-        this.players = correctedGame.players;
+        if (this.auction?.inAuction) {
+          this.auction = Auction.fromLog(this.log.slice(0, -2), this);
+          this.previousPlayerName = action.payload.player;
+          this.currentPlayerName = this.auction.currentPlayerName;
+          this.currentNation = this.auction.currentNation;
+          this.investorCardHolder = this.auction.investorCardHolder;
+          this.players = this.auction.players;
+          this.availableBonds = this.auction.availableBonds;
+          this.nations = this.auction.nations;
+          this.availableActions = this.auction.availableActions;
+        } else {
+          const correctedGame = Imperial.fromLog(this.log.slice(0, lastRondelActionIndex), this.board);
+          this.currentNation = correctedGame.currentNation;
+          this.currentPlayerName = correctedGame.currentPlayerName;
+          this.units = correctedGame.units;
+          this.unitsToMove = correctedGame.unitsToMove;
+          this.provinces = correctedGame.provinces;
+          this.nations = correctedGame.nations;
+          this.maneuvering = correctedGame.maneuvering;
+          this.handlingConflict = correctedGame.handlingConflict;
+          this.swissBanks = correctedGame.swissBanks;
+          this.passingThroughInvestor = correctedGame.passingThroughInvestor;
+          this.previousPlayerName = correctedGame.previousPlayerName;
+          this.fleetConvoyCount = correctedGame.fleetConvoyCount;
+          this.maxImports = correctedGame.maxImports;
+          this.availableBonds = correctedGame.availableBonds;
+          this.availableActions = correctedGame.availableActions;
+          this.investorCardHolder = correctedGame.investorCardHolder;
+          this.players = correctedGame.players;
+        }
         return;
       }
       case "bondPurchase": {
@@ -190,6 +202,7 @@ export default class Imperial {
 
   handleAuctionBondPurchase(action) {
     this.auction.tick(action, this);
+    this.previousPlayerName = this.auction.previousPlayerName;
     this.currentPlayerName = this.auction.currentPlayerName;
     this.currentNation = this.auction.currentNation;
     this.investorCardHolder = this.auction.investorCardHolder;
@@ -219,6 +232,7 @@ export default class Imperial {
     this.provinces = s.provinces;
     this.units = this.initializeUnits(s.units);
     this.currentPlayerName = this.getStartingPlayer();
+    this.previousPlayerName = this.currentPlayerName;
     this.availableActions = this.getStartingAvailableActions();
     this.soloMode = action.payload.soloMode;
   }
