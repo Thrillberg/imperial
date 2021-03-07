@@ -71,7 +71,7 @@ export default class Imperial {
         const reversedGameLog = this.log.slice().reverse();
         let lastRondelActionIndex = -1;
         for (const action of reversedGameLog) {
-          if (action.type !== "rondel" && action.type !== "bondPurchase") {
+          if (action.type !== "rondel" && action.type !== "bondPurchase" && action.type !== "skipBondPurchase") {
             lastRondelActionIndex--;
           } else {
             break;
