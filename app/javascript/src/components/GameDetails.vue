@@ -11,7 +11,6 @@
         :key="player.name"
       ></Player>
     </div>
-    <TurnStatus :game="game"></TurnStatus>
     <button
       v-if="canUndo()"
       class="rounded py-2 px-6 my-4 bg-green-800 text-white cursor-pointer"
@@ -108,7 +107,6 @@ import BondPurchase from "../components/BondPurchase.vue";
 import ConflictHandler from "../components/ConflictHandler.vue";
 import Player from "../components/Player.vue";
 import Rondel from "../components/Rondel.vue";
-import TurnStatus from "../components/TurnStatus.vue";
 
 export default {
   name: "GameDetails",
@@ -117,8 +115,7 @@ export default {
     BondPurchase,
     ConflictHandler,
     Player,
-    Rondel,
-    TurnStatus
+    Rondel
   },
   props: ["game", "chooseImportType", "controllingPlayerName", "profile", "importPlacements", "online_users"],
   computed: {

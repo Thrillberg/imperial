@@ -17,6 +17,7 @@
             :key="nation.value"
           ></NationComponent>
         </div>
+        <TurnStatus :game="game" :profile="profile"></TurnStatus>
         <div class="flex justify-between">
           <div class="w-2/3 border border-gray-500 rounded">
             <Board
@@ -138,6 +139,7 @@ import Flag from "../components/flags/Flag.vue";
 import GameDetails from "../components/GameDetails.vue";
 import GameLog from "../components/GameLog.vue";
 import NationComponent from "../components/NationComponent.vue";
+import TurnStatus from "../components/TurnStatus.vue";
 
 import getGameLog from "../getGameLog.js";
 
@@ -149,7 +151,8 @@ export default {
     Flag,
     GameDetails,
     GameLog,
-    NationComponent
+    NationComponent,
+    TurnStatus
   },
   props: ["profile", "users", "games"],
   data: () => {
