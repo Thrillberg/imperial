@@ -8,7 +8,7 @@
       </span>
       <b>{{ player.name }}</b>
     </p>
-    <span v-if="player.name === profile.username || game.soloMode">Cash: {{ player.cash }}m</span>
+    <span>Cash: {{ player.cash }}m</span>
     <div>Raw score: {{ player.rawScore }}</div>
     <div class="flex flex-wrap">
       <Bond
