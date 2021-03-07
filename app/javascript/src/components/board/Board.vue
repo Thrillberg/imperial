@@ -181,7 +181,7 @@ export default {
       let nation;
       this.dots().forEach(dot => {
         const normalizedProvince = province.replace(/\.*\s/gm, "").toLowerCase();
-        if (normalizedProvince === dot.province) {
+        if (normalizedProvince === dot.normalizedProvince) {
           nation = dot.flag.value;
         }
       });

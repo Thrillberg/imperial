@@ -153,7 +153,7 @@ export default {
     showRondelHelperText: function() {
       let allActionsAreRondel = true;
       for (const action of this.game.availableActions) {
-        if (action.type !== "rondel") {
+        if (action.type !== "rondel" && action.type !== "undo") {
           allActionsAreRondel = false;
         }
       }
