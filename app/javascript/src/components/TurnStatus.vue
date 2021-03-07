@@ -1,13 +1,27 @@
 <template>
-  <div class="border border-gray-500 rounded p-2 m-2">
-    <b>{{ game.currentPlayerName }}</b> is {{ stringify(Array.from(game.availableActions)) }}.
+  <div class="border border-gray-500 rounded p-2 m-2 text-center" :class="alertCurrentPlayer">
+    <span v-html="playerIs"></span>{{ stringify(Array.from(game.availableActions)) }}.
   </div>
 </template>
 
 <script>
 export default {
   name: "TurnStatus",
-  props: ["game"],
+  props: ["game", "profile"],
+  computed: {
+    alertCurrentPlayer() {
+      if (this.game.currentPlayerName === this.profile.username) {
+        return `bg-${this.game.currentNation.value}`;
+      }
+    },
+    playerIs() {
+      if (this.game.currentPlayerName === this.profile.username) {
+        return "<b>You</b> are "
+      } else {
+        return `<b>${this.game.currentPlayerName}</b> is `
+      }
+    }
+  },
   methods: {
     stringify(actions) {
       const actionsWithoutUndo = [];
