@@ -78,7 +78,15 @@ export default class Imperial {
           }
         }
         if (this.auction?.inAuction) {
-          this.auction = Auction.fromLog(this.log.slice(0, -2), this);
+          let sanitizedLog = [];
+          for (const action of this.log.slice(0, -2)) {
+            if (action.type === "undo") {
+              sanitizedLog.pop();
+              continue;
+            }
+            sanitizedLog.push(action);
+          }
+          this.auction = Auction.fromLog(sanitizedLog, this);
           this.previousPlayerName = action.payload.player;
           this.currentPlayerName = this.auction.currentPlayerName;
           this.currentNation = this.auction.currentNation;
