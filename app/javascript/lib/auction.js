@@ -40,7 +40,9 @@ export default class Auction {
     this.provinces = s.provinces;
     this.units = s.units;
     this.firstPlayerIndex = 0;
+    this.previousPlayerName = this.order[0];
     this.currentPlayerName = this.order[0];
+    this.currentNation = Nation.AH;
     this.soloMode = s.soloMode;
     this.availableBonds = s.availableBonds;
     this.availableActions = this.availableBondPurchases(Nation.AH);
@@ -147,6 +149,7 @@ export default class Auction {
 
   handleAdvancePlayer() {
     const currentPlayerIndex = this.order.indexOf(this.currentPlayerName);
+    this.previousPlayerName = this.currentPlayerName;
     this.currentPlayerName = this.order[currentPlayerIndex + 1] || this.order[0];
   }
 

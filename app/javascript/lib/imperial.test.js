@@ -2889,6 +2889,47 @@ describe("imperial", () => {
       });
     });
 
+    describe("undo", () => {
+      const newGame = () => {
+        const board = new GameBoard({
+          nodes: [
+            { name: "a", nation: Nation.AH },
+            { name: "b", nation: Nation.IT },
+            { name: "c", nation: Nation.FR }
+          ],
+          edges: []
+        });
+
+        const game = new Imperial(board);
+        initialize(game);
+        return game;
+      };
+
+      test("player can undo their last move", () => {
+        const game = newGame();
+
+        game.tick(Action.rondel({nation: Nation.AH, cost: 0, slot: "production1"}));
+        game.tick(Action.undo({player: "player1"}));
+
+        expect(game.currentNation).toEqual(Nation.AH);
+        expect(game.currentPlayerName).toEqual("player1");
+      });
+
+      test("multiple undos work", () => {
+        const game = newGame();
+
+        game.tick(Action.rondel({nation: Nation.AH, cost: 0, slot: "production1"}));
+        game.tick(Action.undo({player: "player1"}));
+        game.tick(Action.rondel({nation: Nation.AH, cost: 0, slot: "production1"}));
+        game.tick(Action.rondel({nation: Nation.IT, cost: 0, slot: "production1"}));
+        game.tick(Action.rondel({nation: Nation.FR, cost: 0, slot: "production1"}));
+        game.tick(Action.undo({player: "player1"}));
+
+        expect(game.currentNation).toEqual(Nation.FR);
+        expect(game.currentPlayerName).toEqual("player1");
+      });
+    });
+
     describe("invalid moves", () => {
       const newGame = () => {
         const board = new GameBoard({
