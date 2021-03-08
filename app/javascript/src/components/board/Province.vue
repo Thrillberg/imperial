@@ -339,6 +339,8 @@ export default {
           return -5
         case "Genoa":
           return 10
+        case "Marseille":
+          return 15
       }
       return 0
     },
@@ -358,6 +360,12 @@ export default {
           return -10
         case "Venice":
           return 14
+        case "Marseille":
+          return 5
+        case "West Balkan":
+          return 7
+        case "Sweden":
+          return 5
       }
       return 0
     },
