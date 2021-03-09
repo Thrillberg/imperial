@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+RAILS_ENV=test bundle exec rake db:environment:set db:create db:schema:load
+bundle exec rails server -e test -p 5002
