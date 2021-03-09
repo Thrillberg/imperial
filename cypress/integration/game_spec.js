@@ -32,5 +32,17 @@ describe("Game", () => {
     cy.contains("Romania").click()
     cy.contains("Vienna").next().click()
     cy.contains("Danzig").click()
+    cy.contains("Fight").click()
+    // IT
+    cy.get("#maneuver1").click()
+    cy.contains("Rome").next().click()
+    cy.contains("Spain").click()
+    cy.contains("Undo").click()
+    cy.get("#maneuver1").click()
+    cy.contains("Naples").next().click()
+    cy.contains("Western Mediterranean Sea").click()
+    cy.contains("Rome").next().click()
+    cy.contains("Spain").click()
+
   })
 })

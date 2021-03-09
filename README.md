@@ -48,8 +48,28 @@ If any of the above instructions did not work for you, please do not hesitate to
 
 ## Running tests
 
-The JavaScript in this project is relatively well-tested but the Ruby and VueJS code is not, currently, well-tested. To run JS tests, run the following command from the project root:
+To run JS tests, run the following command from the project root:
 
 ```
 npm test
+```
+
+To run Ruby RSpec tests, run the following command from the project root:
+
+```
+rspec
+```
+
+This project also uses [Cypress](https://www.cypress.io/) for feature tests. To
+run these tests, run the following command from the project root:
+
+```
+bin/webpack
+./test_server
+```
+
+And in another terminal:
+
+```
+npm run cypress
 ```
