@@ -42,7 +42,7 @@ export default {
     fighting: function() {
       let fighting = true;
       for (const action of this.game.availableActions) {
-        if (action.type !== "coexist" && action.type !== "fight") {
+        if (action.type !== "coexist" && action.type !== "fight" && action.type !== "undo") {
           fighting = false;
         }
       }
@@ -51,7 +51,7 @@ export default {
     occupying: function() {
       let occupying = true;
       for (const action of this.game.availableActions) {
-        if (action.type !== "friendlyEntrance" && action.type !== "unfriendlyEntrance") {
+        if (action.type !== "friendlyEntrance" && action.type !== "unfriendlyEntrance" && action.type !== "undo") {
           occupying = false;
         }
       }
