@@ -5,7 +5,7 @@ class Cypress::CleanupController < ActionController::Base
     end
 
     tables = ActiveRecord::Base.connection.tables
-    tables.delete 'schema_migrations'
+    tables.delete "schema_migrations"
     tables.each do |t|
       ActiveRecord::Base.connection.execute("TRUNCATE #{t} CASCADE")
     end
