@@ -16,4 +16,9 @@ Rails.application.routes.draw do
 
   root "pages#index", as: :pages_index
   get "*path", to: "pages#index", format: false
+
+  if Rails.env.test?
+    require "test_routes"
+    define_test_routes
+  end
 end

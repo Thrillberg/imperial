@@ -40,5 +40,8 @@ module RailsServer
 
     config.hosts << "imperial-staging.herokuapp.com"
     config.hosts << "imperial-game.herokuapp.com"
+    config.hosts << "localhost"
+
+    config.autoloader = :classic
   end
 end
