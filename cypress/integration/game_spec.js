@@ -30,5 +30,7 @@ describe("Game", () => {
     cy.get("#maneuver1").click()
     cy.contains("Budapest").next().click()
     cy.contains("Romania").click()
+    cy.contains("Vienna").next().click()
+    cy.contains("Danzig").click()
   })
 })
