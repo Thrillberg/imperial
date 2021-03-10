@@ -296,6 +296,7 @@ export default {
     updateGameLog(log) {
       this.poppedTurns = [];
       const gameLog = getGameLog(log);
+      this.$delete(this.game);
       this.game = Imperial.fromLog(gameLog);
       if (this.game.players) {
         this.gameStarted = true;
@@ -394,12 +395,16 @@ export default {
     },
     back: function() {
       this.poppedTurns.push(this.game.log.pop());
-      this.game = Imperial.fromLog(this.game.log);
+      const log = this.game.log;
+      this.$delete(this.game);
+      this.game = Imperial.fromLog(log);
     },
     forward: function() {
       const nextTurn = this.poppedTurns.pop();
       this.game.log.push(nextTurn);
-      this.game = Imperial.fromLog(this.game.log);
+      const log = this.game.log;
+      this.$delete(this.game);
+      this.game = Imperial.fromLog(log);
     }
   }
 };
