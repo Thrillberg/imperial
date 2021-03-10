@@ -275,11 +275,7 @@ export default class Imperial {
   }
 
   handleAuctionBondPurchase(action) {
-    console.log(action, this.availableBonds)
     this.auction.tick(action, this);
-    this.previousPlayerName = this.auction.previousPlayerName;
-    this.currentPlayerName = this.auction.currentPlayerName;
-    this.currentNation = this.auction.currentNation;
     this.investorCardHolder = this.auction.investorCardHolder;
     this.availableActions = this.auction.availableActions;
   }
