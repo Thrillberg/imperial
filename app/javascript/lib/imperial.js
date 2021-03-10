@@ -102,6 +102,7 @@ export default class Imperial {
         //  const correctedGame = Imperial.fromLog(this.log.slice(0, lastRondelActionIndex), this.board);
         this.currentNation = this.oldState.currentNation;
         this.currentPlayerName = this.oldState.currentPlayerName;
+        this.previousPlayerName = action.payload.player;
         this.units = this.oldState.units;
         this.unitsToMove = this.oldState.unitsToMove;
         this.provinces = this.oldState.provinces;
@@ -113,6 +114,7 @@ export default class Imperial {
         this.previousPlayerName = this.oldState.previousPlayerName;
         this.fleetConvoyCount = this.oldState.fleetConvoyCount;
         this.maxImports = this.oldState.maxImports;
+        console.log(this.oldState, action)
         this.availableBonds = this.oldState.availableBonds;
         this.availableActions = this.oldState.availableActions;
         this.investorCardHolder = this.oldState.investorCardHolder;
@@ -123,6 +125,7 @@ export default class Imperial {
       case "bondPurchase": {
         const inAuction = this.auction?.inAuction;
         if (inAuction) {
+          console.log(action, this.availableBonds)
           this.handleAuctionBondPurchase(action);
           if (!this.auction.inAuction) {
             this.currentPlayerName = this.nations.get(this.currentNation).controller;
@@ -212,7 +215,7 @@ export default class Imperial {
   }
 
   setOldState(action) {
-    if (action.type === "rondel" || action.type === "bondPurchase") {
+    if (action.type === "rondel" || action.type === "bondPurchase" || action.type === "skipBondPurchase") {
       let units = new Map;
       for (const [key, value] of this.units) {
         const newValue = new Map;
@@ -272,6 +275,7 @@ export default class Imperial {
   }
 
   handleAuctionBondPurchase(action) {
+    console.log(action, this.availableBonds)
     this.auction.tick(action, this);
     this.previousPlayerName = this.auction.previousPlayerName;
     this.currentPlayerName = this.auction.currentPlayerName;
