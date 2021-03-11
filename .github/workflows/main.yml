@@ -25,7 +25,7 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v2
-      uses: cypress-io/github-action@v2
+    - uses: cypress-io/github-action@v2
       with:
         browser: chrome
     - name: Set up Ruby
