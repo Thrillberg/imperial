@@ -17,7 +17,7 @@
             :key="nation.value"
           ></NationComponent>
         </div>
-        <TurnStatus :game="game" :profile="profile"></TurnStatus>
+        <TurnStatus :game="game" :profile="profile" :controllingPlayerName="controllingPlayerName"></TurnStatus>
         <div class="flex justify-between">
           <div class="w-2/3 border border-gray-500 rounded">
             <Board
@@ -69,6 +69,7 @@
               v-on:chooseImportType="makeImportTypeChoice"
               v-on:endManeuver="endManeuver"
               v-on:runImport="runImport"
+              v-on:clearControllingPlayerName="clearControllingPlayerName"
             ></GameDetails>
           </div>
         </div>
@@ -405,6 +406,9 @@ export default {
       const log = this.game.log;
       this.$delete(this.game);
       this.game = Imperial.fromLog(log);
+    },
+    clearControllingPlayerName() {
+      this.controllingPlayerName = "";
     }
   }
 };

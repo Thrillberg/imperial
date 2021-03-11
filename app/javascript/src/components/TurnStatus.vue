@@ -7,7 +7,7 @@
 <script>
 export default {
   name: "TurnStatus",
-  props: ["game", "profile"],
+  props: ["game", "profile", "controllingPlayerName"],
   computed: {
     alertCurrentPlayer() {
       if (this.game.currentPlayerName === this.profile.username) {
@@ -17,6 +17,8 @@ export default {
     playerIs() {
       if (this.game.currentPlayerName === this.profile.username) {
         return "<b>You</b> are "
+      } else if (this.controllingPlayerName === "") {
+        return "<b>Swiss Banks</b> are "
       } else {
         return `<b>${this.game.currentPlayerName}</b> is `
       }
