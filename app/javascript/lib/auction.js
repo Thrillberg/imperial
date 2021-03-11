@@ -12,7 +12,7 @@ export default class Auction {
 
   tick(action, game) {
     if (action.type === "initialize") {
-      this.initialize(action);
+      this.initialize(action, game);
       return;
     }
 
@@ -28,19 +28,16 @@ export default class Auction {
     }
   }
 
-  initialize(action) {
+  initialize(action, game) {
     const s = setup({
       players: action.payload.players,
       provinceNames: Array.from(board.graph.keys())
     });
     this.inAuction = true;
     this.order = s.order;
-    this.provinces = s.provinces;
-    this.units = s.units;
     this.firstPlayerIndex = 0;
-    this.currentNation = Nation.AH;
-    this.soloMode = s.soloMode;
-    this.availableActions = this.availableBondPurchases(
+    game.currentNation = Nation.AH;
+    game.availableActions = this.availableBondPurchases(
       Nation.AH,
       {
         availableBonds: s.availableBonds,
@@ -134,16 +131,16 @@ export default class Auction {
 
         const [startingPlayer, startingNation] = this.getStartingPlayerAndNation(game);
         game.currentPlayerName = startingPlayer;
-        this.currentNation = startingNation;
-        this.availableActions = new Set(game.rondelActions(startingNation));
+        game.currentNation = startingNation;
+        game.availableActions = new Set(game.rondelActions(startingNation));
         this.inAuction = false;
         return;
       }
     }
-    this.currentNation = nextNation;
+    game.currentNation = nextNation;
     const ahControllerIndex = this.order.indexOf(game.nations.get(Nation.AH).controller);
-    this.investorCardHolder = this.order[ahControllerIndex - 1] || this.order[this.order.length - 1];
-    this.availableActions = this.availableBondPurchases(nextNation, game);
+    game.investorCardHolder = this.order[ahControllerIndex - 1] || this.order[this.order.length - 1];
+    game.availableActions = this.availableBondPurchases(nextNation, game);
   }
 
   handleAdvancePlayer(game) {

@@ -71,35 +71,6 @@ export default class Imperial {
       case "noop":
         return;
       case "undo": {
-        //const reversedGameLog = this.log.slice().reverse();
-        //let lastRondelActionIndex = -1;
-        //for (const action of reversedGameLog) {
-        //  if (action.type !== "rondel" && action.type !== "bondPurchase" && action.type !== "skipBondPurchase") {
-        //    lastRondelActionIndex--;
-        //  } else {
-        //    break;
-        //  }
-        //}
-        //if (this.auction?.inAuction) {
-        //  let sanitizedLog = [];
-        //  for (const action of this.log.slice(0, -2)) {
-        //    if (action.type === "undo") {
-        //      sanitizedLog.pop();
-        //      continue;
-        //    }
-        //    sanitizedLog.push(action);
-        //  }
-        //  this.auction = Auction.fromLog(sanitizedLog, this);
-        //  this.previousPlayerName = action.payload.player;
-        //  this.currentPlayerName = this.auction.currentPlayerName;
-        //  this.currentNation = this.auction.currentNation;
-        //  this.investorCardHolder = this.auction.investorCardHolder;
-        //  this.players = this.auction.players;
-        //  this.availableBonds = this.auction.availableBonds;
-        //  this.nations = this.auction.nations;
-        //  this.availableActions = this.auction.availableActions;
-        //} else {
-        //  const correctedGame = Imperial.fromLog(this.log.slice(0, lastRondelActionIndex), this.board);
         this.currentNation = this.oldState.currentNation;
         this.currentPlayerName = this.oldState.currentPlayerName;
         this.previousPlayerName = action.payload.player;
@@ -114,19 +85,16 @@ export default class Imperial {
         this.previousPlayerName = this.oldState.previousPlayerName;
         this.fleetConvoyCount = this.oldState.fleetConvoyCount;
         this.maxImports = this.oldState.maxImports;
-        console.log(this.oldState, action)
         this.availableBonds = this.oldState.availableBonds;
         this.availableActions = this.oldState.availableActions;
         this.investorCardHolder = this.oldState.investorCardHolder;
         this.players = this.oldState.players;
-        //}
         return;
       }
       case "bondPurchase": {
         const inAuction = this.auction?.inAuction;
         if (inAuction) {
-          console.log(action, this.availableBonds)
-          this.handleAuctionBondPurchase(action);
+          this.auction.tick(action, this);
           if (!this.auction.inAuction) {
             this.currentPlayerName = this.nations.get(this.currentNation).controller;
           }
@@ -138,7 +106,7 @@ export default class Imperial {
       case "skipBondPurchase": {
         const inAuction = this.auction?.inAuction;
         if (inAuction) {
-          this.handleAuctionBondPurchase(action);
+          this.auction.tick(action, this);
           if (!this.auction.inAuction) {
             this.currentPlayerName = this.nations.get(this.currentNation).controller;
           }
@@ -224,21 +192,21 @@ export default class Imperial {
         }
         units.set(Nation[key.value], newValue);
       }
-      let nations = new Map;
+      let nations = new Map();
       for (const [key, value] of this.nations) {
         nations.set(Nation[key.value], Object.assign({}, value));
       }
-      let provinces = new Map;
+      let provinces = new Map();
       for (const [key, value] of this.provinces) {
         provinces.set(key, Object.assign({}, value));
       }
-      let availableBonds = new Set;
+      let availableBonds = new Set();
       for (const bond of this.availableBonds) {
         availableBonds.add(bond);
       }
-      let availableActions = new Set;
-      for (const bond of this.availableActions) {
-        availableActions.add(bond);
+      let availableActions = new Set();
+      for (const action of this.availableActions) {
+        availableActions.add(action);
       }
       let players = {};
       for (const player of Object.keys(this.players)) {
@@ -274,12 +242,6 @@ export default class Imperial {
     }
   }
 
-  handleAuctionBondPurchase(action) {
-    this.auction.tick(action, this);
-    this.investorCardHolder = this.auction.investorCardHolder;
-    this.availableActions = this.auction.availableActions;
-  }
-
   initialize(action) {
     let setup;
     if (action.payload.variant === "auction") {
@@ -304,7 +266,9 @@ export default class Imperial {
     this.units = this.initializeUnits(s.units);
     this.currentPlayerName = this.getStartingPlayer();
     this.previousPlayerName = this.currentPlayerName;
-    this.availableActions = this.getStartingAvailableActions();
+    if (this.variant === "standard") {
+      this.availableActions = new Set(this.rondelActions(this.currentNation));
+    }
     this.soloMode = action.payload.soloMode;
   }
 
@@ -313,14 +277,6 @@ export default class Imperial {
       return this.order[0];
     } else if (this.variant === "standard") {
       return this.nations.get(this.currentNation).controller;
-    }
-  }
-
-  getStartingAvailableActions() {
-    if (this.variant === "auction") {
-      return Auction.fromLog(this.log, this).availableActions;
-    } else if (this.variant === "standard") {
-      return new Set(this.rondelActions(this.currentNation));
     }
   }
 
