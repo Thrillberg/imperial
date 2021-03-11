@@ -88,21 +88,19 @@
       </div>
     </div>
     <ConflictHandler :game="game" :profile="profile" :controllingPlayerName="controllingPlayerName" v-on:tick-with-action="tickWithAction"></ConflictHandler>
-    <div class="buttons" v-if="canForceInvestor">
-      <ActionComponent
-        v-for="action in game.availableActions"
-        v-bind:key="JSON.stringify(action)"
-        v-bind:action="action"
-        v-bind:text="actionToText(action)"
-        v-bind:dispatch="tickWithAction"
-      ></ActionComponent>
+    <div class="text-center" v-if="canForceInvestor">
+      <button @click="forceInvestor" class="rounded p-2 bg-green-800 text-white cursor-pointer">
+        Force investor
+      </button>
+      <button @click="skipForceInvestor" class="rounded p-2 bg-green-800 text-white cursor-pointer">
+        Do not force investor
+      </button>
     </div>
   </div>
 </template>
 
 <script>
 import Action from "../../lib/action.js";
-import ActionComponent from "../components/ActionComponent.vue";
 import BondPurchase from "../components/BondPurchase.vue";
 import ConflictHandler from "../components/ConflictHandler.vue";
 import Player from "../components/Player.vue";
@@ -111,7 +109,6 @@ import Rondel from "../components/Rondel.vue";
 export default {
   name: "GameDetails",
   components: {
-    ActionComponent,
     BondPurchase,
     ConflictHandler,
     Player,
@@ -128,8 +125,8 @@ export default {
     },
     canForceInvestor: function () {
       if (this.game.availableActions.size > 0 &&
-        Array.from(this.game.availableActions).every((action) => action.type === "forceInvestor" || action.type === "skipForceInvestor")) {
-          this.controllingPlayerName = "";
+        Array.from(this.game.availableActions).every((action) => action.type === "forceInvestor" || action.type === "skipForceInvestor" || action.type === "undo")) {
+          this.$emit("clearControllingPlayerName");
           if (this.game.swissBanks.includes(this.profile.username) || (this.game.soloMode && this.profile.username in this.game.players)) {
             return true;
           }
@@ -176,17 +173,6 @@ export default {
         }
       }
     },
-    actionToText: function(action) {
-      if (action.type === "coexist") {
-        return `Coexist`;
-      } else if (action.type === "fight") {
-        return `Fight`;
-      } else if (action.type === "forceInvestor") {
-        return "Force investor";
-      } else if (action.type === "skipForceInvestor") {
-        return "Do not force investor";
-      }
-    },
     endManeuver: function() {
       this.$emit("endManeuver", Action.endManeuver());
     },
@@ -228,6 +214,20 @@ export default {
             action.payload.player === this.profile.username || this.game.soloMode
           )
         ) {
+          this.tickWithAction(action);
+        }
+      }
+    },
+    forceInvestor() {
+      for (const action of this.game.availableActions) {
+        if (action.type === "forceInvestor") {
+          this.tickWithAction(action);
+        }
+      }
+    },
+    skipForceInvestor() {
+      for (const action of this.game.availableActions) {
+        if (action.type === "skipForceInvestor") {
           this.tickWithAction(action);
         }
       }

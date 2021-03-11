@@ -137,5 +137,8 @@ describe("Auction game", () => {
     cy.contains("Berlin").next().click()
     // RU
     cy.get("#production2").click()
+    // AH
+    cy.get("#import").click()
+    cy.contains("Force investor").click()
   })
 })
