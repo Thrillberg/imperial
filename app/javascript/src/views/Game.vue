@@ -298,7 +298,7 @@ export default {
       const gameLog = getGameLog(log);
       this.$delete(this.game);
       this.game = Imperial.fromLog(gameLog);
-      if (this.game.players) {
+      if (Object.keys(this.game.players).length > 0) {
         this.gameStarted = true;
         this.currentPlayer = this.game.players[this.profile.username] || {};
         this.controllingPlayerName = this.game.currentPlayerName;

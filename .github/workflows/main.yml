@@ -55,4 +55,5 @@ jobs:
         PGPASSWORD: postgres
         RAILS_ENV: test
       with:
+        browser: chrome
         start: bundle exec rails server -e test -p 5002

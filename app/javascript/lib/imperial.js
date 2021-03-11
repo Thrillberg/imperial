@@ -35,9 +35,12 @@ export default class Imperial {
     this.fleetConvoyCount = {};
     this.maxImports = 0;
     this.winner = "";
+    this.availableBonds = new Set();
+    this.players = {};
   }
 
   tick(action) {
+    this.setOldState(action);
     // Initialize and endGame actions are always valid.
     if (action.type === "initialize") {
       this.log.push(action);
@@ -68,59 +71,30 @@ export default class Imperial {
       case "noop":
         return;
       case "undo": {
-        const reversedGameLog = this.log.slice().reverse();
-        let lastRondelActionIndex = -1;
-        for (const action of reversedGameLog) {
-          if (action.type !== "rondel" && action.type !== "bondPurchase" && action.type !== "skipBondPurchase") {
-            lastRondelActionIndex--;
-          } else {
-            break;
-          }
-        }
-        if (this.auction?.inAuction) {
-          let sanitizedLog = [];
-          for (const action of this.log.slice(0, -2)) {
-            if (action.type === "undo") {
-              sanitizedLog.pop();
-              continue;
-            }
-            sanitizedLog.push(action);
-          }
-          this.auction = Auction.fromLog(sanitizedLog, this);
-          this.previousPlayerName = action.payload.player;
-          this.currentPlayerName = this.auction.currentPlayerName;
-          this.currentNation = this.auction.currentNation;
-          this.investorCardHolder = this.auction.investorCardHolder;
-          this.players = this.auction.players;
-          this.availableBonds = this.auction.availableBonds;
-          this.nations = this.auction.nations;
-          this.availableActions = this.auction.availableActions;
-        } else {
-          const correctedGame = Imperial.fromLog(this.log.slice(0, lastRondelActionIndex), this.board);
-          this.currentNation = correctedGame.currentNation;
-          this.currentPlayerName = correctedGame.currentPlayerName;
-          this.units = correctedGame.units;
-          this.unitsToMove = correctedGame.unitsToMove;
-          this.provinces = correctedGame.provinces;
-          this.nations = correctedGame.nations;
-          this.maneuvering = correctedGame.maneuvering;
-          this.handlingConflict = correctedGame.handlingConflict;
-          this.swissBanks = correctedGame.swissBanks;
-          this.passingThroughInvestor = correctedGame.passingThroughInvestor;
-          this.previousPlayerName = correctedGame.previousPlayerName;
-          this.fleetConvoyCount = correctedGame.fleetConvoyCount;
-          this.maxImports = correctedGame.maxImports;
-          this.availableBonds = correctedGame.availableBonds;
-          this.availableActions = correctedGame.availableActions;
-          this.investorCardHolder = correctedGame.investorCardHolder;
-          this.players = correctedGame.players;
-        }
+        this.currentNation = this.oldState.currentNation;
+        this.currentPlayerName = this.oldState.currentPlayerName;
+        this.previousPlayerName = action.payload.player;
+        this.units = this.oldState.units;
+        this.unitsToMove = this.oldState.unitsToMove;
+        this.provinces = this.oldState.provinces;
+        this.nations = this.oldState.nations;
+        this.maneuvering = this.oldState.maneuvering;
+        this.handlingConflict = this.oldState.handlingConflict;
+        this.swissBanks = this.oldState.swissBanks;
+        this.passingThroughInvestor = this.oldState.passingThroughInvestor;
+        this.previousPlayerName = this.oldState.previousPlayerName;
+        this.fleetConvoyCount = this.oldState.fleetConvoyCount;
+        this.maxImports = this.oldState.maxImports;
+        this.availableBonds = this.oldState.availableBonds;
+        this.availableActions = this.oldState.availableActions;
+        this.investorCardHolder = this.oldState.investorCardHolder;
+        this.players = this.oldState.players;
         return;
       }
       case "bondPurchase": {
         const inAuction = this.auction?.inAuction;
         if (inAuction) {
-          this.handleAuctionBondPurchase(action);
+          this.auction.tick(action, this);
           if (!this.auction.inAuction) {
             this.currentPlayerName = this.nations.get(this.currentNation).controller;
           }
@@ -132,7 +106,7 @@ export default class Imperial {
       case "skipBondPurchase": {
         const inAuction = this.auction?.inAuction;
         if (inAuction) {
-          this.handleAuctionBondPurchase(action);
+          this.auction.tick(action, this);
           if (!this.auction.inAuction) {
             this.currentPlayerName = this.nations.get(this.currentNation).controller;
           }
@@ -208,13 +182,64 @@ export default class Imperial {
     }
   }
 
-  handleAuctionBondPurchase(action) {
-    this.auction.tick(action, this);
-    this.previousPlayerName = this.auction.previousPlayerName;
-    this.currentPlayerName = this.auction.currentPlayerName;
-    this.currentNation = this.auction.currentNation;
-    this.investorCardHolder = this.auction.investorCardHolder;
-    this.availableActions = this.auction.availableActions;
+  setOldState(action) {
+    if (action.type === "rondel" || action.type === "bondPurchase" || action.type === "skipBondPurchase") {
+      let units = new Map;
+      for (const [key, value] of this.units) {
+        const newValue = new Map;
+        for (const [key2, value2] of value) {
+          newValue.set(key2, Object.assign({}, value2));
+        }
+        units.set(Nation[key.value], newValue);
+      }
+      let nations = new Map();
+      for (const [key, value] of this.nations) {
+        nations.set(Nation[key.value], Object.assign({}, value));
+      }
+      let provinces = new Map();
+      for (const [key, value] of this.provinces) {
+        provinces.set(key, Object.assign({}, value));
+      }
+      let availableBonds = new Set();
+      for (const bond of this.availableBonds) {
+        availableBonds.add(bond);
+      }
+      let availableActions = new Set();
+      for (const action of this.availableActions) {
+        availableActions.add(action);
+      }
+      let players = {};
+      for (const player of Object.keys(this.players)) {
+        players[player] = {};
+        players[player].cash = this.players[player].cash;
+        players[player].name = this.players[player].name;
+        players[player].rawScore = this.players[player].rawScore;
+        let bonds = new Set();
+        for (const bond of this.players[player].bonds) {
+          bonds.add(bond)
+        }
+        players[player].bonds = bonds;
+      }
+      this.oldState = {
+        currentNation: this.currentNation,
+        currentPlayerName: this.currentPlayerName,
+        units,
+        unitsToMove: this.unitsToMove,
+        provinces,
+        nations,
+        maneuvering: this.maneuvering,
+        handlingConflict: this.handlingConflict,
+        swissBanks: this.swissBanks,
+        passingThroughInvestor: this.passingThroughInvestor,
+        previousPlayerName: this.previousPlayerName,
+        fleetConvoyCount: this.fleetConvoyCount,
+        maxImports: this.maxImports,
+        availableBonds,
+        availableActions,
+        investorCardHolder: this.investorCardHolder,
+        players
+      }
+    }
   }
 
   initialize(action) {
@@ -241,7 +266,9 @@ export default class Imperial {
     this.units = this.initializeUnits(s.units);
     this.currentPlayerName = this.getStartingPlayer();
     this.previousPlayerName = this.currentPlayerName;
-    this.availableActions = this.getStartingAvailableActions();
+    if (this.variant === "standard") {
+      this.availableActions = new Set(this.rondelActions(this.currentNation));
+    }
     this.soloMode = action.payload.soloMode;
   }
 
@@ -250,14 +277,6 @@ export default class Imperial {
       return this.order[0];
     } else if (this.variant === "standard") {
       return this.nations.get(this.currentNation).controller;
-    }
-  }
-
-  getStartingAvailableActions() {
-    if (this.variant === "auction") {
-      return Auction.fromLog(this.log, this).availableActions;
-    } else if (this.variant === "standard") {
-      return new Set(this.rondelActions(this.currentNation));
     }
   }
 

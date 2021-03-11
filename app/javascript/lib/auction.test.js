@@ -8,6 +8,7 @@ describe("auction", () => {
   describe("initialize", () => {
     test("it is AH's turn to select a rondel slot", () => {
       const auction = new Auction();
+      const game = new Imperial();
       let expectedActions = new Set([
         Action.skipBondPurchase({ player: "player1", nation: Nation.AH })
       ]);
@@ -30,18 +31,17 @@ describe("auction", () => {
           soloMode: false,
           variant: "auction"
         }),
-        new Imperial()
+        game
       );
 
-      expect(auction.availableActions).toEqual(expectedActions);
+      expect(game.availableActions).toEqual(expectedActions);
     });
   });
 
   describe("bondPurchase", () => {
-    const game = new Imperial();
-    const newAuction = () => {
-      const auction = new Auction();
-      auction.tick(
+    const newGame = () => {
+      const game = new Imperial();
+      game.tick(
         Action.initialize({
           players: [
             { id: "player1" },
@@ -49,14 +49,14 @@ describe("auction", () => {
           ],
           soloMode: false,
           variant: "auction"
-        }),
-        game
+        })
       );
-      return auction;
-    };
+      return game;
+    }
 
     test("player purchases a bond", () => {
-      const auction = newAuction();
+      const game = newGame();
+      const auction = game.auction;
       let expectedActions = new Set([
         Action.skipBondPurchase({ player: "player2", nation: Nation.AH })
       ]);
@@ -75,14 +75,15 @@ describe("auction", () => {
         game
       );
 
-      expect(auction.players["player1"].bonds).toEqual(
+      expect(game.players["player1"].bonds).toEqual(
         new Set([Bond(Nation.AH, 2)])
       );
-      expect(auction.availableActions).toEqual(expectedActions);
+      expect(game.availableActions).toEqual(expectedActions);
     });
 
     test("all players have had an opportunity to buy an AH bond", () => {
-      const auction = newAuction();
+      const game = newGame();
+      const auction = game.auction;
       let expectedActions = new Set([
         Action.skipBondPurchase({ player: "player2", nation: Nation.IT })
       ]);
@@ -105,13 +106,13 @@ describe("auction", () => {
         game
       );
 
-      expect(auction.players["player1"].bonds).toEqual(
+      expect(game.players["player1"].bonds).toEqual(
         new Set([Bond(Nation.AH, 2)])
       );
-      expect(auction.players["player2"].bonds).toEqual(
+      expect(game.players["player2"].bonds).toEqual(
         new Set([Bond(Nation.AH, 1)])
       );
-      expect(auction.availableActions).toEqual(expectedActions);
+      expect(game.availableActions).toEqual(expectedActions);
     });
 
     test("last player buys a final bond and swiss bank is assigned", () => {
@@ -138,9 +139,10 @@ describe("auction", () => {
         Action.bondPurchase({ player: "player1", cost: 4, nation: Nation.RU })
       ];
 
-      const auction = Auction.fromLog(log, game);
+      const game = Imperial.fromLog(log);
+      const auction = game.auction;
 
-      expect(auction.availableActions).toEqual(
+      expect(game.availableActions).toEqual(
         new Set(
           [
             "factory",
