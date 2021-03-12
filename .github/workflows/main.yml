@@ -57,3 +57,4 @@ jobs:
       with:
         browser: chrome
         start: bundle exec rails server -e test -p 5002
+        config: pageLoadTimeout=100000
