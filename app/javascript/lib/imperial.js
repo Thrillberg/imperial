@@ -232,7 +232,7 @@ export default class Imperial {
         swissBanks: this.swissBanks,
         passingThroughInvestor: this.passingThroughInvestor,
         previousPlayerName: this.previousPlayerName,
-        fleetConvoyCount: this.fleetConvoyCount,
+        fleetConvoyCount: Object.assign({}, this.fleetConvoyCount),
         maxImports: this.maxImports,
         availableBonds,
         availableActions,

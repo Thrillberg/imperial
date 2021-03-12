@@ -15,10 +15,10 @@ export default {
       }
     },
     playerIs() {
-      if (this.game.currentPlayerName === this.profile.username) {
-        return "<b>You</b> are "
-      } else if (this.controllingPlayerName === "") {
+      if (this.controllingPlayerName === "") {
         return "<b>Swiss Banks</b> are "
+      } else if (this.game.currentPlayerName === this.profile.username) {
+        return "<b>You</b> are "
       } else {
         return `<b>${this.game.currentPlayerName}</b> is `
       }
