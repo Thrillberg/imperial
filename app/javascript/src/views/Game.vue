@@ -103,6 +103,12 @@
             >
               Start Auction Variant Game
             </button>
+            <button
+              @click="startGame('noInvestorCard')"
+              class="rounded bg-green-800 text-white cursor-pointer block text-2xl hover:bg-green-900 p-10 m-10 mx-auto"
+            >
+              Start Game Without Investor Card
+            </button>
           </div>
           <div v-else-if="playingInThisGame" class="text-2xl m-2">
             Game not yet started!
