@@ -363,8 +363,10 @@ export default class Imperial {
         }
       }
     } else {
-      for (const player in this.players) {
-        this.checkForSwissBank(player);
+      if (this.variant !== "noInvestorCard") {
+        for (const player in this.players) {
+          this.checkForSwissBank(player);
+        }
       }
       if (this.investing) {
         this.previousPlayerName = this.currentPlayerName;
@@ -415,16 +417,18 @@ export default class Imperial {
         }
       }
     } else {
-      for (const player in this.players) {
-        if (this.nationsUnderControl(player).length > 0) {
-          const playerIndex = this.swissBanks.indexOf(player);
-          if (playerIndex !== -1) {
-            this.swissBanks.splice(playerIndex, 1)
-          }
-        } else {
-          const playerIndex = this.swissBanks.indexOf(player);
-          if (playerIndex === -1) {
-            this.swissBanks.push(player);
+      if (this.variant !== "noInvestorCard") {
+        for (const player in this.players) {
+          if (this.nationsUnderControl(player).length > 0) {
+            const playerIndex = this.swissBanks.indexOf(player);
+            if (playerIndex !== -1) {
+              this.swissBanks.splice(playerIndex, 1)
+            }
+          } else {
+            const playerIndex = this.swissBanks.indexOf(player);
+            if (playerIndex === -1) {
+              this.swissBanks.push(player);
+            }
           }
         }
       }
@@ -1150,9 +1154,13 @@ export default class Imperial {
       this.players[this.currentPlayerName].cash += payment;
       this.nations.get(nation).treasury -= payment;
     }
-    this.investorCardActive = true;
-    this.middleOfInvestorTurn();
-    this.passingThroughInvestor = false;
+    if (this.variant === "noInvestorCard") {
+      this.endOfInvestorTurn(this.currentPlayerName);
+    } else {
+      this.investorCardActive = true;
+      this.middleOfInvestorTurn();
+      this.passingThroughInvestor = false;
+    }
   }
 
   importRondel(action) {
@@ -1451,6 +1459,10 @@ export default class Imperial {
           });
         })
     );
+    if (this.variant === "noInvestorCard") {
+      this.investing = true
+      this.firstInvestor = this.currentPlayerName
+    }
     this.availableActions.add(Action.skipBondPurchase({ player: investor, nation: null }));
   }
 
