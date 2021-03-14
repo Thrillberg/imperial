@@ -104,7 +104,7 @@
               Start Auction Variant Game
             </button>
             <button
-              @click="startGame('noInvestorCard')"
+              @click="startGame('withoutInvestorCard')"
               class="rounded bg-green-800 text-white cursor-pointer block text-2xl hover:bg-green-900 p-10 m-10 mx-auto"
             >
               Start Game Without Investor Card

@@ -453,14 +453,12 @@ export default class Imperial {
     this.unitsToMove = [];
     this.fleetConvoyCount = {};
     this.maneuvering = false;
-    if (this.variant === "noInvestorCard") {
-      this.investing = true;
-      this.firstInvestor = this.currentPlayerName;
-      this.availableActions = availableBondPurchases(this.currentNation, this);
-      return;
+    if (this.variant === "withoutInvestorCard") {
+      this.roundOfInvestment();
+    } else {
+      this.handleAdvancePlayer();
+      this.availableActions = new Set(this.rondelActions(this.currentNation));
     }
-    this.handleAdvancePlayer();
-    this.availableActions = new Set(this.rondelActions(this.currentNation));
   }
 
   endGame() {
@@ -547,14 +545,12 @@ export default class Imperial {
     if (this.unitsToMove.length === 0) {
       this.unitsToMove = [];
       this.maneuvering = false;
-      if (this.variant === "noInvestorCard") {
-        this.investing = true;
-        this.firstInvestor = this.currentPlayerName;
-        this.availableActions = availableBondPurchases(this.currentNation, this);
-        return;
+      if (this.variant === "withoutInvestorCard") {
+        this.roundOfInvestment();
+      } else {
+        this.handleAdvancePlayer();
+        this.availableActions = new Set(this.rondelActions(this.currentNation));
       }
-      this.handleAdvancePlayer();
-      this.availableActions = new Set(this.rondelActions(this.currentNation));
     } else {
       const reversedLog = this.log.slice().reverse();
       const lastManeuverRondelAction = reversedLog.find(this.actionIsRondelAndManeuver);
@@ -574,14 +570,12 @@ export default class Imperial {
       this.units.get(action.payload.challenger).get(action.payload.province).friendly = true;
       this.unitsToMove = [];
       this.maneuvering = false;
-      if (this.variant === "noInvestorCard") {
-        this.investing = true;
-        this.firstInvestor = this.currentPlayerName;
-        this.availableActions = availableBondPurchases(this.currentNation, this);
-        return;
+      if (this.variant === "withoutInvestorCard") {
+        this.roundOfInvestment();
+      } else {
+        this.handleAdvancePlayer();
+        this.availableActions = new Set(this.rondelActions(this.currentNation));
       }
-      this.handleAdvancePlayer();
-      this.availableActions = new Set(this.rondelActions(this.currentNation));
     } else {
       const reversedLog = this.log.slice().reverse();
       const lastManeuverRondelAction = reversedLog.find(action => action.type === "rondel");
@@ -654,14 +648,12 @@ export default class Imperial {
     if (this.unitsToMove.length === 0) {
       this.unitsToMove = [];
       this.maneuvering = false;
-      if (this.variant === "noInvestorCard") {
-        this.investing = true;
-        this.firstInvestor = this.currentPlayerName;
-        this.availableActions = availableBondPurchases(this.currentNation, this);
-        return;
+      if (this.variant === "withoutInvestorCard") {
+        this.roundOfInvestment();
+      } else {
+        this.handleAdvancePlayer();
+        this.availableActions = new Set(this.rondelActions(this.currentNation));
       }
-      this.handleAdvancePlayer();
-      this.availableActions = new Set(this.rondelActions(this.currentNation));
     } else {
       const reversedLog = this.log.slice().reverse();
       const lastManeuverRondelAction = reversedLog.find(this.actionIsRondelAndManeuver);
@@ -675,14 +667,12 @@ export default class Imperial {
     if (this.unitsToMove.length === 0) {
       this.unitsToMove = [];
       this.maneuvering = false;
-      if (this.variant === "noInvestorCard") {
-        this.investing = true;
-        this.firstInvestor = this.currentPlayerName;
-        this.availableActions = availableBondPurchases(this.currentNation, this);
-        return;
+      if (this.variant === "withoutInvestorCard") {
+        this.roundOfInvestment();
+      } else {
+        this.handleAdvancePlayer();
+        this.availableActions = new Set(this.rondelActions(this.currentNation));
       }
-      this.handleAdvancePlayer();
-      this.availableActions = new Set(this.rondelActions(this.currentNation));
     } else {
       const reversedLog = this.log.slice().reverse();
       const lastManeuverRondelAction = reversedLog.find(this.actionIsRondelAndManeuver);
@@ -699,15 +689,13 @@ export default class Imperial {
       this.middleOfInvestorTurn();
       this.passingThroughInvestor = false;
     } else {
-      if (this.variant === "noInvestorCard") {
-        this.investing = true;
-        this.firstInvestor = this.currentPlayerName;
-        this.availableActions = availableBondPurchases(this.currentNation, this);
-        return;
+      if (this.variant === "withoutInvestorCard") {
+        this.roundOfInvestment();
+      } else {
+        this.handleAdvancePlayer();
+        this.availableActions = new Set(this.rondelActions(this.currentNation));
+        this.buildingFactory = false;
       }
-      this.handleAdvancePlayer();
-      this.availableActions = new Set(this.rondelActions(this.currentNation));
-      this.buildingFactory = false;
     }
   }
 
@@ -737,14 +725,12 @@ export default class Imperial {
       this.middleOfInvestorTurn();
       this.passingThroughInvestor = false;
     } else {
-      if (this.variant === "noInvestorCard") {
-        this.investing = true;
-        this.firstInvestor = this.currentPlayerName;
-        this.availableActions = availableBondPurchases(this.currentNation, this);
-        return;
+      if (this.variant === "withoutInvestorCard") {
+        this.roundOfInvestment();
+      } else {
+        this.handleAdvancePlayer();
+        this.availableActions = new Set(this.rondelActions(this.currentNation));
       }
-      this.handleAdvancePlayer();
-      this.availableActions = new Set(this.rondelActions(this.currentNation));
     }
   }
 
@@ -935,14 +921,12 @@ export default class Imperial {
         this.middleOfInvestorTurn();
         this.passingThroughInvestor = false;
       } else {
-        if (this.variant === "noInvestorCard") {
-          this.investing = true;
-          this.firstInvestor = this.currentPlayerName;
-          this.availableActions = availableBondPurchases(this.currentNation, this);
-          return;
+        if (this.variant === "withoutInvestorCard") {
+          this.roundOfInvestment();
+        } else {
+          this.handleAdvancePlayer();
+          this.availableActions = new Set(this.rondelActions(this.currentNation));
         }
-        this.handleAdvancePlayer();
-        this.availableActions = new Set(this.rondelActions(this.currentNation));
       }
     }
   }
@@ -1000,14 +984,12 @@ export default class Imperial {
           this.passingThroughInvestor = false;
           return;
         }
-        if (this.variant === "noInvestorCard") {
-          this.investing = true;
-          this.firstInvestor = this.currentPlayerName;
-          this.availableActions = availableBondPurchases(this.currentNation, this);
-          return;
+        if (this.variant === "withoutInvestorCard") {
+          this.roundOfInvestment();
+        } else {
+          this.handleAdvancePlayer();
+          this.availableActions = new Set(this.rondelActions(this.currentNation));
         }
-        this.handleAdvancePlayer();
-        this.availableActions = new Set(this.rondelActions(this.currentNation));
         return;
       }
       case "taxation": {
@@ -1066,16 +1048,14 @@ export default class Imperial {
           this.middleOfInvestorTurn();
           this.passingThroughInvestor = false;
         } else {
-          if (this.variant === "noInvestorCard") {
-            this.investing = true;
-            this.firstInvestor = this.currentPlayerName;
-            this.availableActions = availableBondPurchases(this.currentNation, this);
-            return;
+          if (this.variant === "withoutInvestorCard") {
+            this.roundOfInvestment();
+          } else {
+            this.handleAdvancePlayer();
+            this.availableActions = new Set(
+              this.rondelActions(this.currentNation)
+            );
           }
-          this.handleAdvancePlayer();
-          this.availableActions = new Set(
-            this.rondelActions(this.currentNation)
-          );
         }
         this.updateRawScores();
         return;
@@ -1090,14 +1070,12 @@ export default class Imperial {
       case "factory": {
         // If nation cannot afford to build a factory
         if (this.nations.get(this.currentNation).treasury < 5) {
-          if (this.variant === "noInvestorCard") {
-            this.investing = true;
-            this.firstInvestor = this.currentPlayerName;
+          if (this.variant === "withoutInvestorCard") {
             this.roundOfInvestment();
+          } else {
+            this.handleAdvancePlayer();
             return;
           }
-          this.handleAdvancePlayer();
-          return;
         }
 
         this.availableActions = new Set();
@@ -1151,7 +1129,7 @@ export default class Imperial {
       this.players[this.currentPlayerName].cash += payment;
       this.nations.get(nation).treasury -= payment;
     }
-    if (this.variant === "noInvestorCard") {
+    if (this.variant === "withoutInvestorCard") {
       this.endOfInvestorTurn(this.currentPlayerName);
     } else {
       this.investorCardActive = true;
@@ -1456,7 +1434,7 @@ export default class Imperial {
           });
         })
     );
-    if (this.variant === "noInvestorCard") {
+    if (this.variant === "withoutInvestorCard") {
       this.investing = true
       this.firstInvestor = this.currentPlayerName
     }
@@ -1477,10 +1455,6 @@ export default class Imperial {
     this.previousPlayerName = this.currentPlayerName;
     this.currentNation = this.nextNation(this.currentNation);
     this.currentPlayerName = this.nations.get(this.currentNation).controller;
-  }
-
-  roundOfInvestment() {
-    this.availableActions = availableBondPurchases(this.currentNation, this);
   }
 
   totalInvestmentInNation(player, nation) {
@@ -1747,6 +1721,12 @@ export default class Imperial {
       }
     }
     return availableActions;
+  }
+
+  roundOfInvestment() {
+    this.investing = true;
+    this.firstInvestor = this.currentPlayerName;
+    this.availableActions = availableBondPurchases(this.currentNation, this);
   }
 
   isEqual(action1, action2) {
