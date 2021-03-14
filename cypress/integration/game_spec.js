@@ -1,5 +1,5 @@
 describe("Standard game", () => {
-  xit("works", () => {
+  it("works", () => {
     cy.factory("account", {email: "a@b.com", password: "password"})
     cy.login("a@b.com")
 
@@ -63,7 +63,7 @@ describe("Standard game", () => {
 })
 
 describe("Auction game", () => {
-  xit("works", () => {
+  it("works", () => {
     cy.factory("account", {email: "a@b.com", password: "password"})
     cy.login("a@b.com")
 
