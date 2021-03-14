@@ -5,6 +5,7 @@ import standardGameBoard from "./board.js";
 import auctionSetup from "./auctionSetup.js";
 import standardSetup from "./standardSetup.js";
 import availableBondPurchases from "./availableBondPurchases.js";
+import setOldState from "./setOldState.js";
 
 export default class Imperial {
   static fromLog(log, board) {
@@ -75,45 +76,20 @@ export default class Imperial {
       case "noop":
         return;
       case "undo": {
-        this.currentNation = this.oldState.currentNation;
-        this.currentPlayerName = this.oldState.currentPlayerName;
-        this.previousPlayerName = action.payload.player;
-        this.units = this.oldState.units;
-        this.unitsToMove = this.oldState.unitsToMove;
-        this.provinces = this.oldState.provinces;
-        this.nations = this.oldState.nations;
-        this.maneuvering = this.oldState.maneuvering;
-        this.handlingConflict = this.oldState.handlingConflict;
-        this.swissBanks = this.oldState.swissBanks;
-        this.passingThroughInvestor = this.oldState.passingThroughInvestor;
-        this.previousPlayerName = this.oldState.previousPlayerName;
-        this.fleetConvoyCount = this.oldState.fleetConvoyCount;
-        this.maxImports = this.oldState.maxImports;
-        this.availableBonds = this.oldState.availableBonds;
-        this.availableActions = this.oldState.availableActions;
-        this.investorCardHolder = this.oldState.investorCardHolder;
-        this.players = this.oldState.players;
+        Object.assign(this, this.oldState);
         return;
       }
       case "bondPurchase": {
-        const inAuction = this.auction?.inAuction;
-        if (inAuction) {
+        if (this.auction?.inAuction) {
           this.auction.tick(action, this);
-          if (!this.auction.inAuction) {
-            this.currentPlayerName = this.nations.get(this.currentNation).controller;
-          }
         } else {
           this.bondPurchase(action);
         }
         return;
       }
       case "skipBondPurchase": {
-        const inAuction = this.auction?.inAuction;
-        if (inAuction) {
+        if (this.auction?.inAuction) {
           this.auction.tick(action, this);
-          if (!this.auction.inAuction) {
-            this.currentPlayerName = this.nations.get(this.currentNation).controller;
-          }
         } else {
           this.skipBondPurchase(action);
         }
@@ -187,62 +163,11 @@ export default class Imperial {
   }
 
   setOldState(action) {
+    // Undo rewinds the state until the last rondel action or
+    // bond purchase/skipped bond purchase
     if (action.type === "rondel" || action.type === "bondPurchase" || action.type === "skipBondPurchase") {
-      let units = new Map;
-      for (const [key, value] of this.units) {
-        const newValue = new Map;
-        for (const [key2, value2] of value) {
-          newValue.set(key2, Object.assign({}, value2));
-        }
-        units.set(Nation[key.value], newValue);
-      }
-      let nations = new Map();
-      for (const [key, value] of this.nations) {
-        nations.set(Nation[key.value], Object.assign({}, value));
-      }
-      let provinces = new Map();
-      for (const [key, value] of this.provinces) {
-        provinces.set(key, Object.assign({}, value));
-      }
-      let availableBonds = new Set();
-      for (const bond of this.availableBonds) {
-        availableBonds.add(bond);
-      }
-      let availableActions = new Set();
-      for (const action of this.availableActions) {
-        availableActions.add(action);
-      }
-      let players = {};
-      for (const player of Object.keys(this.players)) {
-        players[player] = {};
-        players[player].cash = this.players[player].cash;
-        players[player].name = this.players[player].name;
-        players[player].rawScore = this.players[player].rawScore;
-        let bonds = new Set();
-        for (const bond of this.players[player].bonds) {
-          bonds.add(bond)
-        }
-        players[player].bonds = bonds;
-      }
-      this.oldState = {
-        currentNation: this.currentNation,
-        currentPlayerName: this.currentPlayerName,
-        units,
-        unitsToMove: this.unitsToMove,
-        provinces,
-        nations,
-        maneuvering: this.maneuvering,
-        handlingConflict: this.handlingConflict,
-        swissBanks: this.swissBanks,
-        passingThroughInvestor: this.passingThroughInvestor,
-        previousPlayerName: this.previousPlayerName,
-        fleetConvoyCount: Object.assign({}, this.fleetConvoyCount),
-        maxImports: this.maxImports,
-        availableBonds,
-        availableActions,
-        investorCardHolder: this.investorCardHolder,
-        players
-      }
+      const oldState = setOldState(this);
+      this.oldState = Object.assign({}, this, oldState);
     }
   }
 
