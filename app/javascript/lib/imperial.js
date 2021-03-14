@@ -349,6 +349,21 @@ export default class Imperial {
 
     this.updateRawScores();
     
+    if (this.investing) {
+      this.previousPlayerName = this.currentPlayerName;
+      const index = this.order.indexOf(this.currentPlayerName);
+      if (index === this.order.length - 1) {
+        this.currentPlayerName = this.order[0];
+      } else {
+        this.currentPlayerName = this.order[index + 1];
+      }
+      if (this.currentPlayerName !== this.firstInvestor) {
+        this.availableActions = availableBondPurchases(this.currentNation, this);
+        return;
+      }
+      this.investing = false;
+    }
+
     let swissBanksToInvest = this.swissBanks;
     if (
       swissBanksToInvest.length > 0 &&
@@ -363,24 +378,8 @@ export default class Imperial {
         }
       }
     } else {
-      if (this.variant !== "noInvestorCard") {
-        for (const player in this.players) {
-          this.checkForSwissBank(player);
-        }
-      }
-      if (this.investing) {
-        this.previousPlayerName = this.currentPlayerName;
-        const index = this.order.indexOf(this.currentPlayerName);
-        if (index === this.order.length - 1) {
-          this.currentPlayerName = this.order[0];
-        } else {
-          this.currentPlayerName = this.order[index + 1];
-        }
-        if (this.currentPlayerName !== this.firstInvestor) {
-          this.availableActions = availableBondPurchases(this.currentNation, this);
-          return;
-        }
-        this.investing = false;
+      for (const player in this.players) {
+        this.checkForSwissBank(player);
       }
       this.handleAdvancePlayer();
       this.advanceInvestorCard();
@@ -403,6 +402,20 @@ export default class Imperial {
   }
 
   skipBondPurchase(action) {
+    if (this.investing) {
+      this.previousPlayerName = this.currentPlayerName;
+      const index = this.order.indexOf(this.currentPlayerName);
+      if (index === this.order.length - 1) {
+        this.currentPlayerName = this.order[0];
+      } else {
+        this.currentPlayerName = this.order[index + 1];
+      }
+      if (this.currentPlayerName !== this.firstInvestor) {
+        this.availableActions = availableBondPurchases(this.currentNation, this);
+        return;
+      }
+      this.investing = false;
+    }
     let swissBanksToInvest = this.swissBanks;
     if (
       swissBanksToInvest.length > 0 &&
@@ -417,34 +430,18 @@ export default class Imperial {
         }
       }
     } else {
-      if (this.variant !== "noInvestorCard") {
-        for (const player in this.players) {
-          if (this.nationsUnderControl(player).length > 0) {
-            const playerIndex = this.swissBanks.indexOf(player);
-            if (playerIndex !== -1) {
-              this.swissBanks.splice(playerIndex, 1)
-            }
-          } else {
-            const playerIndex = this.swissBanks.indexOf(player);
-            if (playerIndex === -1) {
-              this.swissBanks.push(player);
-            }
+      for (const player in this.players) {
+        if (this.nationsUnderControl(player).length > 0) {
+          const playerIndex = this.swissBanks.indexOf(player);
+          if (playerIndex !== -1) {
+            this.swissBanks.splice(playerIndex, 1)
+          }
+        } else {
+          const playerIndex = this.swissBanks.indexOf(player);
+          if (playerIndex === -1) {
+            this.swissBanks.push(player);
           }
         }
-      }
-      if (this.investing) {
-        this.previousPlayerName = this.currentPlayerName;
-        const index = this.order.indexOf(this.currentPlayerName);
-        if (index === this.order.length - 1) {
-          this.currentPlayerName = this.order[0];
-        } else {
-          this.currentPlayerName = this.order[index + 1];
-        }
-        if (this.currentPlayerName !== this.firstInvestor) {
-          this.availableActions = availableBondPurchases(this.currentNation, this);
-          return;
-        }
-        this.investing = false;
       }
       this.handleAdvancePlayer();
       this.advanceInvestorCard();

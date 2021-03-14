@@ -1,11 +1,14 @@
 import Action from "./action.js";
 
 export default (nation, game) => {
-  let out = new Set([Action.skipBondPurchase({ player: game.currentPlayerName, nation })]);
+  const player = game.currentPlayerName;
+  let out = new Set([Action.skipBondPurchase({ player, nation })]);
   const bonds = [...game.availableBonds].filter(bond => {
-    const player = game.currentPlayerName;
     const exchangeableBondCosts = [...game.players[player].bonds]
       .filter(exchangeableBond => {
+        if (game.swissBanks.includes(player)) {
+          return true;
+        }
         return exchangeableBond.nation === nation;
       })
       .map(x => x.cost);
@@ -20,6 +23,9 @@ export default (nation, game) => {
     )
   })
   bonds.map(bond => {
+    if (game.swissBanks.includes(player)) {
+      nation = bond.nation;
+    }
     out.add(Action.bondPurchase({ nation, player: game.currentPlayerName, cost: bond.cost }));
   })
   return out;
