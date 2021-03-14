@@ -53,7 +53,7 @@ export default {
     tradedBond: function({cost, nation, player}) {
       const playerObj = this.game.players[player];
       if (playerObj.cash < cost) {
-        let topBond = {cost: 0};
+        let topBond = {cost: 0, nation: {}};
         for (const bond of playerObj.bonds) {
           if (bond.nation === nation) {
             if (bond.cost > topBond.cost) {

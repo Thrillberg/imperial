@@ -139,7 +139,9 @@ export default class Auction {
     }
     game.currentNation = nextNation;
     const ahControllerIndex = this.order.indexOf(game.nations.get(Nation.AH).controller);
-    game.investorCardHolder = this.order[ahControllerIndex - 1] || this.order[this.order.length - 1];
+    if (game.variant !== "withoutInvestorCard") {
+      game.investorCardHolder = this.order[ahControllerIndex - 1] || this.order[this.order.length - 1];
+    }
     game.availableActions = this.availableBondPurchases(nextNation, game);
   }
 
