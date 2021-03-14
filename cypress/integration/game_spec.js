@@ -1,5 +1,5 @@
 describe("Standard game", () => {
-  it("works", () => {
+  xit("works", () => {
     cy.factory("account", {email: "a@b.com", password: "password"})
     cy.login("a@b.com")
 
@@ -63,7 +63,7 @@ describe("Standard game", () => {
 })
 
 describe("Auction game", () => {
-  it("works", () => {
+  xit("works", () => {
     cy.factory("account", {email: "a@b.com", password: "password"})
     cy.login("a@b.com")
 
@@ -201,10 +201,33 @@ describe("Without Investor Card game", () => {
     cy.get("#investor").click()
     cy.get(".bg-GE").contains("1:2").click()
     cy.contains("Do not buy a bond").click()
+    cy.contains("Do not buy a bond").click()
+    cy.contains("Do not buy a bond").click()
+    cy.contains("Do not buy a bond").click()
+    cy.contains("Do not buy a bond").click()
+    // IT
+    cy.contains("Do not buy a bond").click()
+    cy.contains("Do not buy a bond").click()
+    cy.contains("Do not buy a bond").click()
+    cy.contains("Do not buy a bond").click()
     cy.get(".bg-IT").contains("1:2").click()
     cy.contains("Do not buy a bond").click()
+    // FR
+    cy.get("#production1").click()
     cy.contains("Do not buy a bond").click()
     cy.contains("Do not buy a bond").click()
+    cy.contains("Do not buy a bond").click()
+    cy.contains("Do not buy a bond").click()
+    cy.contains("Do not buy a bond").click()
+    cy.get(".bg-IT").contains("2:4").click()
+    // GB
+    cy.get("#taxation").click()
+    cy.contains("Do not buy a bond").click()
+    cy.contains("Do not buy a bond").click()
+    cy.get(".bg-GB").contains("4:9").click()
+    cy.contains("Do not buy a bond").click()
+    cy.contains("Do not buy a bond").click()
+    cy.get(".bg-RU").contains("4:9").click()
   })
 })
 

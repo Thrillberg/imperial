@@ -31,6 +31,7 @@ export default class Imperial {
     this.handlingConflict = false;
     this.soloMode = false;
     this.swissBanks = [];
+    this.uncontrolledNations = [];
     this.passingThroughInvestor = false;
     this.previousPlayerName = "";
     this.fleetConvoyCount = {};
@@ -351,6 +352,14 @@ export default class Imperial {
     
     if (this.investing) {
       this.previousPlayerName = this.currentPlayerName;
+      const nextNation = this.currentNation.when({
+        AH: () => Nation.IT,
+        IT: () => Nation.FR,
+        FR: () => Nation.GB,
+        GB: () => Nation.GE,
+        GE: () => Nation.RU,
+        RU: () => Nation.AH
+      });
       const index = this.order.indexOf(this.currentPlayerName);
       if (index === this.order.length - 1) {
         this.currentPlayerName = this.order[0];
@@ -359,6 +368,10 @@ export default class Imperial {
       }
       if (this.currentPlayerName !== this.firstInvestor) {
         this.availableActions = availableBondPurchases(this.currentNation, this);
+        return;
+      } else if (!this.nations.get(nextNation).controller) {
+        this.currentNation = nextNation;
+        this.roundOfInvestment();
         return;
       }
       this.investing = false;
@@ -404,6 +417,14 @@ export default class Imperial {
   skipBondPurchase(action) {
     if (this.investing) {
       this.previousPlayerName = this.currentPlayerName;
+      const nextNation = this.currentNation.when({
+        AH: () => Nation.IT,
+        IT: () => Nation.FR,
+        FR: () => Nation.GB,
+        GB: () => Nation.GE,
+        GE: () => Nation.RU,
+        RU: () => Nation.AH
+      });
       const index = this.order.indexOf(this.currentPlayerName);
       if (index === this.order.length - 1) {
         this.currentPlayerName = this.order[0];
@@ -412,6 +433,10 @@ export default class Imperial {
       }
       if (this.currentPlayerName !== this.firstInvestor) {
         this.availableActions = availableBondPurchases(this.currentNation, this);
+        return;
+      } else if (!this.nations.get(nextNation).controller) {
+        this.currentNation = nextNation;
+        this.roundOfInvestment();
         return;
       }
       this.investing = false;
