@@ -97,6 +97,8 @@ export default {
           return `${stringify(action.payload.nation.value)} gained ${action.payload.powerPoints} power points.`;
         case "playerTradedInForABond":
           return `${action.payload.player} traded in their ${stringify(action.payload.bondNation.value)} bond for ${action.payload.bondCost}m.`;
+        case "playerAutoSkipsBondPurchase":
+          return `${action.payload.player} could not buy a bond from ${stringify(action.payload.bondNation.value)} because of insufficient funds.`;
         case "playerPaysForRondel":
           let slot = this.capitalize(action.payload.slot).replace(/\d/g,"");
           return `${action.payload.player} paid ${action.payload.cost}m to move to the ${slot} slot on the rondel.`;
