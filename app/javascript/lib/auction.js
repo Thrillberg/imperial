@@ -103,55 +103,45 @@ export default class Auction {
       game.nations.get(action.payload.nation).controller =
         action.payload.player;
     }
-    this.handleAdvancePlayer(game);
     this.setAvailableActions(action, game);
   }
 
   skipBondPurchase(action, game) {
-    this.handleAdvancePlayer(game);
     this.setAvailableActions(action, game);
   }
 
   setAvailableActions(action, game) {
-    const nations = [Nation.AH, Nation.IT, Nation.FR, Nation.GB, Nation.GE, Nation.RU];
-    if (this.shouldAdvanceNation(game)) {
-      this.advanceNation(game);
-      this.firstPlayerIndex++;
-      if (!this.order[this.firstPlayerIndex]) {
-        this.firstPlayerIndex = 0;
-      }
-      game.currentPlayerName = this.order[this.firstPlayerIndex];
-
-      if (!game.currentNation) {
-        for (const player in game.players) {
-          game.checkForSwissBank(player);
-        }
-
-        const [startingPlayer, startingNation] = this.getStartingPlayerAndNation(game);
-        game.currentPlayerName = startingPlayer;
-        game.currentNation = startingNation;
-        game.availableActions = new Set(game.rondelActions(startingNation));
-        this.inAuction = false;
-        return;
-      }
-    }
-    const ahControllerIndex = this.order.indexOf(game.nations.get(Nation.AH).controller);
-    if (game.variant !== "withoutInvestorCard") {
-      game.investorCardHolder = this.order[ahControllerIndex - 1] || this.order[this.order.length - 1];
-    }
-
-    game.availableActions = this.availableBondPurchases(game);
+    game.availableActions = new Set();
+    // If there is one available action, it is the pass action and doesn't
+    // count as a real action.
     while (game.availableActions.size <= 1) {
       this.handleAdvancePlayer(game);
+
+      // Nation's bonds have been offered to all players
       if (this.shouldAdvanceNation(game)) {
         this.advanceNation(game);
+        this.resetCurrentPlayer(game);
+
+        // Auction is over and the game should start
+        if (!game.currentNation) {
+          this.prepareToStartGame(game);
+          return;
+        }
+      }
+      if (this.availableBondPurchases(game).size <= 1) {
+        game.annotatedLog.push(
+          Action.playerAutoSkipsBondPurchase({
+            player: game.currentPlayerName,
+            bondNation: game.currentNation
+          })
+        );
       }
       game.availableActions = this.availableBondPurchases(game);
     }
   }
 
   shouldAdvanceNation(game) {
-    return game.currentPlayerName === this.order[this.firstPlayerIndex] ? true : false
+    return game.currentPlayerName === this.order[this.firstPlayerIndex]
   }
 
   advanceNation(game) {
@@ -164,6 +154,30 @@ export default class Auction {
     const currentPlayerIndex = this.order.indexOf(game.currentPlayerName);
     game.previousPlayerName = game.currentPlayerName;
     game.currentPlayerName = this.order[currentPlayerIndex + 1] || this.order[0];
+  }
+
+  resetCurrentPlayer(game) {
+    this.firstPlayerIndex++;
+    if (!this.order[this.firstPlayerIndex]) {
+      this.firstPlayerIndex = 0;
+    }
+    game.currentPlayerName = this.order[this.firstPlayerIndex];
+  }
+
+  prepareToStartGame(game) {
+    for (const player in game.players) {
+      game.checkForSwissBank(player);
+    }
+
+    const [startingPlayer, startingNation] = this.getStartingPlayerAndNation(game);
+    game.currentPlayerName = startingPlayer;
+    game.currentNation = startingNation;
+    game.availableActions = new Set(game.rondelActions(startingNation));
+    this.inAuction = false;
+    const ahControllerIndex = this.order.indexOf(game.nations.get(Nation.AH).controller);
+    if (game.variant !== "withoutInvestorCard") {
+      game.investorCardHolder = this.order[ahControllerIndex - 1] || this.order[this.order.length - 1];
+    }
   }
 
   totalInvestmentInNation(player, nation, game) {
