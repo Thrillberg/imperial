@@ -6,7 +6,7 @@ import { Bond, Nation } from "./constants.js";
 
 describe("auction", () => {
   describe("initialize", () => {
-    test("it is AH's turn to select a rondel slot", () => {
+    test("it is player1's turn to buy an AH bond", () => {
       const auction = new Auction();
       const game = new Imperial();
       let expectedActions = new Set([
@@ -157,6 +157,78 @@ describe("auction", () => {
         )
       );
       expect(game.swissBanks).toEqual(["player2"]);
+    });
+
+    test("it auto-skips players who cannot afford any bond", () => {
+      let expectedActions = new Set([
+        Action.skipBondPurchase({ player: "player2", nation: Nation.FR })
+      ]);
+      [2, 4, 6, 9, 12, 16, 20, 25, 30].map(cost => {
+        expectedActions.add(
+          Action.bondPurchase({
+            nation: Nation.FR,
+            cost,
+            player: "player2"
+          })
+        )
+      })
+      const log = [
+        Action.initialize({
+          players: [
+            { id: "player1" },
+            { id: "player2" }
+          ],
+          soloMode: false,
+          variant: "auction"
+        }),
+        Action.bondPurchase({ player: "player1", cost: 30, nation: Nation.AH }),
+        Action.bondPurchase({ player: "player2", cost: 2, nation: Nation.AH }),
+        Action.bondPurchase({ player: "player2", cost: 2, nation: Nation.IT }),
+        Action.bondPurchase({ player: "player1", cost: 9, nation: Nation.IT })
+      ]
+
+      const game = Imperial.fromLog(log);
+      const auction = game.auction;
+
+      expect(game.availableActions).toEqual(expectedActions);
+    });
+
+    test("auto-skip can handle more than 2 players with insufficient funds", () => {
+      let expectedActions = new Set([
+        Action.skipBondPurchase({ player: "player3", nation: Nation.GB })
+      ]);
+      [2, 4, 6, 9, 12, 16].map(cost => {
+        expectedActions.add(
+          Action.bondPurchase({
+            nation: Nation.GB,
+            cost,
+            player: "player3"
+          })
+        )
+      })
+      const log = [
+        Action.initialize({
+          players: [
+            { id: "player1" },
+            { id: "player2" },
+            { id: "player3" }
+          ],
+          soloMode: false,
+          variant: "auction"
+        }),
+        Action.bondPurchase({ player: "player1", cost: 25, nation: Nation.AH }),
+        Action.bondPurchase({ player: "player2", cost: 2, nation: Nation.AH }),
+        Action.bondPurchase({ player: "player3", cost: 4, nation: Nation.AH }),
+        Action.bondPurchase({ player: "player2", cost: 25, nation: Nation.IT }),
+        Action.bondPurchase({ player: "player3", cost: 6, nation: Nation.IT }),
+        Action.bondPurchase({ player: "player1", cost: 2, nation: Nation.IT }),
+        Action.bondPurchase({ player: "player3", cost: 2, nation: Nation.FR })
+      ]
+
+      const game = Imperial.fromLog(log);
+      const auction = game.auction;
+
+      expect(game.availableActions).toEqual(expectedActions);
     });
   });
 });
