@@ -52,6 +52,7 @@ export default {
   // The following are only for annotations
   playerGainsCash: makeAction("playerGainsCash", ["player", "amount"]),
   playerTradedInForABond: makeAction("playerTradedInForABond", ["player", "bondNation", "bondCost"]),
+  playerAutoSkipsBondPurchase: makeAction("playerAutoSkipsBondPurchase", ["player", "bondNation"]),
   playerPaysForRondel: makeAction("playerPaysForRondel", ["player", "cost", "slot"]),
   playerInvests: makeAction("playerInvests", ["player"]),
   nationGainsTreasury: makeAction("nationGainsTreasury", ["nation", "amount"]),
