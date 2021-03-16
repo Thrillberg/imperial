@@ -38,23 +38,23 @@ export default class Auction {
     this.firstPlayerIndex = 0;
     game.currentNation = Nation.AH;
     game.availableActions = this.availableBondPurchases(
-      Nation.AH,
       {
         availableBonds: s.availableBonds,
         players: s.players,
+        currentNation: Nation.AH,
         currentPlayerName: this.order[0],
         previousPlayerName: this.order[0]
       }
     );
   }
 
-  availableBondPurchases(nation, game) {
-    let out = new Set([Action.skipBondPurchase({ player: game.currentPlayerName, nation })]);
+  availableBondPurchases(game) {
+    let out = new Set([Action.skipBondPurchase({ player: game.currentPlayerName, nation: game.currentNation })]);
     const bonds = [...game.availableBonds].filter(bond => {
-      return bond.cost <= game.players[game.currentPlayerName].cash && bond.nation === nation
+      return bond.cost <= game.players[game.currentPlayerName].cash && bond.nation === game.currentNation
     })
     bonds.map(bond => {
-      out.add(Action.bondPurchase({ nation, player: game.currentPlayerName, cost: bond.cost }));
+      out.add(Action.bondPurchase({ nation: game.currentNation, player: game.currentPlayerName, cost: bond.cost }));
     })
     return out;
   }
@@ -114,17 +114,15 @@ export default class Auction {
 
   setAvailableActions(action, game) {
     const nations = [Nation.AH, Nation.IT, Nation.FR, Nation.GB, Nation.GE, Nation.RU];
-    let nextNation = action.payload.nation;
-    const nationIndex = nations.indexOf(nextNation);
-    if (game.currentPlayerName === this.order[this.firstPlayerIndex]) {
-      nextNation = nations[nationIndex + 1]
+    if (this.shouldAdvanceNation(game)) {
+      this.advanceNation(game);
       this.firstPlayerIndex++;
       if (!this.order[this.firstPlayerIndex]) {
         this.firstPlayerIndex = 0;
       }
       game.currentPlayerName = this.order[this.firstPlayerIndex];
 
-      if (!nextNation) {
+      if (!game.currentNation) {
         for (const player in game.players) {
           game.checkForSwissBank(player);
         }
@@ -137,12 +135,29 @@ export default class Auction {
         return;
       }
     }
-    game.currentNation = nextNation;
     const ahControllerIndex = this.order.indexOf(game.nations.get(Nation.AH).controller);
     if (game.variant !== "withoutInvestorCard") {
       game.investorCardHolder = this.order[ahControllerIndex - 1] || this.order[this.order.length - 1];
     }
-    game.availableActions = this.availableBondPurchases(nextNation, game);
+
+    game.availableActions = this.availableBondPurchases(game);
+    while (game.availableActions.size <= 1) {
+      this.handleAdvancePlayer(game);
+      if (this.shouldAdvanceNation(game)) {
+        this.advanceNation(game);
+      }
+      game.availableActions = this.availableBondPurchases(game);
+    }
+  }
+
+  shouldAdvanceNation(game) {
+    return game.currentPlayerName === this.order[this.firstPlayerIndex] ? true : false
+  }
+
+  advanceNation(game) {
+    const nations = [Nation.AH, Nation.IT, Nation.FR, Nation.GB, Nation.GE, Nation.RU];
+    const nationIndex = nations.indexOf(game.currentNation);
+    game.currentNation = nations[nationIndex + 1];
   }
 
   handleAdvancePlayer(game) {
