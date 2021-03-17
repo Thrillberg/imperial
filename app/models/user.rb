@@ -7,10 +7,9 @@ class User < ActiveRecord::Base
 
   def convert_games(old_name)
     games.each do |game|
-      initialize_action = game.actions.order(:created_at).first
-      if initialize_action
-        data = initialize_action.data.gsub(old_name, name)
-        initialize_action.update(data: data)
+      game.actions.each do |action|
+        data = action.data.gsub(old_name, name)
+        action.update(data: data)
       end
     end
   end
