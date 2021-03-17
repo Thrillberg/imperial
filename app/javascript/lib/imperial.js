@@ -293,6 +293,35 @@ export default class Imperial {
       }
       if (this.currentPlayerName !== this.firstInvestor) {
         this.availableActions = availableBondPurchases(this.currentNation, this);
+        // If there is one available action, it is the pass action and doesn't
+        // count as a real action.
+        while (this.availableActions.size <= 1 && this.investing) {
+          if (this.currentPlayerName === this.firstInvestor) {
+            this.investing = false;
+            for (const player in this.players) {
+              this.checkForSwissBank(player);
+            }
+            this.handleAdvancePlayer();
+            this.advanceInvestorCard();
+            this.availableActions = new Set(this.rondelActions(this.currentNation));
+
+            return;
+          }
+          this.annotatedLog.push(
+            Action.playerAutoSkipsBondPurchase({
+              player: this.currentPlayerName,
+              bondNation: this.currentNation
+            })
+          );
+          this.previousPlayerName = this.currentPlayerName;
+          const currentPlayerIndex = this.order.indexOf(this.currentPlayerName);
+          this.currentPlayerName = this.order[currentPlayerIndex + 1] || this.order[0];
+          if (this.swissBanks.includes(this.currentPlayerName)) {
+            this.availableActions = this.bondPurchasesFromAllNations();
+          } else {
+            this.availableActions = availableBondPurchases(this.currentNation, this);
+          }
+        }
         return;
       } else if (!this.nations.get(nextNation).controller) {
         this.currentNation = nextNation;
@@ -358,6 +387,35 @@ export default class Imperial {
       }
       if (this.currentPlayerName !== this.firstInvestor) {
         this.availableActions = availableBondPurchases(this.currentNation, this);
+        // If there is one available action, it is the pass action and doesn't
+        // count as a real action.
+        while (this.availableActions.size <= 1 && this.investing) {
+          this.annotatedLog.push(
+            Action.playerAutoSkipsBondPurchase({
+              player: this.currentPlayerName,
+              bondNation: this.currentNation
+            })
+          );
+          this.previousPlayerName = this.currentPlayerName;
+          const currentPlayerIndex = this.order.indexOf(this.currentPlayerName);
+          this.currentPlayerName = this.order[currentPlayerIndex + 1] || this.order[0];
+          if (this.currentPlayerName === this.firstInvestor) {
+            this.investing = false;
+            for (const player in this.players) {
+              this.checkForSwissBank(player);
+            }
+            this.handleAdvancePlayer();
+            this.advanceInvestorCard();
+            this.availableActions = new Set(this.rondelActions(this.currentNation));
+
+            return;
+          }
+          if (this.swissBanks.includes(this.currentPlayerName)) {
+            this.availableActions = this.bondPurchasesFromAllNations();
+          } else {
+            this.availableActions = availableBondPurchases(this.currentNation, this);
+          }
+        }
         return;
       } else if (!this.nations.get(nextNation).controller) {
         this.currentNation = nextNation;
@@ -381,17 +439,7 @@ export default class Imperial {
       }
     } else {
       for (const player in this.players) {
-        if (this.nationsUnderControl(player).length > 0) {
-          const playerIndex = this.swissBanks.indexOf(player);
-          if (playerIndex !== -1) {
-            this.swissBanks.splice(playerIndex, 1)
-          }
-        } else {
-          const playerIndex = this.swissBanks.indexOf(player);
-          if (playerIndex === -1) {
-            this.swissBanks.push(player);
-          }
-        }
+        this.checkForSwissBank(player);
       }
       this.handleAdvancePlayer();
       this.advanceInvestorCard();
@@ -1361,8 +1409,26 @@ export default class Imperial {
       this.investing = true
       this.firstInvestor = this.currentPlayerName
     } else {
-      this.availableActions = availableBondPurchases(null, this);
+      this.availableActions = this.bondPurchasesFromAllNations();
     }
+  }
+
+  bondPurchasesFromAllNations() {
+    let actions = new Set();
+    for (const [nation, data] of this.nations) {
+      for (const action of availableBondPurchases(nation, this)) {
+        actions.add(action);
+      }
+    }
+    for (const action of actions) {
+      if (action.type === "skipBondPurchase" && action.payload.nation) {
+        actions.delete(action);
+      }
+    }
+    actions.add(
+      Action.skipBondPurchase({ player: this.currentPlayerName, nation: null })
+    );
+    return actions;
   }
 
   playerBondsOfNation(player, nation) {
@@ -1651,6 +1717,22 @@ export default class Imperial {
     this.investing = true;
     this.firstInvestor = this.currentPlayerName;
     this.availableActions = availableBondPurchases(this.currentNation, this);
+    while (this.availableActions.size <= 1 && this.investing) {
+      this.annotatedLog.push(
+        Action.playerAutoSkipsBondPurchase({
+          player: this.currentPlayerName,
+          bondNation: this.currentNation
+        })
+      );
+      this.previousPlayerName = this.currentPlayerName;
+      const currentPlayerIndex = this.order.indexOf(this.currentPlayerName);
+      this.currentPlayerName = this.order[currentPlayerIndex + 1] || this.order[0];
+      if (this.swissBanks.includes(this.currentPlayerName)) {
+        this.availableActions = this.bondPurchasesFromAllNations();
+      } else {
+        this.availableActions = availableBondPurchases(this.currentNation, this);
+      }
+    }
   }
 
   isEqual(action1, action2) {
