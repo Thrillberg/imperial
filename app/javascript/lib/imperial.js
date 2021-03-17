@@ -1357,38 +1357,11 @@ export default class Imperial {
   endOfInvestorTurn(investor) {
     this.currentPlayerName = investor;
     // Investor may buy a bond
-    this.availableActions = new Set(
-      [...this.availableBonds]
-        .filter(bond => {
-          const player = investor;
-          const exchangeableBondCosts = [...this.players[player].bonds]
-            .filter(exchangeableBond => {
-              return exchangeableBond.nation === bond.nation;
-            })
-            .map(x => x.cost);
-          const topBondCost = Math.max(exchangeableBondCosts) || 0;
-          return(
-            // Player can buy outright
-            bond.cost <= this.players[player].cash || (
-              // Player can trade up but not down
-              bond.cost <= this.players[player].cash + topBondCost &&
-              bond.cost > topBondCost
-            )
-          )
-        })
-        .map(bond => {
-          return Action.bondPurchase({
-            nation: bond.nation,
-            player: investor,
-            cost: bond.cost
-          });
-        })
-    );
+    this.availableActions = availableBondPurchases(this.currentNation, this);
     if (this.variant === "withoutInvestorCard") {
       this.investing = true
       this.firstInvestor = this.currentPlayerName
     }
-    this.availableActions.add(Action.skipBondPurchase({ player: investor, nation: null }));
   }
 
   playerBondsOfNation(player, nation) {
