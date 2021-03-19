@@ -27,7 +27,9 @@
         <div v-for="bearer of bondBearers" :bearer="bearer">
           <b>{{ bearer.player }}</b> would receive {{ bearer.dividend }}m
         </div>
-        <b>{{ game.investorCardHolder }}</b> has the investor card
+        <div v-if="game.variant !== 'withoutInvestorCard'">
+          <b>{{ game.investorCardHolder }}</b> has the investor card
+        </div>
       </div>
       <div v-if="onTaxationSlot" class="mb-2">
         <div>
@@ -106,7 +108,11 @@ export default {
           case "investor": {
             this.onInvestorSlot = true;
             this.onTaxationSlot = false;
-            this.helperText = "Nation pays players interest, investor card holder receives 2m and may purchase a bond, Swiss Banks may invest."
+            if (this.game.variant === "withoutInvestorCard") {
+              this.helperText = "Nation pays players interest"
+            } else {
+              this.helperText = "Nation pays players interest, investor card holder receives 2m and may purchase a bond, Swiss Banks may invest."
+            }
             break;
           }
           case "import": {
