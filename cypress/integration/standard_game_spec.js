@@ -180,6 +180,12 @@ describe("Standard game", () => {
     // RU
     cy.get("#investor").click()
     cy.get(".bg-GB").contains("5:12").click()
+    // AH
+    cy.get("#maneuver1").click()
+    cy.contains("Bulgaria").click()
+    cy.contains("Romania").click()
+    cy.contains("Coexist").click()
+    cy.contains("Fight").click()
 
   })
 })

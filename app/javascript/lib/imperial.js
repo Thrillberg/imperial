@@ -563,11 +563,11 @@ export default class Imperial {
   }
 
   coexist(action) {
-    this.handlingConflict = false;
     const reversedLog = this.log.slice().reverse();
     if (reversedLog[1].type !== "coexist") {
       // Coexist request can be accepted or rejected
-      this.currentPlayerName = action.payload.incumbent;
+      this.previousPlayerName = this.currentPlayerName;
+      this.currentPlayerName = this.nations.get(action.payload.incumbent).controller;
       this.availableActions = new Set([
         Action.coexist({
           province: action.payload.province,
@@ -582,6 +582,7 @@ export default class Imperial {
         })
       ]);
     } else {
+      this.handlingConflict = false;
       if (this.unitsToMove.length === 0) {
         // End of turn
         this.units.get(action.payload.challenger).get(action.payload.province).friendly = true;
