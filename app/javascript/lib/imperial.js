@@ -1727,6 +1727,17 @@ export default class Imperial {
       this.previousPlayerName = this.currentPlayerName;
       const currentPlayerIndex = this.order.indexOf(this.currentPlayerName);
       this.currentPlayerName = this.order[currentPlayerIndex + 1] || this.order[0];
+      if (this.currentPlayerName === this.firstInvestor) {
+        this.investing = false;
+        for (const player in this.players) {
+          this.checkForSwissBank(player);
+        }
+        this.handleAdvancePlayer();
+        this.advanceInvestorCard();
+        this.availableActions = new Set(this.rondelActions(this.currentNation));
+
+        return;
+      }
       if (this.swissBanks.includes(this.currentPlayerName)) {
         this.availableActions = this.bondPurchasesFromAllNations();
       } else {
