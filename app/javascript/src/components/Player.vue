@@ -12,7 +12,7 @@
     <div>Raw score: {{ player.rawScore }}</div>
     <div class="flex flex-wrap">
       <Bond
-        v-for="bond in player.bonds"
+        v-for="bond in sortedBonds(player.bonds)"
         :bond="bond"
         :key="bond.nation.value + bond.cost"
       />
@@ -24,6 +24,8 @@
 
 <script>
 import Bond from "./Bond.vue";
+
+import { Nation } from "../../lib/constants.js";
 
 export default {
   name: "Player",
@@ -37,6 +39,32 @@ export default {
     profile: Object,
     game: Object,
     name: String
+  },
+  methods: {
+    sortedBonds(bonds) {
+      const nations = [
+        Nation.AH,
+        Nation.IT,
+        Nation.FR,
+        Nation.GB,
+        Nation.GE,
+        Nation.RU
+      ]
+      const sortedByNation = [...bonds].sort((bond1, bond2) => {
+        if (nations.indexOf(bond1.nation) > nations.indexOf(bond2.nation)) {
+          return 1
+        } else {
+          return -1
+        }
+      });
+      const sortedBonds = sortedByNation.sort((bond1, bond2) => {
+        if (bond1.nation === bond2.nation && bond1.cost > bond2.cost) {
+          return 1
+        }
+        return -1
+      });
+      return sortedBonds;
+    }
   }
 };
 </script>
