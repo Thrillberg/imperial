@@ -2756,10 +2756,54 @@ describe("imperial", () => {
         return game;
       };
 
+      test("other nation can choose to fight", () => {
+        const game = newGame();
+        game.units.get(Nation.AH).get("a").armies++;
+        game.units.get(Nation.IT).get("a").armies++;
+        game.availableActions = new Set([
+          Action.coexist({
+            province: "a",
+            incumbent: Nation.AH,
+            challenger: Nation.IT
+          })
+        ]);
+
+        game.tick(
+          Action.coexist({
+            province: "a",
+            incumbent: Nation.AH,
+            challenger: Nation.IT
+          })
+        );
+        
+        expect(game.availableActions).toEqual(
+          new Set([
+            Action.coexist({
+              province: "a",
+              incumbent: Nation.AH,
+              challenger: Nation.IT
+            }),
+            Action.fight({
+              province: "a",
+              incumbent: Nation.AH,
+              challenger: Nation.IT,
+              targetType: undefined
+            })
+          ])
+        );
+      });
+
       test("both units remain", () => {
         const game = newGame();
         game.units.get(Nation.AH).get("a").armies++;
         game.units.get(Nation.IT).get("a").armies++;
+        game.availableActions = new Set([
+          Action.coexist({
+            province: "a",
+            incumbent: Nation.AH,
+            challenger: Nation.IT
+          })
+        ]);
 
         game.tick(
           Action.coexist({
@@ -2787,6 +2831,13 @@ describe("imperial", () => {
         game.units.get(Nation.AH).get("a").armies++;
         game.units.get(Nation.IT).get("a").armies++;
         game.units.get(Nation.IT).get("a").armies++;
+        game.availableActions = new Set([
+          Action.coexist({
+            province: "a",
+            incumbent: Nation.AH,
+            challenger: Nation.IT
+          })
+        ]);
 
         game.tick(
           Action.coexist({
@@ -2804,11 +2855,21 @@ describe("imperial", () => {
           const game = newGame();
           game.units.get(Nation.AH).get("b").armies++;
           game.units.get(Nation.IT).get("a").armies++;
+          game.availableActions = new Set([
+            Action.rondel({ slot: "maneuver1", nation: Nation.AH, cost: 0 })
+          ]);
 
           game.tick(
             Action.rondel({ slot: "maneuver1", nation: Nation.AH, cost: 0 })
           );
           game.tick(Action.maneuver({ origin: "b", destination: "a" }));
+          game.tick(
+            Action.coexist({
+              province: "a",
+              incumbent: Nation.IT,
+              challenger: Nation.AH
+            })
+          );
           game.tick(
             Action.coexist({
               province: "a",
@@ -2838,11 +2899,21 @@ describe("imperial", () => {
           game.units.get(Nation.AH).get("b").armies++;
           game.units.get(Nation.AH).get("b").armies++;
           game.units.get(Nation.IT).get("a").armies++;
+          game.availableActions = new Set([
+            Action.rondel({ slot: "maneuver1", nation: Nation.AH, cost: 0 })
+          ]);
 
           game.tick(
             Action.rondel({ slot: "maneuver1", nation: Nation.AH, cost: 0 })
           );
           game.tick(Action.maneuver({ origin: "b", destination: "a" }));
+          game.tick(
+            Action.coexist({
+              province: "a",
+              incumbent: Nation.IT,
+              challenger: Nation.AH
+            })
+          );
           game.tick(
             Action.coexist({
               province: "a",
