@@ -1645,21 +1645,23 @@ export default class Imperial {
   }
 
   passedThroughInvestor(from, to) {
-    switch (from) {
-      case "maneuver1": {
-        return ["import", "production2", "maneuver2", "taxation", "factory"].includes(to);
-      }
-      case "production1": {
-        return ["import", "production2", "maneuver2", "taxation"].includes(to);
-      }
-      case "factory": {
-        return ["import", "production2", "maneuver2"].includes(to);
-      }
-      case "taxation": {
-        return ["import", "production2"].includes(to);
-      }
-      case "maneuver2": {
-        return ["import"].includes(to);
+    if (this.variant !== "withoutInvestorCard") {
+      switch (from) {
+        case "maneuver1": {
+          return ["import", "production2", "maneuver2", "taxation", "factory"].includes(to);
+        }
+        case "production1": {
+          return ["import", "production2", "maneuver2", "taxation"].includes(to);
+        }
+        case "factory": {
+          return ["import", "production2", "maneuver2"].includes(to);
+        }
+        case "taxation": {
+          return ["import", "production2"].includes(to);
+        }
+        case "maneuver2": {
+          return ["import"].includes(to);
+        }
       }
     }
   }
