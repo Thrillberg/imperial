@@ -373,6 +373,8 @@ export default {
       switch (this.name) {
         case "Danzig":
           return 20
+        case "Edinburgh":
+          return 15
         case "Genoa":
           return 15
         case "St. Petersburg":
@@ -388,6 +390,8 @@ export default {
           return -20
         case "Danzig":
           return -30
+        case "Edinburgh":
+          return 5
         case "Genoa":
           return 10
         case "St. Petersburg":
