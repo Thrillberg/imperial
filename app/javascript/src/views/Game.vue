@@ -347,6 +347,7 @@ export default {
         }
       }
       if (!provinceIsValid) {
+        this.maneuverOrigin = "";
         return;
       }
       if (this.game.currentPlayerName === this.profile.username || this.game.soloMode) {
