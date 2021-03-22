@@ -340,6 +340,15 @@ export default {
     },
     selectProvince(inputProvince) {
       const province = inputProvince.replace(/\.*\s/gm, "").toLowerCase();
+      let provinceIsValid = false;
+      for (const validProvince of this.validProvinces()) {
+        if (validProvince === province) {
+          provinceIsValid = true;
+        }
+      }
+      if (!provinceIsValid) {
+        return;
+      }
       if (this.game.currentPlayerName === this.profile.username || this.game.soloMode) {
         // If the game is in a maneuver and an origin is specified,
         // then the next specified province is the destination
