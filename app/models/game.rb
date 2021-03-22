@@ -6,8 +6,7 @@ class Game < ActiveRecord::Base
 
   scope :current, -> {
     includes(:host, :users, :actions)
-      .where("actions.created_at > ?", 3.days.ago)
-      .references(:actions)
+      .where("created_at > ?", 3.days.ago)
       .order(created_at: :desc)
   }
 
