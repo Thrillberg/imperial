@@ -1149,7 +1149,7 @@ export default class Imperial {
       this.nations.get(nation).treasury -= payment;
     }
     if (this.variant === "withoutInvestorCard") {
-      this.endOfInvestorTurn(this.currentPlayerName);
+      this.roundOfInvestment();
     } else {
       this.investorCardActive = true;
       this.middleOfInvestorTurn();
