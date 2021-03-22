@@ -316,10 +316,12 @@ export default class Imperial {
           this.previousPlayerName = this.currentPlayerName;
           const currentPlayerIndex = this.order.indexOf(this.currentPlayerName);
           this.currentPlayerName = this.order[currentPlayerIndex + 1] || this.order[0];
-          if (this.swissBanks.includes(this.currentPlayerName)) {
-            this.availableActions = this.bondPurchasesFromAllNations();
-          } else {
-            this.availableActions = availableBondPurchases(this.currentNation, this);
+          if (this.currentPlayerName !== this.firstInvestor) {
+            if (this.swissBanks.includes(this.currentPlayerName)) {
+              this.availableActions = this.bondPurchasesFromAllNations();
+            } else {
+              this.availableActions = availableBondPurchases(this.currentNation, this);
+            }
           }
         }
         return;
