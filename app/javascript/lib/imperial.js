@@ -1034,8 +1034,10 @@ export default class Imperial {
           player: this.currentPlayerName,
           amount: excessTaxes
         }));
-        // Nation's taxChartPosition increases to match taxes
-        nation.taxChartPosition += excessTaxes;
+        // Nation's taxChartPosition matches taxes but cannot fall
+        if (taxes > nation.taxChartPosition) {
+          nation.taxChartPosition = taxes;
+        }
         // The tax chart maxes out at 15
         if (nation.taxChartPosition > 15) nation.taxChartPosition = 15;
         // 2. Collecting money
@@ -1052,7 +1054,7 @@ export default class Imperial {
         if (powerPoints < 0) powerPoints = 0;
         nation.powerPoints += powerPoints;
 
-        if (nation.powerPoints + taxes >= 25) {
+        if (nation.powerPoints >= 25) {
           nation.powerPoints = 25;
           this.updateRawScores();
 

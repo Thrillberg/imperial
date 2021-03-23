@@ -1975,6 +1975,30 @@ describe("imperial", () => {
             expect(game.nations.get(Nation.AH).powerPoints).toEqual(25);
             expect(game.log[game.log.length - 1]).toEqual(Action.endGame());
           });
+
+          test("based on a real-life example!", () => {
+            const game = newGame();
+            // Arbitrarily give AH 3 power points
+            game.nations.get(Nation.AH).powerPoints = 6;
+            game.nations.get(Nation.AH).taxChartPosition = 11;
+            // Give AH stuff to put AH's power points over 25
+            game.provinces.get("a").factory = "armaments";
+            game.provinces.get("b").factory = "armaments";
+            game.provinces.get("c").flag = Nation.AH;
+            game.provinces.get("d").flag = Nation.AH;
+            game.provinces.get("e").factory = "armaments";
+            game.provinces.get("h").flag = Nation.AH;
+            game.provinces.get("i").flag = Nation.AH;
+            game.provinces.get("j").flag = Nation.AH;
+            game.provinces.get("k").flag = Nation.AH;
+
+            game.tick(
+              Action.rondel({ cost: 0, nation: Nation.AH, slot: "taxation" })
+            );
+
+            expect(game.nations.get(Nation.AH).powerPoints).toEqual(13);
+            expect(game.players["player1"].cash).toEqual(3);
+          });
         });
       });
 
