@@ -585,6 +585,8 @@ export default class Imperial {
       ]);
     } else {
       this.handlingConflict = false;
+      this.previousPlayerName = this.currentPlayerName;
+      this.currentPlayerName = this.nations.get(action.payload.challenger).controller;
       if (this.unitsToMove.length === 0) {
         // End of turn
         this.units.get(action.payload.challenger).get(action.payload.province).friendly = true;
