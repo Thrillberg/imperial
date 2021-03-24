@@ -32,6 +32,16 @@
       </div>
     </div>
   </div>
+  <div v-else-if="fighting() && (profile.username === controllingPlayerName || (game.soloMode && profile.username in game.players))" class="text-center text-lg">
+    <div
+      v-for="fightAction in fightActions()"
+      v-on:click="$emit('tick-with-action', fightAction)"
+      :key="fightAction.payload.province"
+      class="rounded p-2 bg-green-800 text-white cursor-pointer"
+    >
+      Fight in {{ fightAction.payload.province }}
+    </div>
+  </div>
 </template>
 
 <script>
@@ -40,10 +50,10 @@ export default {
   props: { game: Object, profile: Object, controllingPlayerName: String },
   methods: {
     fighting: function() {
-      let fighting = true;
+      let fighting = false;
       for (const action of this.game.availableActions) {
-        if (action.type !== "coexist" && action.type !== "fight" && action.type !== "undo") {
-          fighting = false;
+        if (action.type === "coexist" || action.type === "fight") {
+          fighting = true;
         }
       }
       return fighting;
@@ -92,6 +102,15 @@ export default {
         }
       }
       this.$emit("tick-with-action", unfriendlyEntranceAction);
+    },
+    fightActions: function() {
+      let fightActions = [];
+      for (const action of this.game.availableActions) {
+        if (action.type === "fight") {
+          fightActions.push(action)
+        }
+      }
+      return fightActions;
     }
   }
 }

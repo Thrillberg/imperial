@@ -503,22 +503,61 @@ export default class Imperial {
       .get(action.payload.challenger)
       .get(province);
 
-    // Remove units at the fight
-    if (incumbentUnitsAtProvince.fleets > 0) {
-      if (action.payload.targetType === "army") {
-        incumbentUnitsAtProvince.armies -= 1;
-        challengerUnitsAtProvince.armies -= 1;
-      } else {
-        incumbentUnitsAtProvince.fleets -= 1;
-        if (challengerUnitsAtProvince.armies === 1) {
-          challengerUnitsAtProvince.armies -= 1;
-        } else {
-          challengerUnitsAtProvince.fleets -= 1;
+    // Remove units from this.unitsToMove in case they could have moved
+    let unitIndex = null;
+    this.unitsToMove.forEach(([unitProvince, _], index) => {
+      if (unitProvince === province) {
+        unitIndex = index;
+      }
+    });
+    if (unitIndex !== null) {
+      this.unitsToMove.splice(unitIndex, 1);
+      // Remove it from available actions
+      for (const action of this.availableActions) {
+        if (action.payload?.origin === province || action.payload?.province === province) {
+          this.availableActions.delete(action)
         }
       }
-    } else if (incumbentUnitsAtProvince.armies > 0) {
-      incumbentUnitsAtProvince.armies -= 1;
-      challengerUnitsAtProvince.armies -= 1;
+    }
+
+    // Remove units at the fight
+    while (
+      (incumbentUnitsAtProvince.fleets > 0 || incumbentUnitsAtProvince.armies > 0) &&
+      (challengerUnitsAtProvince.fleets > 0 || challengerUnitsAtProvince.armies > 0)
+    ) {
+      if (incumbentUnitsAtProvince.fleets > 0) {
+        if (action.payload.targetType === "army") {
+          incumbentUnitsAtProvince.armies -= 1;
+          challengerUnitsAtProvince.armies -= 1;
+        } else {
+          incumbentUnitsAtProvince.fleets -= 1;
+          if (challengerUnitsAtProvince.armies === 1) {
+            challengerUnitsAtProvince.armies -= 1;
+          } else {
+            challengerUnitsAtProvince.fleets -= 1;
+          }
+        }
+      } else if (incumbentUnitsAtProvince.armies > 0) {
+        incumbentUnitsAtProvince.armies -= 1;
+        challengerUnitsAtProvince.armies -= 1;
+      }
+    }
+
+    // Remove destroyed units from this.availableActions
+    const fleetsAtProvince = this.units.get(this.currentNation).get(province).fleets;
+    const armiesAtProvince = this.units.get(this.currentNation).get(province).armies;
+    if (fleetsAtProvince === 0 && armiesAtProvince === 0) {
+      let coexistAction = {};
+      let fightAction = {};
+      for (const action of this.availableActions) {
+        if (action.type === "coexist" && action.payload.province === province) {
+          coexistAction = action
+        } else if (action.type === "fight" && action.payload.province === province) {
+          fightAction = action
+        }
+      }
+      this.availableActions.delete(coexistAction)
+      this.availableActions.delete(fightAction)
     }
 
     const totalIncumbentUnitsAtProvince =
@@ -542,6 +581,8 @@ export default class Imperial {
     }
 
     this.handlingConflict = false;
+    this.previousPlayerName = this.currentPlayerName;
+    this.currentPlayerName = this.nations.get(action.payload.challenger).controller;
     if (this.unitsToMove.length === 0) {
       this.unitsToMove = [];
       this.maneuvering = false;
@@ -896,9 +937,11 @@ export default class Imperial {
 
   setManeuverAvailableActions() {
     if (this.unitsToMove.length > 0) {
+      this.availableActions = new Set();
+      this.checkForNewFights();
       const provincesWithFleets = new Map();
       const provincesWithArmies = new Map();
-      const out = new Set([Action.endManeuver()]);
+      this.availableActions.add(Action.endManeuver());
       this.unitsToMove.forEach(([origin, type]) => {
         const units = this.units.get(this.currentNation).get(origin);
         if (units.fleets > 0 && type === "fleet") {
@@ -914,7 +957,7 @@ export default class Imperial {
             friendlyFleets: new Set(),
             isOccupied: this.isOccupied(this.currentNation)
           })) {
-            out.add(Action.maneuver({ origin, destination }));
+            this.availableActions.add(Action.maneuver({ origin, destination }));
           }
         }
         const friendlyFleets = new Set();
@@ -931,11 +974,10 @@ export default class Imperial {
             friendlyFleets,
             isOccupied: this.isOccupied(this.currentNation)
           })) {
-            out.add(Action.maneuver({ origin, destination }));
+            this.availableActions.add(Action.maneuver({ origin, destination }));
           }
         }
       });
-      this.availableActions = out;
     } else {
       // No more units may be maneuvered on this turn.
       this.maneuvering = false;
@@ -1087,8 +1129,10 @@ export default class Imperial {
       }
       case "maneuver1":
       case "maneuver2": {
+        this.availableActions = new Set([Action.endManeuver()]);
         this.maneuvering = true;
         this.collectUnitsToMove(action);
+        this.checkForNewFights();
         this.beginManeuver(action);
         return;
       }
@@ -1365,8 +1409,24 @@ export default class Imperial {
     }
   }
 
+  checkForNewFights() {
+    this.unitsToMove.forEach(([province, unitType]) => {
+      for (const [nation, data] of this.nations) {
+        let {armies, fleets} = this.units.get(nation).get(province);
+        if ((armies > 0 || fleets > 0) && nation !== this.currentNation) {
+          this.availableActions.add(Action.fight({
+            province,
+            incumbent: this.currentNation,
+            challenger: nation,
+            targetType: unitType
+          }))
+        }
+      }
+    });
+  }
+
   beginManeuver(action) {
-    const destinations = new Set([Action.endManeuver()]);
+    this.availableActions = new Set([Action.endManeuver()]);
 
     this.unitsToMove.forEach(([origin, type]) => {
       if (type === "fleet") {
@@ -1377,7 +1437,7 @@ export default class Imperial {
           friendlyFleets: new Set(),
           isOccupied: this.isOccupied(this.currentNation)
         })) {
-          destinations.add(
+          this.availableActions.add(
             Action.maneuver({
               origin,
               destination
@@ -1398,7 +1458,7 @@ export default class Imperial {
           friendlyFleets,
           isOccupied: this.isOccupied(this.currentNation)
         })) {
-          destinations.add(
+          this.availableActions.add(
             Action.maneuver({
               origin,
               destination
@@ -1407,8 +1467,6 @@ export default class Imperial {
         }
       }
     });
-
-    this.availableActions = destinations;
   }
 
   flagCount(nation) {
@@ -1620,7 +1678,8 @@ export default class Imperial {
     let provinceIsUnoccupied = true;
     for (const [occupyingNation] of this.units) {
       if (occupyingNation !== owningNation) {
-        if (this.units.get(occupyingNation).get(province).armies > 0) {
+        let {armies, friendly} = this.units.get(occupyingNation).get(province);
+        if (armies > 0 && !friendly) {
           provinceIsUnoccupied = false;
         }
       }
@@ -1733,7 +1792,7 @@ export default class Imperial {
   }
 
   availableActionsWithUndo() {
-    let availableActions = this.availableActions;
+    let availableActions = new Set([...this.availableActions]);
     if (this.log.length > 1) {
       if (this.log.slice(-1)[0].type !== "undo") {
         availableActions.add(Action.undo({ player: this.previousPlayerName }));
