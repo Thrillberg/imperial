@@ -219,7 +219,6 @@ const edges = [
   ["dijon", "marseille"],
   ["dijon", "bordeaux"],
   ["dijon", "brest"],
-  ["tunis", "easternmediterraneansea"],
   ["tunis", "westernmediterraneansea"],
   ["tunis", "algeria"],
   ["algeria", "westernmediterraneansea"],

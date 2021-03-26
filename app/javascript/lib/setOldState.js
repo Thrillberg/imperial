@@ -37,6 +37,10 @@ export default (game) => {
     }
     players[player].bonds = bonds;
   }
+  let fleetConvoyCount = {};
+  for (const province of Object.keys(game.fleetConvoyCount)) {
+    fleetConvoyCount[province] = game.fleetConvoyCount[province]
+  }
 
   return {
     units,
@@ -44,6 +48,7 @@ export default (game) => {
     provinces,
     availableBonds,
     availableActions,
-    players
+    players,
+    fleetConvoyCount
   }
 }
