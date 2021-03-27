@@ -222,9 +222,10 @@ export default class Imperial {
     };
     const bonds = this.players[action.payload.player].bonds;
     if (action.payload.cost > this.players[action.payload.player].cash) {
-      const tradeIn = [...bonds]
+      const tradeableBonds = [...bonds]
         .filter(({ nation }) => nation === action.payload.nation)
-        .map(({ cost }) => cost)[0];
+        .map(({ cost }) => cost);
+      const tradeIn = Math.max(...tradeableBonds);
       if (tradeIn === undefined) {
         throw new Error(
           `${action.payload.player} does not have any bonds to trade for ${action.payload.nation}`
