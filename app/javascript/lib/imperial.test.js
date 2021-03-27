@@ -95,6 +95,27 @@ describe("imperial", () => {
         );
       });
 
+      test("player trades in the highest-value bond", () => {
+        const game = newGame();
+        game.players["player1"].bonds = new Set([
+          Bond(Nation.AH, 3),
+          Bond(Nation.AH, 5)
+        ]);
+        game.players["player1"].cash = 12;
+        game.availableActions = new Set([
+          Action.bondPurchase({ player: "player1", cost: 20, nation: Nation.AH })
+        ]);
+
+        game.tick(
+          Action.bondPurchase({ player: "player1", cost: 20, nation: Nation.AH })
+        );
+
+        expect(game.players["player1"].bonds).toEqual(
+          new Set([Bond(Nation.AH, 7), Bond(Nation.AH, 3)])
+        );
+        expect(game.players["player1"].cash).toEqual(4);
+      });
+
       test("purchasing a bond can grant control of the nation", () => {
         const game = newGame();
         game.players["player1"].bonds = new Set();
