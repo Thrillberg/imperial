@@ -881,10 +881,10 @@ describe("imperial", () => {
             );
           });
 
-          test("nation cannot use railroad rule when occupied", () => {
+          test("nation cannot use railroad through occupied province", () => {
             const game = newGame();
             game.units.get(Nation.AH).get("e").armies++;
-            game.units.get(Nation.IT).get("g").armies++;
+            game.units.get(Nation.IT).get("f").armies++;
 
             game.tick(
               Action.rondel({ slot: maneuver, nation: Nation.AH, cost: 0 })

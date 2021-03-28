@@ -661,7 +661,8 @@ export default class Imperial {
             origin,
             nation: action.payload.nation,
             isFleet: true,
-            friendlyFleets: new Set()
+            friendlyFleets: new Set(),
+            occupiedHomeProvinces: this.occupiedHomeProvinces(this.currentNation)
           })) {
             destinations.add(
               Action.maneuver({
@@ -677,7 +678,8 @@ export default class Imperial {
             origin,
             nation: action.payload.nation,
             isFleet: false,
-            friendlyFleets: new Set()
+            friendlyFleets: new Set(),
+            occupiedHomeProvinces: this.occupiedHomeProvinces(this.currentNation)
           })) {
             destinations.add(
               Action.maneuver({
@@ -956,7 +958,7 @@ export default class Imperial {
             nation: this.currentNation,
             isFleet: true,
             friendlyFleets: new Set(),
-            isOccupied: this.isOccupied(this.currentNation)
+            occupiedHomeProvinces: this.occupiedHomeProvinces(this.currentNation)
           })) {
             this.availableActions.add(Action.maneuver({ origin, destination }));
           }
@@ -973,7 +975,7 @@ export default class Imperial {
             nation: this.currentNation,
             isFleet: false,
             friendlyFleets,
-            isOccupied: this.isOccupied(this.currentNation)
+            occupiedHomeProvinces: this.occupiedHomeProvinces(this.currentNation)
           })) {
             this.availableActions.add(Action.maneuver({ origin, destination }));
           }
@@ -1436,7 +1438,7 @@ export default class Imperial {
           nation: action.payload.nation,
           isFleet: true,
           friendlyFleets: new Set(),
-          isOccupied: this.isOccupied(this.currentNation)
+          occupiedHomeProvinces: this.occupiedHomeProvinces(this.currentNation)
         })) {
           this.availableActions.add(
             Action.maneuver({
@@ -1457,7 +1459,7 @@ export default class Imperial {
           nation: action.payload.nation,
           isFleet: false,
           friendlyFleets,
-          isOccupied: this.isOccupied(this.currentNation)
+          occupiedHomeProvinces: this.occupiedHomeProvinces(this.currentNation)
         })) {
           this.availableActions.add(
             Action.maneuver({
@@ -1753,16 +1755,24 @@ export default class Imperial {
     }
   }
 
-  isOccupied(nation) {
-    let isOccupied = false;
+  occupiedHomeProvinces(nation) {
+    let occupiedHomeProvinces = [];
     if (!!this.board.byNation.get(nation)) {
       for (const province of this.board.byNation.get(nation)) {
-        for (const [occupyingNation,] of this.nations) {
-          const units = this.units.get(occupyingNation).get(province);
-          if (units.armies > 0 && occupyingNation !== nation && units.friendly === false) {
-            isOccupied = true;
-          }
+        if (this.provinceIsOccupied(province, nation)) {
+          occupiedHomeProvinces.push(province);
         }
+      }
+    }
+    return occupiedHomeProvinces;
+  }
+
+  provinceIsOccupied(province, nation) {
+    let isOccupied = false;
+    for (const [occupyingNation,] of this.nations) {
+      const units = this.units.get(occupyingNation).get(province);
+      if (units.armies > 0 && occupyingNation !== nation && units.friendly === false) {
+        isOccupied = true;
       }
     }
     return isOccupied;

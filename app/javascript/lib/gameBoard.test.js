@@ -110,7 +110,7 @@ describe("GameBoard", () => {
           nation: "a",
           isFleet: false,
           friendlyFleets: new Set(),
-          isOccupied: true
+          occupiedHomeProvinces: ["2"]
         })
       ).toEqual(["2"]);
     });

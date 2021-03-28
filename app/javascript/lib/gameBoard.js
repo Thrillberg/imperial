@@ -35,7 +35,7 @@ export default class GameBoard {
     return allPaths.map(path => path[path.length - 1])
   }
 
-  pathsFrom({ origin, nation, isFleet, friendlyFleets, isOccupied }, currentPath) {
+  pathsFrom({ origin, nation, isFleet, friendlyFleets, occupiedHomeProvinces = [] }, currentPath) {
     this.validate(origin);
     let paths = [currentPath];
 
@@ -48,20 +48,23 @@ export default class GameBoard {
       // Fleet maneuvering to the ocean
       if (isFleet && this.graph.get(province).isOcean) {
         paths.push(currentPath.concat([province]));
-      // Army maneuvering to its own land
-      } else if (!isFleet && !this.graph.get(province).isOcean && this.graph.get(province).nation === nation && !isOccupied) {
+      // Army maneuvering to its own unoccupied land
+      } else if (!isFleet && !this.graph.get(province).isOcean && this.graph.get(province).nation === nation && !occupiedHomeProvinces.includes(province)) {
         const newPaths = this.pathsFrom(
-          { origin: province, nation, isFleet, friendlyFleets, isOccupied },
+          { origin: province, nation, isFleet, friendlyFleets, occupiedHomeProvinces },
           currentPath.concat([province])
         );
         paths = paths.concat(newPaths);
+      // Army maneuvering to its own occupied land
+      } else if (!isFleet && !this.graph.get(province).isOcean && this.graph.get(province).nation === nation && occupiedHomeProvinces.includes(province)) {
+        paths.push(currentPath.concat([province]));
       // Army maneuvering to foreign land
       } else if (!isFleet && !this.graph.get(province).isOcean) {
         paths.push(currentPath.concat([province]));
       // Army convoying over ocean
       } else if (!isFleet && this.graph.get(province).isOcean && friendlyFleets.has(province)) {
         const newPaths = this.pathsFrom(
-          { origin: province, nation, isFleet, friendlyFleets, isOccupied },
+          { origin: province, nation, isFleet, friendlyFleets, occupiedHomeProvinces },
           currentPath.concat([province])
         );
         paths = paths.concat(newPaths);
