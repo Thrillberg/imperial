@@ -54,7 +54,6 @@
 </template>
 
 <script>
-import Imperial from "../../lib/imperial.js";
 import stringify from "../stringify.js";
 
 import RondelSlot from "./RondelSlot.vue";
@@ -189,10 +188,9 @@ export default {
       return slots;
     },
     nextTaxChartPosition() {
-      const calculatedGame = Imperial.fromLog(this.game.log)
       const nation = this.game.currentNation;
-      const factories = calculatedGame.unoccupiedFactoryCount(nation);
-      const flags = calculatedGame.flagCount(nation);
+      const factories = this.game.unoccupiedFactoryCount(nation);
+      const flags = this.game.flagCount(nation);
       const currentTaxChartPosition = this.game.nations.get(nation).taxChartPosition;
 
       let taxChartPosition = factories * 2 + flags;
@@ -203,7 +201,7 @@ export default {
     },
     nationTaxes() {
       const nation = this.game.currentNation;
-      let taxes = this.nextTaxChartPosition() - Imperial.fromLog(this.game.log).unitCount(nation)
+      let taxes = this.nextTaxChartPosition() - this.game.unitCount(nation)
       if (taxes < 0) taxes = 0;
       return taxes;
     },
