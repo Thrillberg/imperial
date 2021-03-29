@@ -616,6 +616,122 @@ describe("imperial", () => {
           expect(game.importing).toEqual(true);
         });
 
+        test("importing when armies are at the limit", () => {
+          const board = new GameBoard({
+            nodes: [
+              { name: "a", nation: Nation.AH },
+              { name: "b", nation: null },
+              { name: "c", nation: Nation.IT }
+            ],
+            edges: []
+          });
+
+          const game = new Imperial(board);
+          initialize(game);
+          game.units.get(Nation.AH).get("a").armies = game.unitLimits.get(Nation.AH).armies;
+          const availableActions = new Set([Action.import({ placements: [] })]);
+
+          game.tick(
+            Action.rondel({ slot: "import", cost: 0, nation: Nation.AH })
+          );
+
+          expect(game.availableActions).toEqual(availableActions);
+          expect(game.nations.get(Nation.AH).rondelPosition).toEqual("import");
+          expect(game.importing).toEqual(true);
+        });
+
+        test("importing when armies are 1 below the limit", () => {
+          const board = new GameBoard({
+            nodes: [
+              { name: "a", nation: Nation.AH },
+              { name: "b", nation: null },
+              { name: "c", nation: Nation.IT }
+            ],
+            edges: []
+          });
+
+          const game = new Imperial(board);
+          initialize(game);
+          game.units.get(Nation.AH).get("a").armies = game.unitLimits.get(Nation.AH).armies - 1;
+          const availableActions = new Set([Action.import({ placements: [] })]);
+
+          availableActions.add(
+            Action.import({ placements: [{ province: "a", type: "army" }] })
+          );
+
+          game.tick(
+            Action.rondel({ slot: "import", cost: 0, nation: Nation.AH })
+          );
+
+          expect(game.availableActions).toEqual(availableActions);
+          expect(game.nations.get(Nation.AH).rondelPosition).toEqual("import");
+          expect(game.importing).toEqual(true);
+        });
+
+        test("importing when armies are 2 below the limit", () => {
+          const board = new GameBoard({
+            nodes: [
+              { name: "a", nation: Nation.AH },
+              { name: "b", nation: null },
+              { name: "c", nation: Nation.IT }
+            ],
+            edges: []
+          });
+
+          const game = new Imperial(board);
+          initialize(game);
+          game.units.get(Nation.AH).get("a").armies = game.unitLimits.get(Nation.AH).armies - 2;
+          const availableActions = new Set([Action.import({ placements: [] })]);
+
+          availableActions.add(
+            Action.import({ placements: [{ province: "a", type: "army" }] })
+          );
+          availableActions.add(
+            Action.import({ placements: [{ province: "a", type: "army" }, { province: "a", type: "army" }] })
+          );
+          game.tick(
+            Action.rondel({ slot: "import", cost: 0, nation: Nation.AH })
+          );
+
+          expect(game.availableActions).toEqual(availableActions);
+          expect(game.nations.get(Nation.AH).rondelPosition).toEqual("import");
+          expect(game.importing).toEqual(true);
+        });
+
+        test("importing when armies are 3 below the limit", () => {
+          const board = new GameBoard({
+            nodes: [
+              { name: "a", nation: Nation.AH },
+              { name: "b", nation: null },
+              { name: "c", nation: Nation.IT }
+            ],
+            edges: []
+          });
+
+          const game = new Imperial(board);
+          initialize(game);
+          game.units.get(Nation.AH).get("a").armies = game.unitLimits.get(Nation.AH).armies - 3;
+          const availableActions = new Set([Action.import({ placements: [] })]);
+
+          availableActions.add(
+            Action.import({ placements: [{ province: "a", type: "army" }] })
+          );
+          availableActions.add(
+            Action.import({ placements: [{ province: "a", type: "army" }, { province: "a", type: "army" }] })
+          );
+          availableActions.add(
+            Action.import({ placements: [{ province: "a", type: "army" }, { province: "a", type: "army" }, { province: "a", type: "army" }] })
+          );
+          game.tick(
+            Action.rondel({ slot: "import", cost: 0, nation: Nation.AH })
+          );
+
+          expect(game.availableActions).toEqual(availableActions);
+          expect(game.nations.get(Nation.AH).rondelPosition).toEqual("import");
+          expect(game.importing).toEqual(true);
+        });
+
+
         test("nation can import fleets in their coastal province", () => {
           const board = new GameBoard({
             nodes: [
@@ -737,6 +853,454 @@ describe("imperial", () => {
                 { province: "a", type: "fleet" },
                 { province: "a", type: "army" },
                 { province: "a", type: "fleet" }
+              ]
+            })
+          );
+          game.tick(
+            Action.rondel({ slot: "import", cost: 0, nation: Nation.AH })
+          );
+
+          expect(game.availableActions).toEqual(availableActions);
+          expect(game.nations.get(Nation.AH).rondelPosition).toEqual("import");
+          expect(game.importing).toEqual(true);
+        });
+
+
+        test("importing when fleets are at the limit", () => {
+          const board = new GameBoard({
+            nodes: [
+              { name: "a", nation: Nation.AH, factoryType: "shipyard" },
+              { name: "b", nation: null },
+              { name: "c", nation: Nation.IT }
+            ],
+            edges: []
+          });
+
+          const game = new Imperial(board);
+          initialize(game);
+          game.units.get(Nation.AH).get("a").fleets = game.unitLimits.get(Nation.AH).fleets;
+          const availableActions = new Set([Action.import({ placements: [] })]);
+
+          game.tick(
+            Action.rondel({ slot: "import", cost: 0, nation: Nation.AH })
+          );
+
+          expect(game.availableActions).toEqual(availableActions);
+          expect(game.nations.get(Nation.AH).rondelPosition).toEqual("import");
+          expect(game.importing).toEqual(true);
+        });
+
+        test("importing when fleets are 1 below the limit", () => {
+          const board = new GameBoard({
+            nodes: [
+              { name: "a", nation: Nation.AH, factoryType: "shipyard" },
+              { name: "b", nation: null },
+              { name: "c", nation: Nation.IT }
+            ],
+            edges: []
+          });
+
+          const game = new Imperial(board);
+          initialize(game);
+          game.units.get(Nation.AH).get("a").fleets = game.unitLimits.get(Nation.AH).fleets - 1;
+          const availableActions = new Set([Action.import({ placements: [] })]);
+
+          availableActions.add(
+            Action.import({ placements: [{ province: "a", type: "army" }] })
+          );
+          availableActions.add(
+            Action.import({ placements: [{ province: "a", type: "fleet" }] })
+          );
+          availableActions.add(
+            Action.import({
+              placements: [
+                { province: "a", type: "army" },
+                { province: "a", type: "army" }
+              ]
+            })
+          );
+          availableActions.add(
+            Action.import({
+              placements: [
+                { province: "a", type: "army" },
+                { province: "a", type: "fleet" }
+              ]
+            })
+          );
+          availableActions.add(
+            Action.import({
+              placements: [
+                { province: "a", type: "fleet" },
+                { province: "a", type: "army" }
+              ]
+            })
+          );
+          availableActions.add(
+            Action.import({
+              placements: [
+                { province: "a", type: "army" },
+                { province: "a", type: "army" },
+                { province: "a", type: "army" }
+              ]
+            })
+          );
+          availableActions.add(
+            Action.import({
+              placements: [
+                { province: "a", type: "army" },
+                { province: "a", type: "army" },
+                { province: "a", type: "fleet" }
+              ]
+            })
+          );
+          availableActions.add(
+            Action.import({
+              placements: [
+                { province: "a", type: "army" },
+                { province: "a", type: "fleet" },
+                { province: "a", type: "army" }
+              ]
+            })
+          );
+          availableActions.add(
+            Action.import({
+              placements: [
+                { province: "a", type: "fleet" },
+                { province: "a", type: "army" },
+                { province: "a", type: "army" }
+              ]
+            })
+          );
+
+          game.tick(
+            Action.rondel({ slot: "import", cost: 0, nation: Nation.AH })
+          );
+
+          expect(game.availableActions).toEqual(availableActions);
+          expect(game.nations.get(Nation.AH).rondelPosition).toEqual("import");
+          expect(game.importing).toEqual(true);
+        });
+
+        test("importing when fleets are 2 below the limit", () => {
+          const board = new GameBoard({
+            nodes: [
+              { name: "a", nation: Nation.AH, factoryType: "shipyard" },
+              { name: "b", nation: null },
+              { name: "c", nation: Nation.IT }
+            ],
+            edges: []
+          });
+
+          const game = new Imperial(board);
+          initialize(game);
+          game.units.get(Nation.AH).get("a").fleets = game.unitLimits.get(Nation.AH).fleets - 2;
+          const availableActions = new Set([Action.import({ placements: [] })]);
+
+          availableActions.add(
+            Action.import({ placements: [{ province: "a", type: "army" }] })
+          );
+          availableActions.add(
+            Action.import({ placements: [{ province: "a", type: "fleet" }] })
+          );
+          availableActions.add(
+            Action.import({
+              placements: [
+                { province: "a", type: "army" },
+                { province: "a", type: "army" }
+              ]
+            })
+          );
+          availableActions.add(
+            Action.import({
+              placements: [
+                { province: "a", type: "fleet" },
+                { province: "a", type: "fleet" }
+              ]
+            })
+          );
+          availableActions.add(
+            Action.import({
+              placements: [
+                { province: "a", type: "army" },
+                { province: "a", type: "fleet" }
+              ]
+            })
+          );
+          availableActions.add(
+            Action.import({
+              placements: [
+                { province: "a", type: "fleet" },
+                { province: "a", type: "army" }
+              ]
+            })
+          );
+          availableActions.add(
+            Action.import({
+              placements: [
+                { province: "a", type: "army" },
+                { province: "a", type: "army" },
+                { province: "a", type: "army" }
+              ]
+            })
+          );
+          availableActions.add(
+            Action.import({
+              placements: [
+                { province: "a", type: "army" },
+                { province: "a", type: "army" },
+                { province: "a", type: "fleet" }
+              ]
+            })
+          );
+          availableActions.add(
+            Action.import({
+              placements: [
+                { province: "a", type: "army" },
+                { province: "a", type: "fleet" },
+                { province: "a", type: "fleet" }
+              ]
+            })
+          );
+          availableActions.add(
+            Action.import({
+              placements: [
+                { province: "a", type: "army" },
+                { province: "a", type: "fleet" },
+                { province: "a", type: "army" }
+              ]
+            })
+          );
+          availableActions.add(
+            Action.import({
+              placements: [
+                { province: "a", type: "fleet" },
+                { province: "a", type: "fleet" },
+                { province: "a", type: "army" }
+              ]
+            })
+          );
+          availableActions.add(
+            Action.import({
+              placements: [
+                { province: "a", type: "fleet" },
+                { province: "a", type: "army" },
+                { province: "a", type: "army" }
+              ]
+            })
+          );
+          availableActions.add(
+            Action.import({
+              placements: [
+                { province: "a", type: "fleet" },
+                { province: "a", type: "army" },
+                { province: "a", type: "fleet" }
+              ]
+            })
+          );
+          game.tick(
+            Action.rondel({ slot: "import", cost: 0, nation: Nation.AH })
+          );
+
+          expect(game.availableActions).toEqual(availableActions);
+          expect(game.nations.get(Nation.AH).rondelPosition).toEqual("import");
+          expect(game.importing).toEqual(true);
+        });
+
+        test("importing when fleets are 3 below the limit", () => {
+          const board = new GameBoard({
+            nodes: [
+              { name: "a", nation: Nation.AH, factoryType: "shipyard" },
+              { name: "b", nation: null },
+              { name: "c", nation: Nation.IT }
+            ],
+            edges: []
+          });
+
+          const game = new Imperial(board);
+          initialize(game);
+          game.units.get(Nation.AH).get("a").fleets = game.unitLimits.get(Nation.AH).fleets - 3;
+          const availableActions = new Set([Action.import({ placements: [] })]);
+
+          availableActions.add(
+            Action.import({ placements: [{ province: "a", type: "army" }] })
+          );
+          availableActions.add(
+            Action.import({ placements: [{ province: "a", type: "fleet" }] })
+          );
+          availableActions.add(
+            Action.import({
+              placements: [
+                { province: "a", type: "army" },
+                { province: "a", type: "army" }
+              ]
+            })
+          );
+          availableActions.add(
+            Action.import({
+              placements: [
+                { province: "a", type: "fleet" },
+                { province: "a", type: "fleet" }
+              ]
+            })
+          );
+          availableActions.add(
+            Action.import({
+              placements: [
+                { province: "a", type: "army" },
+                { province: "a", type: "fleet" }
+              ]
+            })
+          );
+          availableActions.add(
+            Action.import({
+              placements: [
+                { province: "a", type: "fleet" },
+                { province: "a", type: "army" }
+              ]
+            })
+          );
+          availableActions.add(
+            Action.import({
+              placements: [
+                { province: "a", type: "army" },
+                { province: "a", type: "army" },
+                { province: "a", type: "army" }
+              ]
+            })
+          );
+          availableActions.add(
+            Action.import({
+              placements: [
+                { province: "a", type: "army" },
+                { province: "a", type: "army" },
+                { province: "a", type: "fleet" }
+              ]
+            })
+          );
+          availableActions.add(
+            Action.import({
+              placements: [
+                { province: "a", type: "army" },
+                { province: "a", type: "fleet" },
+                { province: "a", type: "fleet" }
+              ]
+            })
+          );
+          availableActions.add(
+            Action.import({
+              placements: [
+                { province: "a", type: "army" },
+                { province: "a", type: "fleet" },
+                { province: "a", type: "army" }
+              ]
+            })
+          );
+          availableActions.add(
+            Action.import({
+              placements: [
+                { province: "a", type: "fleet" },
+                { province: "a", type: "fleet" },
+                { province: "a", type: "fleet" }
+              ]
+            })
+          );
+          availableActions.add(
+            Action.import({
+              placements: [
+                { province: "a", type: "fleet" },
+                { province: "a", type: "fleet" },
+                { province: "a", type: "army" }
+              ]
+            })
+          );
+          availableActions.add(
+            Action.import({
+              placements: [
+                { province: "a", type: "fleet" },
+                { province: "a", type: "army" },
+                { province: "a", type: "army" }
+              ]
+            })
+          );
+          availableActions.add(
+            Action.import({
+              placements: [
+                { province: "a", type: "fleet" },
+                { province: "a", type: "army" },
+                { province: "a", type: "fleet" }
+              ]
+            })
+          );
+
+          game.tick(
+            Action.rondel({ slot: "import", cost: 0, nation: Nation.AH })
+          );
+
+          expect(game.availableActions).toEqual(availableActions);
+          expect(game.nations.get(Nation.AH).rondelPosition).toEqual("import");
+          expect(game.importing).toEqual(true);
+        });
+
+        test("importing when armies and fleets are both at the limit", () => {
+          const board = new GameBoard({
+            nodes: [
+              { name: "a", nation: Nation.AH, factoryType: "shipyard" },
+              { name: "b", nation: null },
+              { name: "c", nation: Nation.IT }
+            ],
+            edges: []
+          });
+
+          const game = new Imperial(board);
+          initialize(game);
+          game.units.get(Nation.AH).get("a").armies = game.unitLimits.get(Nation.AH).armies;
+          game.units.get(Nation.AH).get("a").fleets = game.unitLimits.get(Nation.AH).fleets;
+          const availableActions = new Set([Action.import({ placements: [] })]);
+
+          game.tick(
+            Action.rondel({ slot: "import", cost: 0, nation: Nation.AH })
+          );
+
+          expect(game.availableActions).toEqual(availableActions);
+          expect(game.nations.get(Nation.AH).rondelPosition).toEqual("import");
+          expect(game.importing).toEqual(true);
+        });
+
+        test("importing when armies and fleets are both 1 under the limit", () => {
+          const board = new GameBoard({
+            nodes: [
+              { name: "a", nation: Nation.AH, factoryType: "shipyard" },
+              { name: "b", nation: null },
+              { name: "c", nation: Nation.IT }
+            ],
+            edges: []
+          });
+
+          const game = new Imperial(board);
+          initialize(game);
+          game.units.get(Nation.AH).get("a").armies = game.unitLimits.get(Nation.AH).armies - 1;
+          game.units.get(Nation.AH).get("a").fleets = game.unitLimits.get(Nation.AH).fleets - 1;
+          const availableActions = new Set([Action.import({ placements: [] })]);
+
+          availableActions.add(
+            Action.import({ placements: [{ province: "a", type: "army" }] })
+          );
+          availableActions.add(
+            Action.import({ placements: [{ province: "a", type: "fleet" }] })
+          );
+          availableActions.add(
+            Action.import({
+              placements: [
+                { province: "a", type: "army" },
+                { province: "a", type: "fleet" }
+              ]
+            })
+          );
+          availableActions.add(
+            Action.import({
+              placements: [
+                { province: "a", type: "fleet" },
+                { province: "a", type: "army" }
               ]
             })
           );
@@ -903,7 +1467,7 @@ describe("imperial", () => {
         });
       });
 
-      describe("production1 or production2", () => {
+      describe.only("production1 or production2", () => {
         const newGame = () => {
           const board = new GameBoard({
             nodes: [{ name: "a", nation: Nation.AH }],
@@ -938,7 +1502,7 @@ describe("imperial", () => {
               expect(game.units.get(Nation.AH).get("a").armies).toEqual(0);
             });
 
-            test("a unit is not produce in a province that has an occupied factory", () => {
+            test("a unit is not produced in a province that has an occupied factory", () => {
               const game = newGame();
               game.provinces.get("a").factory = "armaments";
               game.units.get(Nation.IT).get("a").armies = 1;
@@ -948,6 +1512,31 @@ describe("imperial", () => {
               );
 
               expect(game.units.get(Nation.AH).get("a").armies).toEqual(0);
+            });
+
+            test("no more armies are produced when that unit limit is reached", () => {
+              const game = newGame();
+              game.provinces.get("a").factory = "armaments";
+              game.units.get(Nation.AH).get("a").armies = game.unitLimits.get(Nation.AH).armies;
+              
+              game.tick(
+                Action.rondel({ slot: production, cost: 0, nation: Nation.AH })
+              );
+
+              expect(game.units.get(Nation.AH).get("a").fleets).toEqual(0);
+              expect(game.units.get(Nation.AH).get("a").armies).toEqual(game.unitLimits.get(Nation.AH).armies);
+            });
+
+            test("no more fleets are produced when that unit limit is reached", () => {
+              const game = newGame();
+              game.provinces.get("a").factory = "shipyard";
+              game.units.get(Nation.AH).get("a").fleets = game.unitLimits.get(Nation.AH).fleets;
+
+              game.tick(
+                Action.rondel({ slot: production, cost: 0, nation: Nation.AH })
+              );
+              expect(game.units.get(Nation.AH).get("a").armies).toEqual(0);
+              expect(game.units.get(Nation.AH).get("a").fleets).toEqual(game.unitLimits.get(Nation.AH).fleets);
             });
           });
 
