@@ -42,6 +42,8 @@ export default class Imperial {
     this.players = {};
     this.investing = false;
     this.firstInvestor = "";
+    this.currentNationInConflict = null;
+    this.coexistingNations = [];
   }
 
   tick(action) {
@@ -496,6 +498,8 @@ export default class Imperial {
   }
 
   fight(action) {
+    this.coexistingNations = [];
+    this.currentNationInConflict = null;
     const province = action.payload.province;
     const incumbentUnitsAtProvince = this.units
       .get(action.payload.incumbent)
@@ -607,38 +611,41 @@ export default class Imperial {
   }
 
   coexist(action) {
-    const reversedLog = this.log.slice().reverse();
-    if (reversedLog[1].type !== "coexist") {
+    this.coexistingNations.push(action.payload.challenger);
+    this.currentNationInConflict = action.payload.incumbent;
+    if (!this.coexistingNations.includes(this.currentNationInConflict)) {
       // Coexist request can be accepted or rejected
+      this.previousPlayerName = this.currentPlayerName;
+      this.currentPlayerName = this.nations.get(action.payload.incumbent).controller;
       const destination = action.payload.province;
       this.availableActions = new Set();
       let incumbent = null;
-      for (const [nation] of this.nations) {
-        if (nation !== this.currentNation) {
+      for (const [nation, data] of this.nations) {
+        if (nation !== this.currentNationInConflict) {
           const units = this.units.get(nation).get(destination);
           if (units.armies > 0 || units.fleets > 0) {
             if (units.armies > 0) {
-              if (!incumbent) {
+              if (!this.coexistingNations.includes(nation)) {
                 incumbent = nation;
               }
               this.availableActions.add(
                 Action.fight({
                   province: destination,
                   incumbent: nation,
-                  challenger: this.currentNation,
+                  challenger: this.currentNationInConflict,
                   targetType: "army"
                 })
               );
             }
             if (units.fleets > 0) {
-              if (!incumbent) {
+              if (!this.coexistingNations.includes(nation)) {
                 incumbent = nation;
               }
               this.availableActions.add(
                 Action.fight({
                   province: destination,
                   incumbent: nation,
-                  challenger: this.currentNation,
+                  challenger: this.currentNationInConflict,
                   targetType: "fleet"
                 }),
               );
@@ -650,8 +657,8 @@ export default class Imperial {
         this.availableActions.add(
           Action.coexist({
             province: destination,
-            incumbent,
-            challenger: this.currentNation
+            incumbent: incumbent || action.payload.challenger,
+            challenger: this.currentNationInConflict
           })
         )
         this.handlingConflict = true;
@@ -660,6 +667,8 @@ export default class Imperial {
     }
 
     this.handlingConflict = false;
+    this.coexistingNations = [];
+    this.currentNationInConflict = null;
     this.previousPlayerName = this.currentPlayerName;
     this.currentPlayerName = this.nations.get(action.payload.challenger).controller;
     if (this.unitsToMove.length === 0) {
@@ -675,6 +684,7 @@ export default class Imperial {
       }
     } else {
       // Find and maneuver other units
+      const reversedLog = this.log.slice().reverse();
       const lastManeuverRondelAction = reversedLog.find(action => action.type === "rondel");
       const destinations = new Set([Action.endManeuver()]);
       const action = lastManeuverRondelAction;

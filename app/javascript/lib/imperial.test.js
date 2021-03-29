@@ -2910,7 +2910,7 @@ describe("imperial", () => {
             }),
             Action.coexist({
               province: "a",
-              incumbent: Nation.IT,
+              incumbent: Nation.FR,
               challenger: Nation.AH
             })
           ])
@@ -2997,8 +2997,8 @@ describe("imperial", () => {
           game.tick(
             Action.coexist({
               province: "a",
-              incumbent: Nation.IT,
-              challenger: Nation.AH
+              incumbent: Nation.AH,
+              challenger: Nation.IT
             })
           );
 
@@ -3041,8 +3041,8 @@ describe("imperial", () => {
           game.tick(
             Action.coexist({
               province: "a",
-              incumbent: Nation.IT,
-              challenger: Nation.AH
+              incumbent: Nation.AH,
+              challenger: Nation.IT
             })
           );
 
