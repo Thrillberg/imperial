@@ -2158,16 +2158,16 @@ describe("imperial", () => {
 
           expect(game.availableActions).toEqual(
             new Set([
-              Action.coexist({
-                province: "b",
-                incumbent: Nation.IT,
-                challenger: Nation.AH
-              }),
               Action.fight({
                 province: "b",
                 incumbent: Nation.IT,
                 challenger: Nation.AH,
                 targetType: "fleet"
+              }),
+              Action.coexist({
+                province: "b",
+                incumbent: Nation.IT,
+                challenger: Nation.AH
               })
             ])
           );
@@ -2245,6 +2245,40 @@ describe("imperial", () => {
               Action.fight({
                 province: "d",
                 incumbent: Nation.IT,
+                challenger: Nation.AH,
+                targetType: "army"
+              })
+            ])
+          );
+        });
+
+        test("maneuver army to destination occupied by two others allows occupier to decide who to fight", () => {
+          const game = newGame();
+          game.units.get(Nation.AH).get("c").armies++;
+          game.units.get(Nation.IT).get("d").armies++;
+          game.units.get(Nation.FR).get("d").armies++;
+
+          game.tick(
+            Action.rondel({ slot: "maneuver1", nation: Nation.AH, cost: 0 })
+          );
+          game.tick(Action.maneuver({ origin: "c", destination: "d" }));
+
+          expect(game.availableActions).toEqual(
+            new Set([
+              Action.coexist({
+                province: "d",
+                incumbent: Nation.IT,
+                challenger: Nation.AH
+              }),
+              Action.fight({
+                province: "d",
+                incumbent: Nation.IT,
+                challenger: Nation.AH,
+                targetType: "army"
+              }),
+              Action.fight({
+                province: "d",
+                incumbent: Nation.FR,
                 challenger: Nation.AH,
                 targetType: "army"
               })
@@ -2831,6 +2865,51 @@ describe("imperial", () => {
             Action.fight({
               province: "a",
               incumbent: Nation.AH,
+              challenger: Nation.IT,
+              targetType: undefined
+            })
+          ])
+        );
+      });
+
+      test("multiple other nations can choose to fight", () => {
+        const game = newGame();
+        game.units.get(Nation.AH).get("a").armies++;
+        game.units.get(Nation.IT).get("a").armies++;
+        game.units.get(Nation.FR).get("a").armies++;
+        game.availableActions = new Set([
+          Action.coexist({
+            province: "a",
+            incumbent: Nation.AH,
+            challenger: Nation.IT
+          })
+        ]);
+
+        game.tick(
+          Action.coexist({
+            province: "a",
+            incumbent: Nation.AH,
+            challenger: Nation.IT
+          })
+        );
+        
+        expect(game.currentPlayerName).toEqual(game.nations.get(Nation.AH).controller);
+        expect(game.availableActions).toEqual(
+          new Set([
+            Action.coexist({
+              province: "a",
+              incumbent: Nation.AH,
+              challenger: Nation.IT
+            }),
+            Action.fight({
+              province: "a",
+              incumbent: Nation.AH,
+              challenger: Nation.IT,
+              targetType: undefined
+            }),
+            Action.fight({
+              province: "a",
+              incumbent: Nation.FR,
               challenger: Nation.IT,
               targetType: undefined
             })

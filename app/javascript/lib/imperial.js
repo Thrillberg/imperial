@@ -625,73 +625,74 @@ export default class Imperial {
           targetType: action.payload.targetType
         })
       ]);
-    } else {
-      this.handlingConflict = false;
-      this.previousPlayerName = this.currentPlayerName;
-      this.currentPlayerName = this.nations.get(action.payload.challenger).controller;
-      if (this.unitsToMove.length === 0) {
-        // End of turn
-        this.units.get(action.payload.challenger).get(action.payload.province).friendly = true;
-        this.unitsToMove = [];
-        this.maneuvering = false;
-        if (this.variant === "withoutInvestorCard") {
-          this.roundOfInvestment();
-        } else {
-          this.handleAdvancePlayer();
-          this.availableActions = new Set(this.rondelActions(this.currentNation));
-        }
+      return;
+    }
+
+    this.handlingConflict = false;
+    this.previousPlayerName = this.currentPlayerName;
+    this.currentPlayerName = this.nations.get(action.payload.challenger).controller;
+    if (this.unitsToMove.length === 0) {
+      // End of turn
+      this.units.get(action.payload.challenger).get(action.payload.province).friendly = true;
+      this.unitsToMove = [];
+      this.maneuvering = false;
+      if (this.variant === "withoutInvestorCard") {
+        this.roundOfInvestment();
       } else {
-        // Find and maneuver other units
-        const lastManeuverRondelAction = reversedLog.find(action => action.type === "rondel");
-        const destinations = new Set([Action.endManeuver()]);
-        const action = lastManeuverRondelAction;
-        const provincesWithFleets = new Map();
-        const provincesWithArmies = new Map();
-
-        for (const [province, type] of this.unitsToMove) {
-          if (type === "fleet") {
-            provincesWithFleets.set(province, 1);
-          } else {
-            provincesWithArmies.set(province, 1);
-          }
-        }
-
-        for (const [origin] of provincesWithFleets) {
-          for (const destination of this.board.neighborsFor({
-            origin,
-            nation: action.payload.nation,
-            isFleet: true,
-            friendlyFleets: new Set(),
-            occupiedHomeProvinces: this.occupiedHomeProvinces(this.currentNation)
-          })) {
-            destinations.add(
-              Action.maneuver({
-                origin,
-                destination
-              })
-            );
-          }
-        }
-
-        for (const [origin] of provincesWithArmies) {
-          for (const destination of this.board.neighborsFor({
-            origin,
-            nation: action.payload.nation,
-            isFleet: false,
-            friendlyFleets: new Set(),
-            occupiedHomeProvinces: this.occupiedHomeProvinces(this.currentNation)
-          })) {
-            destinations.add(
-              Action.maneuver({
-                origin,
-                destination
-              })
-            );
-          }
-        }
-
-        this.availableActions = destinations;
+        this.handleAdvancePlayer();
+        this.availableActions = new Set(this.rondelActions(this.currentNation));
       }
+    } else {
+      // Find and maneuver other units
+      const lastManeuverRondelAction = reversedLog.find(action => action.type === "rondel");
+      const destinations = new Set([Action.endManeuver()]);
+      const action = lastManeuverRondelAction;
+      const provincesWithFleets = new Map();
+      const provincesWithArmies = new Map();
+
+      for (const [province, type] of this.unitsToMove) {
+        if (type === "fleet") {
+          provincesWithFleets.set(province, 1);
+        } else {
+          provincesWithArmies.set(province, 1);
+        }
+      }
+
+      for (const [origin] of provincesWithFleets) {
+        for (const destination of this.board.neighborsFor({
+          origin,
+          nation: action.payload.nation,
+          isFleet: true,
+          friendlyFleets: new Set(),
+          occupiedHomeProvinces: this.occupiedHomeProvinces(this.currentNation)
+        })) {
+          destinations.add(
+            Action.maneuver({
+              origin,
+              destination
+            })
+          );
+        }
+      }
+
+      for (const [origin] of provincesWithArmies) {
+        for (const destination of this.board.neighborsFor({
+          origin,
+          nation: action.payload.nation,
+          isFleet: false,
+          friendlyFleets: new Set(),
+          occupiedHomeProvinces: this.occupiedHomeProvinces(this.currentNation)
+        })) {
+          destinations.add(
+            Action.maneuver({
+              origin,
+              destination
+            })
+          );
+        }
+      }
+
+      this.availableActions = destinations;
     }
   }
 
@@ -845,12 +846,16 @@ export default class Imperial {
     this.unitsToMove.splice(i, 1);
 
     // Interrupt manuevers in case of potential conflict!
+    this.availableActions = new Set();
+    let incumbent = null;
     for (const [nation] of this.nations) {
       if (nation !== this.currentNation) {
         const units = this.units.get(nation).get(destination);
         if (units.armies > 0 || units.fleets > 0) {
-          this.availableActions = new Set();
           if (units.armies > 0) {
+            if (!incumbent) {
+              incumbent = nation;
+            }
             this.availableActions.add(
               Action.fight({
                 province: destination,
@@ -861,6 +866,9 @@ export default class Imperial {
             );
           }
           if (units.fleets > 0) {
+            if (!incumbent) {
+              incumbent = nation;
+            }
             this.availableActions.add(
               Action.fight({
                 province: destination,
@@ -870,17 +878,19 @@ export default class Imperial {
               }),
             );
           }
-          this.availableActions.add(
-            Action.coexist({
-              province: destination,
-              incumbent: nation,
-              challenger: this.currentNation
-            })
-          )
-          this.handlingConflict = true;
-          return;
         }
       }
+    }
+    if (this.availableActions.size > 0) {
+      this.availableActions.add(
+        Action.coexist({
+          province: destination,
+          incumbent,
+          challenger: this.currentNation
+        })
+      )
+      this.handlingConflict = true;
+      return;
     }
 
     // Interrupt maneuvers when entering another nation's home province!

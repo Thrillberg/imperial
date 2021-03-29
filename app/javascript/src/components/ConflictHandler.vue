@@ -11,10 +11,12 @@
         Coexist
       </div>
       <div
-        v-on:click="fight"
+        v-for="fightAction in fightActions()"
+        v-on:click="$emit('tick-with-action', fightAction)"
+        :key="fightAction.payload.incumbent.value"
         class="rounded p-2 bg-green-800 text-white cursor-pointer"
       >
-        Fight
+      Fight {{ stringify(fightAction.payload.incumbent.value) }}
       </div>
     </div>
     <div v-if="occupying()">
@@ -45,6 +47,8 @@
 </template>
 
 <script>
+import stringify from "../stringify.js";
+
 export default {
   name: "ConflictHandler",
   props: { game: Object, profile: Object, controllingPlayerName: String },
@@ -111,6 +115,9 @@ export default {
         }
       }
       return fightActions;
+    },
+    stringify(string) {
+      return stringify(string)
     }
   }
 }
