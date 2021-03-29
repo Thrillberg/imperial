@@ -119,17 +119,19 @@ describe("GameBoard", () => {
   describe("fleets", () => {
     const gameBoard = new GameBoard({
       nodes: [
-        { name: "1", nation: "a", isOcean: false },
+        { name: "1", nation: "a", isOcean: false, egress: "2" },
         { name: "2", nation: null, isOcean: true },
-        { name: "3", nation: "a", isOcean: false }
+        { name: "3", nation: "a", isOcean: false },
+        { name: "4", nation: null, isOcean: true }
       ],
       edges: [
         ["1", "2"],
-        ["1", "3"]
+        ["1", "3"],
+        ["1", "4"]
       ]
     });
 
-    test("fleet can move from land to sea", () => {
+    test("fleet can move from land to sea, but only to the correct egress", () => {
       expect(
         gameBoard.neighborsFor({
           origin: "1",

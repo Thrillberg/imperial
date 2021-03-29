@@ -8,12 +8,13 @@ export default class GameBoard {
   }
 
   setupGraph(nodes) {
-    for (const { name: province, nation, isOcean, factoryType } of nodes) {
+    for (const { name: province, nation, isOcean, factoryType, egress } of nodes) {
       this.graph.set(province, {
         nation,
         neighbors: new Set(),
         isOcean,
-        factoryType
+        factoryType,
+        egress
       });
 
       if (!this.byNation.has(nation)) {
@@ -82,6 +83,14 @@ export default class GameBoard {
     // Units cannot begin and end in the same spot
     paths = paths.filter(path => path.length > 1);
 
+    // Fleets can only exit a home province into one particular egress
+    paths = paths.filter((path) => {
+      const destinationIsNotCorrectEgress = path[path.length - 1] !== this.graph.get(origin).egress;
+      if (isFleet && this.graph.get(origin).nation && destinationIsNotCorrectEgress) {
+        return false;
+      }
+      return true;
+    });
     return paths;
   }
 
