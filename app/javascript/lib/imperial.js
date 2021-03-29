@@ -610,22 +610,53 @@ export default class Imperial {
     const reversedLog = this.log.slice().reverse();
     if (reversedLog[1].type !== "coexist") {
       // Coexist request can be accepted or rejected
-      this.previousPlayerName = this.currentPlayerName;
-      this.currentPlayerName = this.nations.get(action.payload.incumbent).controller;
-      this.availableActions = new Set([
-        Action.coexist({
-          province: action.payload.province,
-          incumbent: action.payload.incumbent,
-          challenger: action.payload.challenger
-        }),
-        Action.fight({
-          province: action.payload.province,
-          incumbent: action.payload.incumbent,
-          challenger: action.payload.challenger,
-          targetType: action.payload.targetType
-        })
-      ]);
-      return;
+      const destination = action.payload.province;
+      this.availableActions = new Set();
+      let incumbent = null;
+      for (const [nation] of this.nations) {
+        if (nation !== this.currentNation) {
+          const units = this.units.get(nation).get(destination);
+          if (units.armies > 0 || units.fleets > 0) {
+            if (units.armies > 0) {
+              if (!incumbent) {
+                incumbent = nation;
+              }
+              this.availableActions.add(
+                Action.fight({
+                  province: destination,
+                  incumbent: nation,
+                  challenger: this.currentNation,
+                  targetType: "army"
+                })
+              );
+            }
+            if (units.fleets > 0) {
+              if (!incumbent) {
+                incumbent = nation;
+              }
+              this.availableActions.add(
+                Action.fight({
+                  province: destination,
+                  incumbent: nation,
+                  challenger: this.currentNation,
+                  targetType: "fleet"
+                }),
+              );
+            }
+          }
+        }
+      }
+      if (this.availableActions.size > 0) {
+        this.availableActions.add(
+          Action.coexist({
+            province: destination,
+            incumbent,
+            challenger: this.currentNation
+          })
+        )
+        this.handlingConflict = true;
+        return;
+      }
     }
 
     this.handlingConflict = false;

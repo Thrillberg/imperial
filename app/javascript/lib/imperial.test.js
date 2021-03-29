@@ -2857,16 +2857,16 @@ describe("imperial", () => {
         
         expect(game.availableActions).toEqual(
           new Set([
-            Action.coexist({
-              province: "a",
-              incumbent: Nation.AH,
-              challenger: Nation.IT
-            }),
             Action.fight({
               province: "a",
-              incumbent: Nation.AH,
-              challenger: Nation.IT,
-              targetType: undefined
+              incumbent: Nation.IT,
+              challenger: Nation.AH,
+              targetType: "army"
+            }),
+            Action.coexist({
+              province: "a",
+              incumbent: Nation.IT,
+              challenger: Nation.AH
             })
           ])
         );
@@ -2896,22 +2896,22 @@ describe("imperial", () => {
         expect(game.currentPlayerName).toEqual(game.nations.get(Nation.AH).controller);
         expect(game.availableActions).toEqual(
           new Set([
-            Action.coexist({
-              province: "a",
-              incumbent: Nation.AH,
-              challenger: Nation.IT
-            }),
             Action.fight({
               province: "a",
-              incumbent: Nation.AH,
-              challenger: Nation.IT,
-              targetType: undefined
+              incumbent: Nation.IT,
+              challenger: Nation.AH,
+              targetType: "army"
             }),
             Action.fight({
               province: "a",
               incumbent: Nation.FR,
-              challenger: Nation.IT,
-              targetType: undefined
+              challenger: Nation.AH,
+              targetType: "army"
+            }),
+            Action.coexist({
+              province: "a",
+              incumbent: Nation.IT,
+              challenger: Nation.AH
             })
           ])
         );
