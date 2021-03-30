@@ -2535,6 +2535,35 @@ describe("imperial", () => {
 
           expect(game.provinces.get("f").flag).toEqual(undefined);
         });
+
+        test("maneuver away from coexisting province switches flag to other nation", () => {
+          const game = newGame();
+          game.units.get(Nation.AH).get("f").armies++;
+          game.units.get(Nation.IT).get("f").armies++;
+          game.provinces.get("f").flag = Nation.AH
+
+          game.tick(
+            Action.rondel({ slot: "maneuver1", nation: Nation.AH, cost: 0 })
+          );
+          game.tick(Action.maneuver({ origin: "f", destination: "e" }));
+
+          expect(game.provinces.get("f").flag).toEqual(Nation.IT);
+        });
+
+        test("maneuver away from coexisting province keeps flag on original nation, if province is still contested", () => {
+          const game = newGame();
+          game.units.get(Nation.AH).get("f").armies++;
+          game.units.get(Nation.IT).get("f").armies++;
+          game.units.get(Nation.FR).get("f").armies++;
+          game.provinces.get("f").flag = Nation.AH
+
+          game.tick(
+            Action.rondel({ slot: "maneuver1", nation: Nation.AH, cost: 0 })
+          );
+          game.tick(Action.maneuver({ origin: "f", destination: "e" }));
+
+          expect(game.provinces.get("f").flag).toEqual(Nation.AH);
+        });
       });
     });
 
