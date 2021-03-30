@@ -13,10 +13,10 @@
       <div
         v-for="fightAction in fightActions()"
         v-on:click="$emit('tick-with-action', fightAction)"
-        :key="fightAction.payload.incumbent.value"
+        :key="fightAction.payload.incumbent.value + fightAction.payload.targetType"
         class="rounded p-2 bg-green-800 text-white cursor-pointer"
       >
-      Fight {{ stringify(fightAction.payload.incumbent.value) }}
+      Fight {{ stringify(fightAction.payload.incumbent.value) }} ({{ fightAction.payload.targetType }})
       </div>
     </div>
     <div v-if="occupying()">
