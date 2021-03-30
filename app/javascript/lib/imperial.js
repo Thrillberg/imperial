@@ -1232,18 +1232,6 @@ export default class Imperial {
       this.maxImports = 3;
     }
 
-    // if (this.armyCount(action.payload.nation) == this.unitLimits.get(action.payload.nation).armies) {
-    //   this.availableActions = availableActions;
-    //   this.importing = true;
-    //   return;
-    // }
-
-    // if (this.fleetCount(action.payload.nation) == this.unitLimits.get(action.payload.nation).fleets) {
-    //   this.availableActions = availableActions;
-    //   this.importing = true;
-    //   return;
-    // }
-
     for (const province of unoccupiedHomeProvinces) {
       if (treasury >= 1) {
         if (!this.overUnitLimit(action.payload.nation, "army", 1)) {
