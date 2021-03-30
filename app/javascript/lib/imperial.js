@@ -1040,11 +1040,11 @@ export default class Imperial {
             const units = this.units.get(nation).get(province);
             if (this.nobodyIsOccupying(province, nation)) {
               if (this.provinces.get(province).factory === "shipyard" &&
-                  !this.overUnitLimit(action.payload.nation, "fleets", 1)
+                  !this.overUnitLimit(action.payload.nation, "fleet", 1)
               ) {
                 units.fleets++;
-              } else if (this.provinces.get(province).factory != "shipyard" &&
-                        !this.overUnitLimit(action.payload.nation, "armies", 1)
+              } else if (this.provinces.get(province).factory !== "shipyard" &&
+                        !this.overUnitLimit(action.payload.nation, "army", 1)
               ) {
                 units.armies++;
               }
@@ -1219,7 +1219,7 @@ export default class Imperial {
     const unoccupiedHomeProvinces = [...homeProvinces].filter(province => {
       let unoccupied = true;
       for (const [nation] of this.nations) {
-        if (nation != action.payload.nation && this.units.get(nation).get(province).armies > 0) {
+        if (nation !== action.payload.nation && this.units.get(nation).get(province).armies > 0) {
           unoccupied = false
         }
       }
@@ -1232,31 +1232,27 @@ export default class Imperial {
       this.maxImports = 3;
     }
 
-    if (this.armyCount(action.payload.nation) == this.unitLimits.get(action.payload.nation).armies) {
-      this.availableActions = availableActions;
-      this.importing = true;
-      return;
-    }
+    // if (this.armyCount(action.payload.nation) == this.unitLimits.get(action.payload.nation).armies) {
+    //   this.availableActions = availableActions;
+    //   this.importing = true;
+    //   return;
+    // }
 
-    if (this.fleetCount(action.payload.nation) == this.unitLimits.get(action.payload.nation).fleets) {
-      this.availableActions = availableActions;
-      this.importing = true;
-      return;
-    }
-
-    // const imports = Array.from({length: this.maxImports}, (_, i) => i + 1);
-    // this.unitLimits.get(action.payload.nation)[unitType]);
-    // overUnitLimit(nation, unitType, numberOfPlacements)
+    // if (this.fleetCount(action.payload.nation) == this.unitLimits.get(action.payload.nation).fleets) {
+    //   this.availableActions = availableActions;
+    //   this.importing = true;
+    //   return;
+    // }
 
     for (const province of unoccupiedHomeProvinces) {
       if (treasury >= 1) {
-        if (!this.overUnitLimit(action.payload.nation, "armies", 1)) {
+        if (!this.overUnitLimit(action.payload.nation, "army", 1)) {
           availableActions.add(
             Action.import({ placements: [{ province, type: "army" }] })
           );
         };
         if (this.board.graph.get(province).factoryType === "shipyard" &&
-            !this.overUnitLimit(action.payload.nation, "fleets", 1)
+            !this.overUnitLimit(action.payload.nation, "fleet", 1)
         ) {
           availableActions.add(
             Action.import({ placements: [{ province, type: "fleet" }] })
@@ -1266,7 +1262,7 @@ export default class Imperial {
 
       for (const province2 of unoccupiedHomeProvinces) {
         if (treasury >= 2) {
-          if (!this.overUnitLimit(action.payload.nation, "armies", 2)) {
+          if (!this.overUnitLimit(action.payload.nation, "army", 2)) {
           availableActions.add(
             Action.import({
               placements: [
@@ -1276,8 +1272,8 @@ export default class Imperial {
             })
           )};
           if (this.board.graph.get(province).factoryType === "shipyard" && 
-              !this.overUnitLimit(action.payload.nation, "fleets", 1) &&
-              !this.overUnitLimit(action.payload.nation, "armies", 1)
+              !this.overUnitLimit(action.payload.nation, "fleet", 1) &&
+              !this.overUnitLimit(action.payload.nation, "army", 1)
           ) {
             availableActions.add(
               Action.import({
@@ -1289,8 +1285,8 @@ export default class Imperial {
             );
           }
           if (this.board.graph.get(province2).factoryType === "shipyard" &&
-              !this.overUnitLimit(action.payload.nation, "fleets", 1) &&
-              !this.overUnitLimit(action.payload.nation, "armies", 1)
+              !this.overUnitLimit(action.payload.nation, "fleet", 1) &&
+              !this.overUnitLimit(action.payload.nation, "army", 1)
           ) {
             availableActions.add(
               Action.import({
@@ -1304,7 +1300,7 @@ export default class Imperial {
           if (
             this.board.graph.get(province).factoryType === "shipyard" &&
             this.board.graph.get(province2).factoryType === "shipyard" &&
-            !this.overUnitLimit(action.payload.nation, "fleets", 2)
+            !this.overUnitLimit(action.payload.nation, "fleet", 2)
           ) {
             availableActions.add(
               Action.import(
@@ -1317,7 +1313,7 @@ export default class Imperial {
 
         for (const province3 of unoccupiedHomeProvinces) {
           if (treasury >= 3) {
-            if (!this.overUnitLimit(action.payload.nation, "armies", 3)) {
+            if (!this.overUnitLimit(action.payload.nation, "army", 3)) {
             availableActions.add(
               Action.import({
                 placements: [
@@ -1328,8 +1324,8 @@ export default class Imperial {
               })
             )};
             if (this.board.graph.get(province).factoryType === "shipyard" &&
-                !this.overUnitLimit(action.payload.nation, "fleets", 1) &&
-                !this.overUnitLimit(action.payload.nation, "armies", 2)
+                !this.overUnitLimit(action.payload.nation, "fleet", 1) &&
+                !this.overUnitLimit(action.payload.nation, "army", 2)
             ) {
               availableActions.add(
                 Action.import({
@@ -1342,8 +1338,8 @@ export default class Imperial {
               );
             }
             if (this.board.graph.get(province2).factoryType === "shipyard" &&
-                !this.overUnitLimit(action.payload.nation, "fleets", 1) &&
-                !this.overUnitLimit(action.payload.nation, "armies", 2)
+                !this.overUnitLimit(action.payload.nation, "fleet", 1) &&
+                !this.overUnitLimit(action.payload.nation, "army", 2)
             ) {
               availableActions.add(
                 Action.import({
@@ -1356,8 +1352,8 @@ export default class Imperial {
               );
             }
             if (this.board.graph.get(province3).factoryType === "shipyard" &&
-                !this.overUnitLimit(action.payload.nation, "fleets", 1) &&
-                !this.overUnitLimit(action.payload.nation, "armies", 2)
+                !this.overUnitLimit(action.payload.nation, "fleet", 1) &&
+                !this.overUnitLimit(action.payload.nation, "army", 2)
             ) {
               availableActions.add(
                 Action.import({
@@ -1372,8 +1368,8 @@ export default class Imperial {
             if (
               this.board.graph.get(province).factoryType === "shipyard" &&
               this.board.graph.get(province2).factoryType === "shipyard" &&
-              !this.overUnitLimit(action.payload.nation, "fleets", 2) &&
-              !this.overUnitLimit(action.payload.nation, "armies", 1)
+              !this.overUnitLimit(action.payload.nation, "fleet", 2) &&
+              !this.overUnitLimit(action.payload.nation, "army", 1)
             ) {
               availableActions.add(
                 Action.import({
@@ -1388,8 +1384,8 @@ export default class Imperial {
             if (
               this.board.graph.get(province).factoryType === "shipyard" &&
               this.board.graph.get(province3).factoryType === "shipyard" &&
-              !this.overUnitLimit(action.payload.nation, "fleets", 2) &&
-              !this.overUnitLimit(action.payload.nation, "armies", 1)
+              !this.overUnitLimit(action.payload.nation, "fleet", 2) &&
+              !this.overUnitLimit(action.payload.nation, "army", 1)
             ) {
               availableActions.add(
                 Action.import({
@@ -1404,8 +1400,8 @@ export default class Imperial {
             if (
               this.board.graph.get(province2).factoryType === "shipyard" &&
               this.board.graph.get(province3).factoryType === "shipyard" &&
-              !this.overUnitLimit(action.payload.nation, "fleets", 2) &&
-              !this.overUnitLimit(action.payload.nation, "armies", 1)
+              !this.overUnitLimit(action.payload.nation, "fleet", 2) &&
+              !this.overUnitLimit(action.payload.nation, "army", 1)
             ) {
               availableActions.add(
                 Action.import({
@@ -1421,7 +1417,7 @@ export default class Imperial {
               this.board.graph.get(province).factoryType === "shipyard" &&
               this.board.graph.get(province2).factoryType === "shipyard" &&
               this.board.graph.get(province3).factoryType === "shipyard" &&
-              !this.overUnitLimit(action.payload.nation, "fleets", 3)
+              !this.overUnitLimit(action.payload.nation, "fleet", 3)
             ) {
               availableActions.add(
                 Action.import({
@@ -1627,10 +1623,10 @@ export default class Imperial {
   }
 
   overUnitLimit(nation, unitType, numberOfPlacements) {
-    if (unitType === "armies") {
-      return this.armyCount(nation) + numberOfPlacements > this.unitLimits.get(nation)[unitType];
+    if (unitType === "army") {
+      return this.armyCount(nation) + numberOfPlacements > this.unitLimits.get(nation).armies;
     } else {
-      return this.fleetCount(nation) + numberOfPlacements > this.unitLimits.get(nation)[unitType];
+      return this.fleetCount(nation) + numberOfPlacements > this.unitLimits.get(nation).fleets;
     }
   }
 

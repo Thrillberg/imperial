@@ -186,9 +186,9 @@ export default ({ players, provinceNames }) => {
   const unitLimits = new Map();
 
   for (const nation of Nation) {
-    if (nation == Nation.AH) {
+    if (nation === Nation.AH) {
       unitLimits.set(nation, {armies: 10, fleets: 6});
-    } else if (nation == Nation.GB) {
+    } else if (nation === Nation.GB) {
       unitLimits.set(nation, {armies: 6, fleets: 10});
     } else {
       unitLimits.set(nation, {armies: 8, fleets: 8});

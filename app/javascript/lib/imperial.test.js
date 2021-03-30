@@ -881,6 +881,27 @@ describe("imperial", () => {
           game.units.get(Nation.AH).get("a").fleets = game.unitLimits.get(Nation.AH).fleets;
           const availableActions = new Set([Action.import({ placements: [] })]);
 
+          availableActions.add(
+            Action.import({ placements: [{ province: "a", type: "army" }] })
+          );
+          availableActions.add(
+            Action.import({
+              placements: [
+                { province: "a", type: "army" },
+                { province: "a", type: "army" }
+              ]
+            })
+          );
+          availableActions.add(
+            Action.import({
+              placements: [
+                { province: "a", type: "army" },
+                { province: "a", type: "army" },
+                { province: "a", type: "army" }
+              ]
+            })
+          );
+
           game.tick(
             Action.rondel({ slot: "import", cost: 0, nation: Nation.AH })
           );
@@ -1467,7 +1488,7 @@ describe("imperial", () => {
         });
       });
 
-      describe.only("production1 or production2", () => {
+      describe("production1 or production2", () => {
         const newGame = () => {
           const board = new GameBoard({
             nodes: [{ name: "a", nation: Nation.AH }],
