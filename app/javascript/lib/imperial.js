@@ -531,21 +531,20 @@ export default class Imperial {
       (incumbentUnitsAtProvince.fleets > 0 || incumbentUnitsAtProvince.armies > 0) &&
       (challengerUnitsAtProvince.fleets > 0 || challengerUnitsAtProvince.armies > 0)
     ) {
-      if (incumbentUnitsAtProvince.fleets > 0) {
-        if (action.payload.targetType === "army") {
-          incumbentUnitsAtProvince.armies -= 1;
+      if (action.payload.targetType === "army") {
+        incumbentUnitsAtProvince.armies -= 1;
+        if (challengerUnitsAtProvince.armies > 0) {
           challengerUnitsAtProvince.armies -= 1;
         } else {
-          incumbentUnitsAtProvince.fleets -= 1;
-          if (challengerUnitsAtProvince.armies === 1) {
-            challengerUnitsAtProvince.armies -= 1;
-          } else {
-            challengerUnitsAtProvince.fleets -= 1;
-          }
+          challengerUnitsAtProvince.fleets -= 1;
         }
-      } else if (incumbentUnitsAtProvince.armies > 0) {
-        incumbentUnitsAtProvince.armies -= 1;
-        challengerUnitsAtProvince.armies -= 1;
+      } else {
+        incumbentUnitsAtProvince.fleets -= 1;
+        if (challengerUnitsAtProvince.armies > 0) {
+          challengerUnitsAtProvince.armies -= 1;
+        } else {
+          challengerUnitsAtProvince.fleets -= 1;
+        }
       }
     }
 
@@ -717,12 +716,18 @@ export default class Imperial {
         }
       }
 
+      const friendlyFleets = new Set();
+      for (const [province, units] of this.units.get(this.currentNation)) {
+        if (units.fleets - (this.fleetConvoyCount[province] || 0) > 0) {
+          friendlyFleets.add(province);
+        }
+      }
       for (const [origin] of provincesWithArmies) {
         for (const destination of this.board.neighborsFor({
           origin,
           nation: action.payload.nation,
           isFleet: false,
-          friendlyFleets: new Set(),
+          friendlyFleets,
           occupiedHomeProvinces: this.occupiedHomeProvinces(this.currentNation)
         })) {
           destinations.add(

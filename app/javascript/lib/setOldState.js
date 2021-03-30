@@ -41,6 +41,10 @@ export default (game) => {
   for (const province of Object.keys(game.fleetConvoyCount)) {
     fleetConvoyCount[province] = game.fleetConvoyCount[province]
   }
+  let coexistingNations = [];
+  for (const nation of game.coexistingNations) {
+    coexistingNations.push(nation);
+  }
 
   return {
     units,
@@ -49,6 +53,8 @@ export default (game) => {
     availableBonds,
     availableActions,
     players,
-    fleetConvoyCount
+    fleetConvoyCount,
+    coexistingNations,
+    currentNationInConflict: game.currentNationInConflict
   }
 }
