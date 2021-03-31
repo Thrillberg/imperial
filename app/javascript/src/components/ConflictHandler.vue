@@ -38,10 +38,10 @@
     <div
       v-for="fightAction in fightActions()"
       v-on:click="$emit('tick-with-action', fightAction)"
-      :key="fightAction.payload.province"
+      :key="fightAction.payload.province + fightAction.payload.challenger"
       class="rounded p-2 bg-green-800 text-white cursor-pointer"
     >
-      Fight in {{ fightAction.payload.province }}
+    Fight {{ stringify(fightAction.payload.challenger.value) }} in {{ fightAction.payload.province }}
     </div>
   </div>
 </template>

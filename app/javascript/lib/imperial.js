@@ -1533,7 +1533,7 @@ export default class Imperial {
   }
 
   beginManeuver(action) {
-    this.availableActions = new Set([Action.endManeuver()]);
+    this.availableActions.add(Action.endManeuver());
 
     this.unitsToMove.forEach(([origin, type]) => {
       if (type === "fleet") {
