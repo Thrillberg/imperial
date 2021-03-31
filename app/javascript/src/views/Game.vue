@@ -77,6 +77,9 @@
           :log="game.annotatedLog"
         />
       </div>
+      <div v-else-if="gameCancelled()">
+        This game was cancelled by the host
+      </div>
       <div v-else class="flex justify-between">
         <div class="w-2/3 border border-gray-500 rounded">
           <Board
@@ -108,6 +111,12 @@
               class="rounded bg-green-800 text-white cursor-pointer block text-2xl hover:bg-green-900 p-10 m-10 mx-auto"
             >
               Start Game Without Investor Card
+            </button>
+            <button
+              @click="cancelGame"
+              class="rounded bg-red-500 text-white cursor-pointer block text-2xl hover:bg-red-600 p-5 m-5 mx-auto"
+            >
+              Cancel Game
             </button>
           </div>
           <div v-else-if="playingInThisGame" class="text-2xl m-2">
@@ -233,6 +242,15 @@ export default {
       const soloMode = game.soloMode;
       const action = Action.initialize({ players, soloMode, variant });
       apiClient.tick(game.id, action);
+    },
+    cancelGame() {
+      const game = this.games.find(game => game.id === this.$route.params.id);
+      apiClient.cancel(game.id);
+      this.$router.push("/");
+    },
+    gameCancelled() {
+      const game = this.games.find(game => game.id === this.$route.params.id);
+      return game.cancelledAt;
     },
     playerNames: function(game) {
       if (game.players.length === 1) {

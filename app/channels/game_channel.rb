@@ -28,6 +28,11 @@ class GameChannel < ApplicationCable::Channel
 
     when "updateGames"
       broadcast_games "game_channel", "updateGames"
+
+    when "cancelGame"
+      game = game_from_data(data)
+      game.update(cancelled_at: Time.zone.now)
+      broadcast_games "game_channel", "updateGames"
     end
   end
 

@@ -154,6 +154,16 @@ class APIClient {
       "GameChannel"
     );
   }
+
+  cancel(gameId) {
+    return this.send(
+      {
+        kind: "cancelGame",
+        data: { gameId }
+      },
+      "GameChannel"
+    );
+  }
 }
 
 const apiClient = new APIClient();
