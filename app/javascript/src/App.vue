@@ -26,7 +26,6 @@
 
 <script>
 import { apiClient } from "./router/index.js";
-import Imperial from "../lib/imperial.js";
 import { Nation } from "../lib/constants.js";
 
 import Header from "./components/Header.vue";
@@ -56,18 +55,14 @@ export default {
     apiClient.onUpdateGames(({ games }) => {
       this.games = games.map(game => {
         const gameLog = getGameLog(game.log);
-        const imperialGame = Imperial.fromLog(gameLog);
         return {
           host: game.host,
           log: game.log,
           players: game.players,
           name: game.name,
           id: game.id,
-          currentPlayer: imperialGame.currentPlayerName,
-          winner: imperialGame.winner,
           forceEndedAt: game.force_ended_at,
           createdAt: game.created_at,
-          variant: imperialGame.variant
         };
       });
       this.gamesFetched = true;
