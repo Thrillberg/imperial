@@ -54,7 +54,6 @@ export default {
     });
     apiClient.onUpdateGames(({ games }) => {
       this.games = games.map(game => {
-        const gameLog = getGameLog(game.log);
         return {
           host: game.host,
           log: game.log,
@@ -62,6 +61,7 @@ export default {
           name: game.name,
           id: game.id,
           forceEndedAt: game.force_ended_at,
+          cancelledAt: game.cancelled_at,
           createdAt: game.created_at,
         };
       });

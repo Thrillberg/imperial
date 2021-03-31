@@ -6,7 +6,7 @@ class Game < ActiveRecord::Base
 
   scope :current, -> {
     includes(:host, :users, :actions)
-      .where(force_ended_at: nil)
+      .where(force_ended_at: nil, cancelled_at: nil)
       .order(created_at: :desc)
   }
 
@@ -18,6 +18,7 @@ class Game < ActiveRecord::Base
       players: users.map(&:name),
       log: actions.map(&:data),
       force_ended_at: force_ended_at,
+      cancelled_at: cancelled_at,
       created_at: created_at
     }
   end
