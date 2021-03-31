@@ -432,9 +432,10 @@ export default class Imperial {
     }
     let swissBanksToInvest = this.swissBanks;
     if (
+      this.variant !== "withoutInvestorCard" &&
       swissBanksToInvest.length > 0 &&
       swissBanksToInvest.some(bank => this.hasNotBoughtABondThisTurn(bank) === true)
-      ) {
+    ) {
       for (const player of swissBanksToInvest) {
         if (
           player !== this.investorCardHolder &&
