@@ -69,7 +69,6 @@
               v-on:chooseImportType="makeImportTypeChoice"
               v-on:endManeuver="endManeuver"
               v-on:runImport="runImport"
-              v-on:clearControllingPlayerName="clearControllingPlayerName"
             ></GameDetails>
           </div>
         </div>
@@ -440,9 +439,6 @@ export default {
       const log = this.game.log;
       this.$delete(this.game);
       this.game = Imperial.fromLog(log);
-    },
-    clearControllingPlayerName() {
-      this.controllingPlayerName = "";
     }
   }
 };

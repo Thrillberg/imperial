@@ -45,6 +45,10 @@ export default (game) => {
   for (const nation of game.coexistingNations) {
     coexistingNations.push(nation);
   }
+  let swissBanksWhoDoNotInterrupt = [];
+  for (const bank of game.swissBanksWhoDoNotInterrupt) {
+    swissBanksWhoDoNotInterrupt.push(bank);
+  }
 
   return {
     units,
@@ -55,6 +59,7 @@ export default (game) => {
     players,
     fleetConvoyCount,
     coexistingNations,
-    currentNationInConflict: game.currentNationInConflict
+    currentNationInConflict: game.currentNationInConflict,
+    swissBanksWhoDoNotInterrupt
   }
 }
