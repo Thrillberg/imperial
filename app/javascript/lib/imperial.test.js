@@ -3541,15 +3541,9 @@ describe("imperial", () => {
               challenger: Nation.AH,
               targetType: "army"
             }),
-            Action.fight({
-              province: "a",
-              incumbent: Nation.FR,
-              challenger: Nation.AH,
-              targetType: "army"
-            }),
             Action.coexist({
               province: "a",
-              incumbent: Nation.FR,
+              incumbent: Nation.IT,
               challenger: Nation.AH
             })
           ])

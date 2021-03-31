@@ -612,53 +612,45 @@ export default class Imperial {
 
   coexist(action) {
     this.coexistingNations.push(action.payload.challenger);
-    this.currentNationInConflict = action.payload.incumbent;
-    if (!this.coexistingNations.includes(this.currentNationInConflict)) {
+    let nationsAtProvince = [];
+    for (const [nation] of this.nations) {
+      const {armies, fleets} = this.units.get(nation).get(action.payload.province);
+      if ((armies > 0 || fleets > 0) && !this.coexistingNations.includes(nation)) {
+        nationsAtProvince.push(nation);
+      }
+    }
+    if (nationsAtProvince.length > 0) {
       // Coexist request can be accepted or rejected
       this.previousPlayerName = this.currentPlayerName;
-      this.currentPlayerName = this.nations.get(action.payload.incumbent).controller;
+      this.currentPlayerName = this.nations.get(nationsAtProvince[0]).controller;
       const destination = action.payload.province;
       this.availableActions = new Set();
-      let incumbent = null;
-      for (const [nation, data] of this.nations) {
-        if (nation !== this.currentNationInConflict) {
-          const units = this.units.get(nation).get(destination);
-          if (units.armies > 0 || units.fleets > 0) {
-            if (units.armies > 0) {
-              if (!this.coexistingNations.includes(nation)) {
-                incumbent = nation;
-              }
-              this.availableActions.add(
-                Action.fight({
-                  province: destination,
-                  incumbent: nation,
-                  challenger: this.currentNationInConflict,
-                  targetType: "army"
-                })
-              );
-            }
-            if (units.fleets > 0) {
-              if (!this.coexistingNations.includes(nation)) {
-                incumbent = nation;
-              }
-              this.availableActions.add(
-                Action.fight({
-                  province: destination,
-                  incumbent: nation,
-                  challenger: this.currentNationInConflict,
-                  targetType: "fleet"
-                }),
-              );
-            }
-          }
-        }
+      
+      if (this.units.get(nationsAtProvince[0]).get(action.payload.province).armies > 0) {
+        this.availableActions.add(
+          Action.fight({
+            province: destination,
+            incumbent: this.coexistingNations[0],
+            challenger: nationsAtProvince[0],
+            targetType: "army"
+          })
+        );
+      } else if (this.units.get(nationsAtProvince[0]).get(action.payload.province).fleets > 0) {
+        this.availableActions.add(
+          Action.fight({
+            province: destination,
+            incumbent: this.coexistingNations[0],
+            challenger: nationsAtProvince[0],
+            targetType: "fleet"
+          })
+        );
       }
       if (this.availableActions.size > 0) {
         this.availableActions.add(
           Action.coexist({
             province: destination,
-            incumbent: incumbent || action.payload.challenger,
-            challenger: this.currentNationInConflict
+            incumbent: action.payload.challenger,
+            challenger: nationsAtProvince[0]
           })
         )
         this.handlingConflict = true;
