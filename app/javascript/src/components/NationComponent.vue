@@ -40,11 +40,11 @@ export default {
     currentNation() {
       if (this.current_nation === this.nation && this.controller === this.current_player) {
         return `bg-${this.nation} border-4 border-black`
-      };
+      }
 
       if (this.current_nation === this.nation) {
         return `bg-${this.nation}`
-      };
+      }
 
       return ""
     },

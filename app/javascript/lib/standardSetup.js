@@ -192,8 +192,8 @@ export default ({ players, provinceNames }) => {
       unitLimits.set(nation, {armies: 6, fleets: 10});
     } else {
       unitLimits.set(nation, {armies: 8, fleets: 8});
-    };
-  };
+    }
+  }
 
   out.provinces = provinces;
   out.currentNation = Nation.AH;

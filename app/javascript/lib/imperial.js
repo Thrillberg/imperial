@@ -94,7 +94,7 @@ export default class Imperial {
         if (this.auction?.inAuction) {
           this.auction.tick(action, this);
         } else {
-          this.skipBondPurchase(action);
+          this.skipBondPurchase();
         }
         return;
       }
@@ -158,7 +158,7 @@ export default class Imperial {
         return;
       }
       case "skipDestroyFactory": {
-        this.skipDestroyFactory(action);
+        this.skipDestroyFactory();
         return;
       }
       case "import": {
@@ -387,7 +387,7 @@ export default class Imperial {
     }
   }
 
-  skipBondPurchase(action) {
+  skipBondPurchase() {
     if (this.investing) {
       this.previousPlayerName = this.currentPlayerName;
       const nextNation = this.currentNation.when({
@@ -529,7 +529,7 @@ export default class Imperial {
 
     // Remove units from this.unitsToMove in case they could have moved
     let unitIndex = null;
-    this.unitsToMove.forEach(([unitProvince, _], index) => {
+    this.unitsToMove.forEach(([unitProvince], index) => {
       if (unitProvince === province) {
         unitIndex = index;
       }
@@ -830,7 +830,7 @@ export default class Imperial {
     this.setManeuverAvailableActions();
   }
 
-  skipDestroyFactory(action) {
+  skipDestroyFactory() {
     this.setManeuverAvailableActions();
   }
 
@@ -1326,7 +1326,7 @@ export default class Imperial {
           availableActions.add(
             Action.import({ placements: [{ province, type: "army" }] })
           );
-        };
+        }
         if (this.board.graph.get(province).factoryType === "shipyard" &&
             !this.overUnitLimit(action.payload.nation, "fleet", 1)
         ) {
@@ -1346,7 +1346,7 @@ export default class Imperial {
                 { province: province2, type: "army" }
               ]
             })
-          )};
+          )}
           if (this.board.graph.get(province).factoryType === "shipyard" && 
               !this.overUnitLimit(action.payload.nation, "fleet", 1) &&
               !this.overUnitLimit(action.payload.nation, "army", 1)
@@ -1398,7 +1398,7 @@ export default class Imperial {
                   { province: province3, type: "army" }
                 ]
               })
-            )};
+            )}
             if (this.board.graph.get(province).factoryType === "shipyard" &&
                 !this.overUnitLimit(action.payload.nation, "fleet", 1) &&
                 !this.overUnitLimit(action.payload.nation, "army", 2)
@@ -1536,7 +1536,7 @@ export default class Imperial {
 
   checkForNewFights() {
     this.unitsToMove.forEach(([province, unitType]) => {
-      for (const [nation, data] of this.nations) {
+      for (const [nation] of this.nations) {
         let {armies, fleets} = this.units.get(nation).get(province);
         if ((armies > 0 || fleets > 0) && nation !== this.currentNation) {
           this.availableActions.add(Action.fight({
@@ -1625,7 +1625,7 @@ export default class Imperial {
 
   bondPurchasesFromAllNations() {
     let actions = new Set();
-    for (const [nation, data] of this.nations) {
+    for (const [nation] of this.nations) {
       for (const action of availableBondPurchases(nation, this)) {
         actions.add(action);
       }
@@ -1775,7 +1775,7 @@ export default class Imperial {
     }
     if (treasury < 5) {
       out.delete(factoryAction)
-    };
+    }
     return out;
   }
 
@@ -1850,7 +1850,7 @@ export default class Imperial {
       } else if (action.payload && (action.payload.player === player && (action.type === "bondPurchase" || action.type === "skipBondPurchase"))) {
         hasNotBoughtABond = false
       }
-    };
+    }
     return hasNotBoughtABond;
   }
 
@@ -1900,7 +1900,7 @@ export default class Imperial {
 
   occupiedHomeProvinces(nation) {
     let occupiedHomeProvinces = [];
-    if (!!this.board.byNation.get(nation)) {
+    if (this.board.byNation.get(nation)) {
       for (const province of this.board.byNation.get(nation)) {
         if (this.provinceIsOccupied(province, nation)) {
           occupiedHomeProvinces.push(province);

@@ -29,7 +29,7 @@ export default {
   components: { Flag },
   methods: {
     border() {
-      if (!!this.tradedBond) {
+      if (this.tradedBond) {
         return "red";
       } else {
         return "green";

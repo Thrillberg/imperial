@@ -123,7 +123,7 @@ describe("memoize()", () => {
     const fn = memoize(m => {
       callCount++;
       const out = new Map();
-      for (const [k, [_, v]] of m) {
+      for (const [k, [, v]] of m) {
         const newV = new Set();
         for (const e of v) {
           if (e > 2) {

@@ -1,6 +1,6 @@
 import Action from "./action.js";
 import Imperial from "./imperial.js";
-import { Bond, Nation } from "./constants.js";
+import { Nation } from "./constants.js";
 
 const log = [
   Action.initialize({
@@ -133,5 +133,7 @@ describe("round of investment", () => {
     game.tick(Action.bondPurchase({ player: "player3", cost: 9, nation: Nation.FR }))
     game.tick(Action.skipBondPurchase({ player: "player1", nation: Nation.FR }))
     game.tick(Action.rondel({ nation: Nation.GB, cost: 0, slot: "investor" }))
+
+    expect(game.currentPlayerName).toEqual("player1");
   });
 });

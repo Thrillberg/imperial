@@ -7,7 +7,7 @@
         <p>{{ game.winner }} won!</p>
       </div>
       <div class="flex justify-around">
-        <div v-for="[nation] of game.nations">
+        <div v-for="[nation] of game.nations" :key="nation.value">
           <svg xmlns="http://www.w3.org/2000/svg" height="90" width="120">
             <Flag
               :nation="nation.value"
@@ -18,11 +18,11 @@
           <div class="text-5xl">{{ Math.floor(game.nations.get(nation).powerPoints / 5) }}x</div>
         </div>
       </div>
-      <div v-for="(player, index) of playersSortedByScore()">
+      <div v-for="(player, index) of playersSortedByScore()" :key="index">
         <div class="my-5">
           <p class="text-2xl"><b>{{ index + 1 }}. {{ game.players[player].name }}</b></p>
           <div class="flex flex-row justify-center">
-            <div v-for="bond of game.players[player].bonds">
+            <div v-for="bond of game.players[player].bonds" :key="bond.nation+bond.number">
               <Bond :bond="bond" />
               <div>{{ bond.number * Math.floor(game.nations.get(bond.nation).powerPoints / 5) }} VP</div>
             </div>

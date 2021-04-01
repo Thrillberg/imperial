@@ -150,7 +150,6 @@ import { apiClient } from "../router/index.js";
 
 import Board from "../components/board/Board.vue";
 import EndGame from "../components/EndGame.vue";
-import Flag from "../components/flags/Flag.vue";
 import GameDetails from "../components/GameDetails.vue";
 import GameLog from "../components/GameLog.vue";
 import NationComponent from "../components/NationComponent.vue";
@@ -163,7 +162,6 @@ export default {
   components: {
     Board,
     EndGame,
-    Flag,
     GameDetails,
     GameLog,
     NationComponent,

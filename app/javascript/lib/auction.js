@@ -71,7 +71,6 @@ export default class Auction {
       25: 8,
       30: 9
     };
-    const nations = [Nation.AH, Nation.IT, Nation.FR, Nation.GB, Nation.GE, Nation.RU];
 
     game.nations.get(action.payload.nation).treasury += action.payload.cost;
     game.players[action.payload.player].cash -= action.payload.cost;
@@ -215,4 +214,4 @@ export default class Auction {
     }
     return [player, nation];
   }
-};
+}

@@ -13,7 +13,7 @@
           v-for="(rondel_slot, index) in slots"
           v-on:slot-clicked="slotClicked(rondel_slot.type)"
           v-on:slot-hovered="slotHovered(rondel_slot.type)"
-          v-on:slot-silent="slotSilent(rondel_slot.type)"
+          v-on:slot-silent="slotSilent()"
           :index="index"
           :is_valid="isValid(rondel_slot.type)"
           :nations="nationsOnSlot(rondel_slot.type)"
@@ -24,7 +24,7 @@
     </div>
     <div v-if="!!helperText" class="w-1/2 mx-auto border border-gray-600 rounded m-2 p-2">
       <div v-if="onInvestorSlot" class="mb-2">
-        <div v-for="bearer of bondBearers" :bearer="bearer">
+        <div v-for="bearer of bondBearers" :bearer="bearer" :key="bearer.player">
           <b>{{ bearer.player }}</b> would receive {{ bearer.dividend }}m
         </div>
         <div v-if="game.variant !== 'withoutInvestorCard'">
@@ -166,7 +166,7 @@ export default {
         this.game.currentPlayerName === this.name || (this.game.soloMode && this.name in this.game.players)
       )
     },
-    slotSilent(slot) {
+    slotSilent() {
       this.helperText = "";
     },
     slotClicked: function(slot) {

@@ -28,17 +28,10 @@
 </template>
 
 <script>
-import Action from "../../lib/action.js";
-import { apiClient } from "../router/index.js";
-import { Nation } from "../../lib/constants.js";
-
 import { DateTime, Interval } from "luxon";
-
-import Star from "../components/Star.vue";
 
 export default {
   name: "UnstartedGameList",
-  components: { Star },
   props: { games: Array, profile: Object },
   methods: {
     openSince(date) {

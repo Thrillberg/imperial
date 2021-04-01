@@ -1,6 +1,5 @@
 import Action from "./action.js";
 import Auction from "./auction.js";
-import GameBoard from "./gameBoard.js";
 import Imperial from "./imperial.js";
 import { Bond, Nation } from "./constants.js";
 
@@ -140,7 +139,6 @@ describe("auction", () => {
       ];
 
       const game = Imperial.fromLog(log);
-      const auction = game.auction;
 
       expect(game.availableActions).toEqual(
         new Set(
@@ -188,7 +186,6 @@ describe("auction", () => {
       ]
 
       const game = Imperial.fromLog(log);
-      const auction = game.auction;
 
       expect(game.availableActions).toEqual(expectedActions);
     });
@@ -226,7 +223,6 @@ describe("auction", () => {
       ]
 
       const game = Imperial.fromLog(log);
-      const auction = game.auction;
 
       expect(game.availableActions).toEqual(expectedActions);
     });
