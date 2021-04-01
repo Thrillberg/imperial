@@ -74,6 +74,7 @@
         </div>
         <GameLog
           :log="game.annotatedLog"
+          :logTimestamps="logTimestamps"
         />
       </div>
       <div v-else-if="gameCancelled()">
@@ -177,6 +178,7 @@ export default {
       gameLoaded: false,
       gameStarted: false,
       importPlacements: [],
+      logTimestamps: [],
       maneuverOrigin: "",
       poppedTurns: []
     };
@@ -315,7 +317,8 @@ export default {
           ];
       }
     },
-    updateGameLog(log) {
+    updateGameLog(log, logTimestamps) {
+      this.logTimestamps = logTimestamps;
       this.poppedTurns = [];
       const gameLog = getGameLog(log);
       this.$delete(this.game);
