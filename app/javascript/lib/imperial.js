@@ -44,6 +44,7 @@ export default class Imperial {
     this.firstInvestor = "";
     this.currentNationInConflict = null;
     this.coexistingNations = [];
+    this.swissBanksWhoDoNotInterrupt = [];
   }
 
   tick(action) {
@@ -118,22 +119,34 @@ export default class Imperial {
         return;
       }
       case "forceInvestor": {
+        this.swissBanksWhoDoNotInterrupt = [];
+        this.passingThroughInvestor = false;
         this.nations.get(this.currentNation).rondelPosition = "investor";
         const investorAction = Action.rondel({
           slot: "investor",
           nation: this.currentNation,
           cost: 0
         });
+        this.currentPlayerName = this.nations.get(this.currentNation).controller;
         this.investor(investorAction);
         return;
       }
       case "skipForceInvestor": {
-        const reversedLog = this.log.slice().reverse();
-        const lastRondelAction = reversedLog.find((action) => {
-          return action.type === "rondel"
-        });
-        this.availableActions = new Set([lastRondelAction]);
-        this.tick(lastRondelAction);
+        this.swissBanksWhoDoNotInterrupt.push(this.currentPlayerName);
+        // All Swiss Banks have allowed the move past Investor
+        if (this.swissBanksWhoDoNotInterrupt.length === this.swissBanks.length) {
+          const reversedLog = this.log.slice().reverse();
+          const lastRondelAction = reversedLog.find((action) => {
+            return action.type === "rondel"
+          });
+          this.currentPlayerName = this.nations.get(lastRondelAction.payload.nation).controller;
+          this.availableActions = new Set([lastRondelAction]);
+          this.tick(lastRondelAction);
+          return;
+        // More Swiss Banks need to be given the option to force Investor
+        } else {
+          this.allowSwissBanksToForceInvestor();
+        }
         return;
       }
       case "buildFactory": {
@@ -392,7 +405,11 @@ export default class Imperial {
         this.currentPlayerName = this.order[index + 1];
       }
       if (this.currentPlayerName !== this.firstInvestor) {
-        this.availableActions = availableBondPurchases(this.currentNation, this);
+        if (this.swissBanks.includes(this.currentPlayerName)) {
+          this.availableActions = this.bondPurchasesFromAllNations();
+        } else {
+          this.availableActions = availableBondPurchases(this.currentNation, this);
+        }
         // If there is one available action, it is the pass action and doesn't
         // count as a real action.
         while (this.availableActions.size <= 1 && this.investing) {
@@ -1074,6 +1091,7 @@ export default class Imperial {
     if (this.passedThroughInvestor(currentNation.rondelPosition, action.payload.slot) && this.passingThroughInvestor === false) {
       this.passingThroughInvestor = true;
       // Allow Swiss Bank holders to interrupt
+      this.swissBanksWhoDoNotInterrupt = [];
       if (this.canAffordToPayInvestors(this.currentNation)) {
         this.allowSwissBanksToForceInvestor();
         if (this.availableActions.size > 0) {
@@ -1838,10 +1856,14 @@ export default class Imperial {
 
   allowSwissBanksToForceInvestor() {
     this.availableActions = new Set();
-    for (const player of this.swissBanks) {
-      this.availableActions.add(Action.forceInvestor({player}))
-      this.availableActions.add(Action.skipForceInvestor({player}))
-    };
+    this.swissBanks.forEach(player => {
+      if (!this.swissBanksWhoDoNotInterrupt.includes(player)) {
+        this.currentPlayerName = player;
+        this.availableActions.add(Action.forceInvestor({player}))
+        this.availableActions.add(Action.skipForceInvestor({player}))
+        return;
+      }
+    });
   }
 
   canAffordToPayInvestors(nation) {
@@ -1857,23 +1879,21 @@ export default class Imperial {
   }
 
   passedThroughInvestor(from, to) {
-    if (this.variant !== "withoutInvestorCard") {
-      switch (from) {
-        case "maneuver1": {
-          return ["import", "production2", "maneuver2", "taxation", "factory"].includes(to);
-        }
-        case "production1": {
-          return ["import", "production2", "maneuver2", "taxation"].includes(to);
-        }
-        case "factory": {
-          return ["import", "production2", "maneuver2"].includes(to);
-        }
-        case "taxation": {
-          return ["import", "production2"].includes(to);
-        }
-        case "maneuver2": {
-          return ["import"].includes(to);
-        }
+    switch (from) {
+      case "maneuver1": {
+        return ["import", "production2", "maneuver2", "taxation", "factory"].includes(to);
+      }
+      case "production1": {
+        return ["import", "production2", "maneuver2", "taxation"].includes(to);
+      }
+      case "factory": {
+        return ["import", "production2", "maneuver2"].includes(to);
+      }
+      case "taxation": {
+        return ["import", "production2"].includes(to);
+      }
+      case "maneuver2": {
+        return ["import"].includes(to);
       }
     }
   }

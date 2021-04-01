@@ -126,7 +126,6 @@ export default {
     canForceInvestor: function () {
       if (this.game.availableActions.size > 0 &&
         Array.from(this.game.availableActions).every((action) => action.type === "forceInvestor" || action.type === "skipForceInvestor" || action.type === "undo")) {
-          this.$emit("clearControllingPlayerName");
           if (this.game.swissBanks.includes(this.profile.username) || (this.game.soloMode && this.profile.username in this.game.players)) {
             return true;
           }
