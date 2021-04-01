@@ -57,8 +57,6 @@
 </template>
 
 <script>
-import { apiClient } from "../router/index.js";
-
 export default {
   name: "Header",
   props: ["profile"],
@@ -104,11 +102,6 @@ export default {
     register() {
       if (this.$route.path !== "/register") {
         this.$router.push("/register");
-      }
-    },
-    signIn() {
-      if (this.$route.path !== "/sign_in") {
-        this.$router.push("/sign_in");
       }
     }
   }

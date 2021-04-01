@@ -82,7 +82,7 @@ export default {
         case "destroyFactory":
           return this.destroyFactoryAction(action.payload);
         case "endManeuver":
-          return this.endManeuverAction(action.payload);
+          return this.endManeuverAction();
         case "forceInvestor":
           return notImplemented;
         case "skipForceInvestor":
@@ -99,9 +99,10 @@ export default {
           return `${action.payload.player} traded in their ${stringify(action.payload.bondNation.value)} bond for ${action.payload.bondCost}m.`;
         case "playerAutoSkipsBondPurchase":
           return `${action.payload.player} could not buy a bond from ${stringify(action.payload.bondNation.value)} because of insufficient funds.`;
-        case "playerPaysForRondel":
+        case "playerPaysForRondel": {
           let slot = this.capitalize(action.payload.slot).replace(/\d/g,"");
           return `${action.payload.player} paid ${action.payload.cost}m to move to the ${slot} slot on the rondel.`;
+        }
         case "playerInvests":
           return `${action.payload.player} received 2m for holding the investor card.`;
       }
@@ -155,7 +156,7 @@ export default {
       let province = this.capitalize(payload.province);
       return `Factory destroyed in ${province}.`;
     },
-    endManeuverAction(payload) {
+    endManeuverAction() {
       return `Military maneuvers have ended for now.`
     }
   }

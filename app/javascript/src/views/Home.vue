@@ -32,9 +32,6 @@
 </template>
 
 <script>
-import { apiClient } from "../router/index.js";
-
-import EndedGameList from "../components/EndedGameList.vue";
 import UnstartedGameList from "../components/UnstartedGameList.vue";
 import YourGames from "../components/YourGames.vue";
 

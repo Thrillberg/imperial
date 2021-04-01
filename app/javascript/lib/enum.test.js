@@ -22,8 +22,6 @@ describe("Enum", () => {
     });
 
     test("of instances", () => {
-      const currentValue = MyEnum.HUHU.value;
-
       expect(() => {
         MyEnum.HUHU.value = 42;
       }).toThrowError();
@@ -34,7 +32,7 @@ describe("Enum", () => {
     const s = new Set();
     s.add(MyEnum.HUHU);
 
-    expect(s.has(MyEnum.HUHU));
+    expect(s).toContain(MyEnum.HUHU);
 
     s.add(MyEnum.HUHU);
 

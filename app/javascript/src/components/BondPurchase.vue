@@ -2,7 +2,7 @@
   <div v-if="purchasingBond">
     <div class="text-lg m-2">Purchase a bond - You have {{ game.players[current_player].cash }}m in cash.</div>
     <div class="flex flex-wrap">
-      <div v-for="bond of game.availableBonds">
+      <div v-for="bond of game.availableBonds" :key="bond.nation+bond.cost">
         <Bond
           v-if="canBePurchased(bond)"
           :bond="bond"
@@ -68,7 +68,7 @@ export default {
       this.$emit("purchaseBond", bond);
     },
     skipBondPurchase: function() {
-      this.$emit("skip");;
+      this.$emit("skip");
     },
   }
 }

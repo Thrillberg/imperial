@@ -26,11 +26,8 @@
 
 <script>
 import { apiClient } from "./router/index.js";
-import { Nation } from "../lib/constants.js";
 
 import Header from "./components/Header.vue";
-
-import getGameLog from "./getGameLog.js";
 
 export default {
   name: "App",
@@ -93,7 +90,7 @@ export default {
     createUserProfile() {
       fetch("/users", { method: "POST", credentials: "include" })
         .then((response) => response.json())
-        .then(({ id, name }) => {
+        .then(({ name }) => {
           this.profile = { username: name };
           apiClient.updateUser(name);
           this.profileFetched = true;

@@ -46,6 +46,7 @@
     >
       <circle
         v-for="(nation, index) in nations"
+        :key="index"
         :cx="xPosition(index)"
         :cy="yPosition(index)"
         r="7"
@@ -58,13 +59,8 @@
 </template>
 
 <script>
-import Flag from "./flags/Flag.vue";
-
 export default {
   name: "RondelSlot",
-  components: {
-    Flag
-  },
   props: {
     index: Number,
     is_valid: Boolean,

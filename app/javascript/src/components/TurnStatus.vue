@@ -13,6 +13,7 @@ export default {
       if (this.game.currentPlayerName === this.profile.username) {
         return `bg-${this.game.currentNation.value}`;
       }
+      return "";
     },
     playerIs() {
       if (this.controllingPlayerName === "") {
@@ -31,7 +32,7 @@ export default {
         if (action.type !== "undo") {
           actionsWithoutUndo.push(action)
         }
-      };
+      }
       if (actionsWithoutUndo.every(action => action.type === "rondel")) {
         return "choosing a rondel slot"
       } else if (actionsWithoutUndo.every(action => action.type === "buildFactory")) {

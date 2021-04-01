@@ -7,17 +7,6 @@ import Action from "./action";
 import Imperial from "./imperial";
 import mainLog from "./schnelleinsteigLog";
 
-const rondelSlots = [
-  "factory",
-  "production1",
-  "maneuver1",
-  "investor",
-  "import",
-  "production2",
-  "maneuver2",
-  "taxation"
-];
-
 describe("Schnelleinsteig", () => {
   describe("setup for four players", () => {
     const game = Imperial.fromLog(mainLog.slice(0, 1));

@@ -310,9 +310,7 @@ export default {
           return -10
         case "English Channel":
           return -30
-        case "Marseille":
         case "Hamburg":
-          return -15
         case "Marseille":
           return -15
         case "St. Petersburg":

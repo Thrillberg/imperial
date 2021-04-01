@@ -8,8 +8,10 @@
           <b>Imperial</b> is a board game in which you play as an investor in pre-World War I European imperial powers. Players own bonds in various nations and whoever owns the majority stake in a nation controls that nation.
         </p>
         <p>
-        Each nation takes their turn to do one action on the <b>rondel</b>. Whoever happens to control that nation when it is the nation's turn is the person who decides what that nation will do on that turn. Countries gain <b>power points</b> (which are increased by building factories and conquering territory). The first nation to gain <b>25 power points</b> signals the end of the game. The winner of the game is determined by evaluating the bonds controlled by each player and calculating who has the most valuable portfolio. The <b>raw score</b> in the player cards represents the player's score, taking into acount only the bonds they control. For each of the player's bonds, the following calculation is made and added to the player's raw score: 
+        Each nation takes their turn to do one action on the <b>rondel</b>. Whoever happens to control that nation when it is the nation's turn is the person who decides what that nation will do on that turn. Countries gain <b>power points</b> (which are increased by building factories and conquering territory). The first nation to gain <b>25 power points</b> signals the end of the game. The winner of the game is determined by evaluating the bonds controlled by each player and calculating who has the most valuable portfolio. The <b>raw score</b> in the player cards represents the player's score, taking into acount only the bonds they control. For each of the player's bonds, the following calculation is made and added to the player's raw score:
+        </p>
         <div class="text-center">(nation power points / 5) * bond number</div>
+        <p>
         The bond number is the lefthand number on the bond. For determining the winner at the end of the game, each player's cash is added to their raw score to make up their total Victory Points.
         </p>
       </div>
