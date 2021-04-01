@@ -1,8 +1,11 @@
 <template>
   <div class="border border-black bg-gray-100 rounded p-2 m-2 rondel">
-    <div v-for="(action, index) in event" :key="index">
+    <div v-for="({action, timestamp}, index) in event" :key="index">
       <div v-if="action.type === 'initialize'">
-        <p>{{ action.payload.soloMode ? "Solo game started!" : "Game started!" }}</p>
+        <div class="flex justify-between">
+          <p>{{ action.payload.soloMode ? "Solo game started!" : "Game started!" }}</p>
+          <p>{{ toString(timestamp) }}</p>
+        </div>
         <p>Variant: {{ action.payload.variant || "standard" }}</p>
         <p v-for="(player, index) in action.payload.players" :key="index">
           <svg 
@@ -25,16 +28,23 @@
           height="20"
           >
           <Flag :nation="action.payload.nation.value" width="30"></Flag>
-        </svg>{{ processAction(action) }}
+        </svg>
+        <div class="flex justify-between">
+          <p>{{ processAction(action) }}</p>
+          <p>{{ toString(timestamp) }}</p>
+        </div>
       </div>  
-      <div v-else>
-        - {{ processAction(action) }}
+      <div v-else class="flex justify-between">
+        <p>- {{ processAction(action) }}</p>
+        <p>{{ toString(timestamp) }}</p>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import { DateTime } from "luxon";
+
 import Flag from "./flags/Flag.vue";
 import stringify from "../stringify.js";
 export default {
@@ -158,6 +168,13 @@ export default {
     },
     endManeuverAction() {
       return `Military maneuvers have ended for now.`
+    },
+    toString(timestamp) {
+      if (timestamp !== "") {
+        return DateTime.fromISO(timestamp).toLocaleString(DateTime.DATETIME_FULL)
+      }
+
+      return "Automated";
     }
   }
 }
