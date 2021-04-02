@@ -327,6 +327,7 @@ export default {
         this.gameStarted = true;
         this.currentPlayer = this.game.players[this.profile.username] || {};
         this.controllingPlayerName = this.game.currentPlayerName;
+        this.updateFavicon();
       }
       apiClient.updateCurrentPlayerName(this.$route.params.id, this.game.currentPlayerName);
       this.gameLoaded = true;
@@ -441,6 +442,19 @@ export default {
       const log = this.game.log;
       this.$delete(this.game);
       this.game = Imperial.fromLog(log);
+    },
+    updateFavicon() {
+      if (this.currentPlayer.name === this.game.currentPlayerName) {
+        let link = document.createElement("link");
+        link.rel = "icon";
+        document.getElementsByTagName("head")[0].appendChild(link);
+        link.href = "../packs/favicon2.ico";
+      } else {
+        let link = document.createElement("link");
+        link.rel = "icon";
+        document.getElementsByTagName("head")[0].appendChild(link);
+        link.href = "../packs/favicon.ico";
+      }
     }
   }
 };
