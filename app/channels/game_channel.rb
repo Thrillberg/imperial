@@ -33,6 +33,15 @@ class GameChannel < ApplicationCable::Channel
       game = game_from_data(data)
       game.update(cancelled_at: Time.zone.now)
       broadcast_games "game_channel", "updateGames"
+
+    when "updateCurrentPlayerName"
+      data = data["data"]
+      current_player_name = data["currentPlayerName"]
+      current_player_names = JSON.parse(REDIS.get("current_player_names"))
+      current_player_names[data["gameId"]] = current_player_name
+      REDIS.set("current_player_names", current_player_names.to_json)
+
+      broadcast_games "game_channel", "updateGames"
     end
   end
 

@@ -89,6 +89,13 @@ class APIClient {
     this.handlers["updateGameLog"] = cb;
   }
 
+  onUpdateCurrentPlayerName(cb) {
+    if (this.handlers["updateCurrentPlayerName"] !== undefined) {
+      throw new Error("there is already a handler defined");
+    }
+    this.handlers["updateCurrentPlayerName"] = cb;
+  }
+
   joinGame(userId, gameId, userName) {
     return this.send(
       {
@@ -150,6 +157,16 @@ class APIClient {
       {
         kind: "tick",
         data: { gameId, action: JSON.stringify(action) }
+      },
+      "GameChannel"
+    );
+  }
+
+  updateCurrentPlayerName(gameId, currentPlayerName) {
+    return this.send(
+      {
+        kind: "updateCurrentPlayerName",
+        data: { gameId, currentPlayerName }
       },
       "GameChannel"
     );
