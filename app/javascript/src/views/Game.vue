@@ -328,6 +328,7 @@ export default {
         this.currentPlayer = this.game.players[this.profile.username] || {};
         this.controllingPlayerName = this.game.currentPlayerName;
       }
+      apiClient.updateCurrentPlayerName(this.$route.params.id, this.game.currentPlayerName);
       this.gameLoaded = true;
     },
     validProvinces() {

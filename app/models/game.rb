@@ -19,7 +19,8 @@ class Game < ActiveRecord::Base
       log: actions.map(&:data),
       force_ended_at: force_ended_at,
       cancelled_at: cancelled_at,
-      created_at: created_at
+      created_at: created_at,
+      current_player_name: JSON.parse(REDIS.get("current_player_names"))[id]
     }
   end
 

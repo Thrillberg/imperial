@@ -4,6 +4,7 @@
     <div class="flex border-b border-black mt-2">
       <div class="w-1/3"><b>Name</b></div>
       <div class="w-1/3"><b>Players</b></div>
+      <div class="w-1/3"><b>Current Player</b></div>
       <div class="w-1/3"></div>
     </div>
     <button
@@ -19,6 +20,7 @@
           <span>{{ game.name }}</span>
         </div>
         <div class="w-1/3">{{ game.players.length }}</div>
+        <div class="w-1/3">{{ game.currentPlayerName }}</div>
         <div class="w-1/3">
           <button v-if="game.log.length > 0 || game.host !== profile.username" class="rounded bg-green-800 text-white cursor-pointer block hover:bg-green-900 p-2">
             View Game
