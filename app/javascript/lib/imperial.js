@@ -1107,18 +1107,6 @@ export default class Imperial {
               }
             }
           });
-        //if (this.passingThroughInvestor) {
-        //  this.middleOfInvestorTurn();
-        //  this.passingThroughInvestor = false;
-        //  return;
-        //}
-        //if (this.variant === "withoutInvestorCard") {
-        //  this.roundOfInvestment();
-        //} else {
-        //  this.handleAdvancePlayer();
-        //  this.availableActions = new Set(this.rondelActions(this.currentNation));
-        //}
-        //return;
         this.handlePassingThroughInvestor();
         return;
       }
@@ -1955,6 +1943,8 @@ export default class Imperial {
         this.roundOfInvestment();
       }
       this.passingThroughInvestor = false;
+    } else if (this.variant === "withoutInvestorCard") {
+      this.roundOfInvestment();
     } else {
       this.handleAdvancePlayer();
       this.availableActions = new Set(this.rondelActions(this.currentNation));
