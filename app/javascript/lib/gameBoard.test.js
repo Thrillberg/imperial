@@ -49,13 +49,15 @@ describe("GameBoard", () => {
         { name: "2", nation: "a", isOcean: false },
         { name: "3", nation: "a", isOcean: false },
         { name: "4", nation: "b", isOcean: false },
-        { name: "5", nation: "b", isOcean: false }
+        { name: "5", nation: "b", isOcean: false },
+        { name: "6", nation: "b", isOcean: false }
       ],
       edges: [
         ["1", "2"],
         ["2", "3"],
         ["3", "4"],
-        ["4", "5"]
+        ["4", "5"],
+        ["6", "1"]
       ]
     });
 
@@ -67,7 +69,7 @@ describe("GameBoard", () => {
           isFleet: false,
           friendlyFleets: new Set()
         })
-      ).toEqual(["2", "3", "4"]);
+      ).toEqual(["2", "3", "4", "6"]);
     });
 
     test("foreign unit cannot use railroads", () => {
@@ -78,7 +80,7 @@ describe("GameBoard", () => {
           isFleet: false,
           friendlyFleets: new Set()
         })
-      ).toEqual(["2"]);
+      ).toEqual(["2", "6"]);
     });
 
     test("home unit in the middle can go places", () => {
@@ -89,7 +91,7 @@ describe("GameBoard", () => {
           isFleet: false,
           friendlyFleets: new Set()
         })
-      ).toEqual(["2", "1", "4"]);
+      ).toEqual(["2", "1", "6", "4"]);
     });
 
     test("foreign unit in the middle can go fewer places", () => {
@@ -112,7 +114,30 @@ describe("GameBoard", () => {
           friendlyFleets: new Set(),
           occupiedHomeProvinces: ["2"]
         })
-      ).toEqual(["2"]);
+      ).toEqual(["2", "6"]);
+    });
+
+    test("cannot enter and exit on railroad", () => {
+      expect(
+        gameBoard.neighborsFor({
+          origin: "6",
+          nation: "a",
+          isFleet: false,
+          friendlyFleets: new Set()
+        })
+      ).toEqual(["1", "2", "3"]);
+    });
+
+    test("cannot enter and exit on occupied province", () => {
+      expect(
+        gameBoard.neighborsFor({
+          origin: "6",
+          nation: "a",
+          isFleet: false,
+          friendlyFleets: new Set(),
+          occupiedHomeProvinces: ["2"]
+        })
+      ).toEqual(["1"]);
     });
   });
 
@@ -190,12 +215,14 @@ describe("GameBoard", () => {
           nation: null,
           isOcean: true
         },
-        { name: "4", nation: "b", isOcean: false }
+        { name: "4", nation: "b", isOcean: false },
+        { name: "5", nation: "a", isOcean: false }
       ],
       edges: [
         ["1", "2"],
         ["2", "3"],
-        ["3", "4"]
+        ["3", "4"],
+        ["4", "5"]
       ]
     });
 
