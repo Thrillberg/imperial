@@ -69,25 +69,10 @@ export default {
     };
   },
   methods: {
-    signIn: function(e) {
-      fetch("/accounts/sign_in", {
-        method: "POST",
-        headers: {
-          "X-CSRF-Token": this.$cookies.get("CSRF-TOKEN"),
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ session: { email: this.email, password: this.password }})
-      })
-        .then(response => response.json())
-        .then(data => {
-          if (data.email) {
-            this.$emit("signedIn", data);
-            this.errors = [];
-          } else {
-            this.errors = data;
-          }
-        })
-      e.preventDefault();
+    signIn() {
+      if (this.$route.path !== "/sign_in") {
+        this.$router.push("/sign_in");
+      }
     },
     signOut: function (e) {
       fetch("/accounts/sign_out", {
