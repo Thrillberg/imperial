@@ -810,18 +810,8 @@ export default class Imperial {
       action.payload.province
     ).factoryType;
     this.nations.get(this.currentNation).treasury -= 5;
-    if (this.passingThroughInvestor) {
-      this.middleOfInvestorTurn();
-      this.passingThroughInvestor = false;
-    } else {
-      if (this.variant === "withoutInvestorCard") {
-        this.roundOfInvestment();
-      } else {
-        this.handleAdvancePlayer();
-        this.availableActions = new Set(this.rondelActions(this.currentNation));
-        this.buildingFactory = false;
-      }
-    }
+    this.handlePassingThroughInvestor();
+    this.buildingFactory = false;
   }
 
   destroyFactory(action) {
@@ -845,18 +835,7 @@ export default class Imperial {
       this.nations.get(nation).treasury--;
     });
     this.importing = false;
-
-    if (this.passingThroughInvestor) {
-      this.middleOfInvestorTurn();
-      this.passingThroughInvestor = false;
-    } else {
-      if (this.variant === "withoutInvestorCard") {
-        this.roundOfInvestment();
-      } else {
-        this.handleAdvancePlayer();
-        this.availableActions = new Set(this.rondelActions(this.currentNation));
-      }
-    }
+    this.handlePassingThroughInvestor();
   }
 
   maneuver(action) {
@@ -1071,17 +1050,7 @@ export default class Imperial {
       // No more units may be maneuvered on this turn.
       this.maneuvering = false;
       this.fleetConvoyCount = {};
-      if (this.passingThroughInvestor) {
-        this.middleOfInvestorTurn();
-        this.passingThroughInvestor = false;
-      } else {
-        if (this.variant === "withoutInvestorCard") {
-          this.roundOfInvestment();
-        } else {
-          this.handleAdvancePlayer();
-          this.availableActions = new Set(this.rondelActions(this.currentNation));
-        }
-      }
+      this.handlePassingThroughInvestor();
     }
   }
 
@@ -1138,17 +1107,19 @@ export default class Imperial {
               }
             }
           });
-        if (this.passingThroughInvestor) {
-          this.middleOfInvestorTurn();
-          this.passingThroughInvestor = false;
-          return;
-        }
-        if (this.variant === "withoutInvestorCard") {
-          this.roundOfInvestment();
-        } else {
-          this.handleAdvancePlayer();
-          this.availableActions = new Set(this.rondelActions(this.currentNation));
-        }
+        //if (this.passingThroughInvestor) {
+        //  this.middleOfInvestorTurn();
+        //  this.passingThroughInvestor = false;
+        //  return;
+        //}
+        //if (this.variant === "withoutInvestorCard") {
+        //  this.roundOfInvestment();
+        //} else {
+        //  this.handleAdvancePlayer();
+        //  this.availableActions = new Set(this.rondelActions(this.currentNation));
+        //}
+        //return;
+        this.handlePassingThroughInvestor();
         return;
       }
       case "taxation": {
@@ -1205,19 +1176,7 @@ export default class Imperial {
           powerPoints
         }));
 
-        if (this.passingThroughInvestor) {
-          this.middleOfInvestorTurn();
-          this.passingThroughInvestor = false;
-        } else {
-          if (this.variant === "withoutInvestorCard") {
-            this.roundOfInvestment();
-          } else {
-            this.handleAdvancePlayer();
-            this.availableActions = new Set(
-              this.rondelActions(this.currentNation)
-            );
-          }
-        }
+        this.handlePassingThroughInvestor();
         this.updateRawScores();
         return;
       }
@@ -1985,6 +1944,20 @@ export default class Imperial {
       } else {
         this.availableActions = availableBondPurchases(this.currentNation, this);
       }
+    }
+  }
+
+  handlePassingThroughInvestor() {
+    if (this.passingThroughInvestor) {
+      if (this.variant !== "withoutInvestorCard") {
+        this.middleOfInvestorTurn();
+      } else {
+        this.roundOfInvestment();
+      }
+      this.passingThroughInvestor = false;
+    } else {
+      this.handleAdvancePlayer();
+      this.availableActions = new Set(this.rondelActions(this.currentNation));
     }
   }
 
