@@ -2898,12 +2898,12 @@ describe("imperial", () => {
 
         test("maneuver army to home province of another nation allows challenger to decide whether to be friendly or not", () => {
           const game = newGame();
-          game.units.get(Nation.AH).get("e").armies++;
+          game.units.get(Nation.AH).get("d").armies++;
 
           game.tick(
             Action.rondel({ slot: "maneuver1", nation: Nation.AH, cost: 0 })
           );
-          game.tick(Action.maneuver({ origin: "e", destination: "f" }));
+          game.tick(Action.maneuver({ origin: "d", destination: "f" }));
 
           expect(game.availableActions).toEqual(
             new Set([
@@ -3155,7 +3155,7 @@ describe("imperial", () => {
           game.tick(
             Action.rondel({ slot: "maneuver1", nation: Nation.AH, cost: 0 })
           );
-          game.tick(Action.maneuver({ origin: "f", destination: "e" }));
+          game.tick(Action.maneuver({ origin: "f", destination: "d" }));
 
           expect(game.provinces.get("f").flag).toEqual(Nation.IT);
         });
