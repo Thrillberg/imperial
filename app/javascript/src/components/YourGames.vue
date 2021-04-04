@@ -22,7 +22,7 @@
         <div class="w-1/3">{{ game.players.length }}</div>
         <div class="w-1/3">{{ game.currentPlayerName }}</div>
         <div class="w-1/3">
-          <button v-if="game.log.length > 0 || game.host !== profile.username" class="rounded bg-green-800 text-white cursor-pointer block hover:bg-green-900 p-2">
+          <button v-if="game.currentPlayerName || game.host !== profile.username" class="rounded bg-green-800 text-white cursor-pointer block hover:bg-green-900 p-2">
             View Game
           </button>
           <button v-else class="rounded bg-green-800 text-white cursor-pointer block hover:bg-green-900 p-2">

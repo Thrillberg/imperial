@@ -53,7 +53,6 @@ export default {
       this.games = games.map(game => {
         return {
           host: game.host,
-          log: game.log,
           players: game.players,
           name: game.name,
           id: game.id,
