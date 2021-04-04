@@ -667,7 +667,7 @@ export default class Imperial {
         this.availableActions.add(
           Action.coexist({
             province: destination,
-            incumbent: action.payload.challenger,
+            incumbent: this.coexistingNations[0],
             challenger: nationsAtProvince[0]
           })
         )
@@ -680,7 +680,7 @@ export default class Imperial {
     this.coexistingNations = [];
     this.currentNationInConflict = null;
     this.previousPlayerName = this.currentPlayerName;
-    this.currentPlayerName = this.nations.get(action.payload.challenger).controller;
+    this.currentPlayerName = this.nations.get(action.payload.incumbent).controller;
     if (this.unitsToMove.length === 0) {
       // End of turn
       this.units.get(action.payload.challenger).get(action.payload.province).friendly = true;
