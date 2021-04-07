@@ -10,7 +10,7 @@ class UsersController < ApplicationController
       account = Account.find_by(user: user)
       if account
         profile[:registered] = true
-        if account == current_account
+        if sign_in account
           profile[:email] = account.email
         end
       end

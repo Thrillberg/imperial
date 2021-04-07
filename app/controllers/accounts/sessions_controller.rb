@@ -24,9 +24,10 @@ class Accounts::SessionsController < Devise::SessionsController
   end
 
   # DELETE /resource/sign_out
-  # def destroy
-  #   super
-  # end
+  def destroy
+    cookies.delete(:user_id)
+    super
+  end
 
   # protected
 

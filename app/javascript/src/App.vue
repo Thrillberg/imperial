@@ -109,7 +109,7 @@ export default {
       apiClient.updateGames();
     },
     signOut: function () {
-      this.profile = { username: this.profile.username, registered: true };
+      this.profile = {};
     },
     anonymityConfirmed(date) {
       let profile = Object.assign({}, this.profile, { "anonymity_confirmed_at": date });

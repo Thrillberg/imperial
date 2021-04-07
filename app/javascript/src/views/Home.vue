@@ -5,6 +5,7 @@
         <button
           class="rounded bg-green-800 text-white cursor-pointer text-2xl block w-1/2 hover:bg-green-900 p-10 m-10"
           @click="setAnonymous"
+          v-if="profile.username"
         >
           Play as {{ profile.username }}
         </button>
