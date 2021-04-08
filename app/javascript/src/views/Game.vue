@@ -158,6 +158,8 @@ import TurnStatus from "../components/TurnStatus.vue";
 
 import getGameLog from "../getGameLog.js";
 
+import favicon2 from "../assets/favicon2.ico";
+
 export default {
   name: "Game",
   components: {
@@ -448,12 +450,12 @@ export default {
         let link = document.createElement("link");
         link.rel = "icon";
         document.getElementsByTagName("head")[0].appendChild(link);
-        link.href = "../packs/favicon2.ico";
+        link.href = favicon2;
       } else {
         let link = document.createElement("link");
         link.rel = "icon";
         document.getElementsByTagName("head")[0].appendChild(link);
-        link.href = "../packs/favicon.ico";
+        link.href = "/packs/favicon.ico";
       }
     }
   }
