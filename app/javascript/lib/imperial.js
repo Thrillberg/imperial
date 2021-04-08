@@ -94,7 +94,7 @@ export default class Imperial {
         if (this.auction?.inAuction) {
           this.auction.tick(action, this);
         } else {
-          this.skipBondPurchase();
+          this.postBondPurchase();
         }
         return;
       }
@@ -291,103 +291,10 @@ export default class Imperial {
     this.investorCardActive = false;
 
     this.updateRawScores();
-    
-    if (this.investing) {
-      this.previousPlayerName = this.currentPlayerName;
-      const nextNation = this.currentNation.when({
-        AH: () => Nation.IT,
-        IT: () => Nation.FR,
-        FR: () => Nation.GB,
-        GB: () => Nation.GE,
-        GE: () => Nation.RU,
-        RU: () => Nation.AH
-      });
-      const index = this.order.indexOf(this.currentPlayerName);
-      if (index === this.order.length - 1) {
-        this.currentPlayerName = this.order[0];
-      } else {
-        this.currentPlayerName = this.order[index + 1];
-      }
-      if (this.currentPlayerName !== this.firstInvestor) {
-        this.availableActions = availableBondPurchases(this.currentNation, this);
-        // If there is one available action, it is the pass action and doesn't
-        // count as a real action.
-        while (this.availableActions.size <= 1 && this.investing) {
-          if (this.currentPlayerName === this.firstInvestor) {
-            this.investing = false;
-            for (const player in this.players) {
-              this.checkForSwissBank(player);
-            }
-            this.handleAdvancePlayer();
-            this.advanceInvestorCard();
-            this.availableActions = new Set(this.rondelActions(this.currentNation));
-
-            return;
-          }
-          this.annotatedLog.push(
-            Action.playerAutoSkipsBondPurchase({
-              player: this.currentPlayerName,
-              bondNation: this.currentNation
-            })
-          );
-          this.previousPlayerName = this.currentPlayerName;
-          const currentPlayerIndex = this.order.indexOf(this.currentPlayerName);
-          this.currentPlayerName = this.order[currentPlayerIndex + 1] || this.order[0];
-          if (this.currentPlayerName !== this.firstInvestor) {
-            if (this.swissBanks.includes(this.currentPlayerName)) {
-              this.availableActions = this.bondPurchasesFromAllNations();
-            } else {
-              this.availableActions = availableBondPurchases(this.currentNation, this);
-            }
-          }
-        }
-        return;
-      } else if (!this.nations.get(nextNation).controller) {
-        this.currentNation = nextNation;
-        this.roundOfInvestment();
-        return;
-      }
-      this.investing = false;
-    }
-
-    let swissBanksToInvest = this.swissBanks;
-    if (
-      swissBanksToInvest.length > 0 &&
-      swissBanksToInvest.some(bank => this.hasNotBoughtABondThisTurn(bank) === true)
-      ) {
-      for (const player of swissBanksToInvest) {
-        if (
-          player !== this.investorCardHolder &&
-          this.hasNotBoughtABondThisTurn(player)
-        ) {
-          this.endOfInvestorTurn(player);
-        }
-      }
-    } else {
-      for (const player in this.players) {
-        this.checkForSwissBank(player);
-      }
-      this.handleAdvancePlayer();
-      this.advanceInvestorCard();
-      this.availableActions = new Set(this.rondelActions(this.currentNation));
-    }
+    this.postBondPurchase();
   }
 
-  checkForSwissBank(player) {
-    if (this.nationsUnderControl(player).length > 0) {
-      const playerIndex = this.swissBanks.indexOf(player);
-      if (playerIndex !== -1) {
-        this.swissBanks.splice(playerIndex, 1)
-      }
-    } else {
-      const playerIndex = this.swissBanks.indexOf(player);
-      if (playerIndex === -1) {
-        this.swissBanks.push(player);
-      }
-    }
-  }
-
-  skipBondPurchase() {
+  postBondPurchase() {
     if (this.investing) {
       this.previousPlayerName = this.currentPlayerName;
       const nextNation = this.currentNation.when({
@@ -468,6 +375,20 @@ export default class Imperial {
       this.handleAdvancePlayer();
       this.advanceInvestorCard();
       this.availableActions = new Set(this.rondelActions(this.currentNation));
+    }
+  }
+
+  checkForSwissBank(player) {
+    if (this.nationsUnderControl(player).length > 0) {
+      const playerIndex = this.swissBanks.indexOf(player);
+      if (playerIndex !== -1) {
+        this.swissBanks.splice(playerIndex, 1)
+      }
+    } else {
+      const playerIndex = this.swissBanks.indexOf(player);
+      if (playerIndex === -1) {
+        this.swissBanks.push(player);
+      }
     }
   }
 

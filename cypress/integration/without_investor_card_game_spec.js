@@ -80,6 +80,25 @@ describe("Without Investor Card game", () => {
     // RU
     cy.get("#investor").click()
     cy.get(".bg-RU").contains("1:2").click()
+    // AH
+    cy.get("#production2").click()
+    // IT
+    cy.get("#production1").click()
+    // FR
+    cy.get("#import").click()
+    cy.contains("Do not force investor").click()
+    cy.contains("Marseille").click()
+    cy.contains("Fleet").click()
+    cy.contains("Brest").click()
+    cy.contains("Army").click()
+    cy.contains("End import").click()
+    // GB
+    cy.get("#production1").click()
+    cy.contains("Do not buy a bond").click()
+    // GE
+    cy.get("#production1").click()
+    // RU
+    cy.get("#production2").click()
   })
 })
 
