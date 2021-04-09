@@ -21,6 +21,13 @@ module.exports = {
           'vue-svg-loader',
         ],
       },
+      {
+        test: /\.mp3$/,
+        loader: 'file-loader',
+        options: {
+          limit: 10000,
+        }
+      }
     ]
   },
   plugins: [
