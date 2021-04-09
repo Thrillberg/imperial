@@ -159,6 +159,9 @@ import TurnStatus from "../components/TurnStatus.vue";
 import getGameLog from "../getGameLog.js";
 
 import favicon2 from "../assets/favicon2.ico";
+import notification from "../assets/notification.mp3";
+
+import { Howl } from "howler";
 
 export default {
   name: "Game",
@@ -182,7 +185,8 @@ export default {
       importPlacements: [],
       logTimestamps: [],
       maneuverOrigin: "",
-      poppedTurns: []
+      poppedTurns: [],
+      silenceAudio: true
     };
   },
   created() {
@@ -330,9 +334,11 @@ export default {
         this.currentPlayer = this.game.players[this.profile.username] || {};
         this.controllingPlayerName = this.game.currentPlayerName;
         this.updateFavicon();
+        this.audioNotification();
       }
       apiClient.updateCurrentPlayerName(this.$route.params.id, this.game.currentPlayerName);
       this.gameLoaded = true;
+      this.silenceAudio = false;
     },
     validProvinces() {
       // This function returns all provinces that a unit can move
@@ -456,6 +462,11 @@ export default {
         link.rel = "icon";
         document.getElementsByTagName("head")[0].appendChild(link);
         link.href = "/packs/favicon.ico";
+      }
+    },
+    audioNotification() {
+      if (this.currentPlayer.name === this.game.currentPlayerName && !this.silenceAudio) {
+        new Howl({ src: [notification], volume: 0.1 }).play();
       }
     }
   }

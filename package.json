@@ -6,6 +6,8 @@
     "actioncable": "^5.2.4-5",
     "autoprefixer": "^10.2.4",
     "css-loader": "^5.0.2",
+    "file-loader": "^6.2.0",
+    "howler": "^2.2.1",
     "html-webpack-harddisk-plugin": "^2.0.0",
     "html-webpack-plugin": "^5.1.0",
     "html-webpack-template": "^6.2.0",
