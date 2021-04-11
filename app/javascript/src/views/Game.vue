@@ -118,6 +118,14 @@
             >
               Cancel Game
             </button>
+            <div v-for="player in this.otherPlayersInGame(game.id)" :key="player">
+              <button
+                @click="boot(player)"
+                class="rounded bg-red-500 text-white cursor-pointer block text-2xl hover:bg-red-600 p-5 m-5 mx-auto"
+              >
+                Boot {{ player }}
+              </button>
+            </div>
           </div>
           <div v-else-if="playingInThisGame" class="text-2xl m-2">
             Game not yet started!
@@ -234,6 +242,10 @@ export default {
         return []
       }
     },
+    otherPlayersInGame() {
+      let players = this.playersInGame();
+      return players.filter(player => player !== this.profile.username);
+    },
     joinGame() {
       apiClient.joinGame(this.$cookies.get("user_id"), this.$route.params.id, this.profile.username);
     },
@@ -252,6 +264,9 @@ export default {
       const game = this.games.find(game => game.id === this.$route.params.id);
       apiClient.cancel(game.id);
       this.$router.push("/");
+    },
+    boot(playerName) {
+      apiClient.boot(playerName, this.$route.params.id);
     },
     gameCancelled() {
       const game = this.games.find(game => game.id === this.$route.params.id);

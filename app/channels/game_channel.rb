@@ -34,6 +34,12 @@ class GameChannel < ApplicationCable::Channel
       game.update(cancelled_at: Time.zone.now)
       broadcast_games "game_channel", "updateGames"
 
+    when "bootPlayer"
+      game = game_from_data(data)
+      user_id = game.users.find_by(name: data["data"]["playerName"]).id
+      game.players.find_by(user_id: user_id).delete
+      broadcast_games "game_channel", "updateGames"
+
     when "updateCurrentPlayerName"
       data = data["data"]
       current_player_name = data["currentPlayerName"]
