@@ -181,6 +181,16 @@ class APIClient {
       "GameChannel"
     );
   }
+
+  boot(playerName, gameId) {
+    return this.send(
+      {
+        kind: "bootPlayer",
+        data: { playerName, gameId }
+      },
+      "GameChannel"
+    );
+  }
 }
 
 const apiClient = new APIClient();
