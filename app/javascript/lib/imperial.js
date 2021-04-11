@@ -526,7 +526,11 @@ export default class Imperial {
 
     this.handlingConflict = false;
     this.previousPlayerName = this.currentPlayerName;
-    this.currentPlayerName = this.nations.get(action.payload.challenger).controller;
+    if (this.log[this.log.length - 2].type === "coexist") {
+      this.currentPlayerName = this.nations.get(action.payload.incumbent).controller;
+    } else {
+      this.currentPlayerName = this.nations.get(action.payload.challenger).controller;
+    }
     if (this.unitsToMove.length === 0) {
       this.unitsToMove = [];
       this.maneuvering = false;
