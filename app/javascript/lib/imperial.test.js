@@ -2781,6 +2781,7 @@ describe("imperial", () => {
               })
             ])
           );
+          expect(game.currentPlayerName).toEqual("player1");
         });
       });
 
@@ -2860,6 +2861,7 @@ describe("imperial", () => {
               })
             ])
           );
+          expect(game.currentPlayerName).toEqual("player1")
         });
 
         test("maneuver army to destination occupied by two others allows occupier to decide who to fight", () => {
@@ -2894,6 +2896,7 @@ describe("imperial", () => {
               })
             ])
           );
+          expect(game.currentPlayerName).toEqual("player1")
         });
 
         test("maneuver army to home province of another nation allows challenger to decide whether to be friendly or not", () => {
@@ -3477,15 +3480,30 @@ describe("imperial", () => {
       test("other nation can choose to fight", () => {
         const game = newGame();
         game.units.get(Nation.AH).get("a").armies++;
-        game.units.get(Nation.IT).get("a").armies++;
+        game.units.get(Nation.AH).get("a").armies++;
+        game.units.get(Nation.IT).get("b").armies++;
+        game.units.get(Nation.IT).get("b").armies++;
         game.availableActions = new Set([
-          Action.coexist({
-            province: "a",
-            incumbent: Nation.AH,
-            challenger: Nation.IT
+          Action.rondel({
+            slot: "maneuver1",
+            cost: 0,
+            nation: Nation.IT
           })
         ]);
 
+        game.tick(
+          Action.rondel({
+            slot: "maneuver1",
+            cost: 0,
+            nation: Nation.IT
+          })
+        );
+        game.tick(
+          Action.maneuver({
+            destination: "a",
+            origin: "b"
+          })
+        );
         game.tick(
           Action.coexist({
             province: "a",
@@ -3509,6 +3527,17 @@ describe("imperial", () => {
             })
           ])
         );
+        expect(game.currentPlayerName).toEqual("player1")
+
+        game.tick(
+          Action.fight({
+            province: "a",
+            incumbent: Nation.IT,
+            challenger: Nation.AH,
+            targetType: "army"
+          })
+        );
+        expect(game.currentPlayerName).toEqual("player2")
       });
 
       test("multiple other nations can choose to fight", () => {
@@ -3649,6 +3678,7 @@ describe("imperial", () => {
               ].map(slot => Action.rondel({ nation: Nation.IT, cost: 0, slot }))
             )
           );
+          expect(game.currentPlayerName).toEqual("player2")
         });
 
         test("challenger can maneuver if challenger has more units to move", () => {
