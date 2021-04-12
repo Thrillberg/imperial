@@ -167,9 +167,9 @@ import TurnStatus from "../components/TurnStatus.vue";
 import getGameLog from "../getGameLog.js";
 
 import favicon2 from "../assets/favicon2.ico";
-import notification from "../assets/notification.mp3";
+// import notification from "../assets/notification.mp3";
 
-import { Howl } from "howler";
+// import { Howl } from "howler";
 
 export default {
   name: "Game",
@@ -481,7 +481,8 @@ export default {
     },
     audioNotification() {
       if (this.currentPlayer.name === this.game.currentPlayerName && !this.silenceAudio) {
-        new Howl({ src: [notification], volume: 0.1 }).play();
+        // Disabled because this is annoying. Figure out a better way to implement.
+        // new Howl({ src: [notification], volume: 0.1 }).play();
       }
     }
   }
