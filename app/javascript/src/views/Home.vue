@@ -52,7 +52,7 @@ export default {
     unstartedGames() {
       let games = this.games.filter(game => {
         return(
-          game.currentPlayerName &&
+          !game.startedAt &&
           !game.players.includes(this.profile.username) &&
           !game.forceEndedAt
         )

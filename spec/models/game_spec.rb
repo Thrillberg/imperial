@@ -16,7 +16,8 @@ RSpec.describe Game, "#to_json" do
       force_ended_at: nil,
       current_player_name: nil,
       cancelled_at: game.cancelled_at,
-      created_at: game.created_at
+      created_at: game.created_at,
+      started_at: game.started_at
     })
   end
 end
