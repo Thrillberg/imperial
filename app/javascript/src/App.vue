@@ -60,6 +60,7 @@ export default {
           forceEndedAt: game.force_ended_at,
           cancelledAt: game.cancelled_at,
           createdAt: game.created_at,
+          startedAt: game.started_at
         };
       });
       this.gamesFetched = true;

@@ -19,7 +19,8 @@ class Game < ActiveRecord::Base
       force_ended_at: force_ended_at,
       cancelled_at: cancelled_at,
       created_at: created_at,
-      current_player_name: JSON.parse(REDIS.get("current_player_names"))[id]
+      current_player_name: JSON.parse(REDIS.get("current_player_names"))[id],
+      started_at: started_at
     }
   end
 

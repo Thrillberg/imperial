@@ -21,6 +21,7 @@ class GameChannel < ApplicationCable::Channel
 
     when "tick"
       game = game_from_data(data)
+      game.update(started_at: Time.zone.now) unless game.started_at
       data = data["data"]["action"]
       game.actions << Action.create(data: data)
       broadcast_update_game_log "game_channel", "updateGameLog", game
