@@ -24,7 +24,7 @@ export default {
   created() {
     fetch("/get_games", { method: "GET" })
       .then(response => response.json())
-      .then(data => this.games = data)
+      .then(data => this.games = data.filter(game => !game.cancelled_at))
   }
 }
 </script>
