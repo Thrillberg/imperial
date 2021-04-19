@@ -2,6 +2,7 @@ import { Enum } from "./enum.js";
 import { memoize } from "./memo.js";
 
 const Nation = Enum.fromArray(["AH", "IT", "FR", "GB", "GE", "RU"], "Nation");
+const Nation2030 = Enum.fromArray(["RU", "CN", "IN", "BR", "US", "EU"], "Nation");
 
 const cost = {
   1: 2,
@@ -27,5 +28,13 @@ export const AllBonds = () =>
       )
       .flat()
   );
+export const AllBonds2030 = () =>
+  new Set(
+    ["RU", "CN", "IN", "BR", "US", "EU"]
+      .map(nation =>
+        Object.keys(cost).map(number => Bond(Nation2030[nation], parseInt(number)))
+      )
+      .flat()
+  );
 
-export { Nation };
+export { Nation, Nation2030 };
