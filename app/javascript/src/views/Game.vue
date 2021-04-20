@@ -127,8 +127,12 @@
               </button>
             </div>
           </div>
-          <div v-else-if="playingInThisGame" class="text-2xl m-2">
-            Game not yet started!
+          <div v-else-if="playingInThisGame">
+            <div class="mx-auto p-2 text-center">
+              <b>Players:</b>
+              <span>{{ playersInGame(game.id).join(", ") }}</span>
+            </div>
+            <div class="text-2xl m-2">Game not yet started!</div>
           </div>
           <div v-else>
             <div class="mx-auto p-2 text-center">
