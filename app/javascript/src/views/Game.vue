@@ -356,6 +356,9 @@ export default {
         this.audioNotification();
       }
       apiClient.updateCurrentPlayerName(this.$route.params.id, this.game.currentPlayerName);
+      if (this.game.winner) {
+        apiClient.updateWinner(this.$route.params.id, this.game.winner);
+      }
       this.gameLoaded = true;
       this.silenceAudio = false;
     },

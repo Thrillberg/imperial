@@ -2,6 +2,7 @@ class Game < ActiveRecord::Base
   has_many :actions, dependent: :destroy
   has_many :players, dependent: :destroy
   has_many :users, through: :players
+  belongs_to :winner, class_name: "User", optional: true
   belongs_to :host, class_name: "User"
 
   scope :current, -> {
@@ -20,7 +21,8 @@ class Game < ActiveRecord::Base
       cancelled_at: cancelled_at,
       created_at: created_at,
       current_player_name: JSON.parse(REDIS.get("current_player_names"))[id],
-      started_at: started_at
+      started_at: started_at,
+      winner: winner&.name
     }
   end
 

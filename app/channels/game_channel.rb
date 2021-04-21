@@ -49,6 +49,14 @@ class GameChannel < ApplicationCable::Channel
       REDIS.set("current_player_names", current_player_names.to_json)
 
       broadcast_games "game_channel", "updateGames"
+
+    when "updateWinnerName"
+      game = game_from_data(data)
+      winner_name = data["data"]["winnerName"]
+      winner = game.users.find_by(name: winner_name)
+      game.update(winner: winner) unless game.winner
+
+      broadcast_games "game_channel", "updateGames"
     end
   end
 

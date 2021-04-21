@@ -17,7 +17,8 @@ RSpec.describe Game, "#to_json" do
       current_player_name: nil,
       cancelled_at: game.cancelled_at,
       created_at: game.created_at,
-      started_at: game.started_at
+      started_at: game.started_at,
+      winner: nil
     })
   end
 end
