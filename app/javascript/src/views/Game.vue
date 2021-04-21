@@ -86,7 +86,14 @@
             v-bind:game="game"
             v-bind:select_province="() => {}"
             v-bind:valid_provinces="[]"
+            v-if="baseGame() === 'imperial'"
           ></Board>
+          <Board2030
+            v-bind:game="game"
+            v-bind:select_province="() => {}"
+            v-bind:valid_provinces="[]"
+            v-if="baseGame() === 'imperial2030'"
+          ></Board2030>
         </div>
         <div class="w-1/3 mx-2 border border-gray-500 rounded">
           <div v-if="hostingThisGame">
@@ -103,12 +110,14 @@
             <button
               @click="startGame('auction')"
               class="rounded bg-green-800 text-white cursor-pointer block text-2xl hover:bg-green-900 p-10 m-10 mx-auto"
+              v-if="game.base_game === 'imperial'"
             >
               Start Auction Variant Game
             </button>
             <button
               @click="startGame('withoutInvestorCard')"
               class="rounded bg-green-800 text-white cursor-pointer block text-2xl hover:bg-green-900 p-10 m-10 mx-auto"
+              v-if="game.base_game === 'imperial'"
             >
               Start Game Without Investor Card
             </button>
@@ -158,6 +167,7 @@ import { Nation } from "../../lib/constants.js";
 import { apiClient } from "../router/index.js";
 
 import Board from "../components/board/Board.vue";
+import Board2030 from "../components/board2030/Board2030.vue";
 import EndGame from "../components/EndGame.vue";
 import GameDetails from "../components/GameDetails.vue";
 import GameLog from "../components/GameLog.vue";
@@ -165,6 +175,7 @@ import NationComponent from "../components/NationComponent.vue";
 import TurnStatus from "../components/TurnStatus.vue";
 
 import getGameLog from "../getGameLog.js";
+import assignNations from "../assignNations.js";
 
 import favicon2 from "../assets/favicon2.ico";
 // import notification from "../assets/notification.mp3";
@@ -175,6 +186,7 @@ export default {
   name: "Game",
   components: {
     Board,
+    Board2030,
     EndGame,
     GameDetails,
     GameLog,
@@ -234,6 +246,10 @@ export default {
     }
   },
   methods: {
+    baseGame() {
+      const game = this.games.find(game => game.id === this.$route.params.id);
+      return game.baseGame;
+    },
     playersInGame() {
       const game = this.games.find(game => game.id === this.$route.params.id);
       if (game) {
@@ -253,11 +269,12 @@ export default {
       const game = this.games.find(game => game.id === this.$route.params.id);
       const playerNames = this.playerNames(game);
       let players = this.shuffle(playerNames);
+      const baseGame = game.baseGame;
       if (variant === "standard") {
-        players = this.assignNations(players);
+        players = assignNations(players, baseGame);
       }
       const soloMode = game.soloMode;
-      const action = Action.initialize({ players, soloMode, variant });
+      const action = Action.initialize({ players, soloMode, variant, baseGame });
       apiClient.tick(game.id, action);
     },
     cancelGame() {
@@ -298,45 +315,6 @@ export default {
       return players.map(player => {
         return { id: player }
       });
-    },
-    assignNations: function(players) {
-      switch (players.length) {
-        case 2:
-          return [
-            { id: players[0].id, nation: Nation.AH },
-            { id: players[1].id, nation: Nation.IT }
-          ];
-        case 3:
-          return [
-            { id: players[0].id, nation: Nation.AH },
-            { id: players[1].id, nation: Nation.IT },
-            { id: players[2].id, nation: Nation.FR }
-          ];
-        case 4:
-          return [
-            { id: players[0].id, nation: Nation.AH },
-            { id: players[1].id, nation: Nation.IT },
-            { id: players[2].id, nation: Nation.FR },
-            { id: players[3].id, nation: Nation.GB }
-          ];
-        case 5:
-          return [
-            { id: players[0].id, nation: Nation.AH },
-            { id: players[1].id, nation: Nation.IT },
-            { id: players[2].id, nation: Nation.FR },
-            { id: players[3].id, nation: Nation.GB },
-            { id: players[4].id, nation: Nation.GE }
-          ];
-        case 6:
-          return [
-            { id: players[0].id, nation: Nation.AH },
-            { id: players[1].id, nation: Nation.IT },
-            { id: players[2].id, nation: Nation.FR },
-            { id: players[3].id, nation: Nation.GB },
-            { id: players[4].id, nation: Nation.GE },
-            { id: players[5].id, nation: Nation.RU }
-          ];
-      }
     },
     updateGameLog(log, logTimestamps) {
       this.logTimestamps = logTimestamps;

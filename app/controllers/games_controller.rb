@@ -8,7 +8,11 @@ class GamesController < ApplicationController
 
   def create
     host = User.find(params[:id])
-    game = Game.create(name: lovely_string, host: host)
+    game = Game.create(
+      name: lovely_string,
+      host: host,
+      base_game: params[:base_game]
+    )
     host.games << game
 
     render json: game.to_json

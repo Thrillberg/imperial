@@ -8,10 +8,16 @@
       <div class="w-1/3"></div>
     </div>
     <button
-      @click="openGame"
+      @click="openGame('imperial')"
       class="rounded bg-green-800 text-white cursor-pointer block text-lg hover:bg-green-900 py-2 px-4 my-2"
     >
-      Open a New Game
+      Open a New Imperial Game
+    </button>
+    <button
+      @click="openGame('imperial2030')"
+      class="rounded bg-green-800 text-white cursor-pointer block text-lg hover:bg-green-900 py-2 px-4 my-2"
+    >
+      Open a New Imperial 2030 Game
     </button>
     <div v-for="game of games" v-bind:key="game.id">
       <router-link :to="{ path: '/game/' + game.id }" class="flex justify-between items-center hover:bg-gray-200 py-2">
@@ -47,8 +53,8 @@ export default {
   components: { Star },
   props: { games: Array, profile: Object },
   methods: {
-    openGame() {
-      apiClient.openGame(this.$cookies.get("user_id"))
+    openGame(baseGame) {
+      apiClient.openGame(this.$cookies.get("user_id"), baseGame)
         .then(game => {
           this.$router.push(`/game/${game.id}`);
         });

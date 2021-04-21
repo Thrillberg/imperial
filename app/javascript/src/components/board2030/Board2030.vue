@@ -6,7 +6,7 @@
     xmlns:svg="http://www.w3.org/2000/svg"
     xmlns="http://www.w3.org/2000/svg"
     version="1.1"
-    viewBox="0 0 536 430"
+    viewBox="0 0 1016.371 514.609"
   >
     <filter id="brightness">
       <feComponentTransfer>
@@ -49,7 +49,17 @@
 </template>
 
 <script>
+import caribbean_sea from "./caribbean_sea.svg";
+import china_sea from "./china_sea.svg";
+import gulf_of_guinea from "./gulf_of_guinea.svg";
+import indian_ocean from "./indian_ocean.svg";
+import mediterranean_sea from "./mediterranean_sea.svg";
+import north_atlantic from "./north_atlantic.svg";
 import north_pacific from "./north_pacific.svg";
+import sea_of_japan from "./sea_of_japan.svg";
+import south_atlantic from "./south_atlantic.svg";
+import south_pacific from "./south_pacific.svg";
+import tasman_sea from "./tasman_sea.svg";
 
 import Province from "./Province.vue";
 
@@ -203,7 +213,17 @@ export default {
   data() {
     return {
       sea_provinces: {
+        "Caribbean Sea": caribbean_sea,
+        "China Sea": china_sea,
+        "Gulf of Guinea": gulf_of_guinea,
+        "Indian Ocean": indian_ocean,
+        "Mediterranean Sea": mediterranean_sea,
+        "North Atlantic": north_atlantic,
         "North Pacific": north_pacific,
+        "Sea of Japan": sea_of_japan,
+        "South Atlantic": south_atlantic,
+        "South Pacific": south_pacific,
+        "Tasman Sea": tasman_sea,
       },
       land_provinces: {
       }

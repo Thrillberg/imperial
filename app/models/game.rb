@@ -1,4 +1,6 @@
 class Game < ActiveRecord::Base
+  enum base_game: {imperial: 0, imperial2030: 1}
+
   has_many :actions, dependent: :destroy
   has_many :players, dependent: :destroy
   has_many :users, through: :players
@@ -14,6 +16,7 @@ class Game < ActiveRecord::Base
     {
       name: name,
       id: id,
+      base_game: base_game,
       host: host.name,
       players: users.map(&:name),
       force_ended_at: force_ended_at,
