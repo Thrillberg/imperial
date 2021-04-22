@@ -49,13 +49,26 @@
 </template>
 
 <script>
+import alaska from "./alaska.svg";
+import argentina from "./argentina.svg";
+import brasilia from "./brasilia.svg";
+import canada from "./canada.svg";
 import caribbean_sea from "./caribbean_sea.svg";
+import chicago from "./chicago.svg";
 import china_sea from "./china_sea.svg";
+import colombia from "./colombia.svg";
 import gulf_of_guinea from "./gulf_of_guinea.svg";
 import indian_ocean from "./indian_ocean.svg";
+import manaus from "./manaus.svg";
 import mediterranean_sea from "./mediterranean_sea.svg";
+import mexico from "./mexico.svg";
+import new_orleans from "./new_orleans.svg";
+import new_york from "./new_york.svg";
 import north_atlantic from "./north_atlantic.svg";
 import north_pacific from "./north_pacific.svg";
+import peru from "./peru.svg";
+import quebec from "./quebec.svg";
+import san_francisco from "./san_francisco.svg";
 import sea_of_japan from "./sea_of_japan.svg";
 import south_atlantic from "./south_atlantic.svg";
 import south_pacific from "./south_pacific.svg";
@@ -226,6 +239,19 @@ export default {
         "Tasman Sea": tasman_sea,
       },
       land_provinces: {
+        "Alaska": alaska,
+        "Argentina": argentina,
+        "Brasilia": brasilia,
+        "Canada": canada,
+        "Colombia": colombia,
+        "Manaus": manaus,
+        "New Orleans": new_orleans,
+        "New York": new_york,
+        "Chicago": chicago,
+        "Quebec": quebec,
+        "San Francisco": san_francisco,
+        "Mexico": mexico,
+        "Peru": peru,
       }
     };
   },

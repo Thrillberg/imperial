@@ -58,7 +58,7 @@ export default {
   nationGainsTreasury: makeAction("nationGainsTreasury", ["nation", "amount"]),
   nationGainsPowerPoints: makeAction("nationGainsPowerPoints", ["nation", "powerPoints"]),
   // The remaining actions are for the main log
-  initialize: makeAction("initialize", ["players", "soloMode", "variant"]),
+  initialize: makeAction("initialize", ["players", "soloMode", "variant", "baseGame"]),
   bondPurchase: makeAction("bondPurchase", ["nation", "player", "cost"]),
   buildFactory: makeAction("buildFactory", ["province"]),
   coexist: makeAction("coexist", ["province", "incumbent", "challenger"]),

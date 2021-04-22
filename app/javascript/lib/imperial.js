@@ -4,6 +4,7 @@ import Auction from "./auction.js";
 import standardGameBoard from "./board.js";
 import auctionSetup from "./auctionSetup.js";
 import standardSetup from "./standardSetup.js";
+import standard2030Setup from "./standard2030Setup.js";
 import availableBondPurchases from "./availableBondPurchases.js";
 import setOldState from "./setOldState.js";
 
@@ -189,8 +190,13 @@ export default class Imperial {
   initialize(action) {
     let setup;
     this.variant = action.payload.variant;
+    this.baseGame = action.payload.baseGame;
     if (action.payload.variant === "standard") {
-      setup = standardSetup;
+      if (action.payload.baseGame === "imperial") {
+        setup = standardSetup;
+      } else if (action.payload.baseGame === "imperial2030") {
+        setup = standard2030Setup;
+      }
     } else {
       this.auction = Auction.fromLog(this.log, this);
       setup = auctionSetup;

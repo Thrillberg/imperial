@@ -1,4 +1,4 @@
-import { Nation } from "../lib/constants.js";
+import { Nation, Nation2030 } from "../lib/constants.js";
 
 export default function(rawLog) {
   // The following map only exists because of our custom Nation type, which
@@ -9,12 +9,21 @@ export default function(rawLog) {
       action.type === "initialize" &&
       (!action.payload.variant || action.payload.variant === "standard")
     ) {
-      action.payload.players = action.payload.players.map(player => {
-        return {
-          id: player.id,
-          nation: Nation[player.nation.value]
-        };
-      });
+      if (action.payload.baseGame === "imperial") {
+        action.payload.players = action.payload.players.map(player => {
+          return {
+            id: player.id,
+            nation: Nation[player.nation.value]
+          };
+        });
+      } else if (action.payload.baseGame === "imperial2030") {
+        action.payload.players = action.payload.players.map(player => {
+          return {
+            id: player.id,
+            nation: Nation2030[player.nation.value]
+          };
+        });
+      }
     } else if (
       (
         action.type === "rondel" ||

@@ -27,7 +27,17 @@
               :select_province="selectProvince"
               :valid_provinces="validProvinces()"
               :importing_units="importPlacements"
+              v-if="game.baseGame === 'imperial'"
             ></Board>
+            <Board2030
+              :game="game"
+              :profile="profile"
+              :gameStarted="gameStarted"
+              :select_province="selectProvince"
+              :valid_provinces="validProvinces()"
+              :importing_units="importPlacements"
+              v-if="game.baseGame === 'imperial2030'"
+            ></Board2030>
             <div class="flex justify-center my-2">
               <div
                 v-if="this.game.log.length > 1"
@@ -176,6 +186,8 @@ import TurnStatus from "../components/TurnStatus.vue";
 
 import getGameLog from "../getGameLog.js";
 import assignNations from "../assignNations.js";
+import imperialBoard from "../../lib/board.js";
+import imperial2030Board from "../../lib/board2030.js";
 
 import favicon2 from "../assets/favicon2.ico";
 // import notification from "../assets/notification.mp3";
@@ -320,8 +332,14 @@ export default {
       this.logTimestamps = logTimestamps;
       this.poppedTurns = [];
       const gameLog = getGameLog(log);
-      this.$delete(this.game);
-      this.game = Imperial.fromLog(gameLog);
+      const baseGame = this.games.find(game => game.id === this.$route.params.id).baseGame;
+      let board;
+      if (baseGame === "imperial") {
+        board = imperialBoard
+      } else if (baseGame === "imperial2030") {
+        board = imperial2030Board
+      }
+      this.game = Imperial.fromLog(gameLog, board);
       if (Object.keys(this.game.players).length > 0) {
         this.gameStarted = true;
         this.currentPlayer = this.game.players[this.profile.username] || {};
