@@ -50,29 +50,69 @@
 
 <script>
 import alaska from "./alaska.svg";
+import afghanistan from "./afghanistan.svg";
 import argentina from "./argentina.svg";
+import australia from "./australia.svg";
+import beijing from "./beijing.svg";
+import berlin from "./berlin.svg";
+import black_sea from "./black_sea.svg";
 import brasilia from "./brasilia.svg";
 import canada from "./canada.svg";
 import caribbean_sea from "./caribbean_sea.svg";
+import caspian_sea from "./caspian_sea.svg";
+import chennai from "./chennai.svg";
 import chicago from "./chicago.svg";
 import china_sea from "./china_sea.svg";
+import chongqing from "./chongqing.svg";
 import colombia from "./colombia.svg";
+import congo from "./congo.svg";
+import east_africa from "./east_africa.svg";
+import fortaleza from "./fortaleza.svg";
 import gulf_of_guinea from "./gulf_of_guinea.svg";
+import guinea from "./guinea.svg";
 import indian_ocean from "./indian_ocean.svg";
+import indochina from "./indochina.svg";
+import indonesia from "./indonesia.svg";
+import iran from "./iran.svg";
+import japan from "./japan.svg";
+import kazakhstan from "./kazakhstan.svg";
+import kolkata from "./kolkata.svg";
+import korea from "./korea.svg";
+import london from "./london.svg";
 import manaus from "./manaus.svg";
 import mediterranean_sea from "./mediterranean_sea.svg";
 import mexico from "./mexico.svg";
+import mongolia from "./mongolia.svg";
+import moscow from "./moscow.svg";
+import mumbai from "./mumbai.svg";
+import murmansk from "./murmansk.svg";
+import near_east from "./near_east.svg";
+import new_delhi from "./new_delhi.svg";
 import new_orleans from "./new_orleans.svg";
 import new_york from "./new_york.svg";
+import new_zealand from "./new_zealand.svg";
+import nigeria from "./nigeria.svg";
+import north_africa from "./north_africa.svg";
 import north_atlantic from "./north_atlantic.svg";
 import north_pacific from "./north_pacific.svg";
+import novosibirsk from "./novosibirsk.svg";
+import paris from "./paris.svg";
 import peru from "./peru.svg";
+import philippines from "./philippines.svg";
 import quebec from "./quebec.svg";
+import rio_de_janeiro from "./rio_de_janeiro.svg";
+import rome from "./rome.svg";
 import san_francisco from "./san_francisco.svg";
 import sea_of_japan from "./sea_of_japan.svg";
+import shanghai from "./shanghai.svg";
+import south_africa from "./south_africa.svg";
 import south_atlantic from "./south_atlantic.svg";
 import south_pacific from "./south_pacific.svg";
 import tasman_sea from "./tasman_sea.svg";
+import turkey from "./turkey.svg";
+import ukraine from "./ukraine.svg";
+import urumqi from "./urumqi.svg";
+import vladivostok from "./vladivostok.svg";
 
 import Province from "./Province.vue";
 
@@ -227,10 +267,12 @@ export default {
     return {
       sea_provinces: {
         "Caribbean Sea": caribbean_sea,
+        "Caspian Sea": caspian_sea,
         "China Sea": china_sea,
         "Gulf of Guinea": gulf_of_guinea,
         "Indian Ocean": indian_ocean,
         "Mediterranean Sea": mediterranean_sea,
+        "Black Sea": black_sea,
         "North Atlantic": north_atlantic,
         "North Pacific": north_pacific,
         "Sea of Japan": sea_of_japan,
@@ -240,18 +282,56 @@ export default {
       },
       land_provinces: {
         "Alaska": alaska,
+        "Afghanistan": afghanistan,
         "Argentina": argentina,
+        "Australia": australia,
+        "Beijing": beijing,
+        "Berlin": berlin,
         "Brasilia": brasilia,
         "Canada": canada,
+        "Chennai": chennai,
+        "Chongqing": chongqing,
         "Colombia": colombia,
+        "Congo": congo,
+        "East Africa": east_africa,
+        "Fortaleza": fortaleza,
+        "Guinea": guinea,
+        "Indochina": indochina,
+        "Indonesia": indonesia,
+        "Iran": iran,
+        "Japan": japan,
+        "Kazakhstan": kazakhstan,
+        "Kolkata": kolkata,
+        "Korea": korea,
+        "London": london,
         "Manaus": manaus,
+        "Moscow": moscow,
+        "Mumbai": mumbai,
+        "Murmansk": murmansk,
+        "Near East": near_east,
+        "New Delhi": new_delhi,
         "New Orleans": new_orleans,
         "New York": new_york,
+        "New Zealand": new_zealand,
+        "Nigeria": nigeria,
+        "North Africa": north_africa,
+        "Novosibirsk": novosibirsk,
         "Chicago": chicago,
+        "Paris": paris,
         "Quebec": quebec,
+        "Rio de Janeiro": rio_de_janeiro,
+        "Rome": rome,
         "San Francisco": san_francisco,
+        "Shanghai": shanghai,
+        "South Africa": south_africa,
+        "Turkey": turkey,
+        "Ukraine": ukraine,
+        "Urumqi": urumqi,
         "Mexico": mexico,
+        "Mongolia": mongolia,
         "Peru": peru,
+        "Philippines": philippines,
+        "Vladivostok": vladivostok,
       }
     };
   },
