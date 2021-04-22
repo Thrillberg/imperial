@@ -22,7 +22,8 @@ const initialize = game => {
         { id: "player2", nation: Nation.IT }
       ],
       soloMode: false,
-      variant: "standard"
+      variant: "standard",
+      baseGame: "imperial"
     })
   );
 };
@@ -445,7 +446,8 @@ describe("imperial", () => {
               { id: "player2", nation: Nation.IT }
             ],
             soloMode: false,
-            variant: "standard"
+            variant: "standard",
+            baseGame: "imperial"
           })
         );
 
@@ -1816,7 +1818,8 @@ describe("imperial", () => {
                 { id: "player3", nation: Nation.FR }
               ],
               soloMode: false,
-              variant: "standard"
+              variant: "standard",
+              baseGame: "imperial"
             })
           );
           return game;
@@ -3818,7 +3821,8 @@ describe("imperial", () => {
               { id: "player2", nation: Nation.IT }
             ],
             soloMode: false,
-            variant: "standard"
+            variant: "standard",
+            baseGame: "imperial"
           }),
           Action.rondel({nation: Nation.AH, cost: 0, slot: "maneuver1"})
         ]);

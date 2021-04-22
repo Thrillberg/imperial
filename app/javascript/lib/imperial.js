@@ -1,4 +1,4 @@
-import { Nation, Bond } from "./constants.js";
+import { Nation, Nation2030, Bond } from "./constants.js";
 import Action from "./action.js";
 import Auction from "./auction.js";
 import standardGameBoard from "./board.js";
@@ -1658,14 +1658,26 @@ export default class Imperial {
   }
 
   nextNation(lastTurnNation) {
-    const nextNation = lastTurnNation.when({
-      AH: () => Nation.IT,
-      IT: () => Nation.FR,
-      FR: () => Nation.GB,
-      GB: () => Nation.GE,
-      GE: () => Nation.RU,
-      RU: () => Nation.AH
-    });
+    let nextNation;
+    if (this.baseGame === "imperial") {
+      nextNation = lastTurnNation.when({
+        AH: () => Nation.IT,
+        IT: () => Nation.FR,
+        FR: () => Nation.GB,
+        GB: () => Nation.GE,
+        GE: () => Nation.RU,
+        RU: () => Nation.AH
+      });
+    } else if (this.baseGame === "imperial2030") {
+      nextNation = lastTurnNation.when({
+        RU: () => Nation2030.CN,
+        CN: () => Nation2030.IN,
+        IN: () => Nation2030.BR,
+        BR: () => Nation2030.US,
+        US: () => Nation2030.EU,
+        EU: () => Nation2030.RU
+      });
+    }
     if (this.nations.get(nextNation).controller) {
       return nextNation;
     } else {

@@ -18,8 +18,8 @@
           ></NationComponent>
         </div>
         <TurnStatus :game="game" :profile="profile" :controllingPlayerName="controllingPlayerName"></TurnStatus>
-        <div class="flex justify-between">
-          <div class="w-2/3 border border-gray-500 rounded">
+        <div class="flex flex-wrap justify-between">
+          <div class="border border-gray-500 rounded" :class="mapWidth()">
             <Board
               :game="game"
               :profile="profile"
@@ -67,7 +67,7 @@
               </div>
             </div>
           </div>
-          <div class="w-1/3 mx-2 border border-gray-500 rounded">
+          <div class="border border-gray-500 rounded" :class="gameDetailsWidth()">
             <GameDetails
               :game="game"
               :chooseImportType="importProvince"
@@ -173,7 +173,6 @@
 <script>
 import Action from "../../lib/action.js";
 import Imperial from "../../lib/imperial.js";
-import { Nation } from "../../lib/constants.js";
 import { apiClient } from "../router/index.js";
 
 import Board from "../components/board/Board.vue";
@@ -222,7 +221,7 @@ export default {
     };
   },
   created() {
-    apiClient.getGameLog(this.$route.params.id);
+    apiClient.getGameLog(this.$route.params.id, this.game.baseGame);
   },
   computed: {
     gameName() {
@@ -331,8 +330,8 @@ export default {
     updateGameLog(log, logTimestamps) {
       this.logTimestamps = logTimestamps;
       this.poppedTurns = [];
-      const gameLog = getGameLog(log);
       const baseGame = this.games.find(game => game.id === this.$route.params.id).baseGame;
+      const gameLog = getGameLog(log, baseGame);
       let board;
       if (baseGame === "imperial") {
         board = imperialBoard
@@ -479,6 +478,20 @@ export default {
       if (this.currentPlayer.name === this.game.currentPlayerName && !this.silenceAudio) {
         // Disabled because this is annoying. Figure out a better way to implement.
         // new Howl({ src: [notification], volume: 0.1 }).play();
+      }
+    },
+    mapWidth() {
+      if (this.game.baseGame === "imperial") {
+        return "w-2/3"
+      } else if (this.game.baseGame === "imperial2030") {
+        return "w-full"
+      }
+    },
+    gameDetailsWidth() {
+      if (this.game.baseGame === "imperial") {
+        return "w-1/3"
+      } else if (this.game.baseGame === "imperial2030") {
+        return "w-full"
       }
     }
   }

@@ -164,14 +164,21 @@ export default ({ players, provinceNames }) => {
   out.units = units;
 
   const provinces = new Map();
-  const armaments = ["vienna", "budapest", "paris", "berlin", "rome", "moscow"];
+  const armaments = [
+    "chicago",
+    "brasilia",
+    "paris",
+    "moscow",
+    "beijing",
+    "newdelhi"
+  ];
   const shipyard = [
-    "bordeaux",
+    "neworleans",
+    "riodejaneiro",
     "london",
-    "liverpool",
-    "hamburg",
-    "naples",
-    "odessa"
+    "vladivostok",
+    "shanghai",
+    "mumbai"
   ];
   for (const province of provinceNames) {
     let factory = null;
@@ -185,16 +192,15 @@ export default ({ players, provinceNames }) => {
 
   const unitLimits = new Map();
 
-  // TODO: Figure out unit limits
-  //for (const nation of Nation2030) {
-  //  if (nation === Nation2030.AH) {
-  //    unitLimits.set(nation, {armies: 10, fleets: 6});
-  //  } else if (nation === Nation2030.GB) {
-  //    unitLimits.set(nation, {armies: 6, fleets: 10});
-  //  } else {
-  //    unitLimits.set(nation, {armies: 8, fleets: 8});
-  //  }
-  //}
+  for (const nation of Nation2030) {
+    if (nation === Nation2030.CN) {
+      unitLimits.set(nation, {armies: 10, fleets: 6});
+    } else if (nation === Nation2030.US) {
+      unitLimits.set(nation, {armies: 6, fleets: 10});
+    } else {
+      unitLimits.set(nation, {armies: 8, fleets: 8});
+    }
+  }
 
   out.provinces = provinces;
   out.currentNation = Nation2030.RU;

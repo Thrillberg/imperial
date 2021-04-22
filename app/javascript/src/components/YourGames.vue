@@ -17,7 +17,7 @@
       @click="openGame('imperial2030')"
       class="rounded bg-green-800 text-white cursor-pointer block text-lg hover:bg-green-900 py-2 px-4 my-2"
     >
-      Open a New Imperial 2030 Game
+      Open a New Imperial 2030 Game (beta)
     </button>
     <div v-for="game of games" v-bind:key="game.id">
       <router-link :to="{ path: '/game/' + game.id }" class="flex justify-between items-center hover:bg-gray-200 py-2">

@@ -121,7 +121,6 @@
        id="star5"
        xlink:href="#star"
        transform="scale(10.5)" />
-  </defs>
   <rect
      fill="#009b3a"
      id="rect52"
@@ -496,3 +495,16 @@
     </g>
   </svg>
 </template>
+
+<script>
+export default {
+  name: "BRFlag",
+  props: {
+    activeFilter: String,
+    fleet: Boolean,
+    width: String,
+    height: String,
+    transform: String
+  }
+};
+</script>

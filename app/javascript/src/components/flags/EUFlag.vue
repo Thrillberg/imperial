@@ -40,7 +40,6 @@
          transform="scale(-1,1)"
          id="use82" />
     </g>
-  </defs>
   <rect
      fill="#003399"
      width="1500"

@@ -235,15 +235,15 @@ export default {
     },
     nationFill(nation) {
       switch (nation) {
-        case "AH":
+        case "CN":
           return "#ebe084";
-        case "IT":
+        case "BR":
           return "#6E8D4E";
-        case "FR":
+        case "EU":
           return "#54bff9";
-        case "GB":
+        case "US":
           return "#ef7f72";
-        case "GE":
+        case "IN":
           return "silver";
         case "RU":
           return "#9c6bae";

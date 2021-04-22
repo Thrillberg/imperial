@@ -28,7 +28,8 @@ describe("auction", () => {
             { id: "player2" }
           ],
           soloMode: false,
-          variant: "auction"
+          variant: "auction",
+          baseGame: "imperial"
         }),
         game
       );
@@ -47,7 +48,8 @@ describe("auction", () => {
             { id: "player2" }
           ],
           soloMode: false,
-          variant: "auction"
+          variant: "auction",
+          baseGame: "imperial"
         })
       );
       return game;
@@ -122,7 +124,8 @@ describe("auction", () => {
             { id: "player2" }
           ],
           soloMode: false,
-          variant: "auction"
+          variant: "auction",
+          baseGame: "imperial"
         }),
         Action.bondPurchase({ player: "player1", cost: 4, nation: Nation.AH }),
         Action.bondPurchase({ player: "player2", cost: 2, nation: Nation.AH }),
@@ -177,7 +180,8 @@ describe("auction", () => {
             { id: "player2" }
           ],
           soloMode: false,
-          variant: "auction"
+          variant: "auction",
+          baseGame: "imperial"
         }),
         Action.bondPurchase({ player: "player1", cost: 30, nation: Nation.AH }),
         Action.bondPurchase({ player: "player2", cost: 2, nation: Nation.AH }),
@@ -211,7 +215,8 @@ describe("auction", () => {
             { id: "player3" }
           ],
           soloMode: false,
-          variant: "auction"
+          variant: "auction",
+          baseGame: "imperial"
         }),
         Action.bondPurchase({ player: "player1", cost: 25, nation: Nation.AH }),
         Action.bondPurchase({ player: "player2", cost: 2, nation: Nation.AH }),

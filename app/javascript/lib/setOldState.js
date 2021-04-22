@@ -1,4 +1,4 @@
-import { Nation } from "./constants.js";
+import { Nation, Nation2030 } from "./constants.js";
 
 export default (game) => {
   let units = new Map;
@@ -7,11 +7,19 @@ export default (game) => {
     for (const [key2, value2] of value) {
       newValue.set(key2, Object.assign({}, value2));
     }
-    units.set(Nation[key.value], newValue);
+    if (game.baseGame === "imperial") {
+      units.set(Nation[key.value], newValue);
+    } else if (game.baseGame === "imperial2030") {
+      units.set(Nation2030[key.value], newValue);
+    }
   }
   let nations = new Map();
   for (const [key, value] of game.nations) {
-    nations.set(Nation[key.value], Object.assign({}, value));
+    if (game.baseGame === "imperial") {
+      nations.set(Nation[key.value], Object.assign({}, value));
+    } else if (game.baseGame === "imperial2030") {
+      nations.set(Nation2030[key.value], Object.assign({}, value));
+    }
   }
   let provinces = new Map();
   for (const [key, value] of game.provinces) {
