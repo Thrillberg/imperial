@@ -129,6 +129,16 @@ export default {
           return "#8F8F8F"
         case "RU":
           return "#9C6BAE"
+        case "CN":
+          return "#ebe084"
+        case "IN":
+          return "silver"
+        case "BR":
+          return "#6E8D4E"
+        case "US":
+          return "#EF7F72"
+        case "EU":
+          return "#54bff9"
       }
     }
   }

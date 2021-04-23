@@ -106,12 +106,12 @@ class APIClient {
     );
   }
 
-  openGame(id) {
+  openGame(id, base_game) {
     return fetch(
       "/games",
       {
         method: "POST",
-        body: JSON.stringify({ id }),
+        body: JSON.stringify({ id, base_game }),
         headers: { "Content-Type": "application/json" }
       }
     )

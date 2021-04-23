@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_04_21_002541) do
+ActiveRecord::Schema.define(version: 2021_04_21_202945) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -45,6 +45,7 @@ ActiveRecord::Schema.define(version: 2021_04_21_002541) do
     t.datetime "cancelled_at"
     t.datetime "started_at"
     t.uuid "winner_id"
+    t.integer "base_game", default: 0
     t.index ["host_id"], name: "index_games_on_host_id"
     t.index ["winner_id"], name: "index_games_on_winner_id"
   end

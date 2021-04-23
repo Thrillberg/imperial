@@ -10,6 +10,7 @@ RSpec.describe Game, "#to_json" do
 
     expect(game.to_json).to eq({
       name: game.name,
+      base_game: game.base_game,
       id: game.id,
       host: host_user.name,
       players: player_names,
