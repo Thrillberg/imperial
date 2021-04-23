@@ -1,4 +1,4 @@
-import { Nation, Bond } from "./constants.js";
+import { Nation, Nation2030, Bond } from "./constants.js";
 import Action from "./action.js";
 import board from "./board.js";
 import setup from "./auctionSetup.js";
@@ -36,12 +36,16 @@ export default class Auction {
     this.inAuction = true;
     this.order = s.order;
     this.firstPlayerIndex = 0;
-    game.currentNation = Nation.AH;
+    if (action.payload.baseGame === "imperial" || !action.payload.baseGame) {
+      game.currentNation = Nation.AH;
+    } else if (action.payload.baseGame === "imperial2030") {
+      game.currentNation = Nation.RU;
+    }
     game.availableActions = this.availableBondPurchases(
       {
         availableBonds: s.availableBonds,
         players: s.players,
-        currentNation: Nation.AH,
+        currentNation: game.currentNation,
         currentPlayerName: this.order[0],
         previousPlayerName: this.order[0]
       }
@@ -144,7 +148,12 @@ export default class Auction {
   }
 
   advanceNation(game) {
-    const nations = [Nation.AH, Nation.IT, Nation.FR, Nation.GB, Nation.GE, Nation.RU];
+    let nations;
+    if (game.baseGame === "imperial" || !game.baseGame) {
+      nations = [Nation.AH, Nation.IT, Nation.FR, Nation.GB, Nation.GE, Nation.RU];
+    } else if (game.baseGame === "imperial2030") {
+      nations = [Nation2030.RU, Nation2030.CN, Nation2030.IN, Nation2030.BR, Nation2030.US, Nation2030.EU];
+    }
     const nationIndex = nations.indexOf(game.currentNation);
     game.currentNation = nations[nationIndex + 1];
   }
@@ -173,9 +182,14 @@ export default class Auction {
     game.currentNation = startingNation;
     game.availableActions = new Set(game.rondelActions(startingNation));
     this.inAuction = false;
-    const ahControllerIndex = this.order.indexOf(game.nations.get(Nation.AH).controller);
+    let startingControllerIndex;
+    if (game.baseGame === "imperial" || !game.baseGame) {
+      startingControllerIndex = this.order.indexOf(game.nations.get(Nation.AH).controller);
+    } else if (game.baseGame === "imperial2030") {
+      startingControllerIndex = this.order.indexOf(game.nations.get(Nation.RU).controller);
+    }
     if (game.variant !== "withoutInvestorCard") {
-      game.investorCardHolder = this.order[ahControllerIndex - 1] || this.order[this.order.length - 1];
+      game.investorCardHolder = this.order[startingControllerIndex - 1] || this.order[this.order.length - 1];
     }
   }
 
@@ -190,27 +204,53 @@ export default class Auction {
   }
 
   getStartingPlayerAndNation(game) {
-    let nation = Nation.AH;
-    let player = game.nations.get(nation).controller;
-    if (!player) {
-      nation = Nation.IT;
+    let nation, player;
+    if (game.baseGame === "imperial" || !game.baseGame) {
+      nation = Nation.AH;
       player = game.nations.get(nation).controller;
-    }
-    if (!player) {
-      nation = Nation.FR;
-      player = game.nations.get(nation).controller;
-    }
-    if (!player) {
-      nation = Nation.GB;
-      player = game.nations.get(nation).controller;
-    }
-    if (!player) {
-      nation = Nation.GE;
-      player = game.nations.get(nation).controller;
-    }
-    if (!player) {
+      if (!player) {
+        nation = Nation.IT;
+        player = game.nations.get(nation).controller;
+      }
+      if (!player) {
+        nation = Nation.FR;
+        player = game.nations.get(nation).controller;
+      }
+      if (!player) {
+        nation = Nation.GB;
+        player = game.nations.get(nation).controller;
+      }
+      if (!player) {
+        nation = Nation.GE;
+        player = game.nations.get(nation).controller;
+      }
+      if (!player) {
+        nation = Nation.RU;
+        player = game.nations.get(nation).controller;
+      }
+    } else if (game.baseGame === "imperial2030") {
       nation = Nation.RU;
       player = game.nations.get(nation).controller;
+      if (!player) {
+        nation = Nation.CN;
+        player = game.nations.get(nation).controller;
+      }
+      if (!player) {
+        nation = Nation.IN;
+        player = game.nations.get(nation).controller;
+      }
+      if (!player) {
+        nation = Nation.BR;
+        player = game.nations.get(nation).controller;
+      }
+      if (!player) {
+        nation = Nation.US;
+        player = game.nations.get(nation).controller;
+      }
+      if (!player) {
+        nation = Nation.EU;
+        player = game.nations.get(nation).controller;
+      }
     }
     return [player, nation];
   }

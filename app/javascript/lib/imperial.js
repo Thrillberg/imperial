@@ -46,6 +46,7 @@ export default class Imperial {
     this.currentNationInConflict = null;
     this.coexistingNations = [];
     this.swissBanksWhoDoNotInterrupt = [];
+    this.baseGame = "";
   }
 
   tick(action) {
@@ -190,9 +191,9 @@ export default class Imperial {
   initialize(action) {
     let setup;
     this.variant = action.payload.variant;
-    this.baseGame = action.payload.baseGame;
+    this.baseGame = action.payload.baseGame || "imperial";
     if (action.payload.variant === "standard") {
-      if (action.payload.baseGame === "imperial") {
+      if (action.payload.baseGame === "imperial" || !action.payload.baseGame) {
         setup = standardSetup;
       } else if (action.payload.baseGame === "imperial2030") {
         setup = standard2030Setup;
@@ -303,14 +304,26 @@ export default class Imperial {
   postBondPurchase() {
     if (this.investing) {
       this.previousPlayerName = this.currentPlayerName;
-      const nextNation = this.currentNation.when({
-        AH: () => Nation.IT,
-        IT: () => Nation.FR,
-        FR: () => Nation.GB,
-        GB: () => Nation.GE,
-        GE: () => Nation.RU,
-        RU: () => Nation.AH
-      });
+      let nextNation;
+      if (this.baseGame === "imperial") {
+        nextNation = this.currentNation.when({
+          AH: () => Nation.IT,
+          IT: () => Nation.FR,
+          FR: () => Nation.GB,
+          GB: () => Nation.GE,
+          GE: () => Nation.RU,
+          RU: () => Nation.AH
+        });
+      } else if (this.baseGame === "imperial2030") {
+        nextNation = this.currentNation.when({
+          RU: () => Nation2030.CN,
+          CN: () => Nation2030.IN,
+          IN: () => Nation2030.BR,
+          BR: () => Nation2030.US,
+          US: () => Nation2030.EU,
+          EU: () => Nation2030.RU
+        });
+      }
       const index = this.order.indexOf(this.currentPlayerName);
       if (index === this.order.length - 1) {
         this.currentPlayerName = this.order[0];

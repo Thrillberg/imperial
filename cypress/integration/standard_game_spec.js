@@ -4,7 +4,7 @@ describe("Standard game", () => {
     cy.login("a@b.com")
 
     cy.visit("/")
-    cy.contains("Open a New Game").click()
+    cy.contains("Open a New Imperial Game").click()
     cy.contains("Start Standard Game").click()
     // AH
     cy.get("#production1").click()
