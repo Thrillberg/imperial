@@ -72,7 +72,10 @@ export default class Imperial {
       }
     }
 
-    if (!validAction) { return; }
+    if (!validAction) { 
+      console.log("Illegal move attempted: ", action);
+      return;
+    }
 
     this.log.push(action);
     this.annotatedLog.push(action);
