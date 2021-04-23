@@ -296,7 +296,6 @@ export default {
         "East Africa": east_africa,
         "Fortaleza": fortaleza,
         "Guinea": guinea,
-        "Indochina": indochina,
         "Indonesia": indonesia,
         "Iran": iran,
         "Japan": japan,
@@ -332,6 +331,7 @@ export default {
         "Peru": peru,
         "Philippines": philippines,
         "Vladivostok": vladivostok,
+        "Indochina": indochina,
       }
     };
   },
