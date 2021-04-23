@@ -58,6 +58,7 @@ export default {
           name: game.name,
           id: game.id,
           currentPlayerName: game.current_player_name,
+          winner: game.winner,
           forceEndedAt: game.force_ended_at,
           cancelledAt: game.cancelled_at,
           createdAt: game.created_at,

@@ -26,7 +26,7 @@
           <span>{{ game.name }}</span>
         </div>
         <div class="w-1/3">{{ game.players.length }}</div>
-        <div class="w-1/3">{{ game.currentPlayerName }}</div>
+        <div class="w-1/3">{{ currentPlayer(game) }}</div>
         <div class="w-1/3">
           <button v-if="game.currentPlayerName || game.host !== profile.username" class="rounded bg-green-800 text-white cursor-pointer block hover:bg-green-900 p-2">
             View Game
@@ -58,6 +58,13 @@ export default {
         .then(game => {
           this.$router.push(`/game/${game.id}`);
         });
+    },
+    currentPlayer(game) {
+      if (game.winner) {
+        return game.winner + " won!"
+      } else {
+        return game.currentPlayerName
+      }
     }
   }
 }

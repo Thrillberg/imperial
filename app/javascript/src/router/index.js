@@ -172,6 +172,16 @@ class APIClient {
     );
   }
 
+  updateWinner(gameId, winnerName) {
+    return this.send(
+      {
+        kind: "updateWinnerName",
+        data: { gameId, winnerName }
+      },
+      "GameChannel"
+    );
+  }
+
   cancel(gameId) {
     return this.send(
       {

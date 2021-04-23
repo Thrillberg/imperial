@@ -1022,8 +1022,9 @@ export default class Imperial {
       case "production1":
       case "production2": {
         const nation = action.payload.nation;
+        const factoryExists = (province) => this.provinces.get(province).factory === "armaments" || this.provinces.get(province).factory === "shipyard";
         Array.from(this.board.byNation.get(nation))
-          .filter(province => this.provinces.get(province).factory !== null)
+          .filter(factoryExists)
           .forEach(province => {
             const units = this.units.get(nation).get(province);
             if (this.nobodyIsOccupying(province, nation)) {
