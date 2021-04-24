@@ -39,8 +39,8 @@
       v-else-if="(factory_type === 'armaments') && this.mounted"
       width="12"
       height="12"
-      :x="x(0) - 12"
-      :y="y(0) - 1"
+      :x="x(0) - 12 + factoryXAdjustment()"
+      :y="y(0) - 1 + factoryYAdjustment()"
       fill-opacity="0.4"
       fill="brown"
       stroke="none"
@@ -70,8 +70,8 @@
       v-for="(nation, index) in availableArmies()"
       :nation="nation"
       :key="nation + index + 'A'"
-      :x="x(index)"
-      :y="y(index)"
+      :x="x(index) + flagArmyXAdjustment()"
+      :y="y(index) + flagArmyYAdjustment()"
       width="13"
       height="8"
     ></Flag>
@@ -178,51 +178,99 @@ export default {
     },
     flagFleetXAdjustment() {
       switch (this.name) {
-        case "Bordeaux":
-          return -20
+        case "Rio de Janeiro":
+          return 10
       }
       return 0
     },
     flagFleetYAdjustment() {
       switch (this.name) {
-        case "Brest":
+        case "Rio de Janeiro":
           return -30
+      }
+      return 0
+    },
+    flagArmyXAdjustment() {
+      switch (this.name) {
+        case "Beijing":
+          return 10
+      }
+      return 0
+    },
+    flagArmyYAdjustment() {
+      switch (this.name) {
+        case "Moscow":
+          return -20
       }
       return 0
     },
     labelXAdjustment() {
       switch (this.name) {
-        case "Danzig":
-          return 10
+        case "North Pacific":
+          return -50
+        case "Mexico":
+          return -28
+        case "London":
+          return 20
+        case "Japan":
+          return 5
+        case "Indonesia":
+          return -20
+        case "Sea of Japan":
+          return 120
       }
       return 0
     },
     labelYAdjustment() {
       switch (this.name) {
-        case "Western Mediterranean Sea":
+        case "North Pacific":
           return 30
+        case "London":
+          return 25
+        case "Peru":
+          return 10
+        case "Japan":
+          return 25
+        case "Beijing":
+          return 20
+        case "Sea of Japan":
+          return 60
       }
       return 0
     },
     factoryXAdjustment() {
       switch (this.name) {
-        case "Danzig":
-          return 20
-        case "Edinburgh":
-          return 15
-        case "Genoa":
-          return 15
-        case "St. Petersburg":
-          return -20
-        case "Venice":
-          return 15
+        case "London":
+          return 25
+        case "Shanghai":
+          return 30
+        case "New Orleans":
+          return 50
+        case "Beijing":
+          return 40
+        case "Moscow":
+          return 10
       }
       return 0
     },
     factoryYAdjustment() {
       switch (this.name) {
-        case "Brest":
+        case "London":
+          return 5
+        case "Murmansk":
+          return -30
+        case "New Orleans":
+          return 20
+        case "Fortaleza":
           return -20
+        case "Chongqing":
+          return -20
+        case "Beijing":
+          return -5
+        case "Moscow":
+          return 10
+        case "Berlin":
+          return 25
       }
       return 0
     },
