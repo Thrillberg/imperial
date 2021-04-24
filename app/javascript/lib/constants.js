@@ -2,7 +2,7 @@ import { Enum } from "./enum.js";
 import { memoize } from "./memo.js";
 
 const Nation = Enum.fromArray(["AH", "IT", "FR", "GB", "GE", "RU"], "Nation");
-const Nation2030 = Enum.fromArray(["RU", "CN", "IN", "BR", "US", "EU"], "Nation");
+const Nation2030 = Enum.fromArray(["RU", "CN", "IN", "BR", "US", "EU"], "Nation2030");
 
 const cost = {
   1: 2,

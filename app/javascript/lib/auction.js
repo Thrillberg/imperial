@@ -39,7 +39,7 @@ export default class Auction {
     if (action.payload.baseGame === "imperial" || !action.payload.baseGame) {
       game.currentNation = Nation.AH;
     } else if (action.payload.baseGame === "imperial2030") {
-      game.currentNation = Nation.RU;
+      game.currentNation = Nation2030.RU;
     }
     game.availableActions = this.availableBondPurchases(
       {
@@ -186,7 +186,7 @@ export default class Auction {
     if (game.baseGame === "imperial" || !game.baseGame) {
       startingControllerIndex = this.order.indexOf(game.nations.get(Nation.AH).controller);
     } else if (game.baseGame === "imperial2030") {
-      startingControllerIndex = this.order.indexOf(game.nations.get(Nation.RU).controller);
+      startingControllerIndex = this.order.indexOf(game.nations.get(Nation2030.RU).controller);
     }
     if (game.variant !== "withoutInvestorCard") {
       game.investorCardHolder = this.order[startingControllerIndex - 1] || this.order[this.order.length - 1];
@@ -229,26 +229,26 @@ export default class Auction {
         player = game.nations.get(nation).controller;
       }
     } else if (game.baseGame === "imperial2030") {
-      nation = Nation.RU;
+      nation = Nation2030.RU;
       player = game.nations.get(nation).controller;
       if (!player) {
-        nation = Nation.CN;
+        nation = Nation2030.CN;
         player = game.nations.get(nation).controller;
       }
       if (!player) {
-        nation = Nation.IN;
+        nation = Nation2030.IN;
         player = game.nations.get(nation).controller;
       }
       if (!player) {
-        nation = Nation.BR;
+        nation = Nation2030.BR;
         player = game.nations.get(nation).controller;
       }
       if (!player) {
-        nation = Nation.US;
+        nation = Nation2030.US;
         player = game.nations.get(nation).controller;
       }
       if (!player) {
-        nation = Nation.EU;
+        nation = Nation2030.EU;
         player = game.nations.get(nation).controller;
       }
     }
