@@ -21,7 +21,7 @@
     </text>
     <circle
       v-if="dot && this.mounted"
-      :cx="x(0) + 6"
+      :cx="x(0) + 6 + dotXAdjustment()"
       :cy="y(0) - 5"
       r="3"
       v-bind:fill="nationFill(dot)"
@@ -180,6 +180,8 @@ export default {
       switch (this.name) {
         case "Rio de Janeiro":
           return 10
+        case "Caribbean Sea":
+          return 40
       }
       return 0
     },
@@ -187,8 +189,18 @@ export default {
       switch (this.name) {
         case "Rio de Janeiro":
           return -30
+        case "Caribbean Sea":
+          return -10
       }
       return 0
+    },
+    dotXAdjustment() {
+      switch (this.name) {
+        case "Caribbean Sea":
+          return 40
+      }
+      return 0
+
     },
     flagArmyXAdjustment() {
       switch (this.name) {
@@ -206,6 +218,8 @@ export default {
     },
     labelXAdjustment() {
       switch (this.name) {
+        case "Caribbean Sea":
+          return 10
         case "North Pacific":
           return -50
         case "Mexico":
@@ -218,11 +232,15 @@ export default {
           return -20
         case "Sea of Japan":
           return 120
+        case "New Orleans":
+          return 10;
       }
       return 0
     },
     labelYAdjustment() {
       switch (this.name) {
+        case "Caribbean Sea":
+          return -10
         case "North Pacific":
           return 30
         case "London":
@@ -235,6 +253,8 @@ export default {
           return 20
         case "Sea of Japan":
           return 60
+        case "New Orleans":
+          return 15;
       }
       return 0
     },
