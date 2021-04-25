@@ -22,7 +22,7 @@
     <circle
       v-if="dot && this.mounted"
       :cx="x(0) + 6 + dotXAdjustment()"
-      :cy="y(0) - 5"
+      :cy="y(0) - 5 + dotYAdjustment()"
       r="3"
       v-bind:fill="nationFill(dot)"
     ></circle>
@@ -182,6 +182,8 @@ export default {
           return 10
         case "Caribbean Sea":
           return 40
+        case "Sea of Japan":
+          return 100
       }
       return 0
     },
@@ -191,6 +193,8 @@ export default {
           return -30
         case "Caribbean Sea":
           return -10
+        case "Sea of Japan":
+          return 30
       }
       return 0
     },
@@ -198,9 +202,17 @@ export default {
       switch (this.name) {
         case "Caribbean Sea":
           return 40
+        case "Sea of Japan":
+          return 100
       }
       return 0
-
+    },
+    dotYAdjustment() {
+      switch (this.name) {
+        case "Sea of Japan":
+          return 30
+      }
+      return 0
     },
     flagArmyXAdjustment() {
       switch (this.name) {
