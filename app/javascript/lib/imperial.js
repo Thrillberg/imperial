@@ -73,7 +73,6 @@ export default class Imperial {
     }
 
     if (!validAction) { 
-      console.log("Illegal move attempted: ", action);
       return;
     }
 
@@ -1065,26 +1064,33 @@ export default class Imperial {
         let taxes =
           this.unoccupiedFactoryCount(nationName) * 2 +
           this.flagCount(nationName);
-        // Taxes cannot exceed 20m
-        if (taxes > 20) taxes = 20;
-        let excessTaxes = taxes - nation.taxChartPosition;
-        // Players can never lose money here and
-        // nations cannot descend in taxChartPosition
-        if (excessTaxes < 0) {
-          excessTaxes = 0;
+        if (this.baseGame === "imperial") {
+          // Taxes cannot exceed 20m
+          if (taxes > 20) taxes = 20;
+        } else if (this.baseGame === "imperial2030") {
+          // Taxes cannot exceed 23m
+          if (taxes > 23) taxes = 23;
         }
-        // Player receives full excess taxes
-        this.players[this.currentPlayerName].cash += excessTaxes;
-        this.annotatedLog.push(Action.playerGainsCash({
-          player: this.currentPlayerName,
-          amount: excessTaxes
-        }));
-        // Nation's taxChartPosition matches taxes but cannot fall
-        if (taxes > nation.taxChartPosition) {
-          nation.taxChartPosition = taxes;
+        if (this.baseGame === "imperial") {
+          let excessTaxes = taxes - nation.taxChartPosition;
+          // Players can never lose money here and
+          // nations cannot descend in taxChartPosition
+          if (excessTaxes < 0) {
+            excessTaxes = 0;
+          }
+          // Player receives full excess taxes
+          this.players[this.currentPlayerName].cash += excessTaxes;
+          this.annotatedLog.push(Action.playerGainsCash({
+            player: this.currentPlayerName,
+            amount: excessTaxes
+          }));
+          // Nation's taxChartPosition matches taxes but cannot fall
+          if (taxes > nation.taxChartPosition) {
+            nation.taxChartPosition = taxes;
+          }
+          // The tax chart maxes out at 15
+          if (nation.taxChartPosition > 15) nation.taxChartPosition = 15;
         }
-        // The tax chart maxes out at 15
-        if (nation.taxChartPosition > 15) nation.taxChartPosition = 15;
         // 2. Collecting money
         let payment = taxes - this.unitCount(nationName);
         // Nations cannot be paid less than 0m
@@ -1094,10 +1100,74 @@ export default class Imperial {
           nation: nationName,
           amount: payment
         }));
+        if (this.baseGame === "imperial2030") {
+          // Nation pays bonus to current player
+          const bonusByTaxes = {
+            0: 0,
+            1: 0,
+            2: 0,
+            3: 0,
+            4: 0,
+            5: 0,
+            6: 1,
+            7: 1,
+            8: 1,
+            9: 1,
+            10: 2,
+            11: 2,
+            12: 3,
+            13: 3,
+            14: 4,
+            15: 4,
+            16: 5,
+            17: 5,
+            18: 5,
+            19: 5,
+            20: 5,
+            21: 5,
+            22: 5,
+            23: 5
+          }
+          const bonus = bonusByTaxes[taxes];
+          nation.treasury -= bonus;
+          this.players[this.currentPlayerName].cash += bonus;
+        }
         // 3. Adding power points
-        let powerPoints = taxes - 5;
-        if (powerPoints < 0) powerPoints = 0;
-        nation.powerPoints += powerPoints;
+        let powerPoints;
+        if (this.baseGame === "imperial") {
+          powerPoints = taxes - 5;
+          if (powerPoints < 0) powerPoints = 0;
+          nation.powerPoints += powerPoints;
+        } else if (this.baseGame === "imperial2030") {
+          const powerPointsByTax = {
+            0: 0,
+            1: 0,
+            2: 0,
+            3: 0,
+            4: 0,
+            5: 0,
+            6: 1,
+            7: 1,
+            8: 2,
+            9: 2,
+            10: 3,
+            11: 4,
+            12: 5,
+            13: 6,
+            14: 7,
+            15: 8,
+            16: 9,
+            17: 9,
+            18: 9,
+            19: 9,
+            20: 9,
+            21: 9,
+            22: 9,
+            23: 9
+          }
+          powerPoints = powerPointsByTax[taxes]
+          nation.powerPoints += powerPoints
+        }
 
         if (nation.powerPoints >= 25) {
           nation.powerPoints = 25;
