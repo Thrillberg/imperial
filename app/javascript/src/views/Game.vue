@@ -14,6 +14,7 @@
             :tax_chart_position="game.nations.get(nation).taxChartPosition"
             :controller="game.nations.get(nation).controller"
             :current_player="profile.username"
+            :show_tax_chart="game.baseGame === 'imperial'"
             :key="nation.value"
           ></NationComponent>
         </div>

@@ -14,7 +14,7 @@
     <div class="flex flex-col justify-center">
       <div>{{ treasury }}m</div>
       <div>{{ power_points }} power</div>
-      <div>{{ tax_chart_position }} tax</div>
+      <div v-if="show_tax_chart">{{ tax_chart_position }} tax</div>
     </div>
   </div>
 </template>
@@ -33,6 +33,7 @@ export default {
     controller: String,
     nation: String,
     power_points: Number,
+    show_tax_chart: Boolean,
     tax_chart_position: Number,
     treasury: Number
   },
