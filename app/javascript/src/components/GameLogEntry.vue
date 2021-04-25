@@ -47,9 +47,10 @@ import { DateTime } from "luxon";
 
 import Flag from "./flags/Flag.vue";
 import stringify from "../stringify.js";
+
 export default {
   name: "GameLogEntry",
-  props: { events: Object, index: Number },
+  props: { events: Object, index: Number, board: Object },
   computed: {
     event: function() {
       return this.events.event
@@ -143,13 +144,19 @@ export default {
       let province = provincesList[0];
       let provinces = provincesList.slice(0,-1).join(", ") + " and " + provincesList.slice(-1);
       let provincesText = provincesList.length > 1 ? provinces : province;
-      let army = provincesList.length > 1 ? "armies" : "army";
-      return `Imported a total of ${provincesList.length} ${army} into ${provincesText}.`;
+      let unit = provincesList.length > 1 ? "units" : "unit";
+      return `Imported a total of ${provincesList.length} ${unit} into ${provincesText}.`;
     },
     maneuverAction(payload) {
+      let unit;
+      if (this.board.graph.get(payload.destination).isOcean) {
+        unit = "a fleet";
+      } else {
+        unit = "an army";
+      }
       let origin = this.capitalize(payload.origin);
       let destination = this.capitalize(payload.destination);
-      return `Moved an army from ${origin} to ${destination}.`;
+      return `Moved ${unit} from ${origin} to ${destination}.`;
     },
     coexistAction(payload) {
       let province = this.capitalize(payload.province);
@@ -160,7 +167,7 @@ export default {
       let province = this.capitalize(payload.province);
       let incumbent = stringify(payload.incumbent.value);
       let challenger = stringify(payload.challenger.value);
-      return `The armies from ${challenger} have picked a fight with ${incumbent} in ${province}.`;
+      return `${challenger} has picked a fight with ${incumbent} in ${province}.`;
     },
     destroyFactoryAction(payload) {
       let province = this.capitalize(payload.province);

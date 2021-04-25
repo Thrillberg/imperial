@@ -3,6 +3,7 @@
     <GameLogEntry
       v-for="(entry, index) in processedLog()"
         :events="entry"
+        :board="board"
         :key="index"
     ></GameLogEntry>
   </div>
@@ -12,7 +13,7 @@
 import GameLogEntry from "./GameLogEntry.vue";
 export default {
   name: "GameLog",
-  props: { log: Array, logTimestamps: Array },
+  props: { log: Array, logTimestamps: Array, board: Object },
   components: { GameLogEntry },
   methods: {
     processedLog() {

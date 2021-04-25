@@ -85,6 +85,7 @@
         <GameLog
           :log="game.annotatedLog"
           :logTimestamps="logTimestamps"
+          :board="board"
         />
       </div>
       <div v-else-if="gameCancelled()">
@@ -212,6 +213,7 @@ export default {
   data: () => {
     return {
       importProvince: "",
+      board: {},
       controllingPlayerName: "",
       currentPlayer: {},
       game: {},
@@ -336,13 +338,12 @@ export default {
       this.poppedTurns = [];
       const baseGame = this.games.find(game => game.id === this.$route.params.id).baseGame;
       const gameLog = getGameLog(log, baseGame);
-      let board;
       if (baseGame === "imperial") {
-        board = imperialBoard
+        this.board = imperialBoard
       } else if (baseGame === "imperial2030") {
-        board = imperial2030Board
+        this.board = imperial2030Board
       }
-      this.game = Imperial.fromLog(gameLog, board);
+      this.game = Imperial.fromLog(gameLog, this.board);
       if (Object.keys(this.game.players).length > 0) {
         this.gameStarted = true;
         this.currentPlayer = this.game.players[this.profile.username] || {};
