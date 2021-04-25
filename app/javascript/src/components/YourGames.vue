@@ -64,7 +64,7 @@ export default {
         return game.winner + " won!"
       } else if (game.currentPlayerName) {
         return game.currentPlayerName
-      } else {
+      } else if (game.startedAt) {
         return "Computer player"
       }
     }
