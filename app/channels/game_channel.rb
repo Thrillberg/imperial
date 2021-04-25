@@ -42,12 +42,10 @@ class GameChannel < ApplicationCable::Channel
       broadcast_games "game_channel", "updateGames"
 
     when "updateCurrentPlayerName"
-      data = data["data"]
-      current_player_name = data["currentPlayerName"]
-      current_player_names = JSON.parse(REDIS.get("current_player_names"))
-      current_player_names[data["gameId"]] = current_player_name
-      REDIS.set("current_player_names", current_player_names.to_json)
-
+      game = game_from_data(data)
+      current_player_name = data["data"]["currentPlayerName"]
+      player = game.users.find_by(name: current_player_name)
+      game.update(current_player: player)
       broadcast_games "game_channel", "updateGames"
 
     when "updateWinnerName"
@@ -55,7 +53,6 @@ class GameChannel < ApplicationCable::Channel
       winner_name = data["data"]["winnerName"]
       winner = game.users.find_by(name: winner_name)
       game.update(winner: winner) unless game.winner
-
       broadcast_games "game_channel", "updateGames"
     end
   end

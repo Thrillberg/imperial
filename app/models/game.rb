@@ -6,6 +6,7 @@ class Game < ActiveRecord::Base
   has_many :users, through: :players
   belongs_to :winner, class_name: "User", optional: true
   belongs_to :host, class_name: "User"
+  belongs_to :current_player, class_name: "User", optional: true
 
   scope :current, -> {
     includes(:host, :users)
@@ -23,9 +24,9 @@ class Game < ActiveRecord::Base
       force_ended_at: force_ended_at,
       cancelled_at: cancelled_at,
       created_at: created_at,
-      current_player_name: JSON.parse(REDIS.get("current_player_names"))[id],
+      current_player_name: current_player&.name,
       started_at: started_at,
-      winner: winner&.name
+      winner_name: winner&.name
     }
   end
 
