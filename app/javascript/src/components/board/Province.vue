@@ -67,9 +67,10 @@
       height="11"
     ></Flag>
     <Flag
-      v-for="(nation, index) in availableArmies()"
-      :nation="nation"
-      :key="nation + index + 'A'"
+      v-for="(army, index) in availableArmies()"
+      :nation="army.nation"
+      :key="army.nation + index + 'A'"
+      :friendly="army.friendly"
       :x="x(index)"
       :y="y(index)"
       width="13"
