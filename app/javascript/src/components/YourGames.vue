@@ -35,6 +35,7 @@
             Start Game
           </button>
         </div>
+        <div v-else class="w-1/3"></div>
       </router-link>
     </div>
     <div v-if="games.length === 0">
