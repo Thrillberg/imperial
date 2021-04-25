@@ -127,7 +127,14 @@ export default {
           const normalizedProvince = province.replace(/\.*\s/gm, "").toLowerCase();
           if (normalizedProvince === provinceWithUnits) {
             for (let i = 0; i < provinceUnits.armies; i++) {
-              armies.push(nation);
+              let onForeignLand = false;
+              for (const [homeNation, provinces] of this.game.board.byNation) {
+                if (homeNation?.value !== nation && provinces.has(normalizedProvince)) {
+                  onForeignLand = true;
+                }
+              }
+              const friendly = provinceUnits.friendly && onForeignLand;
+              armies.push({ nation, friendly });
             }
           }
         }
