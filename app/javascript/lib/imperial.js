@@ -246,18 +246,10 @@ export default class Imperial {
       30: 9
     };
     const bonds = this.players[action.payload.player].bonds;
-    if (action.payload.cost > this.players[action.payload.player].cash) {
-      const tradeableBonds = [...bonds]
-        .filter(({ nation }) => nation === action.payload.nation)
-        .map(({ cost }) => cost);
-      const tradeIn = Math.max(...tradeableBonds);
-      if (tradeIn === undefined) {
-        throw new Error(
-          `${action.payload.player} does not have any bonds to trade for ${action.payload.nation}`
-        );
-      }
-      const bondToTrade = Bond(action.payload.nation, uncost[tradeIn]);
-      const netCost = action.payload.cost - bondToTrade.cost;
+    const tradeInValue = action.payload.tradeInValue;
+    if (tradeInValue > 0) {
+      const bondToTrade = Bond(action.payload.nation, uncost[tradeInValue]);
+      const netCost = action.payload.cost - tradeInValue;
       this.nations.get(action.payload.nation).treasury += netCost;
       this.availableBonds.add(bondToTrade);
       this.players[action.payload.player].cash -= netCost;
@@ -265,7 +257,7 @@ export default class Imperial {
       this.annotatedLog.push(Action.playerTradedInForABond({
         player: action.payload.player,
         bondNation: action.payload.nation,
-        bondCost: bondToTrade.cost
+        bondCost: tradeInValue
       }));
     } else {
       this.nations.get(action.payload.nation).treasury += action.payload.cost;

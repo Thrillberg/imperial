@@ -12,16 +12,34 @@ export default (nation, game) => {
   if (topBondCost === -Infinity) {
     topBondCost = 0
   }
-  const bonds = [...game.availableBonds].filter(bond => {
+  [...game.availableBonds].map(bond => {
     const playerCanBuyOutright = bond.cost <= game.players[player].cash;
     const playerCanTradeUp =
       bond.cost <= game.players[player].cash + topBondCost &&
       bond.cost > topBondCost
     const correctNation = nation === bond.nation
-    return correctNation && (playerCanBuyOutright || playerCanTradeUp)
-  })
-  bonds.map(bond => {
-    out.add(Action.bondPurchase({ nation, player: game.currentPlayerName, cost: bond.cost }));
+    if (correctNation) {
+      if (playerCanBuyOutright) {
+        out.add(Action.bondPurchase({
+          nation,
+          player: game.currentPlayerName,
+          cost: bond.cost,
+          tradeInValue: 0
+        }));
+      }
+      if (playerCanTradeUp) {
+        exchangeableBondCosts.map(exchangedBondCost => {
+          if (exchangedBondCost < bond.cost) {
+            out.add(Action.bondPurchase({
+              nation,
+              player: game.currentPlayerName,
+              cost: bond.cost,
+              tradeInValue: exchangedBondCost
+            }));
+          }
+        });
+      }
+    }
   })
   return out;
 }

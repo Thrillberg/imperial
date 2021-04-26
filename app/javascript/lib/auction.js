@@ -58,7 +58,12 @@ export default class Auction {
       return bond.cost <= game.players[game.currentPlayerName].cash && bond.nation === game.currentNation
     })
     bonds.map(bond => {
-      out.add(Action.bondPurchase({ nation: game.currentNation, player: game.currentPlayerName, cost: bond.cost }));
+      out.add(Action.bondPurchase({
+        nation: game.currentNation,
+        player: game.currentPlayerName,
+        cost: bond.cost,
+        tradeInValue: 0
+      }));
     })
     return out;
   }

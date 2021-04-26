@@ -16,6 +16,7 @@ describe("auction", () => {
           Action.bondPurchase({
             nation: Nation.AH,
             cost,
+            tradeInValue: 0,
             player: "player1"
           })
         )
@@ -66,13 +67,14 @@ describe("auction", () => {
           Action.bondPurchase({
             nation: Nation.AH,
             cost,
+            tradeInValue: 0,
             player: "player2"
           })
         )
       })
 
       auction.tick(
-        Action.bondPurchase({ player: "player1", cost: 4, nation: Nation.AH }),
+        Action.bondPurchase({ player: "player1", cost: 4, nation: Nation.AH, tradeInValue: 0 }),
         game
       );
 
@@ -93,17 +95,18 @@ describe("auction", () => {
           Action.bondPurchase({
             nation: Nation.IT,
             cost,
+            tradeInValue: 0,
             player: "player2"
           })
         )
       })
 
       auction.tick(
-        Action.bondPurchase({ player: "player1", cost: 4, nation: Nation.AH }),
+        Action.bondPurchase({ player: "player1", cost: 4, nation: Nation.AH, tradeInValue: 0 }),
         game
       );
       auction.tick(
-        Action.bondPurchase({ player: "player2", cost: 2, nation: Nation.AH }),
+        Action.bondPurchase({ player: "player2", cost: 2, nation: Nation.AH, tradeInValue: 0 }),
         game
       );
 
@@ -127,18 +130,18 @@ describe("auction", () => {
           variant: "auction",
           baseGame: "imperial"
         }),
-        Action.bondPurchase({ player: "player1", cost: 4, nation: Nation.AH }),
-        Action.bondPurchase({ player: "player2", cost: 2, nation: Nation.AH }),
-        Action.bondPurchase({ player: "player2", cost: 2, nation: Nation.IT }),
-        Action.bondPurchase({ player: "player1", cost: 4, nation: Nation.IT }),
-        Action.bondPurchase({ player: "player1", cost: 4, nation: Nation.FR }),
-        Action.bondPurchase({ player: "player2", cost: 2, nation: Nation.FR }),
-        Action.bondPurchase({ player: "player2", cost: 2, nation: Nation.GB }),
-        Action.bondPurchase({ player: "player1", cost: 4, nation: Nation.GB }),
-        Action.bondPurchase({ player: "player1", cost: 4, nation: Nation.GE }),
-        Action.bondPurchase({ player: "player2", cost: 2, nation: Nation.GE }),
-        Action.bondPurchase({ player: "player2", cost: 2, nation: Nation.RU }),
-        Action.bondPurchase({ player: "player1", cost: 4, nation: Nation.RU })
+        Action.bondPurchase({ player: "player1", cost: 4, nation: Nation.AH, tradeInValue: 0 }),
+        Action.bondPurchase({ player: "player2", cost: 2, nation: Nation.AH, tradeInValue: 0 }),
+        Action.bondPurchase({ player: "player2", cost: 2, nation: Nation.IT, tradeInValue: 0 }),
+        Action.bondPurchase({ player: "player1", cost: 4, nation: Nation.IT, tradeInValue: 0 }),
+        Action.bondPurchase({ player: "player1", cost: 4, nation: Nation.FR, tradeInValue: 0 }),
+        Action.bondPurchase({ player: "player2", cost: 2, nation: Nation.FR, tradeInValue: 0 }),
+        Action.bondPurchase({ player: "player2", cost: 2, nation: Nation.GB, tradeInValue: 0 }),
+        Action.bondPurchase({ player: "player1", cost: 4, nation: Nation.GB, tradeInValue: 0 }),
+        Action.bondPurchase({ player: "player1", cost: 4, nation: Nation.GE, tradeInValue: 0 }),
+        Action.bondPurchase({ player: "player2", cost: 2, nation: Nation.GE, tradeInValue: 0 }),
+        Action.bondPurchase({ player: "player2", cost: 2, nation: Nation.RU, tradeInValue: 0 }),
+        Action.bondPurchase({ player: "player1", cost: 4, nation: Nation.RU, tradeInValue: 0 })
       ];
 
       const game = Imperial.fromLog(log);
@@ -169,6 +172,7 @@ describe("auction", () => {
           Action.bondPurchase({
             nation: Nation.FR,
             cost,
+            tradeInValue: 0,
             player: "player2"
           })
         )
@@ -183,10 +187,10 @@ describe("auction", () => {
           variant: "auction",
           baseGame: "imperial"
         }),
-        Action.bondPurchase({ player: "player1", cost: 30, nation: Nation.AH }),
-        Action.bondPurchase({ player: "player2", cost: 2, nation: Nation.AH }),
-        Action.bondPurchase({ player: "player2", cost: 2, nation: Nation.IT }),
-        Action.bondPurchase({ player: "player1", cost: 9, nation: Nation.IT })
+        Action.bondPurchase({ player: "player1", cost: 30, nation: Nation.AH, tradeInValue: 0 }),
+        Action.bondPurchase({ player: "player2", cost: 2, nation: Nation.AH, tradeInValue: 0 }),
+        Action.bondPurchase({ player: "player2", cost: 2, nation: Nation.IT, tradeInValue: 0 }),
+        Action.bondPurchase({ player: "player1", cost: 9, nation: Nation.IT, tradeInValue: 0 })
       ]
 
       const game = Imperial.fromLog(log);
@@ -203,6 +207,7 @@ describe("auction", () => {
           Action.bondPurchase({
             nation: Nation.GB,
             cost,
+            tradeInValue: 0,
             player: "player3"
           })
         )
@@ -218,13 +223,13 @@ describe("auction", () => {
           variant: "auction",
           baseGame: "imperial"
         }),
-        Action.bondPurchase({ player: "player1", cost: 25, nation: Nation.AH }),
-        Action.bondPurchase({ player: "player2", cost: 2, nation: Nation.AH }),
-        Action.bondPurchase({ player: "player3", cost: 4, nation: Nation.AH }),
-        Action.bondPurchase({ player: "player2", cost: 25, nation: Nation.IT }),
-        Action.bondPurchase({ player: "player3", cost: 6, nation: Nation.IT }),
-        Action.bondPurchase({ player: "player1", cost: 2, nation: Nation.IT }),
-        Action.bondPurchase({ player: "player3", cost: 2, nation: Nation.FR })
+        Action.bondPurchase({ player: "player1", cost: 25, nation: Nation.AH, tradeInValue: 0 }),
+        Action.bondPurchase({ player: "player2", cost: 2, nation: Nation.AH, tradeInValue: 0 }),
+        Action.bondPurchase({ player: "player3", cost: 4, nation: Nation.AH, tradeInValue: 0 }),
+        Action.bondPurchase({ player: "player2", cost: 25, nation: Nation.IT, tradeInValue: 0 }),
+        Action.bondPurchase({ player: "player3", cost: 6, nation: Nation.IT, tradeInValue: 0 }),
+        Action.bondPurchase({ player: "player1", cost: 2, nation: Nation.IT, tradeInValue: 0 }),
+        Action.bondPurchase({ player: "player3", cost: 2, nation: Nation.FR, tradeInValue: 0 })
       ]
 
       const game = Imperial.fromLog(log);
