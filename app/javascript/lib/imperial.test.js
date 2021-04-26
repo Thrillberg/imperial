@@ -57,7 +57,7 @@ describe("imperial", () => {
           Action.rondel({ nation: Nation.AH, cost: 0, slot: "investor" })
         );
         game.tick(
-          Action.bondPurchase({ player: "player1", cost: 4, nation: Nation.IT })
+          Action.bondPurchase({ player: "player1", cost: 4, nation: Nation.IT, tradeInValue: 0 })
         );
 
         expect(game.players["player1"].bonds).toEqual(
@@ -84,11 +84,11 @@ describe("imperial", () => {
         // Give player one bond to trade in
         game.players["player1"].bonds = new Set([Bond(Nation.AH, 1)]);
         game.availableActions = new Set([
-          Action.bondPurchase({ player: "player1", cost: 4, nation: Nation.AH })
+          Action.bondPurchase({ player: "player1", cost: 4, nation: Nation.AH, tradeInValue: 2 })
         ]);
 
         game.tick(
-          Action.bondPurchase({ player: "player1", cost: 4, nation: Nation.AH })
+          Action.bondPurchase({ player: "player1", cost: 4, nation: Nation.AH, tradeInValue: 2 })
         );
 
         expect(game.players["player1"].bonds).toEqual(
@@ -104,11 +104,11 @@ describe("imperial", () => {
         ]);
         game.players["player1"].cash = 12;
         game.availableActions = new Set([
-          Action.bondPurchase({ player: "player1", cost: 20, nation: Nation.AH })
+          Action.bondPurchase({ player: "player1", cost: 20, nation: Nation.AH, tradeInValue: 12 })
         ]);
 
         game.tick(
-          Action.bondPurchase({ player: "player1", cost: 20, nation: Nation.AH })
+          Action.bondPurchase({ player: "player1", cost: 20, nation: Nation.AH, tradeInValue: 12 })
         );
 
         expect(game.players["player1"].bonds).toEqual(
@@ -126,7 +126,7 @@ describe("imperial", () => {
 
         game.tick(Action.rondel({nation: Nation.AH, cost: 0, slot: "investor"}));
         game.tick(
-          Action.bondPurchase({ player: "player2", cost: 4, nation: Nation.IT })
+          Action.bondPurchase({ player: "player2", cost: 4, nation: Nation.IT, tradeInValue: 0 })
         );
 
         expect(game.nations.get(Nation.IT).controller).toEqual("player2");
@@ -1713,31 +1713,37 @@ describe("imperial", () => {
                 Action.bondPurchase({
                   nation: Nation.AH,
                   player: "player2",
+                  tradeInValue: 0,
                   cost: 4
                 }),
                 Action.bondPurchase({
                   nation: Nation.IT,
                   player: "player2",
+                  tradeInValue: 0,
                   cost: 4
                 }),
                 Action.bondPurchase({
                   nation: Nation.FR,
                   player: "player2",
+                  tradeInValue: 0,
                   cost: 4
                 }),
                 Action.bondPurchase({
                   nation: Nation.GB,
                   player: "player2",
+                  tradeInValue: 0,
                   cost: 4
                 }),
                 Action.bondPurchase({
                   nation: Nation.GE,
                   player: "player2",
+                  tradeInValue: 0,
                   cost: 4
                 }),
                 Action.bondPurchase({
                   nation: Nation.RU,
                   player: "player2",
+                  tradeInValue: 0,
                   cost: 4
                 })
               ])
@@ -1765,31 +1771,37 @@ describe("imperial", () => {
                 Action.bondPurchase({
                   nation: Nation.AH,
                   player: "player2",
+                  tradeInValue: 4,
                   cost: 6
                 }),
                 Action.bondPurchase({
                   nation: Nation.IT,
                   player: "player2",
+                  tradeInValue: 0,
                   cost: 4
                 }),
                 Action.bondPurchase({
                   nation: Nation.FR,
                   player: "player2",
+                  tradeInValue: 0,
                   cost: 4
                 }),
                 Action.bondPurchase({
                   nation: Nation.GB,
                   player: "player2",
+                  tradeInValue: 0,
                   cost: 4
                 }),
                 Action.bondPurchase({
                   nation: Nation.GE,
                   player: "player2",
+                  tradeInValue: 0,
                   cost: 4
                 }),
                 Action.bondPurchase({
                   nation: Nation.RU,
                   player: "player2",
+                  tradeInValue: 0,
                   cost: 4
                 })
               ])
@@ -1876,31 +1888,37 @@ describe("imperial", () => {
                     Action.bondPurchase({
                       nation: Nation.AH,
                       player: "player1",
+                      tradeInValue: 0,
                       cost: 4
                     }),
                     Action.bondPurchase({
                       nation: Nation.IT,
                       player: "player1",
+                      tradeInValue: 0,
                       cost: 4
                     }),
                     Action.bondPurchase({
                       nation: Nation.FR,
                       player: "player1",
+                      tradeInValue: 0,
                       cost: 4
                     }),
                     Action.bondPurchase({
                       nation: Nation.GB,
                       player: "player1",
+                      tradeInValue: 0,
                       cost: 4
                     }),
                     Action.bondPurchase({
                       nation: Nation.GE,
                       player: "player1",
+                      tradeInValue: 0,
                       cost: 4
                     }),
                     Action.bondPurchase({
                       nation: Nation.RU,
                       player: "player1",
+                      tradeInValue: 0,
                       cost: 4
                     })
                   ])
@@ -1934,31 +1952,37 @@ describe("imperial", () => {
                     Action.bondPurchase({
                       nation: Nation.AH,
                       player: "player2",
+                      tradeInValue: 4,
                       cost: 6
                     }),
                     Action.bondPurchase({
                       nation: Nation.IT,
                       player: "player2",
+                      tradeInValue: 0,
                       cost: 4
                     }),
                     Action.bondPurchase({
                       nation: Nation.FR,
                       player: "player2",
+                      tradeInValue: 0,
                       cost: 4
                     }),
                     Action.bondPurchase({
                       nation: Nation.GB,
                       player: "player2",
+                      tradeInValue: 0,
                       cost: 4
                     }),
                     Action.bondPurchase({
                       nation: Nation.GE,
                       player: "player2",
+                      tradeInValue: 0,
                       cost: 4
                     }),
                     Action.bondPurchase({
                       nation: Nation.RU,
                       player: "player2",
+                      tradeInValue: 0,
                       cost: 4
                     })
                   ])
@@ -1998,6 +2022,7 @@ describe("imperial", () => {
                   Action.bondPurchase({
                     nation: Nation.AH,
                     player: "player1",
+                    tradeInValue: 0,
                     cost: 4
                   })
                 );
@@ -2040,6 +2065,7 @@ describe("imperial", () => {
                   Action.bondPurchase({
                     nation: Nation.AH,
                     player: "player2",
+                    tradeInValue: 0,
                     cost: 4
                   })
                 );
@@ -2078,6 +2104,7 @@ describe("imperial", () => {
                   Action.bondPurchase({
                     nation: Nation.AH,
                     player: "player1",
+                    tradeInValue: 0,
                     cost: 4
                   })
                 );
@@ -2118,6 +2145,7 @@ describe("imperial", () => {
                   Action.bondPurchase({
                     nation: Nation.AH,
                     player: "player3",
+                    tradeInValue: 0,
                     cost: 4
                   })
                 );
@@ -2134,6 +2162,7 @@ describe("imperial", () => {
                   Action.bondPurchase({
                     nation: Nation.IT,
                     player: "player1",
+                    tradeInValue: 0,
                     cost: 4
                   })
                 );
@@ -2150,6 +2179,7 @@ describe("imperial", () => {
                   Action.bondPurchase({
                     nation: Nation.FR,
                     player: "player2",
+                    tradeInValue: 0,
                     cost: 4
                   })
                 );
@@ -2211,81 +2241,121 @@ describe("imperial", () => {
                     Action.bondPurchase({
                       nation: Nation.AH,
                       player: "player1",
+                      tradeInValue: 0,
                       cost: 4
                     }),
                     Action.bondPurchase({
                       nation: Nation.AH,
                       player: "player1",
+                      tradeInValue: 0,
                       cost: 6
                     }),
                     Action.bondPurchase({
                       nation: Nation.AH,
                       player: "player1",
+                      tradeInValue: 9,
                       cost: 12
                     }),
                     Action.bondPurchase({
                       nation: Nation.AH,
                       player: "player1",
+                      tradeInValue: 9,
                       cost: 16
                     }),
                     Action.bondPurchase({
                       nation: Nation.IT,
                       player: "player1",
+                      tradeInValue: 0,
                       cost: 4
                     }),
                     Action.bondPurchase({
                       nation: Nation.IT,
                       player: "player1",
+                      tradeInValue: 0,
                       cost: 6
                     }),
                     Action.bondPurchase({
                       nation: Nation.FR,
                       player: "player1",
+                      tradeInValue: 0,
                       cost: 4
                     }),
                     Action.bondPurchase({
                       nation: Nation.FR,
                       player: "player1",
+                      tradeInValue: 0,
                       cost: 6
                     }),
                     Action.bondPurchase({
                       nation: Nation.GB,
                       player: "player1",
+                      tradeInValue: 0,
                       cost: 4
                     }),
                     Action.bondPurchase({
                       nation: Nation.GB,
                       player: "player1",
+                      tradeInValue: 0,
                       cost: 6
                     }),
                     Action.bondPurchase({
                       nation: Nation.GB,
                       player: "player1",
+                      tradeInValue: 9,
                       cost: 12
                     }),
                     Action.bondPurchase({
                       nation: Nation.GB,
                       player: "player1",
+                      tradeInValue: 9,
                       cost: 16
                     }),
                     Action.bondPurchase({
                       nation: Nation.GE,
                       player: "player1",
+                      tradeInValue: 0,
                       cost: 4
                     }),
                     Action.bondPurchase({
                       nation: Nation.GE,
                       player: "player1",
+                      tradeInValue: 2,
+                      cost: 4
+                    }),
+                    Action.bondPurchase({
+                      nation: Nation.GE,
+                      player: "player1",
+                      tradeInValue: 0,
+                      cost: 6
+                    }),
+                    Action.bondPurchase({
+                      nation: Nation.GE,
+                      player: "player1",
+                      tradeInValue: 2,
                       cost: 6
                     }),
                     Action.bondPurchase({
                       nation: Nation.RU,
                       player: "player1",
+                      tradeInValue: 0,
                       cost: 4
                     }),
                     Action.bondPurchase({
                       nation: Nation.RU,
                       player: "player1",
+                      tradeInValue: 2,
+                      cost: 4
+                    }),
+                    Action.bondPurchase({
+                      nation: Nation.RU,
+                      player: "player1",
+                      tradeInValue: 0,
+                      cost: 6
+                    }),
+                    Action.bondPurchase({
+                      nation: Nation.RU,
+                      player: "player1",
+                      tradeInValue: 2,
                       cost: 6
                     })
                   ])
@@ -2324,51 +2394,73 @@ describe("imperial", () => {
                     Action.bondPurchase({
                       nation: Nation.AH,
                       player: "player1",
+                      tradeInValue: 0,
                       cost: 4
                     }),
                     Action.bondPurchase({
                       nation: Nation.AH,
                       player: "player1",
+                      tradeInValue: 9,
                       cost: 12
                     }),
                     Action.bondPurchase({
                       nation: Nation.IT,
                       player: "player1",
+                      tradeInValue: 0,
                       cost: 4
                     }),
                     Action.bondPurchase({
                       nation: Nation.FR,
                       player: "player1",
+                      tradeInValue: 0,
                       cost: 4
                     }),
                     Action.bondPurchase({
                       nation: Nation.GB,
                       player: "player1",
+                      tradeInValue: 0,
                       cost: 4
                     }),
                     Action.bondPurchase({
                       nation: Nation.GB,
                       player: "player1",
+                      tradeInValue: 9,
                       cost: 12
                     }),
                     Action.bondPurchase({
                       nation: Nation.GE,
                       player: "player1",
+                      tradeInValue: 0,
                       cost: 4
                     }),
                     Action.bondPurchase({
                       nation: Nation.GE,
                       player: "player1",
+                      tradeInValue: 2,
+                      cost: 4
+                    }),
+                    Action.bondPurchase({
+                      nation: Nation.GE,
+                      player: "player1",
+                      tradeInValue: 2,
                       cost: 6
                     }),
                     Action.bondPurchase({
                       nation: Nation.RU,
                       player: "player1",
+                      tradeInValue: 0,
                       cost: 4
                     }),
                     Action.bondPurchase({
                       nation: Nation.RU,
                       player: "player1",
+                      tradeInValue: 2,
+                      cost: 4
+                    }),
+                    Action.bondPurchase({
+                      nation: Nation.RU,
+                      player: "player1",
+                      tradeInValue: 2,
                       cost: 6
                     })
                   ])
