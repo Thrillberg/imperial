@@ -827,6 +827,25 @@ export default class Imperial {
     );
     this.unitsToMove.splice(i, 1);
 
+    // Update origin flag if a different nation remains in the origin
+    const nationHadAFlagAtOrigin = this.provinces.get(origin).flag === this.currentNation;
+    const armiesAtOrigin = this.units.get(this.currentNation).get(origin).armies;
+    const fleetsAtOrigin = this.units.get(this.currentNation).get(origin).fleets;
+    if (nationHadAFlagAtOrigin && armiesAtOrigin === 0 && fleetsAtOrigin === 0) {
+      const otherNationsOccupying = [];
+      for (const [nation] of this.nations) {
+        const nationsArmies = this.units.get(nation).get(origin).armies;
+        const nationsFleets = this.units.get(nation).get(origin).fleets;
+        if (nationsArmies > 0 || nationsFleets > 0) {
+          otherNationsOccupying.push(nation);
+        }
+      }
+      // If multiple other nations occupy, then flag remains with the original flag-holder
+      if (otherNationsOccupying.length === 1) {
+        this.provinces.get(origin).flag = otherNationsOccupying[0];
+      }
+    }
+
     // Interrupt manuevers in case of potential conflict!
     this.availableActions = new Set();
     let incumbent = null;
@@ -925,25 +944,6 @@ export default class Imperial {
     if (plantFlag === true) {
       // Update province flag
       this.provinces.get(destination).flag = this.currentNation;
-    }
-
-    // Update origin flag if a different nation remains in the origin
-    const nationHadAFlagAtOrigin = this.provinces.get(origin).flag === this.currentNation;
-    const armiesAtOrigin = this.units.get(this.currentNation).get(origin).armies;
-    const fleetsAtOrigin = this.units.get(this.currentNation).get(origin).fleets;
-    if (nationHadAFlagAtOrigin && armiesAtOrigin === 0 && fleetsAtOrigin === 0) {
-      const otherNationsOccupying = [];
-      for (const [nation] of this.nations) {
-        const nationsArmies = this.units.get(nation).get(origin).armies;
-        const nationsFleets = this.units.get(nation).get(origin).fleets;
-        if (nationsArmies > 0 || nationsFleets > 0) {
-          otherNationsOccupying.push(nation);
-        }
-      }
-      // If multiple other nations occupy, then flag remains with the original flag-holder
-      if (otherNationsOccupying.length === 1) {
-        this.provinces.get(origin).flag = otherNationsOccupying[0];
-      }
     }
 
     this.setManeuverAvailableActions();
