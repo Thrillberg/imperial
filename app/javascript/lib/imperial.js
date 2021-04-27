@@ -245,7 +245,6 @@ export default class Imperial {
       25: 8,
       30: 9
     };
-    const bonds = this.players[action.payload.player].bonds;
     const tradeInValue = action.payload.tradeInValue;
     if (tradeInValue > 0) {
       const bondToTrade = Bond(action.payload.nation, uncost[tradeInValue]);

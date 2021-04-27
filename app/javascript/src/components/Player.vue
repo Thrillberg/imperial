@@ -14,6 +14,10 @@
       <Bond
         v-for="bond in sortedBonds(player.bonds)"
         :bond="bond"
+        :toggleTradeIn="toggleTradeIn"
+        :canBeAppliedToTradeIn="canTradeIn(bond)"
+        :isBeingAppliedToTradeIn="isBeingAppliedToTradeIn(bond)"
+        :class="{ 'cursor-pointer': canTradeIn(bond) }"
         :key="bond.nation.value + bond.cost"
       />
     </div>
@@ -38,9 +42,27 @@ export default {
     player: Object,
     profile: Object,
     game: Object,
-    name: String
+    name: String,
+    purchasingBond: Boolean,
+    tradedInBondNation: String,
+    tradedInValue: Number
   },
   methods: {
+    canTradeIn(bond) {
+      let availableBondsMatchNation = false;
+      for (const availableBond of this.game.availableActions) {
+        if (availableBond.payload.nation === bond.nation) {
+          availableBondsMatchNation = true
+        }
+      }
+      if (
+        this.purchasingBond &&
+        this.game.players[this.current_player].bonds.has(bond) &&
+        availableBondsMatchNation
+      ) {
+        return true
+      }
+    },
     sortedBonds(bonds) {
       const nations = [
         Nation.AH,
@@ -64,6 +86,22 @@ export default {
         return -1
       });
       return sortedBonds;
+    },
+    toggleTradeIn(bond) {
+      this.$emit("toggleTradeIn", bond);
+    },
+    cancelApplyToTradeIn(bond) {
+      this.$emit("cancelApplyToTradeIn", bond);
+    },
+    isBeingAppliedToTradeIn(bond) {
+      if (bond.cost === this.tradedInValue && bond.nation.value === this.tradedInBondNation) {
+        return true
+      }
+    },
+    cursorClass() {
+      if (this.purchasingBond) {
+        return "cursor-pointer"
+      }
     }
   }
 };
