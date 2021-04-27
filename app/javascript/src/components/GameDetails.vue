@@ -3,11 +3,15 @@
     <div class="flex flex-wrap justify-evenly">
       <Player
         v-for="player in game.players"
+        v-on:toggleTradeIn="toggleTradeIn"
         :player="player"
         :current_player="controllingPlayerName"
         :game="game"
         :profile="profile"
         :online_users="online_users"
+        :purchasingBond="purchasingBond"
+        :tradedInBondNation="tradedInBondNation"
+        :tradedInValue="tradedInValue"
         :key="player.name"
       ></Player>
     </div>
@@ -19,9 +23,11 @@
       Undo
     </button>
     <BondPurchase
+      v-if="purchasingBond"
       :game="game"
       :current_player="controllingPlayerName"
       :profile="profile"
+      :tradedInValue="tradedInValue"
       v-on:purchaseBond="purchaseBond"
       v-on:skip="this.skipPurchaseBond"
     ></BondPurchase>
@@ -116,6 +122,13 @@ export default {
   },
   props: ["game", "chooseImportType", "controllingPlayerName", "profile", "importPlacements", "online_users"],
   computed: {
+    purchasingBond() {
+      const purchasingBond = this.game.availableActions.size > 0 &&
+        Array.from(this.game.availableActions).every(
+          (action) => action.type === "bondPurchase" || action.type === "skipBondPurchase" || action.type === "undo"
+        );
+      return purchasingBond && (this.profile.username === this.current_player || (this.game.soloMode && this.profile.username in this.game.players));
+    },
     destroyingFactory: function () {
       const destroyingFactory = this.game.availableActions.size > 0 &&
         Array.from(this.game.availableActions).every(
@@ -131,6 +144,12 @@ export default {
           }
       }
       return false;
+    }
+  },
+  data() {
+    return {
+      tradedInBondNation: "",
+      tradedInValue: 0
     }
   },
   methods: {
@@ -161,8 +180,13 @@ export default {
     },
     purchaseBond(bond) {
       for (const action of this.game.availableActions) {
-        if (bond.cost === action.payload.cost && bond.nation.value === action.payload.nation.value) {
+        if (
+          bond.cost === action.payload.cost &&
+          bond.nation.value === action.payload.nation.value &&
+          action.payload.tradeInValue === this.tradedInValue
+        ) {
           this.tickWithAction(action);
+          this.tradedInValue = 0;
         }
       }
     },
@@ -231,6 +255,15 @@ export default {
         if (action.type === "skipForceInvestor") {
           this.tickWithAction(action);
         }
+      }
+    },
+    toggleTradeIn(bond) {
+      if (this.tradedInValue > 0) {
+        this.tradedInBondNationValue = "";
+        this.tradedInValue = 0;
+      } else {
+        this.tradedInBondNation = bond.nation.value;
+        this.tradedInValue = bond.cost;
       }
     }
   }

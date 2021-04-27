@@ -1,5 +1,5 @@
 <template>
-  <div v-if="purchasingBond">
+  <div>
     <div class="text-lg m-2">Purchase a bond - You have {{ game.players[current_player].cash }}m in cash.</div>
     <div class="flex flex-wrap">
       <div v-for="bond of game.availableBonds" :key="bond.nation+bond.cost">
@@ -7,9 +7,10 @@
           v-if="canBePurchased(bond)"
           :bond="bond"
           :canBePurchased="true"
-          :tradedBond="tradedBond({cost: bond.cost, nation: bond.nation, player: game.currentPlayerName})"
           @click.native="purchase(bond)"
           class="cursor-pointer"
+          :isBeingAppliedToTradeIn="tradedInValue > 0"
+          :tradedInValue="tradedInValue"
         />
         <Bond
           v-else
@@ -30,39 +31,16 @@ import Bond from "../components/Bond.vue";
 export default {
   name: "BondPurchase",
   components: { Bond },
-  props: { game: Object, current_player: String, profile: Object },
-  computed: {
-    purchasingBond() {
-      const purchasingBond = this.game.availableActions.size > 0 &&
-        Array.from(this.game.availableActions).every(
-          (action) => action.type === "bondPurchase" || action.type === "skipBondPurchase" || action.type === "undo"
-        );
-      return purchasingBond && (this.profile.username === this.current_player || (this.game.soloMode && this.profile.username in this.game.players));
-    },
-  },
+  props: { game: Object, current_player: String, profile: Object, tradedInValue: Number },
   methods: {
     canBePurchased(bond) {
       let canBePurchased = false;
       for (const action of this.game.availableActions) {
-        if (action.payload.cost === bond.cost && action.payload.nation === bond.nation) {
+        if (action.payload.cost === bond.cost && action.payload.nation === bond.nation && action.payload.tradeInValue === this.tradedInValue) {
           canBePurchased = true;
         }
       }
       return canBePurchased;
-    },
-    tradedBond: function({cost, nation, player}) {
-      const playerObj = this.game.players[player];
-      if (playerObj.cash < cost) {
-        let topBond = {cost: 0, nation: {}};
-        for (const bond of playerObj.bonds) {
-          if (bond.nation === nation) {
-            if (bond.cost > topBond.cost) {
-              topBond = bond;
-            }
-          }
-        }
-        return topBond;
-      }
     },
     purchase(bond) {
       this.$emit("purchaseBond", bond);
