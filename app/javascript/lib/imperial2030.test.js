@@ -165,7 +165,7 @@ describe("imperial2030", () => {
         // Add two flags for RU
         game.provinces.get("c").flag = Nation2030.RU;
         game.provinces.get("d").flag = Nation2030.RU;
-        // Arbitrarily give RU 0 treasury, which will increase to 5 when initially collecting taxes
+        // Arbitrarily give RU 0 treasury, which will increase to 6 when initially collecting taxes
         game.nations.get(Nation2030.RU).treasury = 0;
         // Arbitrarily give controlling player 5 cash; we want this to increase to 6 and RU treasury to decrease to 0
         game.players["player1"].cash = 5;

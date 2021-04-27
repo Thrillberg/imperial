@@ -32,17 +32,27 @@
         </div>
       </div>
       <div v-if="onTaxationSlot" class="mb-2">
-        <div>
-          <b>Current Tax Chart Position:</b> {{ game.nations.get(game.currentNation).taxChartPosition }}
+        <div v-if="game.baseGame === 'imperial'">
+          <div>
+            <b>Current Tax Chart Position:</b> {{ game.nations.get(game.currentNation).taxChartPosition }}
+          </div>
+          <div>
+            <b>Next Tax Chart Position:</b> {{ nextTaxChartPosition() }}
+          </div>
+          <div>
+            <b>{{ game.currentPlayerName }}</b> would receive {{ nextTaxChartPosition() - game.nations.get(game.currentNation).taxChartPosition }}m
+          </div>
+          <div>
+            <b>{{ stringify(game.currentNation.value) }}</b> would receive {{ nationTaxes() }}m
+          </div>
         </div>
-        <div>
-          <b>Next Tax Chart Position:</b> {{ nextTaxChartPosition() }}
-        </div>
-        <div>
-          <b>{{ game.currentPlayerName }}</b> would receive {{ nextTaxChartPosition() - game.nations.get(game.currentNation).taxChartPosition }}m
-        </div>
-        <div>
-          <b>{{ stringify(game.currentNation.value) }}</b> would receive {{ nationTaxes() }}m
+        <div v-else-if="game.baseGame === 'imperial2030'">
+          <div>
+            <b>{{ game.currentPlayerName }}</b> would receive {{ playerRevenue2030() }}m
+          </div>
+          <div>
+            <b>{{ stringify(game.currentNation.value) }}</b> would receive {{ nationRevenue2030() }}m
+          </div>
         </div>
       </div>
       <div v-if="!!cost">
@@ -208,6 +218,40 @@ export default {
       let taxes = this.nextTaxChartPosition() - this.game.unitCount(nation)
       if (taxes < 0) taxes = 0;
       return taxes;
+    },
+    playerRevenue2030() {
+      const taxes = this.game.unoccupiedFactoryCount(this.game.currentNation) * 2 + this.game.flagCount(this.game.currentNation);
+      const bonusByTaxes = {
+        0: 0,
+        1: 0,
+        2: 0,
+        3: 0,
+        4: 0,
+        5: 0,
+        6: 1,
+        7: 1,
+        8: 1,
+        9: 1,
+        10: 2,
+        11: 2,
+        12: 3,
+        13: 3,
+        14: 4,
+        15: 4,
+        16: 5,
+        17: 5,
+        18: 5,
+        19: 5,
+        20: 5,
+        21: 5,
+        22: 5,
+        23: 5
+      }
+      return bonusByTaxes[taxes];
+    },
+    nationRevenue2030() {
+      const taxes = this.game.unoccupiedFactoryCount(this.game.currentNation) * 2 + this.game.flagCount(this.game.currentNation);
+      return taxes - this.game.unitCount(this.game.currentNation) - this.playerRevenue2030();
     },
     stringify(string) {
       return stringify(string)

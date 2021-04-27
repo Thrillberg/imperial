@@ -1091,15 +1091,7 @@ export default class Imperial {
           // The tax chart maxes out at 15
           if (nation.taxChartPosition > 15) nation.taxChartPosition = 15;
         }
-        // 2. Collecting money
-        let payment = taxes - this.unitCount(nationName);
-        // Nations cannot be paid less than 0m
-        if (payment < 0) payment = 0;
-        nation.treasury += payment;
-        this.annotatedLog.push(Action.nationGainsTreasury({
-          nation: nationName,
-          amount: payment
-        }));
+        let bonus = 0;
         if (this.baseGame === "imperial2030") {
           // Nation pays bonus to current player
           const bonusByTaxes = {
@@ -1128,10 +1120,22 @@ export default class Imperial {
             22: 5,
             23: 5
           }
-          const bonus = bonusByTaxes[taxes];
-          nation.treasury -= bonus;
+          bonus = bonusByTaxes[taxes];
           this.players[this.currentPlayerName].cash += bonus;
+          this.annotatedLog.push(Action.playerGainsCash({
+            player: this.currentPlayerName,
+            amount: bonus
+          }));
         }
+        // 2. Collecting money
+        let payment = taxes - this.unitCount(nationName) - bonus;
+        // Nations cannot be paid less than 0m
+        if (payment < 0) payment = 0;
+        nation.treasury += payment;
+        this.annotatedLog.push(Action.nationGainsTreasury({
+          nation: nationName,
+          amount: payment
+        }));
         // 3. Adding power points
         let powerPoints;
         if (this.baseGame === "imperial") {
