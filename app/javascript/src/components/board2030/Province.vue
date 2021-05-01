@@ -7,7 +7,7 @@
     @mouseleave="hideFactory()"
   >
     <text
-      v-if="this.mounted && !['Sardinia', 'Corsica', 'Switzerland'].includes(this.name)"
+      v-if="this.mounted && !['Black Sea', 'Caspian Sea'].includes(this.name)"
       font-size="7"
       stroke="#303030"
       text-align="center"
@@ -184,6 +184,8 @@ export default {
           return 40
         case "Sea of Japan":
           return 100
+        case "North Pacific":
+          return -50
       }
       return 0
     },
@@ -204,6 +206,10 @@ export default {
           return 40
         case "Sea of Japan":
           return 100
+        case "North Pacific":
+          return -50
+        case "Mexico":
+          return -30
       }
       return 0
     },
@@ -218,6 +224,8 @@ export default {
       switch (this.name) {
         case "Beijing":
           return 10
+        case "Mexico":
+          return -30
       }
       return 0
     },
