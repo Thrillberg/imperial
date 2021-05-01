@@ -268,7 +268,6 @@ export default {
       sea_provinces: {
         "Caribbean Sea": caribbean_sea,
         "Caspian Sea": caspian_sea,
-        "China Sea": china_sea,
         "Gulf of Guinea": gulf_of_guinea,
         "Indian Ocean": indian_ocean,
         "Mediterranean Sea": mediterranean_sea,
@@ -279,6 +278,7 @@ export default {
         "South Atlantic": south_atlantic,
         "South Pacific": south_pacific,
         "Tasman Sea": tasman_sea,
+        "China Sea": china_sea
       },
       land_provinces: {
         "Alaska": alaska,
