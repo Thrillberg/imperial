@@ -245,7 +245,18 @@ export default class Imperial {
       25: 8,
       30: 9
     };
-    const tradeInValue = action.payload.tradeInValue;
+    // Code dealing with bondToTrade is legacy, from before we had the
+    // tradeInValue key in the bondPurchase Action.
+    const bonds = this.players[action.payload.player].bonds;
+    let tradeableBonds = [];
+    if (action.payload.cost > this.players[action.payload.player].cash) {
+      tradeableBonds = [...bonds]
+        .filter(({ nation }) => nation === action.payload.nation)
+        .map(({ cost }) => cost);
+    }
+    const tradeIn = Math.max(...tradeableBonds);
+    const bondToTrade = Bond(action.payload.nation, uncost[tradeIn]);
+    const tradeInValue = action.payload.tradeInValue || bondToTrade.cost;
     if (tradeInValue > 0) {
       const bondToTrade = Bond(action.payload.nation, uncost[tradeInValue]);
       const netCost = action.payload.cost - tradeInValue;
@@ -1981,7 +1992,10 @@ export default class Imperial {
       }
 
       return Object.keys(action1.payload).every(key => {
-        return action1.payload[key] === action2.payload[key]
+        // We make an exception for "tradeInValue" because that key was added after
+        // games have been running in production for awhile.
+        // We didn't want to invalidate historical games!
+        return action1.payload[key] === action2.payload[key] || key === "tradeInValue"
       });
     } else {
       return true;
