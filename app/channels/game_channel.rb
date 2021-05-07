@@ -54,6 +54,31 @@ class GameChannel < ApplicationCable::Channel
       winner = game.users.find_by(name: winner_name)
       game.update(winner: winner) unless game.winner
       broadcast_games "game_channel", "updateGames"
+
+    when "userObservingGame"
+      user_name = data["data"]["playerName"]
+      game_id = data["data"]["gameId"]
+      users_observing_game = JSON.parse(REDIS.get("users_observing_games"))[game_id]
+      users_observing_game ||= []
+      unless users_observing_game.include? user_name
+        users_observing_game << user_name
+      end
+      users_observing_games = JSON.parse(REDIS.get("users_observing_games")).merge(game_id => users_observing_game).to_json
+      REDIS.set("users_observing_games", users_observing_games)
+      broadcast_games "game_channel", "updateGames"
+
+    when "userStoppedObservingGame"
+      user_name = data["data"]["playerName"]
+      game_id = data["data"]["gameId"]
+      users_observing_game = JSON.parse(REDIS.get("users_observing_games"))[game_id]
+      users_observing_game ||= []
+      if users_observing_game.include? user_name
+        users_observing_game.delete(user_name)
+      end
+      users_observing_games = JSON.parse(REDIS.get("users_observing_games")).merge(game_id => users_observing_game).to_json
+      REDIS.set("users_observing_games", users_observing_games)
+      broadcast_games "game_channel", "updateGames"
+
     end
   end
 
