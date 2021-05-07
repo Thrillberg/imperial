@@ -201,6 +201,26 @@ class APIClient {
       "GameChannel"
     );
   }
+
+  userObservingGame(playerName, gameId) {
+    return this.send(
+      {
+        kind: "userObservingGame",
+        data: { playerName, gameId }
+      },
+      "GameChannel"
+    );
+  }
+
+  userStoppedObservingGame(playerName, gameId) {
+    return this.send(
+      {
+        kind: "userStoppedObservingGame",
+        data: { playerName, gameId }
+      },
+      "GameChannel"
+    );
+  }
 }
 
 const apiClient = new APIClient();

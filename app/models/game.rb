@@ -15,6 +15,7 @@ class Game < ActiveRecord::Base
   }
 
   def to_json
+    observers = JSON.parse(REDIS.get("users_observing_games"))[id] || []
     {
       name: name,
       id: id,
@@ -26,7 +27,8 @@ class Game < ActiveRecord::Base
       created_at: created_at,
       current_player_name: current_player&.name,
       started_at: started_at,
-      winner_name: winner&.name
+      winner_name: winner&.name,
+      observers: observers
     }
   end
 

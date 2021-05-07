@@ -12,6 +12,7 @@
         :users="onlineUsers"
         :games="games"
         :gamesFetched="gamesFetched"
+        :observers="observers"
         v-on:registered="register"
         v-on:signedIn="signIn"
         v-on:anonymity_confirmed="anonymityConfirmed"
@@ -37,6 +38,7 @@ export default {
       profile: {},
       games: [],
       onlineUsers: [],
+      observers: [],
       profileFetched: false,
       gamesFetched: false
     };
@@ -51,6 +53,9 @@ export default {
     });
     apiClient.onUpdateGames(({ games }) => {
       this.games = games.map(game => {
+        if (game.id === this.$route.params.id) {
+          this.observers = game.observers;
+        }
         return {
           host: game.host,
           baseGame: game.base_game,
@@ -62,7 +67,8 @@ export default {
           forceEndedAt: game.force_ended_at,
           cancelledAt: game.cancelled_at,
           createdAt: game.created_at,
-          startedAt: game.started_at
+          startedAt: game.started_at,
+          observers: game.observers
         };
       });
       this.gamesFetched = true;

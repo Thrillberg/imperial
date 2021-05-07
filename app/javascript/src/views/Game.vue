@@ -67,6 +67,14 @@
                 ▶
               </div>
             </div>
+            <div class="m-2">
+              Observers:
+              <ul>
+                <li v-for="observer in observers" :key="observer">
+                  {{ observer }}
+                </li>
+              </ul>
+            </div>
           </div>
           <div class="border border-gray-500 rounded" :class="gameDetailsWidth()">
             <GameDetails
@@ -210,7 +218,7 @@ export default {
     NationComponent,
     TurnStatus
   },
-  props: ["profile", "users", "games"],
+  props: ["profile", "users", "games", "observers"],
   data: () => {
     return {
       importProvince: "",
@@ -228,7 +236,12 @@ export default {
     };
   },
   created() {
+    apiClient.userObservingGame(this.profile.username, this.$route.params.id);
     apiClient.getGameLog(this.$route.params.id, this.game.baseGame);
+  },
+  beforeRouteLeave(to, from, next) {
+    apiClient.userStoppedObservingGame(this.profile.username, this.$route.params.id);
+    next();
   },
   computed: {
     gameName() {

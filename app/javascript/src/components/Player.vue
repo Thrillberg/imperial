@@ -51,7 +51,7 @@ export default {
     canTradeIn(bond) {
       let availableBondsMatchNation = false;
       for (const availableBond of this.game.availableActions) {
-        if (availableBond.payload.nation === bond.nation) {
+        if (availableBond.payload?.nation === bond.nation) {
           availableBondsMatchNation = true
         }
       }
