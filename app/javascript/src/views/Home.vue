@@ -18,6 +18,14 @@
       </div>
       <div v-else class="flex justify-around items-start">
         <div class="w-3/4" v-if="gamesFetched">
+          <div class="bg-green-200 p-4 flex">
+            <a href="http://discord.gg/VnxKwuQmg8">
+              <DiscordLogo height="50" fill="#7289DA" class="mr-2" />
+            </a>
+            <p>
+              Please join us <b><a href="https://discord.gg/VnxKwuQmg8" class="underline">on Discord</a></b> if you want to find others to play a live or asynchronous game! We usually try to schedule a live game for <b>1pm EST</b> on Saturday and/or Sunday.
+            </p>
+          </div>
           <YourGames :games="yourGames" :profile="profile"></YourGames>
           <UnstartedGameList :games="unstartedGames" :profile="profile"></UnstartedGameList>
           <router-link to="/games">
@@ -36,9 +44,11 @@
 import UnstartedGameList from "../components/UnstartedGameList.vue";
 import YourGames from "../components/YourGames.vue";
 
+import DiscordLogo from "../assets/discord_logo.svg";
+
 export default {
   name: "Home",
-  components: { UnstartedGameList, YourGames },
+  components: { UnstartedGameList, YourGames, DiscordLogo },
   props: { profile: Object, users: Array, games: Array, gamesFetched: Boolean },
   computed: {
     yourGames() {
