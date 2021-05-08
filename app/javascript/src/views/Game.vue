@@ -236,8 +236,12 @@ export default {
     };
   },
   created() {
+    window.addEventListener("beforeunload", this.beforeWindowUnload)
     apiClient.userObservingGame(this.profile.username, this.$route.params.id);
     apiClient.getGameLog(this.$route.params.id, this.game.baseGame);
+  },
+  beforeDestroy() {
+    window.removeEventListener("beforeunload", this.beforeWindowUnload)
   },
   beforeRouteLeave(to, from, next) {
     apiClient.userStoppedObservingGame(this.profile.username, this.$route.params.id);
@@ -277,6 +281,9 @@ export default {
     }
   },
   methods: {
+    beforeWindowUnload() {
+      apiClient.userStoppedObservingGame(this.profile.username, this.$route.params.id);
+    },
     baseGame() {
       const game = this.games.find(game => game.id === this.$route.params.id);
       return game.baseGame;
