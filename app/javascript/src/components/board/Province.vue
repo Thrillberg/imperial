@@ -76,15 +76,27 @@
       width="13"
       height="8"
     ></Flag>
-    <circle
-      v-if="importingArmy"
-      :cx="x(0) + 6"
-      :cy="y(0) - 5"
-      r="4"
-      fill="red"
-      stroke="red"
-      stroke-dasharray="1,1"
-    ></circle>
+    <Flag
+      v-for="(army, index) in importingArmies"
+      :nation="army.nation"
+      :key="army.nation + index + 'A'"
+      :x="x(index)"
+      :y="y(index)"
+      filter="grayscale"
+      width="13"
+      height="8"
+    ></Flag>
+    <Flag
+      v-for="(fleet, index) in importingFleets"
+      :nation="fleet.nation"
+      :key="fleet.nation + index + 'F'"
+      :x="x(index) + flagFleetXAdjustment()"
+      :y="y(index) + 10 + flagFleetYAdjustment()"
+      :fleet="true"
+      filter="grayscale"
+      width="21"
+      height="11"
+    ></Flag>
   </component>
 </template>
 
@@ -100,7 +112,7 @@ export default {
     dot: String,
     factory: String,
     factory_type: String,
-    importingArmy: Boolean,
+    importingUnits: Array,
     is_valid: Boolean,
     name: String,
     province: Object,
@@ -129,6 +141,22 @@ export default {
       this.$refs.province.children[0].classList.add("hoverable");
     } else {
       this.$refs.province.children[0].classList.remove("hoverable");
+    }
+  },
+  computed: {
+    importingArmies() {
+      if (this.importingUnits) {
+        return this.importingUnits.filter(unit => unit.type === "army");
+      }
+
+      return [];
+    },
+    importingFleets() {
+      if (this.importingUnits) {
+        return this.importingUnits.filter(unit => unit.type === "fleet");
+      }
+
+      return [];
     }
   },
   methods: {

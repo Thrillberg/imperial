@@ -36,7 +36,7 @@
         :select_province="select_province"
         :fleets="fleets(name)"
         :armies="armies(name)"
-        :importing-army="importingArmy(name)"
+        :importingUnits="importingUnits(name)"
         :is_valid="isValid(name)"
         :dot="dot(name)"
         :building_factory="buildingFactory()"
@@ -159,15 +159,13 @@ export default {
       }
       return fleets;
     },
-    importingArmy(province) {
+    importingUnits(province) {
       const normalizedProvince = province.replace(/\.*\s/gm, "").toLowerCase();
-      if (!this.gameStarted) {
-        return false;
-      } else if (this.importing_units.find(unit => unit === normalizedProvince)) {
-        return true;
+      if (this.gameStarted) {
+        return this.importing_units.filter(unit => unit.province === normalizedProvince)
       }
 
-      return false;
+      return [];
     },
     factory(province) {
       const factory = this.factories().find(factory => {
