@@ -438,7 +438,7 @@ export default {
           if (this.game.board.graph.get(province).factoryType === "shipyard") {
             this.importProvince = province;
           } else {
-            this.importPlacements.push({ province, type: "army" });
+            this.importPlacements.push({ province, type: "army", nation: this.game.currentNation.value });
           }
           if (this.importPlacements.length === this.game.maxImports) {
             this.runImport();
@@ -461,7 +461,7 @@ export default {
       }
     },
     makeImportTypeChoice: function(type) {
-      this.importPlacements.push({ province: this.importProvince, type });
+      this.importPlacements.push({ province: this.importProvince, type, nation: this.game.currentNation.value });
       this.importProvince = "";
       if (this.importPlacements.length === this.game.maxImports) {
         this.runImport();
