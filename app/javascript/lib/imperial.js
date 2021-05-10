@@ -157,6 +157,11 @@ export default class Imperial {
         this.buildFactory(action);
         return;
       }
+      case "skipBuildFactory": {
+        this.handlePassingThroughInvestor();
+        this.buildingFactory = false;
+        return;
+      }
       case "destroyFactory": {
         this.destroyFactory(action);
         return;
@@ -1222,6 +1227,9 @@ export default class Imperial {
             this.availableActions.add(Action.buildFactory({ province }));
           }
         }
+        this.availableActions.add(
+          Action.skipBuildFactory({ player: this.currentPlayerName, nation: this.currentNation })
+        );
         this.buildingFactory = true;
 
         return;

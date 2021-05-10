@@ -76,6 +76,8 @@ export default {
           return this.rondelAction(action.payload);
         case "buildFactory":
           return this.buildFactoryAction(action.payload);
+        case "skipBuildFactory":
+          return `${action.payload.player} chose not to build a factory for ${stringify(action.payload.nation.value)}.`;
         case "bondPurchase":
           return this.bondPurchaseAction(action.payload);
         case "skipBondPurchase":

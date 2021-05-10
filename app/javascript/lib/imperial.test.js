@@ -2753,7 +2753,8 @@ describe("imperial", () => {
           expect(game.availableActions).toEqual(
             new Set([
               Action.buildFactory({ province: "a" }),
-              Action.buildFactory({ province: "b" })
+              Action.buildFactory({ province: "b" }),
+              Action.skipBuildFactory({ nation: Nation.AH, player: "player1" })
             ])
           );
           expect(game.buildingFactory).toEqual(true);
@@ -2768,7 +2769,10 @@ describe("imperial", () => {
           );
 
           expect(game.availableActions).toEqual(
-            new Set([Action.buildFactory({ province: "b" })])
+            new Set([
+              Action.buildFactory({ province: "b" }),
+              Action.skipBuildFactory({ nation: Nation.AH, player: "player1" })
+            ])
           );
           expect(game.buildingFactory).toEqual(true);
         });
@@ -2782,7 +2786,10 @@ describe("imperial", () => {
           );
 
           expect(game.availableActions).toEqual(
-            new Set([Action.buildFactory({ province: "b" })])
+            new Set([
+              Action.buildFactory({ province: "b" }),
+              Action.skipBuildFactory({ nation: Nation.AH, player: "player1" })
+            ])
           );
           expect(game.buildingFactory).toEqual(true);
         });

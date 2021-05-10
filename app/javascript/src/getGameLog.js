@@ -28,7 +28,8 @@ export default function(rawLog, baseGame) {
       (
         action.type === "rondel" ||
         action.type === "bondPurchase" ||
-        action.type === "skipBondPurchase"
+        action.type === "skipBondPurchase" ||
+        action.type === "skipBuildFactory"
       ) && action.payload.nation
     ) {
       if (baseGame === "imperial") {
