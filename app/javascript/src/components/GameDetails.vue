@@ -102,6 +102,13 @@
         Do not force investor
       </button>
     </div>
+    <button
+      v-if="game.buildingFactory && (profile.username === controllingPlayerName || (game.soloMode && profile.username in game.players))"
+      class="rounded py-2 px-6 my-4 bg-green-800 text-white cursor-pointer"
+      @click="$emit('skipBuildFactory')"
+    >
+      Skip building a factory
+    </button>
   </div>
 </template>
 

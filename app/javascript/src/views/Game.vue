@@ -88,6 +88,7 @@
               v-on:chooseImportType="makeImportTypeChoice"
               v-on:endManeuver="endManeuver"
               v-on:runImport="runImport"
+              v-on:skipBuildFactory="skipBuildFactory"
             ></GameDetails>
           </div>
         </div>
@@ -444,13 +445,11 @@ export default {
             this.runImport();
           }
         } else if (this.game.buildingFactory) {
-          let factory = {};
           for (const action of this.game.availableActions) {
             if (action.payload.province === province) {
-              factory = action;
+              this.tickWithAction(action);
             }
           }
-          this.tickWithAction(factory);
         }
       }
     },
@@ -472,6 +471,13 @@ export default {
       this.tickWithAction(Action.import({ placements }));
       this.importPlacements = [];
       return;
+    },
+    skipBuildFactory: function() {
+      for (const action of this.game.availableActions) {
+        if (action.type === "skipBuildFactory") {
+          this.tickWithAction(action);
+        }
+      }
     },
     endManeuver: function() {
       this.tickWithAction(Action.endManeuver());

@@ -77,6 +77,7 @@ export default {
   maneuver: makeAction("maneuver", ["origin", "destination"]),
   production: makeAction("production", ["province"]),
   rondel: makeAction("rondel", ["nation", "cost", "slot"]),
+  skipBuildFactory: makeAction("skipBuildFactory", ["player", "nation"]),
   skipBondPurchase: makeAction("skipBondPurchase", ["player", "nation"]),
   skipDestroyFactory: makeAction("skipDestroyFactory", ["province"]),
   skipForceInvestor: makeAction("skipForceInvestor", ["player"]),
