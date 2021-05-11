@@ -29,7 +29,7 @@
 <script>
 import Bond from "./Bond.vue";
 
-import { Nation } from "../../lib/constants.js";
+import { Nation, Nation2030 } from "../../lib/constants.js";
 
 export default {
   name: "Player",
@@ -70,7 +70,13 @@ export default {
         Nation.FR,
         Nation.GB,
         Nation.GE,
-        Nation.RU
+        Nation.RU,
+        Nation2030.RU,
+        Nation2030.CN,
+        Nation2030.IN,
+        Nation2030.BR,
+        Nation2030.US,
+        Nation2030.EU
       ]
       const sortedByNation = [...bonds].sort((bond1, bond2) => {
         if (nations.indexOf(bond1.nation) > nations.indexOf(bond2.nation)) {

@@ -2,7 +2,8 @@ import { Nation, Nation2030, Bond } from "./constants.js";
 import Action from "./action.js";
 import Auction from "./auction.js";
 import standardGameBoard from "./board.js";
-import auctionSetup from "./auctionSetup.js";
+import auctionStandardSetup from "./auctionSetup.js";
+import auction2030Setup from "./auction2030Setup.js";
 import standardSetup from "./standardSetup.js";
 import standard2030Setup from "./standard2030Setup.js";
 import availableBondPurchases from "./availableBondPurchases.js";
@@ -196,7 +197,7 @@ export default class Imperial {
   }
 
   initialize(action) {
-    let setup;
+    let setup, auctionSetup;
     this.variant = action.payload.variant;
     this.baseGame = action.payload.baseGame || "imperial";
     if (action.payload.variant === "standard") {
@@ -206,7 +207,12 @@ export default class Imperial {
         setup = standard2030Setup;
       }
     } else {
-      this.auction = Auction.fromLog(this.log, this);
+      if (action.payload.baseGame === "imperial" || !action.payload.baseGame) {
+        auctionSetup = auctionStandardSetup;
+      } else if (action.payload.baseGame === "imperial2030") {
+        auctionSetup = auction2030Setup;
+      }
+      this.auction = Auction.fromLog(this.log, this, auctionSetup);
       setup = auctionSetup;
     }
     const s = setup({

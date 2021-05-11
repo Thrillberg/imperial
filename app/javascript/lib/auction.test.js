@@ -2,6 +2,7 @@ import Action from "./action.js";
 import Auction from "./auction.js";
 import Imperial from "./imperial.js";
 import { Bond, Nation } from "./constants.js";
+import auctionSetup from "./auctionSetup.js";
 
 describe("auction", () => {
   describe("initialize", () => {
@@ -32,7 +33,8 @@ describe("auction", () => {
           variant: "auction",
           baseGame: "imperial"
         }),
-        game
+        game,
+        auctionSetup
       );
 
       expect(game.availableActions).toEqual(expectedActions);
