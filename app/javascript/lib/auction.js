@@ -1,18 +1,17 @@
 import { Nation, Nation2030, Bond } from "./constants.js";
 import Action from "./action.js";
 import board from "./board.js";
-import setup from "./auctionSetup.js";
 
 export default class Auction {
-  static fromLog(log, game) {
+  static fromLog(log, game, auctionSetup) {
     let auction = new Auction();
-    log.forEach(entry => auction.tick(entry, game));
+    log.forEach(entry => auction.tick(entry, game, auctionSetup));
     return auction
   }
 
-  tick(action, game) {
+  tick(action, game, auctionSetup) {
     if (action.type === "initialize") {
-      this.initialize(action, game);
+      this.initialize(action, game, auctionSetup);
       return;
     }
 
@@ -28,8 +27,8 @@ export default class Auction {
     }
   }
 
-  initialize(action, game) {
-    const s = setup({
+  initialize(action, game, auctionSetup) {
+    const s = auctionSetup({
       players: action.payload.players,
       provinceNames: Array.from(board.graph.keys())
     });
