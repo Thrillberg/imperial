@@ -356,7 +356,12 @@ export default {
     updateGameLog(log, logTimestamps) {
       this.logTimestamps = logTimestamps;
       this.poppedTurns = [];
-      const baseGame = JSON.parse(log[0]).payload.baseGame;
+      let baseGame;
+      if (log[0]) {
+        baseGame = JSON.parse(log[0]).payload.baseGame;
+      } else {
+        baseGame = this.games.find(game => game.id === this.$route.params.id).baseGame
+      }
       const gameLog = getGameLog(log, baseGame);
       if (baseGame === "imperial") {
         this.board = imperialBoard
