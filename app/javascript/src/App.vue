@@ -82,11 +82,11 @@ export default {
       // Fetch user profile
       fetch(`/users/${this.$cookies.get("user_id")}`, { method: "GET" })
         .then(response => response.json())
-        .then(({ name, email, registered, anonymity_confirmed_at }) => {
+        .then(({ name, email, registered, anonymity_confirmed_at, id }) => {
           if (!name) {
             this.createUserProfile();
           } else {
-            this.profile = { username: name, email, registered, anonymity_confirmed_at }
+            this.profile = { username: name, email, registered, anonymity_confirmed_at, id }
             this.profileFetched = true;
           }
         })
@@ -99,22 +99,22 @@ export default {
     createUserProfile() {
       fetch("/users", { method: "POST", credentials: "include" })
         .then((response) => response.json())
-        .then(({ name }) => {
-          this.profile = { username: name };
+        .then(({ name, id }) => {
+          this.profile = { username: name, id };
           apiClient.updateUser(name);
           this.profileFetched = true;
         });
     },
-    identify: function ({username}) {
-      this.profile = { username };
+    identify: function ({username, id}) {
+      this.profile = { username, id };
     },
-    register: function ({username, email, oldUsername}) {
-      this.profile = { username, email, registered: true };
+    register: function ({username, email, oldUsername, id}) {
+      this.profile = { username, email, registered: true, id };
       apiClient.updateUser(username, oldUsername);
       apiClient.updateGames();
     },
-    signIn({username, email}) {
-      this.profile = { username, email, registered: true };
+    signIn({username, email, id}) {
+      this.profile = { username, email, registered: true, id };
       apiClient.updateGames();
     },
     signOut: function () {
