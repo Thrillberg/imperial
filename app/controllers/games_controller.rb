@@ -11,7 +11,8 @@ class GamesController < ApplicationController
     game = Game.create(
       name: lovely_string,
       host: host,
-      base_game: params[:base_game]
+      base_game: params[:base_game],
+      variant: params[:variant]
     )
     host.games << game
 
