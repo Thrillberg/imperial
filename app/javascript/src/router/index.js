@@ -106,12 +106,12 @@ class APIClient {
     );
   }
 
-  openGame(id, base_game) {
+  openGame(id, base_game, variant) {
     return fetch(
       "/games",
       {
         method: "POST",
-        body: JSON.stringify({ id, base_game }),
+        body: JSON.stringify({ id, base_game, variant }),
         headers: { "Content-Type": "application/json" }
       }
     )
@@ -267,6 +267,11 @@ const routes = [
     path: "/users/:id",
     name: "User",
     component: () => import("../views/User.vue")
+  },
+  {
+    path: "/games/new",
+    name: "NewGame",
+    component: () => import("../views/NewGame.vue")
   }
 ];
 

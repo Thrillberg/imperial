@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_04_25_174909) do
+ActiveRecord::Schema.define(version: 2021_05_14_190827) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -47,6 +47,7 @@ ActiveRecord::Schema.define(version: 2021_04_25_174909) do
     t.uuid "winner_id"
     t.integer "base_game", default: 0
     t.uuid "current_player_id"
+    t.integer "variant", default: 0
     t.index ["current_player_id"], name: "index_games_on_current_player_id"
     t.index ["host_id"], name: "index_games_on_host_id"
     t.index ["winner_id"], name: "index_games_on_winner_id"

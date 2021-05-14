@@ -68,7 +68,8 @@ export default {
           cancelledAt: game.cancelled_at,
           createdAt: game.created_at,
           startedAt: game.started_at,
-          observers: game.observers
+          observers: game.observers,
+          variant: game.variant
         };
       });
       this.gamesFetched = true;

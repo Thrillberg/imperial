@@ -107,38 +107,36 @@
             v-bind:game="game"
             v-bind:select_province="() => {}"
             v-bind:valid_provinces="[]"
-            v-if="baseGame() === 'imperial'"
+            v-if="gameData.baseGame === 'imperial'"
           ></Board>
           <Board2030
             v-bind:game="game"
             v-bind:select_province="() => {}"
             v-bind:valid_provinces="[]"
-            v-if="baseGame() === 'imperial2030'"
+            v-if="gameData.baseGame === 'imperial2030'"
           ></Board2030>
         </div>
         <div class="w-1/3 mx-2 border border-gray-500 rounded">
           <div v-if="hostingThisGame">
             <div class="mx-auto p-2 text-center">
-              <b>Players:</b>
-              <span>{{ playersInGame(game.id).join(", ") }}</span>
+              <p>
+                <b>Players:</b>
+                <span>{{ playersInGame(game.id).join(", ") }}</span>
+              </p>
+              <p>
+                <b>Base game:</b>
+                <span>{{ baseGameString(gameData.baseGame) }}</span>
+              </p>
+              <p>
+                <b>Variant:</b>
+                <span>{{ variant(gameData.variant) }}</span>
+              </p>
             </div>
             <button
-              @click="startGame('standard')"
+              @click="startGame"
               class="rounded bg-green-800 text-white cursor-pointer block text-2xl hover:bg-green-900 p-10 m-10 mx-auto"
             >
-              Start Standard Game
-            </button>
-            <button
-              @click="startGame('auction')"
-              class="rounded bg-green-800 text-white cursor-pointer block text-2xl hover:bg-green-900 p-10 m-10 mx-auto"
-            >
-              Start Auction Variant Game
-            </button>
-            <button
-              @click="startGame('withoutInvestorCard')"
-              class="rounded bg-green-800 text-white cursor-pointer block text-2xl hover:bg-green-900 p-10 m-10 mx-auto"
-            >
-              Start Game Without Investor Card
+              Start Game
             </button>
             <button
               @click="cancelGame"
@@ -157,8 +155,18 @@
           </div>
           <div v-else-if="playingInThisGame">
             <div class="mx-auto p-2 text-center">
-              <b>Players:</b>
-              <span>{{ playersInGame(game.id).join(", ") }}</span>
+              <p>
+                <b>Players:</b>
+                <span>{{ playersInGame(game.id).join(", ") }}</span>
+              </p>
+              <p>
+                <b>Base game:</b>
+                <span>{{ baseGameString(gameData.baseGame) }}</span>
+              </p>
+              <p>
+                <b>Variant:</b>
+                <span>{{ variant(gameData.variant) }}</span>
+              </p>
             </div>
             <div class="text-2xl m-2">Game not yet started!</div>
           </div>
@@ -247,6 +255,9 @@ export default {
     next();
   },
   computed: {
+    gameData() {
+      return this.games.find(game => game.id === this.$route.params.id);
+    },
     gameName() {
       const game = this.games.find(game => game.id === this.$route.params.id);
       if (game) {
@@ -302,11 +313,12 @@ export default {
     joinGame() {
       apiClient.joinGame(this.$cookies.get("user_id"), this.$route.params.id, this.profile.username);
     },
-    startGame(variant) {
+    startGame() {
       const game = this.games.find(game => game.id === this.$route.params.id);
       const playerNames = this.playerNames(game);
       let players = this.shuffle(playerNames);
       const baseGame = game.baseGame;
+      const variant = game.variant;
       if (variant === "standard") {
         players = assignNations(players, baseGame);
       }
@@ -530,6 +542,18 @@ export default {
         return "w-1/3"
       } else if (this.game.baseGame === "imperial2030") {
         return "w-full"
+      }
+    },
+    baseGameString(baseGame) {
+      return baseGame === "imperial" ? "Original Imperial" : "Imperial 2030"
+    },
+    variant(variant) {
+      if (variant === "standard") {
+        return "Standard (with investor card, no auction)"
+      } else if (variant === "auction") {
+        return "Auction (with investor card and auction)"
+      } else if (variant === "withoutInvestorCard") {
+        return "Without Investor Card (with auction, no investor card)"
       }
     }
   }

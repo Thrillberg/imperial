@@ -1,5 +1,6 @@
 class Game < ActiveRecord::Base
   enum base_game: {imperial: 0, imperial2030: 1}
+  enum variant: {standard: 0, auction: 1, withoutInvestorCard: 2}
 
   has_many :actions, dependent: :destroy
   has_many :players, dependent: :destroy
@@ -28,7 +29,8 @@ class Game < ActiveRecord::Base
       current_player_name: current_player&.name,
       started_at: started_at,
       winner_name: winner&.name,
-      observers: observers
+      observers: observers,
+      variant: variant
     }
   end
 
