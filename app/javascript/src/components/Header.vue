@@ -30,7 +30,7 @@
       <div class="flex justify-evenly">
         <span v-if="profile.anonymity_confirmed_at && !profile.registered" class="self-center mr-10">Playing as {{ profile.username }}</span>
         <span v-if="profile.email" class="self-center mr-10">Signed in as
-          <router-link :to="{ path: '/user_profiles/' + profile.id }">
+          <router-link :to="{ path: '/users/' + profile.id }">
             {{ profile.username }}
           </router-link>
         </span>

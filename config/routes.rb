@@ -12,7 +12,10 @@ Rails.application.routes.draw do
   get "/get_games", to: "games#index"
   post "/games", to: "games#create"
 
-  resources :users, only: [:show, :create]
+  namespace :api do
+    resources :users, only: [:show, :create]
+  end
+  resources :profiles, only: [:show]
 
   root "pages#index", as: :pages_index
   get "*path", to: "pages#index", format: false

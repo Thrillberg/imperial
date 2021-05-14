@@ -80,7 +80,7 @@ export default {
     });
     if (this.$cookies.get("user_id")) {
       // Fetch user profile
-      fetch(`/users/${this.$cookies.get("user_id")}`, { method: "GET" })
+      fetch(`/profiles/${this.$cookies.get("user_id")}`, { method: "GET" })
         .then(response => response.json())
         .then(({ name, email, registered, anonymity_confirmed_at, id }) => {
           if (!name) {
@@ -97,7 +97,7 @@ export default {
   },
   methods: {
     createUserProfile() {
-      fetch("/users", { method: "POST", credentials: "include" })
+      fetch("/api/users", { method: "POST", credentials: "include" })
         .then((response) => response.json())
         .then(({ name, id }) => {
           this.profile = { username: name, id };

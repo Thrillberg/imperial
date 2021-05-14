@@ -1,24 +1,12 @@
 require "faker"
 
-class UsersController < ApplicationController
+class API::UsersController < ApplicationController
   skip_before_action :verify_authenticity_token
 
   def show
-    user = User.find_by(id: params[:id])
-    profile = {}
-    if user
-      account = Account.find_by(user: user)
-      if account
-        profile[:registered] = true
-        if sign_in account
-          profile[:email] = account.email
-        end
-      end
-      profile[:name] = user.name
-      profile[:anonymity_confirmed_at] = user.anonymity_confirmed_at
-      profile[:id] = user.id
-    end
-    render json: profile
+    user = User.find(params[:id])
+    games = Game.joins(:users).where(users: {id: user.id}).map(&:to_json)
+    render json: {user: user, games: games}
   end
 
   def create
