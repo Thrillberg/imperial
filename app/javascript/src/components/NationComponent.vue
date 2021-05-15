@@ -1,20 +1,21 @@
 <template>
-  <div class="flex flex-grow justify-center" :class="currentNation()">
-    <div class="p-3">
-      <p><b>{{ stringify(nation) }}</b></p>
-      <svg xmlns="http://www.w3.org/2000/svg" height="40" width="60">
-        <Flag
-          :nation="nation"
-          :height="(40).toString()"
-          :filter="controller === current_player ? '' : 'grayscale'"
-        ></Flag>
-      </svg>
-      <p>{{ controller }}</p>
-    </div>
-    <div class="flex flex-col justify-center">
-      <div>{{ treasury }}m</div>
-      <div>{{ power_points }} power</div>
-      <div v-if="show_tax_chart">{{ tax_chart_position }} tax</div>
+  <div class="m-0.5 p-0.5" :class="currentNation()">
+    <p><b>{{ stringify(nation) }}</b></p>
+    <div class="flex flex-grow justify-center">
+      <div class="p-2">
+        <svg xmlns="http://www.w3.org/2000/svg" height="30" width="45">
+          <Flag
+            :nation="nation"
+            :filter="controller === current_player ? '' : 'grayscale'"
+          ></Flag>
+        </svg>
+        <p>{{ controller }}</p>
+      </div>
+      <div class="flex flex-col justify-center">
+        <div>{{ treasury }}m</div>
+        <div>{{ power_points }} power</div>
+        <div v-if="show_tax_chart">{{ tax_chart_position }} tax</div>
+      </div>
     </div>
   </div>
 </template>

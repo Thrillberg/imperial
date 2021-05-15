@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col text-sm">
+  <div class="flex flex-col">
     <div class="flex flex-wrap justify-evenly">
       <Player
         v-for="player in game.players"

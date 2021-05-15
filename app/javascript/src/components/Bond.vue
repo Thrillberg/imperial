@@ -1,6 +1,6 @@
 <template>
   <div
-    :class="'m-2 border-2 border-' + border() +'-500 p-1 tooltip bg-' + bond.nation.value"
+    :class="'m-1 border-2 border-' + border() +'-500 p-1 tooltip bg-' + bond.nation.value"
     :style="filter === 'grayscale' ? {filter: 'grayscale(1)'} : {}"
     @click="click"
   >

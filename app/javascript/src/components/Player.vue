@@ -1,15 +1,17 @@
 <template>
   <div class="p-2 m-1 border border-gray-500" :class="player.name === current_player ? 'bg-green-300' : ''">
-    <p>
-      <span
-        v-if="online_users.includes(player.name)"
-        class="h-2 w-2 bg-blue-700 border-blue-700 border-2 rounded-full inline-block"
-      >
+    <div class="flex justify-between">
+      <span>
+        <span
+          v-if="online_users.includes(player.name)"
+          class="h-2 w-2 bg-blue-700 border-blue-700 border-2 rounded-full inline-block"
+        >
+        </span>
+        <b>{{ player.name }}</b>
       </span>
-      <b>{{ player.name }}</b>
-    </p>
-    <span>Cash: {{ player.cash }}m</span>
-    <div>Raw score: {{ player.rawScore }}</div>
+      <span>{{ player.cash }}m</span>
+      <span>{{ player.rawScore + player.cash }} points</span>
+    </div>
     <div class="flex flex-wrap">
       <Bond
         v-for="bond in sortedBonds(player.bonds)"

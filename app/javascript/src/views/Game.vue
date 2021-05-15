@@ -4,20 +4,6 @@
       <EndGame :game="game" />
       <div class="p-2"><b>{{ gameName }}</b></div>
       <div v-if="gameStarted" class="flex flex-col">
-        <div class="flex">
-          <NationComponent
-            v-for="[nation] of game.nations"
-            :current_nation="game.currentNation.value"
-            :nation="nation.value"
-            :treasury="game.nations.get(nation).treasury"
-            :power_points="game.nations.get(nation).powerPoints"
-            :tax_chart_position="game.nations.get(nation).taxChartPosition"
-            :controller="game.nations.get(nation).controller"
-            :current_player="profile.username"
-            :show_tax_chart="game.baseGame === 'imperial'"
-            :key="nation.value"
-          ></NationComponent>
-        </div>
         <TurnStatus :game="game" :profile="profile" :controllingPlayerName="controllingPlayerName"></TurnStatus>
         <div class="flex flex-wrap justify-between">
           <div class="border border-gray-500 rounded" :class="mapWidth()">
@@ -76,7 +62,21 @@
               </ul>
             </div>
           </div>
-          <div class="border border-gray-500 rounded" :class="gameDetailsWidth()">
+          <div class="border border-gray-500 rounded text-sm" :class="gameDetailsWidth()">
+            <div class="flex flex-wrap">
+              <NationComponent
+                v-for="[nation] of game.nations"
+                :current_nation="game.currentNation.value"
+                :nation="nation.value"
+                :treasury="game.nations.get(nation).treasury"
+                :power_points="game.nations.get(nation).powerPoints"
+                :tax_chart_position="game.nations.get(nation).taxChartPosition"
+                :controller="game.nations.get(nation).controller"
+                :current_player="profile.username"
+                :show_tax_chart="game.baseGame === 'imperial'"
+                :key="nation.value"
+              ></NationComponent>
+            </div>
             <GameDetails
               :game="game"
               :chooseImportType="importProvince"
@@ -532,14 +532,14 @@ export default {
     },
     mapWidth() {
       if (this.game.baseGame === "imperial") {
-        return "w-2/3"
+        return "w-7/12"
       } else if (this.game.baseGame === "imperial2030") {
         return "w-full"
       }
     },
     gameDetailsWidth() {
       if (this.game.baseGame === "imperial") {
-        return "w-1/3"
+        return "w-5/12"
       } else if (this.game.baseGame === "imperial2030") {
         return "w-full"
       }

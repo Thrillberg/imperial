@@ -8,14 +8,14 @@
   >
     <text
       v-if="this.mounted && !['Sardinia', 'Corsica', 'Switzerland'].includes(this.name)"
-      font-size="7"
+      font-size="8"
       stroke="#303030"
       text-align="center"
       :x="x(0) + labelXAdjustment()"
       :y="y(0) + labelYAdjustment()"
       text-anchor="middle"
       alignment-baseline="central"
-      class="font-sans font-thin"
+      class="font-sans"
     >
       {{ this.name }}
     </text>

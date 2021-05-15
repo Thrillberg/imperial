@@ -2,8 +2,8 @@
   <div>
     <div class="flex justify-around">
       <svg
-        width="450px"
-        height="450px"
+        width="350px"
+        height="350px"
         viewBox="-20 -20 240 240"
         version="1.1"
         xmlns="http://www.w3.org/2000/svg"
