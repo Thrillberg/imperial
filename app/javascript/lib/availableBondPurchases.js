@@ -29,7 +29,7 @@ export default (nation, game) => {
       }
       if (playerCanTradeUp) {
         exchangeableBondCosts.map(exchangedBondCost => {
-          if (exchangedBondCost < bond.cost) {
+          if (bond.cost <= game.players[player].cash + exchangedBondCost) {
             out.add(Action.bondPurchase({
               nation,
               player: game.currentPlayerName,

@@ -1754,25 +1754,41 @@ describe("imperial", () => {
             const game = newGame();
             game.investorCardHolder = "player2";
 
-            // Give the AH, 2 bond to player2
+            // Give the AH, 1 and the AH, 2 bonds to player2
+            game.availableBonds.delete(Bond(Nation.AH, 1));
             game.availableBonds.delete(Bond(Nation.AH, 2));
-            game.players["player2"].bonds = new Set([Bond(Nation.AH, 2)]);
+            game.availableBonds.add(Bond(Nation.AH, 4));
+            game.players["player2"].bonds = new Set(
+              [Bond(Nation.AH, 1), Bond(Nation.AH, 2)]
+            );
             game.players["player2"].cash = 0;
 
             game.tick(
               Action.rondel({ slot: "investor", nation: Nation.AH, cost: 0 })
             );
 
-            // player2 can use their own 2m plus the trade-in value of 4m
-            // from their AH, 2 bond to buy the AH, 3 bond
+            // player2 can use their own 5m plus the trade-in value of 2m or 4m
+            // from their AH, 1 and AH, 2 bonds
             expect(game.availableActions).toEqual(
               new Set([
                 Action.skipBondPurchase({ player: "player2", nation: null }),
                 Action.bondPurchase({
                   nation: Nation.AH,
                   player: "player2",
+                  tradeInValue: 2,
+                  cost: 6
+                }),
+                Action.bondPurchase({
+                  nation: Nation.AH,
+                  player: "player2",
                   tradeInValue: 4,
                   cost: 6
+                }),
+                Action.bondPurchase({
+                  nation: Nation.AH,
+                  player: "player2",
+                  tradeInValue: 4,
+                  cost: 9
                 }),
                 Action.bondPurchase({
                   nation: Nation.IT,
