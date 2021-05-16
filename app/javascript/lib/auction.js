@@ -122,7 +122,12 @@ export default class Auction {
     // If there is one available action, it is the pass action and doesn't
     // count as a real action.
     while (game.availableActions.size <= 1) {
-      this.handleAdvancePlayer(game);
+      const currentPlayerIndex = this.order.indexOf(game.currentPlayerName);
+      const canPurchaseBonds = this.availableBondPurchases(game).size > 1;
+      if (canPurchaseBonds) {
+        game.previousPlayerName = game.currentPlayerName;
+      }
+      game.currentPlayerName = this.order[currentPlayerIndex + 1] || this.order[0];
 
       // Nation's bonds have been offered to all players
       if (this.shouldAdvanceNation(game)) {
@@ -135,7 +140,8 @@ export default class Auction {
           return;
         }
       }
-      if (this.availableBondPurchases(game).size <= 1) {
+
+      if (!canPurchaseBonds) {
         game.annotatedLog.push(
           Action.playerAutoSkipsBondPurchase({
             player: game.currentPlayerName,
@@ -160,12 +166,6 @@ export default class Auction {
     }
     const nationIndex = nations.indexOf(game.currentNation);
     game.currentNation = nations[nationIndex + 1];
-  }
-
-  handleAdvancePlayer(game) {
-    const currentPlayerIndex = this.order.indexOf(game.currentPlayerName);
-    game.previousPlayerName = game.currentPlayerName;
-    game.currentPlayerName = this.order[currentPlayerIndex + 1] || this.order[0];
   }
 
   resetCurrentPlayer(game) {
