@@ -1,5 +1,6 @@
 <template>
   <div class="flex flex-col">
+    <TaxChart v-if="show_tax_chart" :taxes="taxes()" />
     <div class="flex flex-wrap justify-evenly">
       <Player
         v-for="player in game.players"
@@ -118,6 +119,7 @@ import BondPurchase from "../components/BondPurchase.vue";
 import ConflictHandler from "../components/ConflictHandler.vue";
 import Player from "../components/Player.vue";
 import Rondel from "../components/Rondel.vue";
+import TaxChart from "../components/TaxChart.vue";
 
 export default {
   name: "GameDetails",
@@ -125,9 +127,10 @@ export default {
     BondPurchase,
     ConflictHandler,
     Player,
-    Rondel
+    Rondel,
+    TaxChart
   },
-  props: ["game", "chooseImportType", "controllingPlayerName", "profile", "importPlacements", "online_users"],
+  props: ["game", "chooseImportType", "controllingPlayerName", "profile", "importPlacements", "online_users", "show_tax_chart"],
   computed: {
     purchasingBond() {
       const purchasingBond = this.game.availableActions.size > 0 &&

@@ -70,10 +70,8 @@
                 :nation="nation.value"
                 :treasury="game.nations.get(nation).treasury"
                 :power_points="game.nations.get(nation).powerPoints"
-                :tax_chart_position="game.nations.get(nation).taxChartPosition"
                 :controller="game.nations.get(nation).controller"
                 :current_player="profile.username"
-                :show_tax_chart="game.baseGame === 'imperial'"
                 :key="nation.value"
               ></NationComponent>
             </div>
@@ -84,6 +82,7 @@
               :profile="profile"
               :importPlacements="importPlacements"
               :online_users="users"
+              :show_tax_chart="game.baseGame === 'imperial'"
               v-on:tick="tickWithAction"
               v-on:chooseImportType="makeImportTypeChoice"
               v-on:endManeuver="endManeuver"
