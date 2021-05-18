@@ -1,5 +1,5 @@
 <template>
-  <div class="m-0.5 p-0.5" :class="currentNation()">
+  <div class="m-0.5" :class="currentNation()">
     <p><b>{{ stringify(nation) }}</b></p>
     <div class="flex flex-grow justify-center">
       <div class="p-2">

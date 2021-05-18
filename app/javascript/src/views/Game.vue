@@ -63,7 +63,7 @@
             </div>
           </div>
           <div class="border border-gray-500 rounded text-sm" :class="gameDetailsWidth()">
-            <div class="flex justify-between">
+            <div class="flex flex-wrap justify-between">
               <NationComponent
                 v-for="[nation] of game.nations"
                 :current_nation="game.currentNation.value"
