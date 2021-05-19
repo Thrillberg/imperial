@@ -33,6 +33,7 @@
           </div>
           <YourGames :games="yourGames" :profile="profile"></YourGames>
           <UnstartedGameList :games="unstartedGames" :profile="profile"></UnstartedGameList>
+          <CurrentGames :games="currentGames"></CurrentGames>
           <router-link to="/games">
             <b class="p-4 underline">All Games</b>
           </router-link>
@@ -46,6 +47,7 @@
 </template>
 
 <script>
+import CurrentGames from "../components/CurrentGames.vue";
 import UnstartedGameList from "../components/UnstartedGameList.vue";
 import YourGames from "../components/YourGames.vue";
 
@@ -53,7 +55,7 @@ import DiscordLogo from "../assets/discord_logo.svg";
 
 export default {
   name: "Home",
-  components: { UnstartedGameList, YourGames, DiscordLogo },
+  components: { CurrentGames, UnstartedGameList, YourGames, DiscordLogo },
   props: { profile: Object, users: Array, games: Array, gamesFetched: Boolean },
   computed: {
     yourGames() {
@@ -75,6 +77,9 @@ export default {
       return games.sort((a, b) => {
         return new Date(b.createdAt) - new Date(a.createdAt);
       });
+    },
+    currentGames() {
+      return this.games.filter(game => game.startedAt && !game.forceEndedAt && !game.winner)
     }
   },
   methods: {
