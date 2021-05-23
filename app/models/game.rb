@@ -30,7 +30,8 @@ class Game < ActiveRecord::Base
       started_at: started_at,
       winner_name: winner&.name,
       observers: observers,
-      variant: variant
+      variant: variant,
+      last_move_at: last_move_at
     }
   end
 
@@ -42,5 +43,9 @@ class Game < ActiveRecord::Base
     end
 
     false
+  end
+
+  def last_move_at
+    actions.order(:created_at).last&.created_at
   end
 end

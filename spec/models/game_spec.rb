@@ -21,7 +21,8 @@ RSpec.describe Game, "#to_json" do
       started_at: game.started_at,
       winner_name: nil,
       observers: [],
-      variant: "standard"
+      variant: "standard",
+      last_move_at: game.last_move_at
     })
   end
 end

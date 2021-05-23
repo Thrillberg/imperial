@@ -13,7 +13,7 @@
         <div class="w-1/5">{{ game.name }}</div>
         <div class="w-1/5">{{ game.players.length }}</div>
         <div class="w-1/5">{{ game.host }}</div>
-        <div class="w-1/5">{{ openSince(game.createdAt) }}</div>
+        <div class="w-1/5">{{ toTime(game.createdAt) }}</div>
         <div class="w-1/5">
           <button v-if="game.players.length < 6" class="rounded bg-green-800 text-white cursor-pointer block hover:bg-green-900 p-2">
             Join Game
@@ -28,34 +28,14 @@
 </template>
 
 <script>
-import { DateTime, Interval } from "luxon";
+import toTime from "../toTime.js";
 
 export default {
   name: "UnstartedGameList",
   props: { games: Array, profile: Object },
   methods: {
-    openSince(date) {
-      const createdAtDate = DateTime.fromISO(date);
-      const now = DateTime.now();
-      const interval = Interval.fromDateTimes(createdAtDate, now)
-      const intervalInSeconds = interval.length("seconds");
-      if (intervalInSeconds < 60) {
-        const number = Math.floor(interval.length("seconds"));
-        const second = number === 1 ? " second" : " seconds";
-        return number + second + " ago";
-      } else if (intervalInSeconds < 3600) {
-        const number = Math.floor(interval.length("minutes"));
-        const minute = number === 1 ? " minute" : " minutes";
-        return number + minute + " ago";
-      } else if (intervalInSeconds < 86400) {
-        const number = Math.floor(interval.length("hours"));
-        const hour = number === 1 ? " hour" : " hours";
-        return number + hour + " ago";
-      } else {
-        const number = Math.floor(interval.length("days"));
-        const day = number === 1 ? " day" : " days";
-        return number + day + " ago";
-      }
+    toTime(date) {
+      return toTime(date);
     }
   }
 }
