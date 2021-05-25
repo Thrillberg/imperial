@@ -401,7 +401,12 @@ export default {
       }
       apiClient.updateCurrentPlayerName(this.$route.params.id, this.game.currentPlayerName);
       if (this.game.winner) {
-        apiClient.updateWinner(this.$route.params.id, this.game.winner);
+        let scores = {};
+        for (const name in this.game.players) {
+          scores[name] = this.game.players[name].rawScore + this.game.players[name].cash;
+        }
+        console.log(scores)
+        apiClient.updateWinner(this.$route.params.id, this.game.winner, scores);
       }
       this.gameLoaded = true;
       this.silenceAudio = false;

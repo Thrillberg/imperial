@@ -172,11 +172,11 @@ class APIClient {
     );
   }
 
-  updateWinner(gameId, winnerName) {
+  updateWinner(gameId, winnerName, scores) {
     return this.send(
       {
         kind: "updateWinnerName",
-        data: { gameId, winnerName }
+        data: { gameId, winnerName, scores }
       },
       "GameChannel"
     );
