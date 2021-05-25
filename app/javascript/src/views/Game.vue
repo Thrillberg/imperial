@@ -233,6 +233,7 @@ export default {
       controllingPlayerName: "",
       currentPlayer: {},
       game: {},
+      gameData: {},
       gameLoaded: false,
       gameStarted: false,
       importPlacements: [],
@@ -255,9 +256,6 @@ export default {
     next();
   },
   computed: {
-    gameData() {
-      return this.games.find(game => game.id === this.$route.params.id);
-    },
     gameName() {
       const game = this.games.find(game => game.id === this.$route.params.id);
       if (game) {
@@ -274,8 +272,14 @@ export default {
       }
     },
     playingInThisGame() {
+      let playingInThisGame = false;
       const game = this.games.find(game => game.id === this.$route.params.id);
-      if (game?.players.includes(this.profile.username)) {
+      for (const player of game.players) {
+        if (player.name === this.profile.username) {
+          playingInThisGame = true;
+        }
+      }
+      if (playingInThisGame) {
         return true
       } else {
         return false
@@ -351,7 +355,7 @@ export default {
         return game.players.map(player => player.name);
       }
       game.soloMode = false;
-      return game.players;
+      return game.players.map(player => player.name);
     },
     shuffle: function(players) {
       let currentIndex = players.length,
@@ -375,10 +379,11 @@ export default {
       this.logTimestamps = logTimestamps;
       this.poppedTurns = [];
       let baseGame;
+      this.gameData = this.games.find(game => game.id === this.$route.params.id);
       if (log[0]) {
         baseGame = JSON.parse(log[0]).payload.baseGame;
       } else {
-        baseGame = this.games.find(game => game.id === this.$route.params.id).baseGame
+        baseGame = this.gameData.baseGame;
       }
       const gameLog = getGameLog(log, baseGame);
       if (baseGame === "imperial") {
