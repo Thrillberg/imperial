@@ -14,7 +14,7 @@ class User < ActiveRecord::Base
     end
   end
 
-  def to_json
+  def to_json_in_game
     {name: name, id: id}
   end
 end

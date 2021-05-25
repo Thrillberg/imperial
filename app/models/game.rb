@@ -22,7 +22,7 @@ class Game < ActiveRecord::Base
       id: id,
       base_game: base_game,
       host: host.name,
-      players: users.map(&:to_json),
+      players: users.map(&:to_json_in_game),
       force_ended_at: force_ended_at,
       cancelled_at: cancelled_at,
       created_at: created_at,

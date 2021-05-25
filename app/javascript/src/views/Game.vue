@@ -301,7 +301,7 @@ export default {
     playersInGame() {
       const game = this.games.find(game => game.id === this.$route.params.id);
       if (game) {
-        return game.players
+        return game.players.map(player => player.name);
       } else {
         return []
       }
@@ -341,8 +341,14 @@ export default {
     playerNames: function(game) {
       if (game.players.length === 1) {
         game.soloMode = true;
-        game.players.push("Charles", "Louis", "Otto", "Henry", "Conrad");
-        return game.players;
+        game.players.push(
+          {name: "Charles"},
+          {name: "Louis"},
+          {name: "Otto"},
+          {name: "Henry"},
+          {name: "Conrad"}
+        );
+        return game.players.map(player => player.name);
       }
       game.soloMode = false;
       return game.players;

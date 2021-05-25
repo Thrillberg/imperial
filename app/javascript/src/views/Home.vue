@@ -60,19 +60,24 @@ export default {
   computed: {
     yourGames() {
       return this.games.filter(game => {
-        return(
-          game.players.includes(this.profile.username) &&
-          !game.forceEndedAt
-        )
+        let inGame = false;
+        game.players.forEach(player => {
+          if (player.name === this.profile.username) {
+            inGame = true;
+          }
+        });
+        return inGame && !game.forceEndedAt;
       })
     },
     unstartedGames() {
       let games = this.games.filter(game => {
-        return(
-          !game.startedAt &&
-          !game.players.includes(this.profile.username) &&
-          !game.forceEndedAt
-        )
+        let inGame = false;
+        game.players.forEach(player => {
+          if (player.name === this.profile.username) {
+            inGame = true;
+          }
+        });
+        return !game.startedAt && !inGame && !game.forceEndedAt
       });
       return games.sort((a, b) => {
         return new Date(b.createdAt) - new Date(a.createdAt);
