@@ -13,4 +13,8 @@ class User < ActiveRecord::Base
       end
     end
   end
+
+  def to_json
+    {name: name, id: id}
+  end
 end

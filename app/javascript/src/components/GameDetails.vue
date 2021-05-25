@@ -3,7 +3,7 @@
     <TaxChart v-if="show_tax_chart" :taxes="taxes()" />
     <div class="flex flex-wrap justify-evenly">
       <Player
-        v-for="player in game.players"
+        v-for="player in players()"
         v-on:toggleTradeIn="toggleTradeIn"
         :player="player"
         :current_player="controllingPlayerName"
@@ -130,7 +130,7 @@ export default {
     Rondel,
     TaxChart
   },
-  props: ["game", "chooseImportType", "controllingPlayerName", "profile", "importPlacements", "online_users", "show_tax_chart"],
+  props: ["game", "chooseImportType", "controllingPlayerName", "profile", "importPlacements", "online_users", "show_tax_chart", "gameData"],
   computed: {
     purchasingBond() {
       const purchasingBond = this.game.availableActions.size > 0 &&
@@ -163,6 +163,25 @@ export default {
     }
   },
   methods: {
+    players() {
+      let players = {};
+      for (const name in this.game.players) {
+        this.gameData.players.forEach(dataPlayer => {
+          if (name === dataPlayer.name) {
+            players[name] = Object.assign(
+              {},
+              this.game.players[name],
+              {id: dataPlayer.id}
+            );
+          }
+        });
+        if (!players[name]) {
+          // Computer player
+          players[name] = this.game.players[name];
+        }
+      }
+      return players;
+    },
     powerPoints() {
       return [...Array(26).keys()].map(slot => {
         let nations = [];

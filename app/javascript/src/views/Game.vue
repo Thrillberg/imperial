@@ -77,6 +77,7 @@
             </div>
             <GameDetails
               :game="game"
+              :gameData="gameData"
               :chooseImportType="importProvince"
               :controllingPlayerName="controllingPlayerName"
               :profile="profile"

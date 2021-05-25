@@ -6,7 +6,7 @@ RSpec.describe Game, "#to_json" do
     game = create(:game, host: host_user)
     host = create(:player, user: host_user, game: game)
     players = [host] + create_list(:player, 4, game: game)
-    player_names = players.map { |player| player.user.name }
+    player_names = players.map { |player| {name: player.user.name, id: player.user.id} }
 
     expect(game.to_json).to eq({
       name: game.name,

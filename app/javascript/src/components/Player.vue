@@ -7,7 +7,12 @@
           class="h-2 w-2 bg-blue-700 border-blue-700 border-2 rounded-full inline-block"
         >
         </span>
-        <b>{{ player.name }}</b>
+        <router-link v-if="player.id" :to="{ path: '/users/' + player.id }" class="underline">
+          <b>{{ player.name }}</b>
+        </router-link>
+        <div v-else>
+          <b>{{ player.name }}</b>
+        </div>
       </span>
       <span>{{ player.cash }}m</span>
       <span>{{ player.rawScore + player.cash }} points</span>

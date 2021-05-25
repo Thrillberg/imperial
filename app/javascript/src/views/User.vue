@@ -1,6 +1,6 @@
 <template>
   <div class="container mx-auto w-3/4">
-    <div class="p-4">
+    <div v-if="gamesFetched" class="p-4">
       <p class="pb-4">
       {{ user.name }} has finished {{ finishedGames.length }} {{ finishedGameString }} and won {{ wonGames.length }} {{ wonGameString }}.
       </p>
@@ -18,6 +18,9 @@
         </router-link>
       </div>
     </div>
+    <div v-else class="p-4">
+      Loading...
+    </div>
   </div>
 </template>
 
@@ -31,13 +34,15 @@ export default {
         this.user = data.user;
         this.finishedGames = data.games.filter(game => !!game.winner_name);
         this.wonGames = this.finishedGames.filter(game => game.winner_name === this.user.name)
+        this.gamesFetched = true;
       });
   },
   data() {
     return {
       user: {},
       finishedGames: [],
-      wonGames: []
+      wonGames: [],
+      gamesFetched: false
     }
   },
   computed: {
