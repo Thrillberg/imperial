@@ -50,6 +50,10 @@ class GameChannel < ApplicationCable::Channel
 
     when "updateWinnerName"
       game = game_from_data(data)
+      scores = data["data"]["scores"]
+      game.players.each do |player|
+        player.update(score: scores[player.user.name])
+      end
       winner_name = data["data"]["winnerName"]
       winner = game.users.find_by(name: winner_name)
       game.update(winner: winner) unless game.winner
