@@ -405,7 +405,6 @@ export default {
         for (const name in this.game.players) {
           scores[name] = this.game.players[name].rawScore + this.game.players[name].cash;
         }
-        console.log(scores)
         apiClient.updateWinner(this.$route.params.id, this.game.winner, scores);
       }
       this.gameLoaded = true;
