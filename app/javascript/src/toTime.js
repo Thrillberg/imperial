@@ -6,6 +6,10 @@ export default function(date) {
   const interval = Interval.fromDateTimes(rawDate, now)
   const intervalInSeconds = interval.length("seconds");
 
+  if (!date) {
+    return ""
+  }
+
   if (intervalInSeconds < 60) {
     const number = Math.floor(interval.length("seconds"));
     const second = number === 1 ? " second" : " seconds";

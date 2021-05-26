@@ -16,6 +16,7 @@
         v-on:registered="register"
         v-on:signedIn="signIn"
         v-on:anonymity_confirmed="anonymityConfirmed"
+        v-on:openGame="openGame"
         ref="game"
       />
     </div>
@@ -56,22 +57,7 @@ export default {
         if (game.id === this.$route.params.id) {
           this.observers = game.observers;
         }
-        return {
-          host: game.host,
-          baseGame: game.base_game,
-          players: game.players,
-          name: game.name,
-          id: game.id,
-          currentPlayerName: game.current_player_name,
-          winner: game.winner_name,
-          forceEndedAt: game.force_ended_at,
-          cancelledAt: game.cancelled_at,
-          createdAt: game.created_at,
-          startedAt: game.started_at,
-          observers: game.observers,
-          variant: game.variant,
-          lastMoveAt: game.last_move_at
-        };
+        return this.translateToGameData(game);
       });
       this.gamesFetched = true;
     });
@@ -125,6 +111,29 @@ export default {
     anonymityConfirmed(date) {
       let profile = Object.assign({}, this.profile, { "anonymity_confirmed_at": date });
       this.profile = profile;
+    },
+    openGame(game) {
+      const gameData = this.translateToGameData(game);
+      this.games.push(gameData);
+    },
+    translateToGameData(game) {
+      return {
+        host: game.host,
+        baseGame: game.base_game,
+        players: game.players,
+        name: game.name,
+        id: game.id,
+        currentPlayerName: game.current_player_name,
+        winner: game.winner_name,
+        forceEndedAt: game.force_ended_at,
+        cancelledAt: game.cancelled_at,
+        createdAt: game.created_at,
+        startedAt: game.started_at,
+        observers: game.observers,
+        variant: game.variant,
+        lastMoveAt: game.last_move_at
+      };
+
     }
   }
 };

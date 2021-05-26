@@ -57,6 +57,7 @@ export default {
       e.preventDefault();
       apiClient.openGame(this.$cookies.get("user_id"), this.baseGame, this.variant)
         .then(game => {
+          this.$emit("openGame", game);
           this.$router.push(`/game/${game.id}`);
         });
     }
