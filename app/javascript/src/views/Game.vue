@@ -2,7 +2,15 @@
   <div>
     <div v-if="this.gameLoaded">
       <EndGame :game="game" />
-      <div class="p-2"><b>{{ gameName }}</b></div>
+      <div class="p-2">
+        <b>{{ gameData.name }} <span v-if="gameData.clonedFromGame">(clone)</span></b>
+        <span v-if="gameData.clonedFromGame && gameStarted" class="cursor-pointer underline text-xs" @click="goToSourceGame">
+          Back to source game
+        </span>
+        <span v-else-if="gameStarted" class="cursor-pointer underline text-xs" @click="cloneGame">
+          Clone game
+        </span>
+      </div>
       <div v-if="gameStarted" class="flex flex-col">
         <TurnStatus :game="game" :profile="profile" :controllingPlayerName="controllingPlayerName"></TurnStatus>
         <div class="flex flex-wrap justify-between">
@@ -233,7 +241,6 @@ export default {
       controllingPlayerName: "",
       currentPlayer: {},
       game: {},
-      gameData: {},
       gameLoaded: false,
       gameStarted: false,
       importPlacements: [],
@@ -256,13 +263,8 @@ export default {
     next();
   },
   computed: {
-    gameName() {
-      const game = this.games.find(game => game.id === this.$route.params.id);
-      if (game) {
-        return game.name
-      } else {
-        return ""
-      }
+    gameData() {
+      return this.games.find(game => game.id === this.$route.params.id);
     },
     reversedGameLog: function () {
       if (this.game.log) {
@@ -273,8 +275,7 @@ export default {
     },
     playingInThisGame() {
       let playingInThisGame = false;
-      const game = this.games.find(game => game.id === this.$route.params.id);
-      for (const player of game.players) {
+      for (const player of this.gameData.players) {
         if (player.name === this.profile.username) {
           playingInThisGame = true;
         }
@@ -286,8 +287,7 @@ export default {
       }
     },
     hostingThisGame() {
-      const game = this.games.find(game => game.id === this.$route.params.id);
-      if (game?.host === this.profile.username) {
+      if (this.gameData?.host === this.profile.username) {
         return true
       } else {
         return false
@@ -297,10 +297,6 @@ export default {
   methods: {
     beforeWindowUnload() {
       apiClient.userStoppedObservingGame(this.profile.username, this.$route.params.id);
-    },
-    baseGame() {
-      const game = this.games.find(game => game.id === this.$route.params.id);
-      return game.baseGame;
     },
     playersInGame() {
       const game = this.games.find(game => game.id === this.$route.params.id);
@@ -318,29 +314,26 @@ export default {
       apiClient.joinGame(this.$cookies.get("user_id"), this.$route.params.id, this.profile.username);
     },
     startGame() {
-      const game = this.games.find(game => game.id === this.$route.params.id);
-      const playerNames = this.playerNames(game);
+      const playerNames = this.playerNames(this.gameData);
       let players = this.shuffle(playerNames);
-      const baseGame = game.baseGame;
-      const variant = game.variant;
+      const baseGame = this.gameData.baseGame;
+      const variant = this.gameData.variant;
       if (variant === "standard") {
         players = assignNations(players, baseGame);
       }
-      const soloMode = game.soloMode;
+      const soloMode = this.gameData.soloMode;
       const action = Action.initialize({ players, soloMode, variant, baseGame });
-      apiClient.tick(game.id, action);
+      apiClient.tick(this.gameData.id, action);
     },
     cancelGame() {
-      const game = this.games.find(game => game.id === this.$route.params.id);
-      apiClient.cancel(game.id);
+      apiClient.cancel(this.gameData.id);
       this.$router.push("/");
     },
     boot(playerName) {
       apiClient.boot(playerName, this.$route.params.id);
     },
     gameCancelled() {
-      const game = this.games.find(game => game.id === this.$route.params.id);
-      return game.cancelledAt;
+      return this.gameData.cancelledAt;
     },
     playerNames: function(game) {
       if (game.players.length === 1) {
@@ -379,7 +372,6 @@ export default {
       this.logTimestamps = logTimestamps;
       this.poppedTurns = [];
       let baseGame;
-      this.gameData = this.games.find(game => game.id === this.$route.params.id);
       if (log[0]) {
         baseGame = JSON.parse(log[0]).payload.baseGame;
       } else {
@@ -570,6 +562,30 @@ export default {
       } else if (variant === "withoutInvestorCard") {
         return "Without Investor Card (with auction, no investor card)"
       }
+    },
+    cloneGame() {
+      fetch(
+        "/clone_games",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            id: this.$route.params.id,
+            host_id: this.profile.id
+          }),
+          headers: { "Content-Type": "application/json" }
+        }
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          this.$emit("receiveGameData", data);
+          apiClient.getGameLog(data.id, this.game.baseGame);
+          this.$router.push(`/game/${data.id}`);
+        });
+    },
+    goToSourceGame() {
+      const id = this.gameData.clonedFromGame;
+      apiClient.getGameLog(id, this.game.baseGame);
+      this.$router.push(`/game/${id}`);
     }
   }
 };

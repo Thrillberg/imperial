@@ -5,9 +5,12 @@ class Game < ActiveRecord::Base
   has_many :actions, dependent: :destroy
   has_many :players, dependent: :destroy
   has_many :users, through: :players
+  has_many :cloned_games, class_name: "Game", foreign_key: "cloned_from_game_id", dependent: :nullify
+
   belongs_to :winner, class_name: "User", optional: true
   belongs_to :host, class_name: "User"
   belongs_to :current_player, class_name: "User", optional: true
+  belongs_to :cloned_from_game, class_name: "Game", optional: true
 
   scope :current, -> {
     includes(:host, :users)
@@ -31,7 +34,8 @@ class Game < ActiveRecord::Base
       winner_name: winner&.name,
       observers: observers,
       variant: variant,
-      last_move_at: last_move_at
+      last_move_at: last_move_at,
+      cloned_from_game: cloned_from_game&.id
     }
   end
 
@@ -47,5 +51,24 @@ class Game < ActiveRecord::Base
 
   def last_move_at
     actions.order(:created_at).last&.created_at
+  end
+
+  def clone(host)
+    cloned_game = dup
+    cloned_game.cloned_from_game = self
+    cloned_game.host = host
+    cloned_game.users << host
+    actions.each do |action|
+      cloned_game.actions << action.dup.tap do |cloned_action|
+        parsed_data = JSON.parse(action.data)
+        if parsed_data["payload"]["soloMode"] == false
+          parsed_data["payload"]["soloMode"] = true
+          cloned_action.data = parsed_data.to_json
+        end
+        cloned_action.originally_created_at = action.created_at
+      end
+    end
+    cloned_game.save
+    cloned_game
   end
 end

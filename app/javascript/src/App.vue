@@ -17,6 +17,7 @@
         v-on:signedIn="signIn"
         v-on:anonymity_confirmed="anonymityConfirmed"
         v-on:openGame="openGame"
+        v-on:receiveGameData="receiveGameData"
         ref="game"
       />
     </div>
@@ -116,6 +117,9 @@ export default {
       const gameData = this.translateToGameData(game);
       this.games.push(gameData);
     },
+    receiveGameData(data) {
+      this.games.push(this.translateToGameData(data));
+    },
     translateToGameData(game) {
       return {
         host: game.host,
@@ -131,9 +135,9 @@ export default {
         startedAt: game.started_at,
         observers: game.observers,
         variant: game.variant,
-        lastMoveAt: game.last_move_at
+        lastMoveAt: game.last_move_at,
+        clonedFromGame: game.cloned_from_game
       };
-
     }
   }
 };
