@@ -22,7 +22,8 @@ RSpec.describe Game, "#to_json" do
       winner_name: nil,
       observers: [],
       variant: "standard",
-      last_move_at: game.last_move_at
+      last_move_at: game.last_move_at,
+      cloned_from_game: nil
     })
   end
 end

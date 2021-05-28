@@ -272,6 +272,11 @@ const routes = [
     path: "/games/new",
     name: "NewGame",
     component: () => import("../views/NewGame.vue")
+  },
+  {
+    path: "/cloned_games",
+    name: "ClonedGames",
+    component: () => import("../views/ClonedGames.vue")
   }
 ];
 

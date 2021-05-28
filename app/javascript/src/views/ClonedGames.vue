@@ -1,6 +1,6 @@
 <template>
   <div class="p-4">
-    <b>All Games</b>
+    <b>Your Cloned Games</b>
     <div class="flex border-b border-black mt-2">
       <div class="w-1/2"><b>Name</b></div>
     </div>
@@ -14,7 +14,7 @@
 
 <script>
 export default {
-  name: "Games",
+  name: "ClonedGames",
   props: { profile: Object },
   data: () => {
     return {
@@ -24,7 +24,9 @@ export default {
   created() {
     fetch("/get_games", { method: "GET" })
       .then(response => response.json())
-      .then(data => this.games = data.filter(game => !game.cancelled_at && !game.cloned_from_game_id))
+      .then(data => this.games = data.filter(
+        game => !game.cancelled_at && game.cloned_from_game_id && game.host_id === this.profile.id
+      ))
   }
 }
 </script>

@@ -12,6 +12,8 @@ Rails.application.routes.draw do
   get "/get_games", to: "games#index"
   post "/games", to: "games#create"
 
+  resources :clone_games, only: [:create]
+
   namespace :api do
     resources :users, only: [:show, :create]
   end

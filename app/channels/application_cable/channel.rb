@@ -28,7 +28,7 @@ module ApplicationCable
         kind: kind,
         data: {
           gameId: game.id,
-          log: game.actions.order(:created_at).map(&:data),
+          log: game.actions.order(:originally_created_at).order(:created_at).map(&:data),
           logTimestamps: game.actions.order(:created_at).map(&:created_at)
         }
       }

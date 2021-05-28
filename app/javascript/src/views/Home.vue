@@ -34,9 +34,16 @@
           <YourGames :games="yourGames" :profile="profile"></YourGames>
           <UnstartedGameList :games="unstartedGames" :profile="profile"></UnstartedGameList>
           <CurrentGames :games="currentGames"></CurrentGames>
-          <router-link to="/games">
-            <b class="p-4 underline">All Games</b>
-          </router-link>
+          <div>
+            <router-link to="/games">
+              <b class="p-4 underline">All Games</b>
+            </router-link>
+          </div>
+          <div>
+            <router-link to="/cloned_games">
+              <b class="p-4 underline">Your Cloned Games</b>
+            </router-link>
+          </div>
         </div>
         <div v-else class="w-3/4 text-center text-2xl mt-8">
           Loading games
@@ -66,7 +73,7 @@ export default {
             inGame = true;
           }
         });
-        return inGame && !game.forceEndedAt;
+        return inGame && !game.forceEndedAt && !game.clonedFromGame;
       })
     },
     unstartedGames() {
@@ -77,14 +84,16 @@ export default {
             inGame = true;
           }
         });
-        return !game.startedAt && !inGame && !game.forceEndedAt
+        return !game.startedAt && !inGame && !game.forceEndedAt && !game.clonedFromGame;
       });
       return games.sort((a, b) => {
         return new Date(b.createdAt) - new Date(a.createdAt);
       });
     },
     currentGames() {
-      return this.games.filter(game => game.startedAt && !game.forceEndedAt && !game.winner)
+      return this.games.filter(
+        game => game.startedAt && !game.forceEndedAt && !game.winner && !game.clonedFromGame
+      )
     }
   },
   methods: {
