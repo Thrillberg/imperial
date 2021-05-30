@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col justify-evenly items-center">
+  <div class="flex flex-col justify-between items-center">
     <div class="underline">{{ taxSlot }}</div>
     <div class="flex flex-wrap">
       <svg

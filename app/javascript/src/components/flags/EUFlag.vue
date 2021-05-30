@@ -5,9 +5,6 @@
     :width="width"
     :height="height"
   >
-    <filter id="grayscale">
-      <feColorMatrix type="matrix" values="0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0"/>
-    </filter>
     <g
     v-bind:clip-path="this.fleet ? 'url(#fleetClip)' : ''" :filter="activeFilter"
     >

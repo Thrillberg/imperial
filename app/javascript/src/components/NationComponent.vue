@@ -1,7 +1,7 @@
 <template>
-  <div class="m-0.5" :class="currentNation()">
+  <div class="p-0.5 border border-gray-500 lg:w-1/3 xl:w-1/3 2xl:w-1/6" :class="currentNation()">
     <p><b>{{ stringify(nation) }}</b></p>
-    <div class="flex flex-grow justify-center">
+    <div class="flex">
       <div class="p-2">
         <svg xmlns="http://www.w3.org/2000/svg" height="30" width="45">
           <Flag
