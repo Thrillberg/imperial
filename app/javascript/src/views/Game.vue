@@ -241,6 +241,7 @@ export default {
       controllingPlayerName: "",
       currentPlayer: {},
       game: {},
+      gameData: { players: [] },
       gameLoaded: false,
       gameStarted: false,
       importPlacements: [],
@@ -251,6 +252,11 @@ export default {
     };
   },
   created() {
+    fetch(`/games/${this.$route.params.id}`)
+      .then(response => response.json())
+      .then(gameData => {
+        this.gameData = gameData;
+      });
     window.addEventListener("beforeunload", this.beforeWindowUnload)
     apiClient.userObservingGame(this.profile.username, this.$route.params.id);
     apiClient.getGameLog(this.$route.params.id, this.game.baseGame);
@@ -263,10 +269,7 @@ export default {
     next();
   },
   computed: {
-    gameData() {
-      return this.games.find(game => game.id === this.$route.params.id);
-    },
-    reversedGameLog: function () {
+    reversedGameLog() {
       if (this.game.log) {
         return this.game.log.slice().reverse();
       } else {
@@ -287,11 +290,7 @@ export default {
       }
     },
     hostingThisGame() {
-      if (this.gameData?.host === this.profile.username) {
-        return true
-      } else {
-        return false
-      }
+      return this.gameData.host === this.profile.username ? true : false
     }
   },
   methods: {
@@ -299,12 +298,7 @@ export default {
       apiClient.userStoppedObservingGame(this.profile.username, this.$route.params.id);
     },
     playersInGame() {
-      const game = this.games.find(game => game.id === this.$route.params.id);
-      if (game) {
-        return game.players.map(player => player.name);
-      } else {
-        return []
-      }
+      return this.gameData.players.map(player => player.name);
     },
     otherPlayersInGame() {
       let players = this.playersInGame();

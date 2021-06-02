@@ -11,6 +11,7 @@ Rails.application.routes.draw do
 
   get "/get_games", to: "games#index"
   post "/games", to: "games#create"
+  get "/games/:id", to: "games#show"
 
   resources :clone_games, only: [:create]
 
