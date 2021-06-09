@@ -252,7 +252,7 @@ export default {
     };
   },
   created() {
-    fetch(`/games/${this.$route.params.id}`)
+    fetch(`/api/games/${this.$route.params.id}`)
       .then(response => response.json())
       .then(gameData => {
         this.gameData = gameData;

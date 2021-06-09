@@ -6,11 +6,6 @@ class GamesController < ApplicationController
     render json: games
   end
 
-  def show
-    game = Game.find(params[:id])
-    render json: game.to_json
-  end
-
   def create
     host = User.find(params[:id])
     game = Game.create(
