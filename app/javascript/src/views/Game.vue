@@ -214,6 +214,7 @@ import TurnStatus from "../components/TurnStatus.vue";
 
 import getGameLog from "../getGameLog.js";
 import assignNations from "../assignNations.js";
+import translateToGameData from "../translateToGameData.js";
 import imperialBoard from "../../lib/board.js";
 import imperial2030Board from "../../lib/board2030.js";
 
@@ -255,11 +256,11 @@ export default {
     fetch(`/api/games/${this.$route.params.id}`)
       .then(response => response.json())
       .then(gameData => {
-        this.gameData = gameData;
+        this.gameData = translateToGameData(gameData);
+        apiClient.getGameLog(this.$route.params.id, this.game.baseGame);
       });
     window.addEventListener("beforeunload", this.beforeWindowUnload)
     apiClient.userObservingGame(this.profile.username, this.$route.params.id);
-    apiClient.getGameLog(this.$route.params.id, this.game.baseGame);
   },
   beforeDestroy() {
     window.removeEventListener("beforeunload", this.beforeWindowUnload)
