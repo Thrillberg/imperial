@@ -36,12 +36,12 @@
           <CurrentGames :games="currentGames"></CurrentGames>
           <div>
             <router-link to="/games">
-              <b class="p-4 underline">All Games</b>
+              <b class="underline">All Games</b>
             </router-link>
           </div>
           <div>
             <router-link to="/cloned_games">
-              <b class="p-4 underline">Your Cloned Games</b>
+              <b class="underline">Your Cloned Games</b>
             </router-link>
           </div>
         </div>
