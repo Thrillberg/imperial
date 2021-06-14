@@ -4,8 +4,10 @@ describe("Auction game", () => {
     cy.login("a@b.com")
 
     cy.visit("/")
-    cy.contains("Open a New Imperial Game").click()
-    cy.contains("Start Auction Variant Game").click()
+    cy.contains("New Game").click()
+    cy.get("#auction").check()
+    cy.contains("New Game").click()
+    cy.contains("Start Game").click()
 
     // AH
     cy.get(".bg-AH").contains("2:4").click()

@@ -4,8 +4,10 @@ describe("Without Investor Card game", () => {
     cy.login("a@b.com")
 
     cy.visit("/")
-    cy.contains("Open a New Imperial Game").click()
-    cy.contains("Start Game Without Investor Card").click()
+    cy.contains("New Game").click()
+    cy.get("#withoutInvestorCard").check()
+    cy.contains("New Game").click()
+    cy.contains("Start Game").click()
 
     // AH
     cy.get(".bg-AH").contains("2:4").click()
