@@ -29,19 +29,19 @@ RSpec.describe Game, "#to_json" do
 end
 
 RSpec.describe Game, "#abandoned?" do
-  context "last action was more than 3 days ago" do
-    let(:game) { create(:game, created_at: 4.days.ago) }
-    let!(:action1) { create(:action, data: "anything", created_at: 5.days.ago, game: game) }
-    let!(:action2) { create(:action, data: "anything", created_at: 4.days.ago, game: game) }
+  context "last action was more than 7 days ago" do
+    let(:game) { create(:game, created_at: 8.days.ago) }
+    let!(:action1) { create(:action, data: "anything", created_at: 9.days.ago, game: game) }
+    let!(:action2) { create(:action, data: "anything", created_at: 8.days.ago, game: game) }
 
     it "returns true" do
       expect(game.abandoned?).to eq true
     end
   end
 
-  context "last action was less than 3 days ago" do
+  context "last action was less than 7 days ago" do
     let(:game) { create(:game, created_at: 1.day.ago) }
-    let!(:action1) { create(:action, data: "anything", created_at: 4.days.ago, game: game) }
+    let!(:action1) { create(:action, data: "anything", created_at: 8.days.ago, game: game) }
     let!(:action2) { create(:action, data: "anything", created_at: 1.day.ago, game: game) }
 
     it "returns false" do
