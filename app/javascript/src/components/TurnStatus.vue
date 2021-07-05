@@ -1,5 +1,5 @@
 <template>
-  <div class="border border-gray-500 rounded p-2 m-2 text-center" :class="alertCurrentPlayer">
+  <div class="border border-gray-500 rounded p-2 m-1 text-center" :class="alertCurrentPlayer">
     <span v-html="playerIs"></span>{{ stringify(Array.from(game.availableActions)) }}.
   </div>
 </template>

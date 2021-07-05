@@ -14,7 +14,7 @@
       <div v-if="gameStarted" class="flex flex-col">
         <TurnStatus :game="game" :profile="profile" :controllingPlayerName="controllingPlayerName"></TurnStatus>
         <div class="flex flex-wrap justify-between">
-          <div class="border border-gray-500 rounded" :class="mapWidth()">
+          <div class="border border-gray-500 rounded overflow-hidden" :class="mapWidth()">
             <Board
               :game="game"
               :profile="profile"
@@ -61,14 +61,6 @@
                 ▶
               </div>
             </div>
-            <div class="m-2">
-              Observers:
-              <ul>
-                <li v-for="observer in observers" :key="observer">
-                  {{ observer }}
-                </li>
-              </ul>
-            </div>
           </div>
           <div class="border border-gray-500 rounded text-sm" :class="gameDetailsWidth()">
             <div class="flex flex-wrap justify-between">
@@ -80,6 +72,7 @@
                 :power_points="game.nations.get(nation).powerPoints"
                 :controller="game.nations.get(nation).controller"
                 :current_player="profile.username"
+                :baseGame="game.baseGame"
                 :key="nation.value"
               ></NationComponent>
             </div>
@@ -100,6 +93,14 @@
             ></GameDetails>
           </div>
         </div>
+        <div class="m-2">
+          Observers:
+          <ul>
+            <li v-for="observer in observers" :key="observer">
+              {{ observer }}
+            </li>
+          </ul>
+        </div>
         <GameLog
           :log="game.annotatedLog"
           :logTimestamps="logTimestamps"
@@ -110,7 +111,7 @@
         This game was cancelled by the host
       </div>
       <div v-else class="flex justify-between">
-        <div class="w-2/3 border border-gray-500 rounded">
+        <div class="w-2/3 border border-gray-500 rounded overflow-hidden">
           <Board
             v-bind:game="game"
             v-bind:select_province="() => {}"

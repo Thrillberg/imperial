@@ -6,7 +6,8 @@
     xmlns:svg="http://www.w3.org/2000/svg"
     xmlns="http://www.w3.org/2000/svg"
     version="1.1"
-    viewBox="0 60 1016.371 540"
+    viewBox="0 0 1016.371 540"
+    :class="this.game.baseGame ? '-mt-20' : '-mt-16'"
   >
     <filter id="brightness">
       <feComponentTransfer>
