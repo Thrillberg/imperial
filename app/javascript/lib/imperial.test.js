@@ -2648,7 +2648,7 @@ describe("imperial", () => {
             expect(game.nations.get(Nation.AH).taxChartPosition).toEqual(15);
           });
 
-          test("nation's taxChartPosition cannot fall", () => {
+          test("nation's taxChartPosition cannot fall below 5", () => {
             const game = newGame();
             // Set taxChartPosition to lowest value, 5
             game.nations.get(Nation.AH).taxChartPosition = 5;

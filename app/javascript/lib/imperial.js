@@ -1087,8 +1087,7 @@ export default class Imperial {
         }
         if (this.baseGame === "imperial") {
           let excessTaxes = taxes - nation.taxChartPosition;
-          // Players can never lose money here and
-          // nations cannot descend in taxChartPosition
+          // Players can never lose money here
           if (excessTaxes < 0) {
             excessTaxes = 0;
           }
@@ -1098,9 +1097,11 @@ export default class Imperial {
             player: this.currentPlayerName,
             amount: excessTaxes
           }));
-          // Nation's taxChartPosition matches taxes but cannot fall
-          if (taxes > nation.taxChartPosition) {
+          // Nation's taxChartPosition matches taxes with a floor of 5
+          if (taxes >= 5) {
             nation.taxChartPosition = taxes;
+          } else {
+            nation.taxCharPosition = 5;
           }
           // The tax chart maxes out at 15
           if (nation.taxChartPosition > 15) nation.taxChartPosition = 15;
