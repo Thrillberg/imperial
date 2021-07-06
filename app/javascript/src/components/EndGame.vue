@@ -18,7 +18,7 @@
           <div class="text-5xl">{{ Math.floor(game.nations.get(nation).powerPoints / 5) }}x</div>
         </div>
       </div>
-      <div v-for="(player, index) of playersSortedByScore()" :key="index">
+      <div v-for="(player, index) in playersSortedByScore" :key="index">
         <div class="my-5">
           <p class="text-2xl"><b>{{ index + 1 }}. {{ game.players[player].name }}</b></p>
           <div class="flex flex-row justify-center">
@@ -42,8 +42,8 @@ export default {
   name: "EndGame",
   components: { Bond, Flag },
   props: { game: Object },
-  methods: {
-    playersSortedByScore: function() {
+  computed: {
+    playersSortedByScore() {
       return Object.keys(this.game.players).sort((a, b) => {
         return this.game.players[a].rawScore + this.game.players[a].cash < this.game.players[b].rawScore + this.game.players[b].cash
       });
