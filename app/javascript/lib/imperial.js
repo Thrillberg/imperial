@@ -559,6 +559,28 @@ export default class Imperial {
       this.provinces.get(province).flag = action.payload.challenger;
     }
 
+    // Change flags, if a third party survives the fighters
+    let otherPresentUnits = [];
+    for (const [nation, units] of this.units) {
+      const unitsAtProvince = units.get(province);
+      const otherArmies = unitsAtProvince.armies;
+      const otherFleets = unitsAtProvince.fleets;
+      if (otherArmies > 0 || otherFleets > 0) {
+        otherPresentUnits.push(nation)
+      }
+    }
+    if (
+      Object.keys(otherPresentUnits).length > 0 &&
+      totalChallengerUnitsAtProvince == totalIncumbentUnitsAtProvince &&
+      isNeutralProvince
+    ) {
+      if (otherPresentUnits.length === 1) {
+        this.provinces.get(province).flag = otherPresentUnits[0];
+      } else if (otherPresentUnits.length > 1) {
+        this.provinces.get(province).flag = null;
+      }
+    }
+
     this.handlingConflict = false;
     this.previousPlayerName = this.currentPlayerName;
     if (this.log[this.log.length - 2].type === "coexist") {

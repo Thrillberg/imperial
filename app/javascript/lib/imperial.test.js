@@ -3371,6 +3371,67 @@ describe("imperial", () => {
           expect(game.provinces.get("a").flag).toEqual(Nation.AH);
         });
 
+        test("flag transfers to a third party if present", () => {
+          const game = newGame();
+          game.provinces.get("a").flag = Nation.AH;
+          game.units.get(Nation.AH).get("b").armies++;
+          game.units.get(Nation.IT).get("a").armies++;
+          game.units.get(Nation.FR).get("a").armies++;
+          game.provinces.get("a").flag = Nation.IT;
+
+          game.tick(
+            Action.rondel({
+              nation: Nation.AH,
+              cost: 0,
+              slot: "maneuver1"
+            })
+          );
+          game.tick(
+            Action.maneuver({ origin: "b", destination: "a" })
+          );
+          game.tick(
+            Action.fight({
+              province: "a",
+              incumbent: Nation.IT,
+              challenger: Nation.AH,
+              targetType: "army"
+            })
+          );
+
+          expect(game.provinces.get("a").flag).toEqual(Nation.FR);
+        });
+
+        test("nobody has flag if multiple third parties contest it", () => {
+          const game = newGame();
+          game.provinces.get("a").flag = Nation.AH;
+          game.units.get(Nation.AH).get("b").armies++;
+          game.units.get(Nation.IT).get("a").armies++;
+          game.units.get(Nation.FR).get("a").armies++;
+          game.units.get(Nation.GE).get("a").armies++;
+          game.provinces.get("a").flag = Nation.IT;
+
+          game.tick(
+            Action.rondel({
+              nation: Nation.AH,
+              cost: 0,
+              slot: "maneuver1"
+            })
+          );
+          game.tick(
+            Action.maneuver({ origin: "b", destination: "a" })
+          );
+          game.tick(
+            Action.fight({
+              province: "a",
+              incumbent: Nation.IT,
+              challenger: Nation.AH,
+              targetType: "army"
+            })
+          );
+
+          expect(game.provinces.get("a").flag).toEqual(null);
+        });
+
         test("both nations lose an army", () => {
           const game = newGame();
           game.units.get(Nation.AH).get("c").armies++;
