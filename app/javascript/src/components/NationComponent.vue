@@ -12,7 +12,7 @@
         <p>{{ controller }}</p>
       </div>
       <div class="flex flex-col justify-center">
-        <div>{{ treasury }}m</div>
+        <div :class="canPayOut ? '' : 'text-red-500 font-bold'">{{ treasury }}m</div>
         <div>{{ power_points }} power</div>
       </div>
     </div>
@@ -29,6 +29,7 @@ export default {
   components: { Flag },
   props: {
     baseGame: String,
+    canPayOut: Boolean,
     current_nation: String,
     current_player: String,
     controller: String,
