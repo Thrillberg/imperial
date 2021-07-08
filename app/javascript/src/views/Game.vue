@@ -69,6 +69,7 @@
                 :current_nation="game.currentNation.value"
                 :nation="nation.value"
                 :treasury="game.nations.get(nation).treasury"
+                :canPayOut="canPayOut(nation)"
                 :power_points="game.nations.get(nation).powerPoints"
                 :controller="game.nations.get(nation).controller"
                 :current_player="profile.username"
@@ -582,6 +583,18 @@ export default {
       const id = this.gameData.clonedFromGame;
       apiClient.getGameLog(id, this.game.baseGame);
       this.$router.push(`/game/${id}`);
+    },
+    canPayOut(nation) {
+      let totalToPayOut = 0;
+      for (const player in this.game.players) {
+        for (const bond of this.game.players[player].bonds) {
+          if (bond.nation === nation) {
+            totalToPayOut += bond.number;
+          }
+        }
+      }
+
+      return this.game.nations.get(nation).treasury >= totalToPayOut;
     }
   }
 };
