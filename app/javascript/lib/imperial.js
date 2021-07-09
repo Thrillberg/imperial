@@ -1968,7 +1968,7 @@ export default class Imperial {
 
   availableActionsWithUndo() {
     let availableActions = new Set([...this.availableActions]);
-    if (this.log.length > 1) {
+    if (this.log.length > 1 && !this.winner) {
       if (this.log.slice(-1)[0].type !== "undo") {
         availableActions.add(Action.undo({ player: this.previousPlayerName }));
       }

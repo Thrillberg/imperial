@@ -14,6 +14,12 @@
       <div class="flex flex-col justify-center">
         <div :class="canPayOut ? '' : 'text-red-500 font-bold'">{{ treasury }}m</div>
         <div>{{ power_points }} power</div>
+        <div
+          v-if="winner"
+          class="text-center font-bold text-xl"
+        >
+          x{{ Math.floor(power_points / 5) }}
+        </div>
       </div>
     </div>
   </div>
@@ -35,7 +41,8 @@ export default {
     controller: String,
     nation: String,
     power_points: Number,
-    treasury: Number
+    treasury: Number,
+    winner: String
   },
   methods: {
     currentNation() {

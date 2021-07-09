@@ -1,7 +1,6 @@
 <template>
   <div>
     <div v-if="this.gameLoaded">
-      <EndGame :game="game" />
       <div class="p-2">
         <b>{{ gameData.name }} <span v-if="gameData.clonedFromGame">(clone)</span></b>
         <span v-if="gameData.clonedFromGame && gameStarted" class="cursor-pointer underline text-xs" @click="goToSourceGame">
@@ -74,6 +73,7 @@
                 :controller="game.nations.get(nation).controller"
                 :current_player="profile.username"
                 :baseGame="game.baseGame"
+                :winner="game.winner"
                 :key="nation.value"
               ></NationComponent>
             </div>
@@ -208,7 +208,6 @@ import { apiClient } from "../router/index.js";
 
 import Board from "../components/board/Board.vue";
 import Board2030 from "../components/board2030/Board2030.vue";
-import EndGame from "../components/EndGame.vue";
 import GameDetails from "../components/GameDetails.vue";
 import GameLog from "../components/GameLog.vue";
 import NationComponent from "../components/NationComponent.vue";
@@ -230,7 +229,6 @@ export default {
   components: {
     Board,
     Board2030,
-    EndGame,
     GameDetails,
     GameLog,
     NationComponent,

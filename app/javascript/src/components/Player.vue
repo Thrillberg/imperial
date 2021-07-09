@@ -1,35 +1,40 @@
 <template>
-  <div class="p-2 m-1 border border-gray-500" :class="player.name === current_player ? 'bg-green-300' : ''">
-    <div class="flex justify-between">
-      <span>
-        <span
-          v-if="online_users.includes(player.name)"
-          class="h-2 w-2 bg-blue-700 border-blue-700 border-2 rounded-full inline-block"
-        >
+  <div class="flex items-center">
+    <div v-if="index" class="text-5xl">
+      {{ index }}
+    </div>
+    <div class="p-2 m-1 border border-gray-500" :class="player.name === current_player ? 'bg-green-300' : ''">
+      <div class="flex justify-between">
+        <span>
+          <span
+            v-if="online_users.includes(player.name)"
+            class="h-2 w-2 bg-blue-700 border-blue-700 border-2 rounded-full inline-block"
+          >
+          </span>
+          <router-link v-if="player.id" :to="{ path: '/users/' + player.id }" class="underline">
+            <b>{{ player.name }}</b>
+          </router-link>
+          <div v-else>
+            <b>{{ player.name }}</b>
+          </div>
         </span>
-        <router-link v-if="player.id" :to="{ path: '/users/' + player.id }" class="underline">
-          <b>{{ player.name }}</b>
-        </router-link>
-        <div v-else>
-          <b>{{ player.name }}</b>
-        </div>
-      </span>
-      <span>{{ player.cash }}m</span>
-      <span>{{ player.rawScore + player.cash }} points</span>
+        <span>{{ player.cash }}m</span>
+        <span>{{ player.rawScore + player.cash }} points</span>
+      </div>
+      <div class="flex flex-wrap">
+        <Bond
+          v-for="bond in sortedBonds(player.bonds)"
+          :bond="bond"
+          :toggleTradeIn="toggleTradeIn"
+          :canBeAppliedToTradeIn="canTradeIn(bond)"
+          :isBeingAppliedToTradeIn="isBeingAppliedToTradeIn(bond)"
+          :class="{ 'cursor-pointer': canTradeIn(bond) }"
+          :key="bond.nation.value + bond.cost"
+        />
+      </div>
+      <div v-if="player.name === game.investorCardHolder">Investor Card</div>
+      <div v-if="game.swissBanks.includes(player.name)">Swiss Bank</div>
     </div>
-    <div class="flex flex-wrap">
-      <Bond
-        v-for="bond in sortedBonds(player.bonds)"
-        :bond="bond"
-        :toggleTradeIn="toggleTradeIn"
-        :canBeAppliedToTradeIn="canTradeIn(bond)"
-        :isBeingAppliedToTradeIn="isBeingAppliedToTradeIn(bond)"
-        :class="{ 'cursor-pointer': canTradeIn(bond) }"
-        :key="bond.nation.value + bond.cost"
-      />
-    </div>
-    <div v-if="player.name === game.investorCardHolder">Investor Card</div>
-    <div v-if="game.swissBanks.includes(player.name)">Swiss Bank</div>
   </div>
 </template>
 
@@ -49,6 +54,7 @@ export default {
     player: Object,
     profile: Object,
     game: Object,
+    index: Number,
     name: String,
     purchasingBond: Boolean,
     tradedInBondNation: String,

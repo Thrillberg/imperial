@@ -1,6 +1,17 @@
 <template>
-  <div class="border border-gray-500 rounded p-2 m-1 text-center" :class="alertCurrentPlayer">
-    <span v-html="playerIs"></span>{{ stringify(Array.from(game.availableActions)) }}.
+  <div
+    v-if="game.winner"
+    class="border border-gray-500 rounded p-2 m-1 text-center bg-green-200"
+  >
+    <b>Game over!</b> {{ game.winner }} won the game.
+  </div>
+  <div
+    v-else
+    class="border border-gray-500 rounded p-2 m-1 text-center"
+    :class="alertCurrentPlayer"
+  >
+    <span v-html="playerIs"></span>
+    {{ stringify(Array.from(game.availableActions)) }}.
   </div>
 </template>
 
