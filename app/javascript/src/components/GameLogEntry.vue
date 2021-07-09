@@ -179,8 +179,12 @@ export default {
       return `Military maneuvers have ended for now.`
     },
     toString(timestamp) {
-      if (timestamp !== "") {
-        return DateTime.fromISO(timestamp).toLocaleString(DateTime.DATETIME_FULL)
+      if (timestamp !== "" && timestamp) {
+        let out = DateTime.fromISO(timestamp).toLocaleString(DateTime.DATETIME_FULL);
+        if (out === "Invalid DateTime") {
+          out = "Automated";
+        }
+        return out;
       }
 
       return "Automated";

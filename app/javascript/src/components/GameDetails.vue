@@ -3,7 +3,7 @@
     <TaxChart v-if="show_tax_chart" :taxes="taxes()" />
     <div class="flex flex-wrap justify-evenly">
       <Player
-        v-for="player in players()"
+        v-for="(player, index) of players()"
         v-on:toggleTradeIn="toggleTradeIn"
         :player="player"
         :current_player="controllingPlayerName"
@@ -13,6 +13,7 @@
         :purchasingBond="purchasingBond"
         :tradedInBondNation="tradedInBondNation"
         :tradedInValue="tradedInValue"
+        :index="game.winner ? index + 1 : null"
         :key="player.name"
       ></Player>
     </div>
@@ -43,10 +44,10 @@
         </div>
       </div>
     </div>
-    <div v-else>
+    <div v-else-if="!game.winner">
       <Rondel
-        v-bind:game="game"
-        v-bind:name="profile.username"
+        :game="game"
+        :name="profile.username"
         v-on:tick-with-action="tickWithAction"
       ></Rondel>
     </div>
@@ -180,7 +181,13 @@ export default {
           players[name] = this.game.players[name];
         }
       }
-      return players;
+      if (this.game.winner) {
+        return Object.values(players).sort((a, b) => {
+          return a.cash + a.rawScore < b.cash + b.rawScore;
+        });
+      } else {
+        return Object.values(players);
+      }
     },
     powerPoints() {
       return [...Array(26).keys()].map(slot => {
