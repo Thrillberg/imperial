@@ -94,6 +94,9 @@
             ></GameDetails>
           </div>
         </div>
+        <div v-if="game.winner">
+          <NationControlChart :game="game" />
+        </div>
         <div class="m-2">
           Observers:
           <ul>
@@ -211,6 +214,7 @@ import Board2030 from "../components/board2030/Board2030.vue";
 import GameDetails from "../components/GameDetails.vue";
 import GameLog from "../components/GameLog.vue";
 import NationComponent from "../components/NationComponent.vue";
+import NationControlChart from "../components/NationControlChart.vue";
 import TurnStatus from "../components/TurnStatus.vue";
 
 import getGameLog from "../getGameLog.js";
@@ -232,6 +236,7 @@ export default {
     GameDetails,
     GameLog,
     NationComponent,
+    NationControlChart,
     TurnStatus
   },
   props: ["profile", "users", "games", "observers"],
