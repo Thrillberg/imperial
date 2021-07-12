@@ -1,48 +1,53 @@
 <template>
   <div
     v-if="game.handlingConflict && (profile.username === controllingPlayerName || (game.soloMode && profile.username in game.players))"
-    class="text-center text-lg"
   >
-    <div v-if="fighting()">
-      <div
+    <div
+      v-if="fighting()"
+      class="text-center text-lg inline-flex flex-col"
+    >
+      <button
         v-on:click="coexist"
-        class="rounded p-2 bg-green-800 text-white cursor-pointer"
+        class="rounded p-2 m-1 bg-green-800 text-white cursor-pointer"
       >
         Coexist
-      </div>
-      <div
+      </button>
+      <button
         v-for="fightAction in fightActions()"
         v-on:click="$emit('tick-with-action', fightAction)"
         :key="fightAction.payload.incumbent.value + fightAction.payload.targetType"
-        class="rounded p-2 bg-green-800 text-white cursor-pointer"
+        class="rounded p-2 m-1 bg-green-800 text-white cursor-pointer"
       >
-      Fight {{ stringify(fightAction.payload.incumbent.value) }} ({{ fightAction.payload.targetType }})
-      </div>
+        Fight {{ stringify(fightAction.payload.incumbent.value) }} ({{ fightAction.payload.targetType }})
+      </button>
     </div>
-    <div v-if="occupying()">
-      <div
+    <div
+      v-if="occupying()"
+      class="text-center text-lg inline-flex flex-col"
+    >
+      <button
         v-on:click="friendlyEntrance"
-        class="rounded p-2 bg-green-800 text-white cursor-pointer"
+        class="rounded p-2 m-1 bg-green-800 text-white cursor-pointer"
       >
         Enter friendly
-      </div>
-      <div
+      </button>
+      <button
         v-on:click="unfriendlyEntrance"
-        class="rounded p-2 bg-green-800 text-white cursor-pointer"
+        class="rounded p-2 m-1 bg-green-800 text-white cursor-pointer"
       >
         Enter unfriendly
-      </div>
+      </button>
     </div>
   </div>
   <div v-else-if="fighting() && (profile.username === controllingPlayerName || (game.soloMode && profile.username in game.players))" class="text-center text-lg">
-    <div
+    <button
       v-for="fightAction in fightActions()"
       v-on:click="$emit('tick-with-action', fightAction)"
       :key="fightAction.payload.province + fightAction.payload.challenger"
-      class="rounded p-2 bg-green-800 text-white cursor-pointer"
+      class="rounded p-2 m-4 bg-green-800 text-white cursor-pointer"
     >
     Fight {{ stringify(fightAction.payload.challenger.value) }} in {{ fightAction.payload.province }}
-    </div>
+    </button>
   </div>
 </template>
 

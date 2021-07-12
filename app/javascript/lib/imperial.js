@@ -799,10 +799,12 @@ export default class Imperial {
   destroyFactory(action) {
     this.provinces.get(action.payload.province).factory = "";
     this.units.get(this.currentNation).get(action.payload.province).armies -= 3;
+    this.handlingConflict = false;
     this.setManeuverAvailableActions();
   }
 
   skipDestroyFactory() {
+    this.handlingConflict = false;
     this.setManeuverAvailableActions();
   }
 
