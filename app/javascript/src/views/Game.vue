@@ -32,34 +32,19 @@
               :importing_units="importPlacements"
               v-if="game.baseGame === 'imperial2030'"
             ></Board2030>
-            <div class="flex justify-center my-2">
-              <div
-                v-if="this.game.log.length > 1"
-                class="rounded p-2 mx-2 bg-green-800 text-white cursor-pointer"
-                @click="back"
-              >
-                ◀
-              </div>
-              <div
-                v-else
-                class="rounded p-2 mx-2 bg-gray-600 text-white cursor-not-allowed"
-              >
-                ◀
-              </div>
-              <div
-                v-if="poppedTurns.length > 0"
-                class="rounded p-2 mx-2 bg-green-800 text-white cursor-pointer"
-                @click="forward"
-              >
-                ▶
-              </div>
-              <div
-                v-else
-                class="rounded p-2 mx-2 bg-gray-600 text-white cursor-not-allowed"
-              >
-                ▶
-              </div>
-            </div>
+            <ControlPanel
+              :game="game"
+              :chooseImportType="importProvince"
+              :controllingPlayerName="controllingPlayerName"
+              :profile="profile"
+              :importPlacements="importPlacements"
+              :gameData="gameData"
+              @tick="tickWithAction"
+              @endManeuver="endManeuver"
+              @chooseImportType="makeImportTypeChoice"
+              @runImport="runImport"
+              @skipBuildFactory="skipBuildFactory"
+            />
           </div>
           <div class="border border-gray-500 rounded text-sm" :class="gameDetailsWidth()">
             <div class="flex flex-wrap justify-between">
@@ -80,17 +65,11 @@
             <GameDetails
               :game="game"
               :gameData="gameData"
-              :chooseImportType="importProvince"
               :controllingPlayerName="controllingPlayerName"
               :profile="profile"
-              :importPlacements="importPlacements"
               :online_users="users"
               :show_tax_chart="game.baseGame === 'imperial'"
-              v-on:tick="tickWithAction"
-              v-on:chooseImportType="makeImportTypeChoice"
-              v-on:endManeuver="endManeuver"
-              v-on:runImport="runImport"
-              v-on:skipBuildFactory="skipBuildFactory"
+              @tick="tickWithAction"
             ></GameDetails>
           </div>
         </div>
@@ -211,6 +190,7 @@ import { apiClient } from "../router/index.js";
 
 import Board from "../components/board/Board.vue";
 import Board2030 from "../components/board2030/Board2030.vue";
+import ControlPanel from "../components/ControlPanel.vue";
 import GameDetails from "../components/GameDetails.vue";
 import GameLog from "../components/GameLog.vue";
 import NationComponent from "../components/NationComponent.vue";
@@ -233,6 +213,7 @@ export default {
   components: {
     Board,
     Board2030,
+    ControlPanel,
     GameDetails,
     GameLog,
     NationComponent,
