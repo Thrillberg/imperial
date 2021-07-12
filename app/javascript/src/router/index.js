@@ -277,6 +277,16 @@ const routes = [
     path: "/cloned_games",
     name: "ClonedGames",
     component: () => import("../views/ClonedGames.vue")
+  },
+  {
+    path: "/forgot_password",
+    name: "ForgotPassword",
+    component: () => import("../views/ForgotPassword.vue")
+  },
+  {
+    path: "/reset_password",
+    name: "ResetPassword",
+    component: () => import("../views/ResetPassword.vue")
   }
 ];
 

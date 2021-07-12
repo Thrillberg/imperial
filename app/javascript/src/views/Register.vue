@@ -25,7 +25,7 @@
       <input
         type="submit"
         value="Register"
-        class="rounded p-10 bg-green-800 text-white cursor-pointer my-2 text-2xl w-1/2 self-center"
+        class="rounded p-5 bg-green-800 text-white cursor-pointer my-2 text-2xl w-1/2 self-center"
       />
     </form>
   </div>
