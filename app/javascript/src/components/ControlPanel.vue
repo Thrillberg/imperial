@@ -16,6 +16,10 @@
       @purchaseBond="purchaseBond"
       @skip="this.skipPurchaseBond"
     ></BondPurchase>
+    <AvailableBonds
+      v-else
+      :game="game"
+    ></AvailableBonds>
     <div v-if="destroyingFactory">
       <div class="text-lg">Do you want to destroy the factory at <b>{{ this.factoryToDestroy }}</b>?</div>
       <div class="flex flex-wrap justify-evenly">
@@ -89,12 +93,13 @@
 <script>
 import Action from "../../lib/action.js";
 
+import AvailableBonds from "../components/AvailableBonds.vue";
 import BondPurchase from "../components/BondPurchase.vue";
 import ConflictHandler from "../components/ConflictHandler.vue";
 
 export default {
   name: "ControlPanel",
-  components: { BondPurchase, ConflictHandler },
+  components: { AvailableBonds, BondPurchase, ConflictHandler },
   props: [
     "game",
     "chooseImportType",
