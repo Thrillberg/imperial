@@ -371,7 +371,7 @@ export default {
       this.poppedTurns = [];
       let baseGame;
       if (log[0]) {
-        baseGame = JSON.parse(log[0]).payload.baseGame;
+        baseGame = JSON.parse(log[0]).payload.baseGame || "imperial";
       } else {
         baseGame = this.gameData.baseGame;
       }
