@@ -24,7 +24,7 @@
         <div class="w-1/5">{{ currentPlayer(game) }}</div>
         <div class="w-1/5">{{ toTime(game.lastMoveAt) }}</div>
         <div class="w-1/5" v-if="!game.winner">
-          <button v-if="game.currentPlayerName || game.host !== profile.username" class="rounded bg-green-800 text-white cursor-pointer block hover:bg-green-900 p-2">
+          <button v-if="game.startedAt" class="rounded bg-green-800 text-white cursor-pointer block hover:bg-green-900 p-2">
             View Game
           </button>
           <button v-else class="rounded bg-green-800 text-white cursor-pointer block hover:bg-green-900 p-2">

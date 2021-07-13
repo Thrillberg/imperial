@@ -113,7 +113,7 @@
             <div class="mx-auto p-2 text-center">
               <p>
                 <b>Players:</b>
-                <span>{{ playersInGame(game.id).join(", ") }}</span>
+                <span>{{ playersInGame.join(", ") }}</span>
               </p>
               <p>
                 <b>Base game:</b>
@@ -149,7 +149,7 @@
             <div class="mx-auto p-2 text-center">
               <p>
                 <b>Players:</b>
-                <span>{{ playersInGame(game.id).join(", ") }}</span>
+                <span>{{ playersInGame.join(", ") }}</span>
               </p>
               <p>
                 <b>Base game:</b>
@@ -162,10 +162,20 @@
             </div>
             <div class="text-2xl m-2">Game not yet started!</div>
           </div>
-          <div v-else>
+          <div v-else-if="!joinedGame">
             <div class="mx-auto p-2 text-center">
-              <b>Players:</b>
-              <span>{{ playersInGame(game.id).join(", ") }}</span>
+              <p>
+                <b>Players:</b>
+                <span>{{ playersInGame.join(", ") }}</span>
+              </p>
+              <p>
+                <b>Base game:</b>
+                <span>{{ baseGameString(gameData.baseGame) }}</span>
+              </p>
+              <p>
+                <b>Variant:</b>
+                <span>{{ variant(gameData.variant) }}</span>
+              </p>
             </div>
             <button
               @click="joinGame"
@@ -232,6 +242,7 @@ export default {
       gameLoaded: false,
       gameStarted: false,
       importPlacements: [],
+      joinedGame: false,
       logTimestamps: [],
       maneuverOrigin: "",
       poppedTurns: [],
@@ -239,12 +250,7 @@ export default {
     };
   },
   created() {
-    fetch(`/api/games/${this.$route.params.id}`)
-      .then(response => response.json())
-      .then(gameData => {
-        this.gameData = translateToGameData(gameData);
-        apiClient.getGameLog(this.$route.params.id, this.game.baseGame);
-      });
+    this.fetchGame();
     window.addEventListener("beforeunload", this.beforeWindowUnload)
     apiClient.userObservingGame(this.profile.username, this.$route.params.id);
   },
@@ -265,8 +271,8 @@ export default {
     },
     playingInThisGame() {
       let playingInThisGame = false;
-      for (const player of this.gameData.players) {
-        if (player.name === this.profile.username) {
+      for (const player of this.playersInGame) {
+        if (player === this.profile.username) {
           playingInThisGame = true;
         }
       }
@@ -278,20 +284,31 @@ export default {
     },
     hostingThisGame() {
       return this.gameData.host === this.profile.username ? true : false
+    },
+    playersInGame() {
+      return this.games.find(
+        game => game.id === this.$route.params.id
+      ).players.map(player => player.name);
     }
   },
   methods: {
+    fetchGame() {
+      fetch(`/api/games/${this.$route.params.id}`)
+        .then(response => response.json())
+        .then(gameData => {
+          this.gameData = translateToGameData(gameData);
+          apiClient.getGameLog(this.$route.params.id, this.game.baseGame);
+        });
+    },
     beforeWindowUnload() {
       apiClient.userStoppedObservingGame(this.profile.username, this.$route.params.id);
     },
-    playersInGame() {
-      return this.gameData.players.map(player => player.name);
-    },
     otherPlayersInGame() {
-      let players = this.playersInGame();
+      let players = this.playersInGame;
       return players.filter(player => player !== this.profile.username);
     },
     joinGame() {
+      this.joinedGame = true;
       apiClient.joinGame(this.$cookies.get("user_id"), this.$route.params.id, this.profile.username);
     },
     startGame() {
