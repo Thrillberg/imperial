@@ -177,6 +177,9 @@ export default {
     endManeuver: function() {
       this.$emit("endManeuver", Action.endManeuver());
     },
+    tickWithAction: function(action) {
+      this.$emit("tick", action);
+    },
     destroyFactory: function() {
       let destroyAction = {};
       for (const action of this.game.availableActions) {
