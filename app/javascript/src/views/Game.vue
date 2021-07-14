@@ -39,11 +39,14 @@
               :profile="profile"
               :importPlacements="importPlacements"
               :gameData="gameData"
+              :tradedInBondNation="tradedInBondNation"
+              :tradedInValue="tradedInValue"
               @tick="tickWithAction"
               @endManeuver="endManeuver"
               @chooseImportType="makeImportTypeChoice"
               @runImport="runImport"
               @skipBuildFactory="skipBuildFactory"
+              @purchaseBond="purchaseBond"
             />
           </div>
           <div class="border border-gray-500 rounded text-sm" :class="gameDetailsWidth()">
@@ -70,6 +73,7 @@
               :online_users="users"
               :show_tax_chart="game.baseGame === 'imperial'"
               @tick="tickWithAction"
+              @toggleTradeIn="toggleTradeIn"
             ></GameDetails>
           </div>
         </div>
@@ -246,7 +250,9 @@ export default {
       logTimestamps: [],
       maneuverOrigin: "",
       poppedTurns: [],
-      silenceAudio: true
+      silenceAudio: true,
+      tradedInBondNation: "",
+      tradedInValue: 0
     };
   },
   created() {
@@ -596,6 +602,27 @@ export default {
       }
 
       return this.game.nations.get(nation).treasury >= totalToPayOut;
+    },
+    toggleTradeIn(bond) {
+      if (this.tradedInValue > 0) {
+        this.tradedInBondNationValue = "";
+        this.tradedInValue = 0;
+      } else {
+        this.tradedInBondNation = bond.nation.value;
+        this.tradedInValue = bond.cost;
+      }
+    },
+    purchaseBond(bond) {
+      for (const action of this.game.availableActions) {
+        if (
+          bond.cost === action.payload.cost &&
+          bond.nation.value === action.payload.nation.value &&
+          action.payload.tradeInValue === this.tradedInValue
+        ) {
+          this.tickWithAction(action);
+          this.tradedInValue = 0;
+        }
+      }
     }
   }
 };

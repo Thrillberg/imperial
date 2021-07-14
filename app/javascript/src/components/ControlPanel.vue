@@ -106,7 +106,9 @@ export default {
     "controllingPlayerName",
     "profile",
     "importPlacements",
-    "gameData"
+    "gameData",
+    "tradedInBondNation",
+    "tradedInValue",
   ],
   computed: {
     purchasingBond() {
@@ -153,24 +155,11 @@ export default {
     }
   },
   data() {
-    return {
-      factoryToDestroy: "",
-      tradedInBondNation: "",
-      tradedInValue: 0
-    }
+    return { factoryToDestroy: "" }
   },
   methods: {
     purchaseBond(bond) {
-      for (const action of this.game.availableActions) {
-        if (
-          bond.cost === action.payload.cost &&
-          bond.nation.value === action.payload.nation.value &&
-          action.payload.tradeInValue === this.tradedInValue
-        ) {
-          this.tickWithAction(action);
-          this.tradedInValue = 0;
-        }
-      }
+      this.$emit("purchaseBond", bond);
     },
     skipPurchaseBond() {
       for (const action of this.game.availableActions) {
@@ -242,15 +231,6 @@ export default {
         if (action.type === "skipForceInvestor") {
           this.tickWithAction(action);
         }
-      }
-    },
-    toggleTradeIn(bond) {
-      if (this.tradedInValue > 0) {
-        this.tradedInBondNationValue = "";
-        this.tradedInValue = 0;
-      } else {
-        this.tradedInBondNation = bond.nation.value;
-        this.tradedInValue = bond.cost;
       }
     },
   }

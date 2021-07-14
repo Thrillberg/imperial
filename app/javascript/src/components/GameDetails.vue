@@ -4,7 +4,7 @@
     <div class="flex flex-wrap justify-evenly">
       <Player
         v-for="(player, index) of players()"
-        v-on:toggleTradeIn="toggleTradeIn"
+        @toggleTradeIn="toggleTradeIn"
         :player="player"
         :current_player="controllingPlayerName"
         :game="game"
@@ -21,7 +21,7 @@
       <Rondel
         :game="game"
         :name="profile.username"
-        v-on:tick-with-action="tickWithAction"
+        @tick-with-action="tickWithAction"
       ></Rondel>
     </div>
   </div>
@@ -107,13 +107,7 @@ export default {
       this.$emit("tick", action);
     },
     toggleTradeIn(bond) {
-      if (this.tradedInValue > 0) {
-        this.tradedInBondNationValue = "";
-        this.tradedInValue = 0;
-      } else {
-        this.tradedInBondNation = bond.nation.value;
-        this.tradedInValue = bond.cost;
-      }
+      this.$emit("toggleTradeIn", bond);
     }
   }
 };
