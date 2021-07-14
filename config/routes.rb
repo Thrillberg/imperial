@@ -17,7 +17,7 @@ Rails.application.routes.draw do
 
   namespace :api do
     resources :users, only: [:show, :create]
-    get "/games/:id", to: "games#show"
+    resources :games, only: [:index, :show]
   end
 
   resources :profiles, only: [:show]
