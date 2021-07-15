@@ -131,6 +131,15 @@
             <button
               @click="startGame"
               class="rounded bg-green-800 text-white cursor-pointer block text-2xl hover:bg-green-900 p-10 m-10 mx-auto"
+              v-if="playersInGame.length === 1"
+            >
+              Start Solo Game
+              <div class="text-xl">(sandbox mode)</div>
+            </button>
+            <button
+              @click="startGame"
+              class="rounded bg-green-800 text-white cursor-pointer block text-2xl hover:bg-green-900 p-10 m-10 mx-auto"
+              v-else
             >
               Start Game
             </button>
