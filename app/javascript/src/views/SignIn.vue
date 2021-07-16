@@ -3,23 +3,23 @@
     <div v-for="(error, index) in errors" v-bind:key="index">
       {{ error }}
     </div>
-    <form class="flex flex-col mx-auto rounded bg-green-200 max-w-4xl mt-10 p-20" @submit="signIn">
+    <form class="flex flex-col mx-auto rounded bg-green-200 sm:max-w-4xl mt-10 sm:p-20" @submit="signIn">
       <input
         type="text"
         placeholder="email"
         v-model="email"
-        class="rounded p-5 border border-green-800 my-2 w-1/2 self-center"
+        class="rounded p-5 border border-green-800 my-2 sm:w-1/2 self-center"
       />
       <input
         type="password"
         placeholder="password"
         v-model="password"
-        class="rounded p-5 border border-green-800 my-2 w-1/2 self-center"
+        class="rounded p-5 border border-green-800 my-2 sm:w-1/2 self-center"
       />
       <input
         type="submit"
         value="Sign In"
-        class="rounded p-5 bg-green-800 text-white cursor-pointer my-2 text-2xl w-1/2 self-center"
+        class="rounded p-5 bg-green-800 text-white cursor-pointer my-2 text-2xl sm:w-1/2 self-center"
       />
       <router-link to="/forgot_password" class="self-center">
         <p class="underline">Forgot your password?</p>

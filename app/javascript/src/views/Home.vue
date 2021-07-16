@@ -3,14 +3,14 @@
     <div class="mt-10">
       <div v-if="!profile.anonymity_confirmed_at && !profile.registered" class="flex flex-col items-center rounded p-20 mx-auto max-w-4xl bg-green-200">
         <button
-          class="rounded bg-green-800 text-white cursor-pointer text-2xl block w-1/2 hover:bg-green-900 p-10 m-10"
+          class="rounded bg-green-800 text-white cursor-pointer text-2xl block sm:w-1/2 hover:bg-green-900 p-3 m-3 sm:p-10 sm:m-10"
           @click="setAnonymous"
           v-if="profile.username"
         >
           Play as {{ profile.username }}
         </button>
         <button
-          class="rounded bg-green-800 text-white cursor-pointer text-2xl block w-1/2 hover:bg-green-900 p-10 m-10"
+          class="rounded bg-green-800 text-white cursor-pointer text-2xl block sm:w-1/2 hover:bg-green-900 p-3 m-3 sm:p-10 sm:m-10"
           @click="register"
           >
           Register an Account

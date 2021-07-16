@@ -1,5 +1,5 @@
 <template>
-  <div class="container mx-auto w-1/2">
+  <div class="container mx-auto sm:w-1/2">
     <b class="text-xl">About PlayImperial</b>
     <div class="mt-5">
       <p>
