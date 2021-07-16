@@ -17,7 +17,7 @@
         </button>
       </div>
       <div v-else class="flex justify-around items-start">
-        <div class="w-3/4" v-if="gamesFetched">
+        <div class="sm:w-3/4" v-if="gamesFetched">
           <div class="bg-yellow-200 p-4 my-2 flex">
             <p>
             This website is under active development! We especially welcome bug reports and feature requests, submitted through <b><a href="https://discord.gg/VnxKwuQmg8" class="underline">Discord</a></b> or <b><a href="https://github.com/Thrillberg/imperial/issues" class="underline">GitHub</a></b>. There is a good chance we will work on whatever you recommend!
@@ -45,7 +45,7 @@
             </router-link>
           </div>
         </div>
-        <div v-else class="w-3/4 text-center text-2xl mt-8">
+        <div v-else class="sm:w-3/4 text-center text-2xl mt-8">
           Loading games
         </div>
       </div>
