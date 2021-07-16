@@ -165,12 +165,12 @@ describe("imperial2030", () => {
         // Add two flags for RU
         game.provinces.get("c").flag = Nation2030.RU;
         game.provinces.get("d").flag = Nation2030.RU;
-        // Arbitrarily give RU 0 treasury, which will increase to 6 when initially collecting taxes
-        game.nations.get(Nation2030.RU).treasury = 0;
-        // Arbitrarily give controlling player 5 cash; we want this to increase to 6 and RU treasury to decrease to 0
-        game.players["player1"].cash = 5;
-        // AH controls one army
+        // RU controls one army
         game.units.get(Nation2030.RU).get("a").armies = 1;
+        // Arbitrarily give RU 0 treasury, which will increase to 6 when initially collecting taxes and decrease to 5 for soldiers' pay
+        game.nations.get(Nation2030.RU).treasury = 0;
+        // Arbitrarily give controlling player 5 cash; we want this to increase to 6 and RU treasury to decrease to 4
+        game.players["player1"].cash = 5;
 
         game.tick(
           Action.rondel({ cost: 0, nation: Nation2030.RU, slot: "taxation" })
@@ -246,6 +246,72 @@ describe("imperial2030", () => {
         );
 
         expect(game.nations.get(Nation2030.RU).powerPoints).toEqual(8);
+      });
+    });
+  });
+
+  describe("rondel cost", () => {
+    const newGame = () => {
+      const board = new GameBoard({ nodes: [], edges: [] });
+
+      const game = new Imperial(board);
+      initialize(game);
+      return game;
+    };
+
+    describe("moving beyond 3 slots", () => {
+      test("it costs 1 + nation score to move extra slots", () => {
+        const game = newGame();
+        // Give player2 3 cash so they can afford all rondel positions
+        game.players["player2"].cash = 3;
+        const expected = new Set();
+        ["investor", "import", "production2"].forEach(slot => {
+          expected.add(Action.rondel({ nation: Nation2030.CN, cost: 0, slot }));
+        });
+        expected.add(
+          Action.rondel({ nation: Nation2030.CN, cost: 1, slot: "maneuver2" })
+        );
+        expected.add(
+          Action.rondel({ nation: Nation2030.CN, cost: 2, slot: "taxation" })
+        );
+        expected.add(
+          Action.rondel({ nation: Nation2030.CN, cost: 3, slot: "factory" })
+        );
+        game.nations.get(Nation2030.CN).rondelPosition = "maneuver1";
+        game.tick(
+          Action.rondel({ slot: "maneuver1", cost: 0, nation: Nation2030.RU })
+        );
+        game.tick(Action.endManeuver());
+
+        expect(game.availableActions).toEqual(expected);
+      });
+
+      test("it costs 4 + nation score * 4 to move extra slots", () => {
+        const game = newGame();
+        // Give player2 3 cash so they can afford all rondel positions
+        game.players["player2"].cash = 30;
+        // Give CN 24 power points so that they need to pay an extra 4 per slot
+        game.nations.get(Nation2030.CN).powerPoints = 24;
+        const expected = new Set();
+        ["investor", "import", "production2"].forEach(slot => {
+          expected.add(Action.rondel({ nation: Nation2030.CN, cost: 0, slot }));
+        });
+        expected.add(
+          Action.rondel({ nation: Nation2030.CN, cost: 5, slot: "maneuver2" })
+        );
+        expected.add(
+          Action.rondel({ nation: Nation2030.CN, cost: 10, slot: "taxation" })
+        );
+        expected.add(
+          Action.rondel({ nation: Nation2030.CN, cost: 15, slot: "factory" })
+        );
+        game.nations.get(Nation2030.CN).rondelPosition = "maneuver1";
+        game.tick(
+          Action.rondel({ slot: "maneuver1", cost: 0, nation: Nation2030.RU })
+        );
+        game.tick(Action.endManeuver());
+
+        expect(game.availableActions).toEqual(expected);
       });
     });
   });
