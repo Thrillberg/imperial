@@ -186,6 +186,8 @@ export default {
           return 100
         case "North Pacific":
           return -50
+        case "Fortaleza":
+          return 8
       }
       return 0
     },
@@ -197,6 +199,8 @@ export default {
           return -10
         case "Sea of Japan":
           return 30
+        case "Fortaleza":
+          return -10
       }
       return 0
     },
