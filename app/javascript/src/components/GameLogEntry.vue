@@ -108,6 +108,8 @@ export default {
           return `${stringify(action.payload.nation.value)} gained ${action.payload.amount}m in taxes.`;
         case "nationGainsPowerPoints":
           return `${stringify(action.payload.nation.value)} gained ${action.payload.powerPoints} power points.`;
+        case "nationPaysPlayer":
+          return `${stringify(action.payload.nation.value)} paid ${action.payload.player} ${action.payload.amount}m.`;
         case "playerTradedInForABond":
           return `${action.payload.player} traded in their ${stringify(action.payload.bondNation.value)} bond for ${action.payload.bondCost}m.`;
         case "playerAutoSkipsBondPurchase":

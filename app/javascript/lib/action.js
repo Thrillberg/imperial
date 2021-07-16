@@ -57,6 +57,7 @@ export default {
   playerInvests: makeAction("playerInvests", ["player"]),
   nationGainsTreasury: makeAction("nationGainsTreasury", ["nation", "amount"]),
   nationGainsPowerPoints: makeAction("nationGainsPowerPoints", ["nation", "powerPoints"]),
+  nationPaysPlayer: makeAction("nationPaysPlayer", ["player", "nation", "amount"]),
   // The remaining actions are for the main log
   initialize: makeAction("initialize", ["players", "soloMode", "variant", "baseGame"]),
   bondPurchase: makeAction("bondPurchase", ["nation", "player", "cost", "tradeInValue"]),

@@ -24,7 +24,7 @@
     </div>
     <div v-if="!!helperText" class="w-1/2 mx-auto border border-gray-600 rounded m-2 p-2">
       <div v-if="onInvestorSlot" class="mb-2">
-        <div v-for="(amount, bearer) in bondBearers" :key="bearer">
+        <div v-for="[bearer, amount] of bondBearers" :key="bearer">
           <b>{{ bearer }}</b> would receive {{ amount }}m
         </div>
         <div v-if="game.variant !== 'withoutInvestorCard'">
@@ -91,7 +91,18 @@ export default {
           }
         }
       }
-      return bearers;
+      let bearersArray = Object.keys(bearers).map(name => [name, bearers[name]]).sort((a, b) => a[1] - b[1]);
+      let remainingTreasury = this.game.nations.get(this.game.currentNation).treasury;
+      return bearersArray.map(bearer => {
+        if (remainingTreasury === 0) return;
+        if (remainingTreasury >= bearer[1]) {
+          remainingTreasury -= bearer[1];
+          return bearer;
+        }
+        const lastPayment = remainingTreasury;
+        remainingTreasury = 0;
+        return [bearer[0], lastPayment];
+      }).filter(Boolean);
     }
   },
   methods: {

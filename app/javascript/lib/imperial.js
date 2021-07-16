@@ -1285,6 +1285,11 @@ export default class Imperial {
               this.players[this.currentPlayerName].cash = 0;
             }
             this.players[player].cash += payment;
+            this.annotatedLog.push(Action.nationPaysPlayer({
+              player: this.players[player].name,
+              nation: nation,
+              amount: payment
+            }));
           }
         );
       }
@@ -1298,10 +1303,20 @@ export default class Imperial {
     if (this.nations.get(nation).treasury > amountOwedToController) {
       this.players[this.currentPlayerName].cash += amountOwedToController;
       this.nations.get(nation).treasury -= amountOwedToController;
+      this.annotatedLog.push(Action.nationPaysPlayer({
+        player: this.currentPlayerName,
+        nation: nation,
+        amount: amountOwedToController
+      }));
     } else {
       const payment = this.nations.get(nation).treasury;
       this.players[this.currentPlayerName].cash += payment;
       this.nations.get(nation).treasury -= payment;
+      this.annotatedLog.push(Action.nationPaysPlayer({
+        player: this.currentPlayerName,
+        nation: nation,
+        amount: payment
+      }));
     }
     if (this.variant === "withoutInvestorCard") {
       this.roundOfInvestment();

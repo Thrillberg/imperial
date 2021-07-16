@@ -1,7 +1,7 @@
 <template>
   <div class="border border-black rounded p-2 m-2">
     <GameLogEntry
-      v-for="(entry, index) in processedLog()"
+      v-for="(entry, index) in processedLog"
         :events="entry"
         :board="board"
         :key="index"
@@ -15,7 +15,7 @@ export default {
   name: "GameLog",
   props: { log: Array, logTimestamps: Array, board: Object },
   components: { GameLogEntry },
-  methods: {
+  computed: {
     processedLog() {
       // TODO: Pull these and their analogoues in action.js out into constants somewhere else
       const annotatedActions = [
@@ -25,8 +25,9 @@ export default {
         "playerPaysForRondel",
         "playerInvests",
         "nationGainsTreasury",
-        "nationGainsPowerPoints"
-        ];
+        "nationGainsPowerPoints",
+        "nationPaysPlayer"
+      ];
       let rawlog = this.log || [];
       let timestamps = this.logTimestamps || [];
       let entries = [];
