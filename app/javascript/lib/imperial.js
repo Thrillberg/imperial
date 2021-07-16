@@ -1758,7 +1758,7 @@ export default class Imperial {
       out.add(
         Action.rondel({
           nation,
-          cost: 2,
+          cost: this.extraRondelCost(1),
           slot:
             rondelPositions[currentIndex + 4] || rondelPositions[distance + 4]
         })
@@ -1766,7 +1766,7 @@ export default class Imperial {
       out.add(
         Action.rondel({
           nation,
-          cost: 4,
+          cost: this.extraRondelCost(2),
           slot:
             rondelPositions[currentIndex + 5] || rondelPositions[distance + 5]
         })
@@ -1774,7 +1774,7 @@ export default class Imperial {
       out.add(
         Action.rondel({
           nation,
-          cost: 6,
+          cost: this.extraRondelCost(3),
           slot:
             rondelPositions[currentIndex + 6] || rondelPositions[distance + 6]
         })
@@ -1803,6 +1803,20 @@ export default class Imperial {
       out.delete(factoryAction)
     }
     return out;
+  }
+
+  extraRondelCost(index) {
+    if (this.baseGame === "imperial") {
+      return index * 2;
+    }
+
+    if (this.baseGame === "imperial2030") {
+      return index + (
+        parseInt(
+          this.nations.get(this.currentNation).powerPoints / 5
+        )
+      * index)
+    }
   }
 
   nextNation(lastTurnNation) {
