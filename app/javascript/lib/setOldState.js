@@ -68,6 +68,7 @@ export default (game) => {
     fleetConvoyCount,
     coexistingNations,
     currentNationInConflict: game.currentNationInConflict,
-    swissBanksWhoDoNotInterrupt
+    swissBanksWhoDoNotInterrupt,
+    importing: false
   }
 }

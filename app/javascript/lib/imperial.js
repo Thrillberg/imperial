@@ -819,6 +819,7 @@ export default class Imperial {
       this.nations.get(nation).treasury--;
     });
     this.importing = false;
+    this.maxImports = 0;
     this.handlePassingThroughInvestor();
   }
 
