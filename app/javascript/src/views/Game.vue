@@ -144,6 +144,13 @@
               Start Game
             </button>
             <button
+              @click="addRandomBot"
+              class="rounded bg-green-800 text-white cursor-pointer block text-2xl hover:bg-green-900 p-5 m-5 mx-auto"
+              v-if="playersInGame.length < 6"
+            >
+              Add a Random Bot
+            </button>
+            <button
               @click="cancelGame"
               class="rounded bg-red-500 text-white cursor-pointer block text-2xl hover:bg-red-600 p-5 m-5 mx-auto"
             >
@@ -301,6 +308,7 @@ export default {
       return this.gameData.host === this.profile.username ? true : false
     },
     playersInGame() {
+      this.fetchGame();
       return this.games.find(
         game => game.id === this.$route.params.id
       ).players.map(player => player.name);
@@ -337,6 +345,9 @@ export default {
       const soloMode = this.gameData.soloMode;
       const action = Action.initialize({ players, soloMode, variant, baseGame });
       apiClient.tick(this.gameData.id, action);
+    },
+    addRandomBot() {
+      apiClient.addRandomBot(this.$route.params.id);
     },
     cancelGame() {
       apiClient.cancel(this.gameData.id);
@@ -401,6 +412,7 @@ export default {
         this.gameStarted = true;
         this.currentPlayer = this.game.players[this.profile.username] || {};
         this.controllingPlayerName = this.game.currentPlayerName;
+        this.handleBotMoves();
         this.updateFavicon();
         this.audioNotification();
       }
@@ -414,6 +426,17 @@ export default {
       }
       this.gameLoaded = true;
       this.silenceAudio = false;
+    },
+    handleBotMoves() {
+      this.gameData.players.forEach((player) => {
+        if (player.name === this.game.currentPlayerName && player.isBot) {
+          this.tickWithAction(this.getRandomAction());
+        }
+      });
+    },
+    getRandomAction() {
+      const actionsArray = Array.from(this.game.availableActions)
+      return actionsArray[Math.floor(Math.random() * actionsArray.length)];
     },
     validProvinces() {
       // This function returns all provinces that a unit can move
