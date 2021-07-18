@@ -232,6 +232,7 @@ import assignNations from "../assignNations.js";
 import translateToGameData from "../translateToGameData.js";
 import imperialBoard from "../../lib/board.js";
 import imperial2030Board from "../../lib/board2030.js";
+import monteCarlo from "../../lib/monteCarloTreeSearch.js";
 
 import favicon2 from "../assets/favicon2.ico";
 // import notification from "../assets/notification.mp3";
@@ -428,9 +429,14 @@ export default {
       this.silenceAudio = false;
     },
     handleBotMoves() {
+      console.log('handling bot moves')
       this.gameData.players.forEach((player) => {
         if (player.name === this.game.currentPlayerName && player.isBot) {
-          this.tickWithAction(this.getRandomAction());
+          //this.tickWithAction(this.getRandomAction());
+          const mcts = new monteCarlo(this.game);
+          mcts.runSearch(this.game.log);
+          const action = mcts.bestAction(this.game.log);
+          this.tickWithAction(action);
         }
       });
     },
