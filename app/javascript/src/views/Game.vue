@@ -308,7 +308,6 @@ export default {
       return this.gameData.host === this.profile.username ? true : false
     },
     playersInGame() {
-      this.fetchGame();
       return this.games.find(
         game => game.id === this.$route.params.id
       ).players.map(player => player.name);
