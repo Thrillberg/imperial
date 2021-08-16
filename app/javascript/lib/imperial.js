@@ -16,7 +16,26 @@ export default class Imperial {
     return game;
   }
 
-  constructor(board) {
+  constructor(board, state) {
+    if (state) {
+      const deepState = setOldState(state);
+      for (const key of Object.keys(deepState)) {
+        this[key] = deepState[key]
+      }
+      this.log = state.log
+      this.annotatedLog = state.annotatedLog
+      this.currentPlayerName = state.currentPlayerName
+      this.board = state.board
+      this.currentNation = state.currentNation
+      this.baseGame = state.baseGame
+      this.unitLimits = state.unitLimits
+      this.swissBanks = state.swissBanks
+      this.investorCardHolder = state.investorCardHolder
+      this.order = state.order
+      this.unitsToMove = state.unitsToMove
+      return
+    }
+
     this.board = board || standardGameBoard;
     // This is the canonical log from which game state is derived.
     this.log = [];
@@ -605,7 +624,7 @@ export default class Imperial {
   }
 
   actionIsRondelAndManeuver(action) {
-    const slot = action.payload.slot;
+    const slot = action.payload?.slot;
     return action.type === "rondel" &&
       (slot === "maneuver1" || slot === "maneuver2");
   }
@@ -1126,7 +1145,7 @@ export default class Imperial {
           if (taxes >= 5) {
             nation.taxChartPosition = taxes;
           } else {
-            nation.taxCharPosition = 5;
+            nation.taxChartPosition = 5;
           }
           // The tax chart maxes out at 15
           if (nation.taxChartPosition > 15) nation.taxChartPosition = 15;
