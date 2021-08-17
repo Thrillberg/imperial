@@ -13,6 +13,7 @@
         :games="games"
         :gamesFetched="gamesFetched"
         :observers="observers"
+        :gameData="gameData"
         v-on:registered="register"
         v-on:signedIn="signIn"
         v-on:anonymity_confirmed="anonymityConfirmed"
@@ -39,6 +40,7 @@ export default {
   data: function () {
     return {
       profile: {},
+      gameData: {},
       games: [],
       onlineUsers: [],
       observers: [],
@@ -58,6 +60,7 @@ export default {
       this.games = games.map(game => {
         if (game.id === this.$route.params.id) {
           this.observers = game.observers;
+          this.gameData = translateToGameData(game)
         }
         return translateToGameData(game);
       });

@@ -229,7 +229,6 @@ import TurnStatus from "../components/TurnStatus.vue";
 
 import getGameLog from "../getGameLog.js";
 import assignNations from "../assignNations.js";
-import translateToGameData from "../translateToGameData.js";
 import imperialBoard from "../../lib/board.js";
 import imperial2030Board from "../../lib/board2030.js";
 
@@ -250,7 +249,7 @@ export default {
     NationControlChart,
     TurnStatus
   },
-  props: ["profile", "users", "games", "observers"],
+  props: ["profile", "users", "gameData", "games", "observers"],
   data: () => {
     return {
       importProvince: "",
@@ -258,7 +257,6 @@ export default {
       controllingPlayerName: "",
       currentPlayer: {},
       game: {},
-      gameData: { players: [] },
       gameLoaded: false,
       gameStarted: false,
       importPlacements: [],
@@ -317,10 +315,7 @@ export default {
     fetchGame() {
       fetch(`/api/games/${this.$route.params.id}`)
         .then(response => response.json())
-        .then(gameData => {
-          this.gameData = translateToGameData(gameData);
-          apiClient.getGameLog(this.$route.params.id, this.game.baseGame);
-        });
+        .then(apiClient.getGameLog(this.$route.params.id, this.game.baseGame));
     },
     beforeWindowUnload() {
       apiClient.userStoppedObservingGame(this.profile.username, this.$route.params.id);
