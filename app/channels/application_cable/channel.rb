@@ -29,7 +29,8 @@ module ApplicationCable
         data: {
           gameId: game.id,
           log: game.actions.order(:originally_created_at).order(:created_at).map(&:data),
-          logTimestamps: game.actions.order(:created_at).map(&:created_at)
+          logTimestamps: game.actions.order(:created_at).map(&:created_at),
+          game: game.to_json
         }
       }
       ActionCable.server.broadcast(channel, payload)

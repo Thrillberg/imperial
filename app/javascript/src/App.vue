@@ -66,9 +66,10 @@ export default {
       });
       this.gamesFetched = true;
     });
-    apiClient.onUpdateGameLog(({ gameId, log, logTimestamps }) => {
+    apiClient.onUpdateGameLog(({ gameId, log, logTimestamps, game }) => {
       if (gameId === this.$route.params.id) {
         this.$refs.game.updateGameLog(log, logTimestamps);
+        this.gameData = translateToGameData(game);
       }
     });
     if (this.$cookies.get("user_id")) {
