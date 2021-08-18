@@ -1,9 +1,9 @@
-//import Imperial from "./imperial.js";
+import Imperial from "./imperial.js";
 const tf = require("@tensorflow/tfjs-node");
 const fs = require("fs");
 
-//export default class MachineLearning {
-class MachineLearning {
+export default class MachineLearning {
+//class MachineLearning {
   static stateArray(game) {
     let stateArray = [];
     // stateArray[0] = AH's rondel position
@@ -166,73 +166,73 @@ class MachineLearning {
 
 const ml = new MachineLearning();
 
-function normalize(value, min, max) {
-  if (min === undefined || max === undefined) {
-    return value;
-  }
-  return (value - min) / (max - min);
-}
-
-const csvTransform = ({
-  AHRondelPosition,
-  ITRondelPosition,
-  FRRondelPosition,
-  GBRondelPosition,
-  GERondelPosition,
-  RURondelPosition,
-  NumberOfAvailableBonds,
-  Cash,
-  RawScore,
-  NumberOfOwnedBonds,
-  annotation
-}) => {
-  const xs = [
-    normalize(AHRondelPosition, 0, 7),
-    normalize(ITRondelPosition, 0, 7),
-    normalize(FRRondelPosition, 0, 7),
-    normalize(GBRondelPosition, 0, 7),
-    normalize(GERondelPosition, 0, 7),
-    normalize(RURondelPosition, 0, 7),
-    normalize(NumberOfAvailableBonds, 0, 42),
-    normalize(Cash),
-    normalize(RawScore),
-    normalize(NumberOfOwnedBonds, 0, 42),
-  ];
-  return {xs, ys: annotation};
-}
-
-const trainingData =
-  tf.data.csv("file://app/javascript/lib/ml.csv")
-    .map(csvTransform)
-    .shuffle(fs.readFileSync("app/javascript/lib/ml.csv", "utf8").length - 1)
-    .batch(100);
-
-const model = tf.sequential();
-model.add(tf.layers.dense({units: 250, activation: 'relu', inputShape: [10]}));
-model.add(tf.layers.dense({units: 175, activation: 'relu'}));
-model.add(tf.layers.dense({units: 150, activation: 'relu'}));
-model.add(tf.layers.dense({units: 10, activation: 'softmax'}));
-model.compile({
-  optimizer: tf.train.adam(),
-  loss: 'sparseCategoricalCrossentropy',
-  metrics: ['accuracy']
-});
-
-async function run(epochCount, savePath) {
-  model.summary();
-  await model.fitDataset(trainingData, {
-    epochs: epochCount,
-    callbacks: {
-      onEpochEnd: async (epoch, logs) => {
-        console.log(`Epoch: ${epoch} - loss: ${logs.loss.toFixed(3)}`);
-      }
-    }
-  });
-
-  if (savePath !== null) {
-    await model.save(savePath);
-    console.log(`Saved model to path: ${savePath}`);
-  }
-}
-
-run(8, "file:///Users/eric/code/imperial/app/javascript/lib/models2")
+//function normalize(value, min, max) {
+//  if (min === undefined || max === undefined) {
+//    return value;
+//  }
+//  return (value - min) / (max - min);
+//}
+//
+//const csvTransform = ({
+//  AHRondelPosition,
+//  ITRondelPosition,
+//  FRRondelPosition,
+//  GBRondelPosition,
+//  GERondelPosition,
+//  RURondelPosition,
+//  NumberOfAvailableBonds,
+//  Cash,
+//  RawScore,
+//  NumberOfOwnedBonds,
+//  annotation
+//}) => {
+//  const xs = [
+//    normalize(AHRondelPosition, 0, 7),
+//    normalize(ITRondelPosition, 0, 7),
+//    normalize(FRRondelPosition, 0, 7),
+//    normalize(GBRondelPosition, 0, 7),
+//    normalize(GERondelPosition, 0, 7),
+//    normalize(RURondelPosition, 0, 7),
+//    normalize(NumberOfAvailableBonds, 0, 42),
+//    normalize(Cash),
+//    normalize(RawScore),
+//    normalize(NumberOfOwnedBonds, 0, 42),
+//  ];
+//  return {xs, ys: annotation};
+//}
+//
+//const trainingData =
+//  tf.data.csv("file://app/javascript/lib/ml.csv")
+//    .map(csvTransform)
+//    .shuffle(fs.readFileSync("app/javascript/lib/ml.csv", "utf8").length - 1)
+//    .batch(100);
+//
+//const model = tf.sequential();
+//model.add(tf.layers.dense({units: 250, activation: 'relu', inputShape: [10]}));
+//model.add(tf.layers.dense({units: 175, activation: 'relu'}));
+//model.add(tf.layers.dense({units: 150, activation: 'relu'}));
+//model.add(tf.layers.dense({units: 10, activation: 'softmax'}));
+//model.compile({
+//  optimizer: tf.train.adam(),
+//  loss: 'sparseCategoricalCrossentropy',
+//  metrics: ['accuracy']
+//});
+//
+//async function run(epochCount, savePath) {
+//  model.summary();
+//  await model.fitDataset(trainingData, {
+//    epochs: epochCount,
+//    callbacks: {
+//      onEpochEnd: async (epoch, logs) => {
+//        console.log(`Epoch: ${epoch} - loss: ${logs.loss.toFixed(3)}`);
+//      }
+//    }
+//  });
+//
+//  if (savePath !== null) {
+//    await model.save(savePath);
+//    console.log(`Saved model to path: ${savePath}`);
+//  }
+//}
+//
+//run(8, "file:///Users/eric/code/imperial/app/javascript/lib/models2")
