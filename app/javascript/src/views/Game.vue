@@ -422,7 +422,7 @@ export default {
       this.silenceAudio = false;
     },
     handleBotMoves() {
-      this.gameData.players.forEach((player) => {
+      this.gameData.players?.forEach((player) => {
         if (player.name === this.game.currentPlayerName && player.isBot) {
           this.tickWithAction(this.getRandomAction());
         }
