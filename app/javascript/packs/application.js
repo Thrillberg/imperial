@@ -20,6 +20,20 @@ import Vue from "vue";
 import App from "../src/App.vue";
 import router from "../src/router";
 import VueCookies from "vue-cookies";
+import * as Sentry from "@sentry/vue";
+import { Integrations } from "@sentry/tracing";
+
+Sentry.init({
+  Vue,
+  dsn: "https://ba9947c7ea584f1bb8838e0a5101155f@o987046.ingest.sentry.io/5943839",
+  integrations: [
+    new Integrations.BrowserTracing({
+      routingInstrumentation: Sentry.vueRouterInstrumentation(router),
+      tracingOrigins: ["localhost", "imperial.club", /^\//],
+    }),
+  ],
+  tracesSampleRate: 1.0,
+});
 
 Vue.config.productionTip = false;
 Vue.use(VueCookies);
