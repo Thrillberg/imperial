@@ -2045,7 +2045,9 @@ describe("imperial", () => {
             describe("3. Investing without a flag", () => {
               test("a player who has a Swiss Bank may invest", () => {
                 const game = newGame();
-                // player2 has no bond and no investor card.
+                // player2 has no bond and no investor card but has enough
+                // money to buy a bond.
+                game.players["player2"].cash = 4;
                 game.investorCardHolder = "player1";
                 game.players["player1"].cash = 4;
                 // Make player1 control all countries
@@ -4000,6 +4002,23 @@ describe("imperial", () => {
 
         expect(game.currentNation).toEqual(Nation.FR);
         expect(game.currentPlayerName).toEqual("player1");
+      });
+
+      test("undo after an automated action", () => {
+        const game = newGame();
+        game.availableBonds = new Set([Bond(Nation.IT, 1)]);
+        game.swissBanks = ["player1"]
+
+        game.tick(Action.rondel({nation: Nation.AH, cost: 0, slot: "investor"}));
+        game.tick(Action.bondPurchase({ player: "player2", cost: 2, nation: Nation.IT, tradeInValue: 0 }));
+        game.tick(Action.undo({player: "player2"}));
+
+        expect(game.availableActions).toEqual(
+          new Set([
+            Action.bondPurchase({ player: "player2", cost: 2, nation: Nation.IT, tradeInValue: 0 }),
+            Action.skipBondPurchase({ player: "player2", nation: null })
+          ])
+        );
       });
     });
 

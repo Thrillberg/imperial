@@ -351,7 +351,7 @@ export default class Imperial {
         } else {
           this.availableActions = availableBondPurchases(this.currentNation, this);
         }
-        // If there is one available action, it is the pass action and doesn't
+        // If there is one available action, it is the skip action and doesn't
         // count as a real action.
         while (this.availableActions.size <= 1 && this.investing) {
           this.annotatedLog.push(
@@ -388,6 +388,7 @@ export default class Imperial {
       }
       this.investing = false;
     }
+
     let swissBanksToInvest = this.swissBanks;
     if (
       this.variant !== "withoutInvestorCard" &&
@@ -400,6 +401,21 @@ export default class Imperial {
           this.hasNotBoughtABondThisTurn(player)
         ) {
           this.endOfInvestorTurn(player);
+        }
+
+        // If there is one available action, it is the skip action and doesn't
+        // count as a real action.
+        if (this.availableActions.size <= 1) {
+          this.annotatedLog.push(
+            Action.playerAutoSkipsBondPurchase({
+              player: this.currentPlayerName,
+              bondNation: this.currentNation
+            })
+          );
+          this.currentNation = this.nextNation(this.currentNation);
+          this.currentPlayerName = this.nations.get(this.currentNation).controller;
+          this.advanceInvestorCard();
+          this.availableActions = new Set(this.rondelActions(this.currentNation));
         }
       }
     } else {
@@ -1632,6 +1648,7 @@ export default class Imperial {
   }
 
   middleOfInvestorTurn() {
+    this.previousPlayerName = this.currentPlayerName;
     this.currentPlayerName = this.investorCardHolder;
     // 2. Investor card holder gets 2m cash
     this.players[this.investorCardHolder].cash += 2;
@@ -1640,6 +1657,7 @@ export default class Imperial {
   }
 
   endOfInvestorTurn(investor) {
+    this.previousPlayerName = this.currentPlayerName;
     this.currentPlayerName = investor;
     if (this.variant === "withoutInvestorCard") {
       this.availableActions = availableBondPurchases(this.currentNation, this);
