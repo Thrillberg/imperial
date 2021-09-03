@@ -71,7 +71,6 @@
               :controllingPlayerName="controllingPlayerName"
               :profile="profile"
               :online_users="users"
-              :show_tax_chart="game.baseGame === 'imperial'"
               @tick="tickWithAction"
               @toggleTradeIn="toggleTradeIn"
             ></GameDetails>
