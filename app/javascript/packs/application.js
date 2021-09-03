@@ -36,6 +36,7 @@ Sentry.init({
     }),
   ],
   tracesSampleRate: 1.0,
+  environment: "production",
 });
 
 const app = document.createElement("div");
