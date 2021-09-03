@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <div v-if="profileFetched && gamesFetched">
+    <div v-if="profileFetched && gamesFetched" class="text-sm sm:text-base">
       <Header
         :profile="profile"
         v-on:signOut="signOut"

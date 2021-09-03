@@ -34,12 +34,12 @@
           <YourGames :games="yourGames" :profile="profile"></YourGames>
           <UnstartedGameList :games="unstartedGames" :profile="profile"></UnstartedGameList>
           <CurrentGames :games="currentGames"></CurrentGames>
-          <div>
+          <div class="px-4">
             <router-link to="/games">
               <b class="underline">All Games</b>
             </router-link>
           </div>
-          <div>
+          <div class="px-4">
             <router-link to="/cloned_games">
               <b class="underline">Your Cloned Games</b>
             </router-link>
