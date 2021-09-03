@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col justify-between items-center">
     <div class="underline">{{ taxSlot }}</div>
-    <div class="flex flex-wrap">
+    <div class="flex flex-wrap h-5" v-if="!showBonus">
       <svg
         width="14px"
         height="14px"
@@ -25,7 +25,8 @@
         </g>
       </svg>
     </div>
-    <div>+ {{ taxSlot - 5 }}</div>
+    <div v-if="showBonus">{{ bonus }}</div>
+    <div>+ {{ powerPointIncrease }}</div>
   </div>
 </template>
 
@@ -33,8 +34,11 @@
 export default {
   name: "TaxChartSlot",
   props: {
+    bonus: Number,
     taxSlot: Number,
-    nations: Array
+    nations: Array,
+    powerPointIncrease: Number,
+    showBonus: Boolean
   },
   methods: {
     fill(nation) {

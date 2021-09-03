@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col">
-    <TaxChart v-if="show_tax_chart" :taxes="taxes()" />
+    <TaxChart :showBonus="game.baseGame === 'imperial2030'" :taxes="taxes()" />
     <div class="flex flex-wrap justify-evenly">
       <Player
         v-for="(player, index) of players()"
@@ -39,7 +39,7 @@ export default {
     Rondel,
     TaxChart
   },
-  props: ["game", "controllingPlayerName", "profile", "online_users", "show_tax_chart", "gameData"],
+  props: ["game", "controllingPlayerName", "profile", "online_users", "gameData"],
   computed: {
     purchasingBond() {
       const purchasingBond = this.game.availableActions.size > 0 &&
@@ -93,15 +93,77 @@ export default {
       });
     },
     taxes() {
-      return [15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5].map(slot => {
-        let nations = [];
-        for (const [nation, data] of this.game.nations) {
-          if (data.taxChartPosition === slot) {
-            nations.push(nation.value);
+      if (this.game.baseGame === "imperial") {
+        return [15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5].map(slot => {
+          let nations = [];
+          for (const [nation, data] of this.game.nations) {
+            if (data.taxChartPosition === slot) {
+              nations.push(nation.value);
+            }
           }
-        }
-        return { slot, nations };
-      });
+          const powerPointIncrease = slot - 5;
+          return { slot, nations, powerPointIncrease };
+        });
+      } else if (this.game.baseGame === "imperial2030") {
+        const taxes = [18, 16, 15, 14, 13, 12, 11, 10, 8, 6, 5]
+        return taxes.map((slot, index) => {
+          let nations = [];
+          for (const [nation, data] of this.game.nations) {
+            if (data.taxChartPosition >= slot) {
+              nations.push(nation.value);
+            }
+          } 
+          const powerPointIncrease = taxes.length - index - 1;
+          let bonus;
+          switch (slot) {
+            case 5: {
+              bonus = 0;
+              break;
+            }
+            case 6: {
+              bonus = 1;
+              break;
+            }
+            case 8: {
+              bonus = 1;
+              break;
+            }
+            case 10: {
+              bonus = 2;
+              break;
+            }
+            case 11: {
+              bonus = 2;
+              break;
+            }
+            case 12: {
+              bonus = 3;
+              break;
+            }
+            case 13: {
+              bonus = 3;
+              break;
+            }
+            case 14: {
+              bonus = 4;
+              break;
+            }
+            case 15: {
+              bonus = 4;
+              break;
+            }
+            case 16: {
+              bonus = 5;
+              break;
+            }
+            case 18: {
+              bonus = 5;
+              break;
+            }
+          }
+          return { slot, nations, powerPointIncrease, bonus };
+        });
+      }
     },
     tickWithAction: function(action) {
       this.$emit("tick", action);
