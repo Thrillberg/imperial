@@ -269,7 +269,7 @@ export default {
     };
   },
   created() {
-    this.fetchGame();
+    apiClient.getGameLog(this.$route.params.id, this.game.baseGame)
     window.addEventListener("beforeunload", this.beforeWindowUnload)
     apiClient.userObservingGame(this.profile.username, this.$route.params.id);
   },
@@ -311,11 +311,6 @@ export default {
     }
   },
   methods: {
-    fetchGame() {
-      fetch(`/api/games/${this.$route.params.id}`)
-        .then(response => response.json())
-        .then(apiClient.getGameLog(this.$route.params.id, this.game.baseGame));
-    },
     beforeWindowUnload() {
       apiClient.userStoppedObservingGame(this.profile.username, this.$route.params.id);
     },
