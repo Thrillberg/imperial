@@ -217,6 +217,7 @@
 import Action from "../../lib/action.js";
 import Imperial from "../../lib/imperial.js";
 import { apiClient } from "../router/index.js";
+import MachineLearning from "../../lib/machineLearning.js";
 
 import Board from "../components/board/Board.vue";
 import Board2030 from "../components/board2030/Board2030.vue";
@@ -315,7 +316,7 @@ export default {
   },
   methods: {
     fetchGame() {
-      fetch(`/api/games/${this.$route.params.id}`)
+      return fetch(`/api/games/${this.$route.params.id}`)
         .then(response => response.json())
         .then(gameData => {
           this.gameData = translateToGameData(gameData);
@@ -334,16 +335,19 @@ export default {
       apiClient.joinGame(this.$cookies.get("user_id"), this.$route.params.id, this.profile.username);
     },
     startGame() {
-      const playerNames = this.playerNames(this.gameData);
-      let players = this.shuffle(playerNames);
-      const baseGame = this.gameData.baseGame;
-      const variant = this.gameData.variant;
-      if (variant === "standard") {
-        players = assignNations(players, baseGame);
-      }
-      const soloMode = this.gameData.soloMode;
-      const action = Action.initialize({ players, soloMode, variant, baseGame });
-      apiClient.tick(this.gameData.id, action);
+      this.fetchGame()
+        .then(() => {
+          const playerNames = this.playerNames(this.gameData);
+          let players = this.shuffle(playerNames);
+          const baseGame = this.gameData.baseGame;
+          const variant = this.gameData.variant;
+          if (variant === "standard") {
+            players = assignNations(players, baseGame);
+          }
+          const soloMode = this.gameData.soloMode;
+          const action = Action.initialize({ players, soloMode, variant, baseGame });
+          apiClient.tick(this.gameData.id, action);
+        });
     },
     addRandomBot() {
       apiClient.addRandomBot(this.$route.params.id);
@@ -411,9 +415,11 @@ export default {
         this.gameStarted = true;
         this.currentPlayer = this.game.players[this.profile.username] || {};
         this.controllingPlayerName = this.game.currentPlayerName;
-        this.handleBotMoves();
-        this.updateFavicon();
-        this.audioNotification();
+        this.handleBotMoves()
+          //.then(() => {
+          //  this.updateFavicon();
+          //  this.audioNotification();
+          //})
       }
       apiClient.updateCurrentPlayerName(this.$route.params.id, this.game.currentPlayerName);
       if (this.game.winner) {
@@ -426,12 +432,14 @@ export default {
       this.gameLoaded = true;
       this.silenceAudio = false;
     },
-    handleBotMoves() {
-      this.gameData.players.forEach((player) => {
+    async handleBotMoves() {
+      for (const player of this.gameData.players) {
         if (player.name === this.game.currentPlayerName && player.isBot) {
-          this.tickWithAction(this.getRandomAction());
+          //this.tickWithAction(this.getRandomAction());
+          const action = await MachineLearning.bestAction([...this.game.availableActions], this.game, player.name)
+          this.tickWithAction(action)
         }
-      });
+      };
     },
     getRandomAction() {
       const actionsArray = Array.from(this.game.availableActions)

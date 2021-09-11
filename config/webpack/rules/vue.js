@@ -1,5 +1,6 @@
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
 const HtmlWebpackHarddiskPlugin = require('html-webpack-harddisk-plugin')
+const NodePolyfillPlugin = require("node-polyfill-webpack-plugin")
 const path = require('path')
 
 module.exports = {
@@ -21,7 +22,7 @@ module.exports = {
         ],
       },
       {
-        test: /\.mp3$/,
+        test: /\.(mp3|json)$/,
         loader: 'file-loader',
         options: {
           limit: 10000,
@@ -34,5 +35,6 @@ module.exports = {
       outputPath: path.resolve(__dirname, '../../../public/packs')
     }),
     new VueLoaderPlugin(),
+    new NodePolyfillPlugin(),
   ]
 }

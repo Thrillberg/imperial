@@ -48,15 +48,16 @@ describe("machineLearning", () => {
   describe("playing games", () => {
     test.only("it generates a playedGame 2d array", async () => {
       let index = 0;
-      while (index <= 10) {
+      while (index <= 100) {
         const game = new Imperial();
         initialize(game);
         const playedGame = await MachineLearning.play(game);
         MachineLearning.writeGame(playedGame);
         index += 1;
+        console.log("Game number: ", index)
       }
 
       //expect(playedGame.length + 1).toEqual(game.log.length);
-    }, 300000);
+    }, 300000000);
   });
 });

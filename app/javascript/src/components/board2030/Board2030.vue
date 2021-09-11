@@ -182,6 +182,7 @@ export default {
     factoryType(province) {
       if (this.game.board && !["Corsica", "Sardinia", "Switzerland"].includes(province)) {
         const normalizedProvince = province.replace(/\.*\s/gm, "").toLowerCase();
+        console.log(this.game.board)
         return this.game.board.graph.get(normalizedProvince).factoryType
       }
     },

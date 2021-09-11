@@ -13,6 +13,9 @@ Rails.application.routes.draw do
   get "/get_games", to: "games#index"
   post "/games", to: "games#create"
 
+  get "/ml_models", to: "ml_models#index"
+  get "/weights.bin", to: "ml_weights#index"
+
   resources :clone_games, only: [:create]
 
   namespace :api do
