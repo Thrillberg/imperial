@@ -2,7 +2,9 @@ class GamesController < ApplicationController
   skip_before_action :verify_authenticity_token
 
   def index
-    games = Game.includes(:host, :users, :actions).order(created_at: :desc)
+    games = Game
+      .includes(:host, :users, :actions, :winner)
+      .order(created_at: :desc)
     render json: games
   end
 
