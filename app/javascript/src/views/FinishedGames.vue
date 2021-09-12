@@ -8,7 +8,7 @@
     <div v-for="game of games" v-bind:key="game.id">
       <router-link :to="{ path: '/game/' + game.id }" class="flex justify-between items-center hover:bg-gray-200 py-2">
         <div class="w-1/2">{{ game.name }}</div>
-        <div class="w-1/2">{{ game.winner }}</div>
+        <div class="w-1/2">{{ game.winner_name }}</div>
       </router-link>
     </div>
   </div>
@@ -26,7 +26,7 @@ export default {
   created() {
     fetch("/get_games", { method: "GET" })
       .then(response => response.json())
-      .then(data => this.games = data.filter(game => !game.cancelled_at && !game.cloned_from_game_id && game.winner))
+      .then(data => this.games = data.filter(game => !game.cancelled_at && !game.cloned_from_game && game.winner_name))
   }
 }
 </script>

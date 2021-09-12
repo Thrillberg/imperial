@@ -5,7 +5,7 @@ class GamesController < ApplicationController
     games = Game
       .includes(:host, :users, :actions, :winner)
       .order(created_at: :desc)
-    render json: games
+    render json: games.map(&:to_json)
   end
 
   def create
