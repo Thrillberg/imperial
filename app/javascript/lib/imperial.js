@@ -447,6 +447,21 @@ export default class Imperial {
     this.unitsToMove = [];
     this.fleetConvoyCount = {};
     this.maneuvering = false;
+    const reversedLog = this.log.slice().reverse();
+    let index = 0;
+    let action = reversedLog[index];
+    let originsFromPreviousManeuver = [];
+    while (action.type !== "rondel") {
+      const origin = action.payload?.origin;
+      if (origin) {
+        originsFromPreviousManeuver.push(origin);
+      }
+      index += 1;
+      action = reversedLog[index];
+    }
+    originsFromPreviousManeuver.forEach(origin => {
+      this.updateFlag(origin);
+    });
     if (this.variant === "withoutInvestorCard") {
       this.roundOfInvestment();
     } else {
@@ -882,24 +897,7 @@ export default class Imperial {
     );
     this.unitsToMove.splice(i, 1);
 
-    // Update origin flag if a different nation remains in the origin
-    const nationHadAFlagAtOrigin = this.provinces.get(origin).flag === this.currentNation;
-    const armiesAtOrigin = this.units.get(this.currentNation).get(origin).armies;
-    const fleetsAtOrigin = this.units.get(this.currentNation).get(origin).fleets;
-    if (nationHadAFlagAtOrigin && armiesAtOrigin === 0 && fleetsAtOrigin === 0) {
-      const otherNationsOccupying = [];
-      for (const [nation] of this.nations) {
-        const nationsArmies = this.units.get(nation).get(origin).armies;
-        const nationsFleets = this.units.get(nation).get(origin).fleets;
-        if (nationsArmies > 0 || nationsFleets > 0) {
-          otherNationsOccupying.push(nation);
-        }
-      }
-      // If multiple other nations occupy, then flag remains with the original flag-holder
-      if (otherNationsOccupying.length === 1) {
-        this.provinces.get(origin).flag = otherNationsOccupying[0];
-      }
-    }
+    this.updateFlag(origin);
 
     // Interrupt manuevers in case of potential conflict!
     this.availableActions = new Set();
@@ -2071,6 +2069,29 @@ export default class Imperial {
     } else {
       this.handleAdvancePlayer();
       this.availableActions = new Set(this.rondelActions(this.currentNation));
+    }
+  }
+
+  updateFlag(origin) {
+    // Update origin flag if a different nation remains in the origin
+    if (this.unitsToMove.length === 0) {
+      const nationHadAFlagAtOrigin = this.provinces.get(origin).flag === this.currentNation;
+      const armiesAtOrigin = this.units.get(this.currentNation).get(origin).armies;
+      const fleetsAtOrigin = this.units.get(this.currentNation).get(origin).fleets;
+      if (nationHadAFlagAtOrigin && armiesAtOrigin === 0 && fleetsAtOrigin === 0) {
+        const otherNationsOccupying = [];
+        for (const [nation] of this.nations) {
+          const nationsArmies = this.units.get(nation).get(origin).armies;
+          const nationsFleets = this.units.get(nation).get(origin).fleets;
+          if (nationsArmies > 0 || nationsFleets > 0) {
+            otherNationsOccupying.push(nation);
+          }
+        }
+        // If multiple other nations occupy, then flag remains with the original flag-holder
+        if (otherNationsOccupying.length === 1) {
+          this.provinces.get(origin).flag = otherNationsOccupying[0];
+        }
+      }
     }
   }
 

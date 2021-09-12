@@ -3305,9 +3305,10 @@ describe("imperial", () => {
           expect(game.provinces.get("f").flag).toEqual(undefined);
         });
 
-        test("maneuver away from coexisting province switches flag to other nation", () => {
+        test("maneuver away from coexisting province switches flag to other nation at the end of the turn", () => {
           const game = newGame();
           game.units.get(Nation.AH).get("f").armies++;
+          game.units.get(Nation.AH).get("g").armies++;
           game.units.get(Nation.IT).get("f").armies++;
           game.provinces.get("f").flag = Nation.AH
 
@@ -3316,6 +3317,12 @@ describe("imperial", () => {
           );
           game.tick(Action.maneuver({ origin: "f", destination: "d" }));
 
+          // The turn isn't over yet so the flag should still be Austrian
+          expect(game.provinces.get("f").flag).toEqual(Nation.AH);
+
+          game.tick(Action.endManeuver())
+
+          // The turn is over now and the flag should switch to Italy
           expect(game.provinces.get("f").flag).toEqual(Nation.IT);
         });
 
