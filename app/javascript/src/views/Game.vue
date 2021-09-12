@@ -380,14 +380,15 @@ export default {
         return { id: player }
       });
     },
-    updateGameLog(log, logTimestamps) {
+    updateGameLog(log, logTimestamps, baseGame) {
       this.logTimestamps = logTimestamps;
       this.poppedTurns = [];
-      let baseGame;
-      if (log[0]) {
-        baseGame = JSON.parse(log[0]).payload.baseGame || "imperial";
-      } else {
-        baseGame = this.gameData.baseGame;
+      if (!baseGame) {
+        if (log[0]) {
+          baseGame = JSON.parse(log[0]).payload.baseGame || "imperial";
+        } else {
+          baseGame = this.gameData.baseGame;
+        }
       }
       const gameLog = getGameLog(log, baseGame);
       if (baseGame === "imperial") {

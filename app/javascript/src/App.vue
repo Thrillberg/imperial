@@ -68,8 +68,8 @@ export default {
     });
     apiClient.onUpdateGameLog(({ gameId, log, logTimestamps, game }) => {
       if (gameId === this.$route.params.id) {
-        this.$refs.game.updateGameLog(log, logTimestamps);
         this.gameData = translateToGameData(game);
+        this.$refs.game.updateGameLog(log, logTimestamps, this.gameData.baseGame);
       }
     });
     if (this.$cookies.get("user_id")) {
