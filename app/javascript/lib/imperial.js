@@ -447,21 +447,7 @@ export default class Imperial {
     this.unitsToMove = [];
     this.fleetConvoyCount = {};
     this.maneuvering = false;
-    const reversedLog = this.log.slice().reverse();
-    let index = 0;
-    let action = reversedLog[index];
-    let originsFromPreviousManeuver = [];
-    while (action.type !== "rondel") {
-      const origin = action.payload?.origin;
-      if (origin) {
-        originsFromPreviousManeuver.push(origin);
-      }
-      index += 1;
-      action = reversedLog[index];
-    }
-    originsFromPreviousManeuver.forEach(origin => {
-      this.updateFlag(origin);
-    });
+    this.adjudicateFlags();
     if (this.variant === "withoutInvestorCard") {
       this.roundOfInvestment();
     } else {
@@ -1049,6 +1035,7 @@ export default class Imperial {
       // No more units may be maneuvered on this turn.
       this.maneuvering = false;
       this.fleetConvoyCount = {};
+      this.adjudicateFlags();
       this.handlePassingThroughInvestor();
     }
   }
@@ -2070,6 +2057,24 @@ export default class Imperial {
       this.handleAdvancePlayer();
       this.availableActions = new Set(this.rondelActions(this.currentNation));
     }
+  }
+
+  adjudicateFlags() {
+    const reversedLog = this.log.slice().reverse();
+    let index = 0;
+    let action = reversedLog[index];
+    let originsFromPreviousManeuver = [];
+    while (action.type !== "rondel") {
+      const origin = action.payload?.origin;
+      if (origin) {
+        originsFromPreviousManeuver.push(origin);
+      }
+      index += 1;
+      action = reversedLog[index];
+    }
+    originsFromPreviousManeuver.forEach(origin => {
+      this.updateFlag(origin);
+    });
   }
 
   updateFlag(origin) {
