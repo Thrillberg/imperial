@@ -2642,12 +2642,15 @@ describe("imperial", () => {
             // Arbitrarily give AH 5 treasury; we want this to increase by 20, not 21
             game.nations.get(Nation.AH).treasury = 5;
 
+
             game.tick(
               Action.rondel({ cost: 0, nation: Nation.AH, slot: "taxation" })
             );
 
             expect(game.nations.get(Nation.AH).treasury).toEqual(25);
             expect(game.nations.get(Nation.AH).taxChartPosition).toEqual(15);
+            expect(game.nations.get(Nation.AH).powerPoints).toEqual(10);
+            expect(game.players["player1"].cash).toEqual(12)
           });
 
           test("nation's taxChartPosition cannot fall below 5", () => {

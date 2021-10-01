@@ -1100,6 +1100,7 @@ export default class Imperial {
       case "taxation": {
         const nationName = action.payload.nation;
         const nation = this.nations.get(nationName);
+        const previousTaxChartPosition = nation.taxChartPosition;
         // 1. Tax revenue / success bonus
         let taxes =
           this.unoccupiedFactoryCount(nationName) * 2 +
@@ -1112,7 +1113,16 @@ export default class Imperial {
           if (taxes > 23) taxes = 23;
         }
         if (this.baseGame === "imperial") {
-          let excessTaxes = taxes - nation.taxChartPosition;
+          // Nation's taxChartPosition matches taxes with a floor of 5
+          if (taxes >= 5) {
+            nation.taxChartPosition = taxes;
+          } else {
+            nation.taxChartPosition = 5;
+          }
+          // The tax chart maxes out at 15
+          if (nation.taxChartPosition > 15) nation.taxChartPosition = 15;
+        }
+          let excessTaxes = nation.taxChartPosition - previousTaxChartPosition;
           // Players can never lose money here
           if (excessTaxes < 0) {
             excessTaxes = 0;
@@ -1123,15 +1133,6 @@ export default class Imperial {
             player: this.currentPlayerName,
             amount: excessTaxes
           }));
-          // Nation's taxChartPosition matches taxes with a floor of 5
-          if (taxes >= 5) {
-            nation.taxChartPosition = taxes;
-          } else {
-            nation.taxCharPosition = 5;
-          }
-          // The tax chart maxes out at 15
-          if (nation.taxChartPosition > 15) nation.taxChartPosition = 15;
-        }
         let bonus = 0;
         if (this.baseGame === "imperial2030") {
           // Nation pays bonus to current player
@@ -1180,7 +1181,7 @@ export default class Imperial {
         // 3. Adding power points
         let powerPoints;
         if (this.baseGame === "imperial") {
-          powerPoints = taxes - 5;
+          powerPoints = nation.taxChartPosition - 5;
           if (powerPoints < 0) powerPoints = 0;
           nation.powerPoints += powerPoints;
         } else if (this.baseGame === "imperial2030") {
