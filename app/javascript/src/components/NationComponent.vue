@@ -60,7 +60,7 @@ export default {
       if (this.baseGame === "imperial") {
         return "lg:w-1/3 xl:w-1/3 2xl:w-1/6"
       } else if (this.baseGame === "imperial2030") {
-        return "w-1/6"
+        return "lg:w-1/3 xl:w-1/3 2xl:w-1/6"
       }
     },
     stringify(nation) {
