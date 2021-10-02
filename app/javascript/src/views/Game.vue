@@ -96,8 +96,8 @@
       <div v-else-if="gameCancelled()">
         This game was cancelled by the host
       </div>
-      <div v-else class="flex justify-between">
-        <div class="w-2/3 border border-gray-500 rounded overflow-hidden">
+      <div v-else class="flex flex-wrap justify-between">
+        <div class="w-full sm:w-2/3 border border-gray-500 rounded overflow-hidden">
           <Board
             v-bind:game="game"
             v-bind:select_province="() => {}"
@@ -111,7 +111,7 @@
             v-if="gameData.baseGame === 'imperial2030'"
           ></Board2030>
         </div>
-        <div class="w-1/3 mx-2 border border-gray-500 rounded">
+        <div class="w-full sm:w-1/3 border border-gray-500 rounded">
           <div v-if="hostingThisGame">
             <div class="mx-auto p-2 text-center">
               <p>
@@ -564,16 +564,16 @@ export default {
     },
     mapWidth() {
       if (this.game.baseGame === "imperial") {
-        return "w-7/12"
+        return "w-full sm:w-7/12"
       } else if (this.game.baseGame === "imperial2030") {
-        return "w-full"
+        return "w-full sm:w-2/3"
       }
     },
     gameDetailsWidth() {
       if (this.game.baseGame === "imperial") {
-        return "w-5/12"
+        return "w-full sm:w-5/12"
       } else if (this.game.baseGame === "imperial2030") {
-        return "w-full"
+        return "w-full sm:w-1/3"
       }
     },
     baseGameString(baseGame) {
