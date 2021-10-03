@@ -43,7 +43,10 @@
             <b>{{ game.currentPlayerName }}</b> would receive {{ nextTaxChartPosition() - game.nations.get(game.currentNation).taxChartPosition }}m
           </div>
           <div>
-            <b>{{ stringify(game.currentNation.value) }}</b> would receive {{ nationTaxes() }}m
+            <b>{{ stringify(game.currentNation.value) }}</b> would receive {{ nextTaxChartPosition() - game.unitCount(game.currentNation) }}m
+          </div>
+          <div>
+            <b>{{ stringify(game.currentNation.value) }}</b>'s power points would be {{ postTaxationGameState.nations.get(game.currentNation).powerPoints }}
           </div>
         </div>
         <div v-else-if="game.baseGame === 'imperial2030'">
@@ -52,6 +55,9 @@
           </div>
           <div>
             <b>{{ stringify(game.currentNation.value) }}</b> would receive {{ nationRevenue2030() }}m
+          </div>
+          <div>
+            <b>{{ stringify(game.currentNation.value) }}</b>'s power points would be {{ postTaxationGameState.nations.get(game.currentNation).powerPoints }}
           </div>
         </div>
       </div>
@@ -65,6 +71,7 @@
 
 <script>
 import stringify from "../stringify.js";
+import Imperial from "../../lib/imperial.js";
 
 import RondelSlot from "./RondelSlot.vue";
 
@@ -103,6 +110,17 @@ export default {
         remainingTreasury = 0;
         return [bearer[0], lastPayment];
       }).filter(Boolean);
+    },
+    postTaxationGameState() {
+      const hypotheticalGame = Imperial.fromLog(this.game.log, this.game.board);
+      let taxationAction = {};
+      for (const action of hypotheticalGame.availableActions) {
+        if (action.type === "rondel" && action.payload.slot === "taxation") {
+          taxationAction = action;
+        }
+      }
+      hypotheticalGame.tick(taxationAction);
+      return hypotheticalGame;
     }
   },
   methods: {
@@ -214,21 +232,7 @@ export default {
     },
     nextTaxChartPosition() {
       const nation = this.game.currentNation;
-      const factories = this.game.unoccupiedFactoryCount(nation);
-      const flags = this.game.flagCount(nation);
-      const currentTaxChartPosition = this.game.nations.get(nation).taxChartPosition;
-
-      let taxChartPosition = factories * 2 + flags;
-      if (taxChartPosition > 20) taxChartPosition = 20;
-      if (taxChartPosition < currentTaxChartPosition) taxChartPosition = currentTaxChartPosition;
-
-      return taxChartPosition;
-    },
-    nationTaxes() {
-      const nation = this.game.currentNation;
-      let taxes = this.nextTaxChartPosition() - this.game.unitCount(nation)
-      if (taxes < 0) taxes = 0;
-      return taxes;
+      return this.postTaxationGameState.nations.get(nation).taxChartPosition;
     },
     playerRevenue2030() {
       const taxes = this.game.unoccupiedFactoryCount(this.game.currentNation) * 2 + this.game.flagCount(this.game.currentNation);
