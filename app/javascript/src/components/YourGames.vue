@@ -14,8 +14,12 @@
     >
        New Game
     </a>
-    <div v-for="game of games" v-bind:key="game.id">
-      <router-link :to="{ path: '/game/' + game.id }" class="flex justify-between items-center hover:bg-gray-200 py-2">
+    <div v-for="game of orderedGames" v-bind:key="game.id">
+      <router-link
+        :to="{ path: '/game/' + game.id }"
+        class="flex justify-between items-center py-2"
+        :class="game.winner ? 'bg-gray-200' : 'hover:bg-yellow-100'"
+      >
         <div class="w-1/3 sm:w-1/5 mx-2">
           <Star v-if="game.currentPlayerName && game.currentPlayerName === profile.username && !game.winner" />
           <span>{{ game.name }}</span>
@@ -49,6 +53,19 @@ export default {
   name: "YourGames",
   components: { Star },
   props: { games: Array, profile: Object },
+  computed: {
+    orderedGames() {
+      return [...this.games].sort((a, b) => {
+        if (a.winner === b.winner) {
+          return 0
+        } else if (a.winner === null) {
+          return -1
+        } else if (b.winner === null) {
+          return 1
+        }
+      });
+    }
+  },
   methods: {
     currentPlayer(game) {
       if (game.winner) {
