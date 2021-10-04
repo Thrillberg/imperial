@@ -566,14 +566,14 @@ export default {
       if (this.game.baseGame === "imperial") {
         return "w-full sm:w-7/12"
       } else if (this.game.baseGame === "imperial2030") {
-        return "w-full sm:w-2/3"
+        return "w-full"
       }
     },
     gameDetailsWidth() {
       if (this.game.baseGame === "imperial") {
         return "w-full sm:w-5/12"
       } else if (this.game.baseGame === "imperial2030") {
-        return "w-full sm:w-1/3"
+        return "w-full"
       }
     },
     baseGameString(baseGame) {
