@@ -21,6 +21,8 @@
               :select_province="selectProvince"
               :valid_provinces="validProvinces()"
               :importing_units="importPlacements"
+              :province_with_fight="provinceWithFight"
+              v-on:fightResolved="resolveFight"
               v-if="game.baseGame === 'imperial'"
             ></Board>
             <Board2030
@@ -30,6 +32,8 @@
               :select_province="selectProvince"
               :valid_provinces="validProvinces()"
               :importing_units="importPlacements"
+              :province_with_fight="provinceWithFight"
+              v-on:fightResolved="resolveFight"
               v-if="game.baseGame === 'imperial2030'"
             ></Board2030>
             <ControlPanel
@@ -263,6 +267,7 @@ export default {
       logTimestamps: [],
       maneuverOrigin: "",
       poppedTurns: [],
+      provinceWithFight: "",
       silenceAudio: true,
       tradedInBondNation: "",
       tradedInValue: 0
@@ -504,7 +509,16 @@ export default {
       this.controllingPlayerName = this.game.currentPlayerName;
       if (this.poppedTurns.length === 0) {
         apiClient.tick(this.$route.params.id, action);
+        this.displayFight(action);
       }
+    },
+    displayFight(action) {
+      if (action.type === "fight") {
+        this.provinceWithFight = action.payload.province;
+      }
+    },
+    resolveFight() {
+      this.provinceWithFight = "";
     },
     makeImportTypeChoice: function(type) {
       this.importPlacements.push({ province: this.importProvince, type, nation: this.game.currentNation.value });
