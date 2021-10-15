@@ -28,6 +28,8 @@
         :fleets="fleets(name)"
         :is_valid="isValid(name)"
         :dot="dot(name)"
+        :province_with_fight="province_with_fight === (name.replace(/\.*\s/gm, '').toLowerCase())"
+        v-on:fightResolved="$emit('fightResolved')"
         :key="name"
       ></Province>
       <Province
@@ -43,6 +45,8 @@
         :building_factory="buildingFactory()"
         :factory="factory(name)"
         :factory_type="factoryType(name)"
+        :province_with_fight="province_with_fight === (name.replace(/\.*\s/gm, '').toLowerCase())"
+        v-on:fightResolved="$emit('fightResolved')"
         :key="name"
       ></Province>
     </g>
@@ -124,6 +128,7 @@ export default {
     profile: Object,
     gameStarted: Boolean,
     importing_units: Array,
+    province_with_fight: String,
     select_province: Function,
     valid_provinces: Array
   },
