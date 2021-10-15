@@ -118,16 +118,19 @@ export default {
     province: Object,
     select_province: Function,
     armies: Array,
-    fleets: Array
+    fleets: Array,
+    province_with_fight: Boolean
   },
   data: () => {
     return {
       mounted: false,
+      originalFill: "",
       tempFactory: false
     };
   },
   mounted() {
     this.mounted = true;
+    this.originalFill = this.$refs.province.children[0].getAttribute("fill");
   },
   updated() {
     const province = this.$refs.province;
@@ -141,6 +144,16 @@ export default {
       this.$refs.province.children[0].classList.add("hoverable");
     } else {
       this.$refs.province.children[0].classList.remove("hoverable");
+    }
+    if (this.province_with_fight) {
+      this.$refs.province.children[0].animate([
+        { fill: "#EF4400" },
+        { fill: this.originalFill }
+      ], {
+        duration: 2000,
+        iterations: 1
+      });
+      this.$emit("fightResolved");
     }
   },
   computed: {
