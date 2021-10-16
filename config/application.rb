@@ -43,5 +43,7 @@ module RailsServer
     config.hosts << "localhost"
 
     config.autoloader = :classic
+
+    config.active_job.queue_adapter = :sidekiq
   end
 end

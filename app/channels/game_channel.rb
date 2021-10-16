@@ -52,6 +52,10 @@ class GameChannel < ApplicationCable::Channel
       game = game_from_data(data)
       current_player_name = data["data"]["currentPlayerName"]
       player = game.users.find_by(name: current_player_name)
+      if player&.turn_notifications_enabled
+        TurnNotificationJob.set(wait: 1.hour)
+          .perform_later(player.id, game.id)
+      end
       game.update(current_player: player)
       broadcast_games "game_channel", "updateGames"
 

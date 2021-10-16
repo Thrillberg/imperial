@@ -22,7 +22,18 @@ class API::UsersController < ApplicationController
     render json: user
   end
 
+  def update
+    user = User.find(user_params[:id])
+    user.turn_notifications_enabled = user_params[:turn_notifications_enabled]
+    user.save
+    render json: user
+  end
+
   private
+
+  def user_params
+    params.require(:user).permit(:id, :turn_notifications_enabled)
+  end
 
   def lovely_string
     Faker::Name.first_name + " the " + Faker::Creature::Animal.name.capitalize

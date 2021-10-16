@@ -13,6 +13,7 @@ gem "rails", "~> 6.0.3", ">= 6.0.3.6"
 gem "redis", "~> 4.0"
 gem "sentry-rails"
 gem "sentry-ruby"
+gem "sidekiq"
 gem "webpacker", "~> 5.x"
 
 group :development, :test do
