@@ -1,3 +1,5 @@
+require "sidekiq/web"
+
 Rails.application.routes.draw do
   devise_for :accounts, controllers: {
     registrations: "accounts/registrations",
@@ -5,6 +7,7 @@ Rails.application.routes.draw do
     passwords: "accounts/passwords"
   }, defaults: {format: :json}
   mount ActionCable.server => "/ws"
+  mount Sidekiq::Web => "/sidekiq"
   get "/health", to: "health#index"
 
   post "/session", to: "sessions#create"
@@ -16,7 +19,7 @@ Rails.application.routes.draw do
   resources :clone_games, only: [:create]
 
   namespace :api do
-    resources :users, only: [:show, :create]
+    resources :users, only: [:show, :create, :update]
     resources :games, only: [:index, :show]
   end
 
