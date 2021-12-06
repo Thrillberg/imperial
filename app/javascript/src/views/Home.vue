@@ -18,17 +18,12 @@
       </div>
       <div v-else class="flex justify-around items-start">
         <div class="sm:w-3/4" v-if="gamesFetched">
-          <div class="bg-yellow-200 p-4 my-2 flex">
-            <p>
-            This website is under active development! We especially welcome bug reports and feature requests, submitted through <b><a href="https://discord.gg/VnxKwuQmg8" class="underline">Discord</a></b> or <b><a href="https://github.com/Thrillberg/imperial/issues" class="underline">GitHub</a></b>. There is a good chance we will work on whatever you recommend!
-            </p>
-          </div>
           <div class="bg-green-200 p-4 my-2 flex">
             <a href="http://discord.gg/VnxKwuQmg8">
               <DiscordLogo height="50" fill="#7289DA" class="mr-2" />
             </a>
             <p>
-              Please join us <b><a href="https://discord.gg/VnxKwuQmg8" class="underline">on Discord</a></b> if you want to find others to play a live or asynchronous game! We usually try to schedule a live game for <b>1pm EST</b> on Saturday and/or Sunday.
+              Please join us <b><a href="https://discord.gg/VnxKwuQmg8" class="underline">on Discord</a></b> if you want to find others to play a live or asynchronous game!
             </p>
           </div>
           <YourGames :games="yourGames" :profile="profile"></YourGames>
