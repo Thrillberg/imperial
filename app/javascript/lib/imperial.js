@@ -1718,10 +1718,10 @@ export default class Imperial {
   advanceInvestorCard() {
     if (this.investorCardHolder) {
       const index = this.order.indexOf(this.investorCardHolder);
-      if (index === 0) {
-        this.investorCardHolder = this.order[this.order.length - 1];
+      if (index === this.order[this.order.length - 1]) {
+        this.investorCardHolder = this.order[0];
       } else {
-        this.investorCardHolder = this.order[index - 1];
+        this.investorCardHolder = this.order[index + 1];
       }
     }
   }
