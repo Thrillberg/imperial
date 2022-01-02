@@ -2168,19 +2168,19 @@ describe("imperial", () => {
 
               test("multiple players with a Swiss Bank may invest in clockwise order, starting with the current bearer of the investor card", () => {
                 const game = newGame();
-                game.investorCardHolder = "player3";
+                game.investorCardHolder = "player2";
                 // Make player3 control all countries
-                game.nations.get(Nation.AH).controller = "player3";
-                game.nations.get(Nation.IT).controller = "player3";
-                game.nations.get(Nation.FR).controller = "player3";
-                game.nations.get(Nation.GB).controller = "player3";
-                game.nations.get(Nation.GE).controller = "player3";
-                game.nations.get(Nation.RU).controller = "player3";
+                game.nations.get(Nation.AH).controller = "player2";
+                game.nations.get(Nation.IT).controller = "player2";
+                game.nations.get(Nation.FR).controller = "player2";
+                game.nations.get(Nation.GB).controller = "player2";
+                game.nations.get(Nation.GE).controller = "player2";
+                game.nations.get(Nation.RU).controller = "player2";
                 game.players["player1"].bonds = new Set();
-                game.players["player2"].bonds = new Set();
+                game.players["player3"].bonds = new Set();
                 game.players["player1"].cash = 30;
-                game.players["player2"].cash = 30;
-                game.swissBanks = ["player2", "player1"]
+                game.players["player3"].cash = 30;
+                game.swissBanks = ["player3", "player1"]
                 // Set AH's rondel position to be something *before* investor
                 game.nations.get(Nation.AH).rondelPosition = startingPosition;
 
@@ -2192,12 +2192,29 @@ describe("imperial", () => {
                     cost: 0
                   })
                 );
+                game.tick(Action.skipForceInvestor({ player: "player3" }));
                 game.tick(Action.skipForceInvestor({ player: "player1" }));
-                game.tick(Action.skipForceInvestor({ player: "player2" }));
                 // InvestorCardHolder buys a bond first
                 game.tick(
                   Action.bondPurchase({
                     nation: Nation.AH,
+                    player: "player2",
+                    tradeInValue: 0,
+                    cost: 4
+                  })
+                );
+
+                // For testing purposes, we delete the skip  bond purchase action
+                game.availableActions.delete(Action.skipBondPurchase({ player: "player3", nation: null }));
+                game.availableActions.forEach((action) => {
+                  expect(action.type).toEqual("bondPurchase");
+                  expect(action.payload.player).toEqual("player3");
+                });
+
+                // player3 (a Swiss Bank) buys a bond next
+                game.tick(
+                  Action.bondPurchase({
+                    nation: Nation.IT,
                     player: "player3",
                     tradeInValue: 0,
                     cost: 4
@@ -2214,25 +2231,8 @@ describe("imperial", () => {
                 // player1 (a Swiss Bank) buys a bond next
                 game.tick(
                   Action.bondPurchase({
-                    nation: Nation.IT,
-                    player: "player1",
-                    tradeInValue: 0,
-                    cost: 4
-                  })
-                );
-
-                // For testing purposes, we delete the skip  bond purchase action
-                game.availableActions.delete(Action.skipBondPurchase({ player: "player2", nation: null }));
-                game.availableActions.forEach((action) => {
-                  expect(action.type).toEqual("bondPurchase");
-                  expect(action.payload.player).toEqual("player2");
-                });
-
-                // player1 (a Swiss Bank) buys a bond next
-                game.tick(
-                  Action.bondPurchase({
                     nation: Nation.FR,
-                    player: "player2",
+                    player: "player1",
                     tradeInValue: 0,
                     cost: 4
                   })
