@@ -389,7 +389,24 @@ export default class Imperial {
       this.investing = false;
     }
 
-    let swissBanksToInvest = this.swissBanks;
+    const index = this.order.indexOf(this.investorCardHolder);
+    let swissBanksToInvest = this.swissBanks.sort((playerA, playerB) => {
+      const playerAIndex = this.order.indexOf(playerA);
+      const playerBIndex = this.order.indexOf(playerB);
+      if (index === 0) {
+        if (playerAIndex > playerBIndex) {
+          return 1
+        } else {
+          return -1
+        }
+      } else {
+        if (playerAIndex - index + 1 > playerBIndex - index + 1) {
+          return 1
+        } else {
+          return -1
+        }
+      }
+    });
     if (
       this.variant !== "withoutInvestorCard" &&
       swissBanksToInvest.length > 0 &&
@@ -1913,7 +1930,25 @@ export default class Imperial {
 
   allowSwissBanksToForceInvestor() {
     this.availableActions = new Set();
-    this.swissBanks.forEach(player => {
+    const index = this.order.indexOf(this.investorCardHolder);
+    let swissBanksToChoose = this.swissBanks.sort((playerA, playerB) => {
+      const playerAIndex = this.order.indexOf(playerA);
+      const playerBIndex = this.order.indexOf(playerB);
+      if (index === 0) {
+        if (playerAIndex > playerBIndex) {
+          return 1
+        } else {
+          return -1
+        }
+      } else {
+        if (playerAIndex - index + 1 > playerBIndex - index + 1) {
+          return 1
+        } else {
+          return -1
+        }
+      }
+    });
+    swissBanksToChoose.forEach(player => {
       if (!this.swissBanksWhoDoNotInterrupt.includes(player)) {
         this.currentPlayerName = player;
         this.availableActions.add(Action.forceInvestor({player}))

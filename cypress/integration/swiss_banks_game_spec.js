@@ -51,6 +51,32 @@ describe("Swiss banks", () => {
     cy.get("#investor").click()
     cy.contains("Do not buy a bond").click()
     cy.contains("Do not buy a bond").click()
-    cy.get(".bg-IT").contains("1:2").click()
+    cy.get(".bg-IT").contains("4:9").click()
+    cy.contains("Do not buy a bond").click()
+    cy.contains("Do not buy a bond").click()
+    // IT
+    cy.get("#production1").click()
+    // FR
+    cy.get("#production1").click()
+    // GB
+    cy.get("#production1").click()
+    // GE
+    cy.get("#production1").click()
+    // RU
+    cy.get("#production1").click()
+    // AH
+    cy.get("#production2").click()
+    // IT
+    cy.get("#import").click()
+    cy.contains("Undo").click()
+    cy.get("#import").click()
+    cy.contains("Undo").click()
+    cy.get("#import").click()
+    cy.contains("Undo").click()
+    cy.get("#import").click()
+    cy.contains("Force investor").click()
+    cy.contains("Do not buy a bond").click()
+    cy.contains("Do not buy a bond").click()
+    cy.contains("Do not buy a bond").click()
   })
 })
