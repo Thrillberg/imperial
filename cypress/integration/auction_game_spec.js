@@ -7,7 +7,7 @@ describe("Auction game", () => {
     cy.contains("New Game").click()
     cy.get("#auction").check()
     cy.contains("New Game").click()
-    cy.contains("Start Game").click()
+    cy.contains("Start Solo Game").click()
 
     // AH
     cy.get(".bg-AH").contains("2:4").click()

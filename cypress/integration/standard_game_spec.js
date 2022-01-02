@@ -6,7 +6,7 @@ describe("Standard game", () => {
     cy.visit("/")
     cy.contains("New Game").click()
     cy.contains("New Game").click()
-    cy.contains("Start Game").click()
+    cy.contains("Start Solo Game").click()
     // AH
     cy.get("#production1").click()
     // IT

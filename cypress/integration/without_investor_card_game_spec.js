@@ -7,7 +7,7 @@ describe("Without Investor Card game", () => {
     cy.contains("New Game").click()
     cy.get("#withoutInvestorCard").check()
     cy.contains("New Game").click()
-    cy.contains("Start Game").click()
+    cy.contains("Start Solo Game").click()
 
     // AH
     cy.get(".bg-AH").contains("2:4").click()
