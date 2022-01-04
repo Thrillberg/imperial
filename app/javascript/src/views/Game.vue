@@ -2,18 +2,36 @@
   <div>
     <div v-if="this.gameLoaded">
       <div class="p-2">
-        <b>{{ gameData.name }} <span v-if="gameData.clonedFromGame">(clone)</span></b>
-        <span v-if="gameData.clonedFromGame && gameStarted" class="cursor-pointer underline text-xs" @click="goToSourceGame">
+        <b
+          >{{ gameData.name }}
+          <span v-if="gameData.clonedFromGame">(clone)</span></b
+        >
+        <span
+          v-if="gameData.clonedFromGame && gameStarted"
+          class="cursor-pointer underline text-xs"
+          @click="goToSourceGame"
+        >
           Back to source game
         </span>
-        <span v-else-if="gameStarted" class="cursor-pointer underline text-xs" @click="cloneGame">
+        <span
+          v-else-if="gameStarted"
+          class="cursor-pointer underline text-xs"
+          @click="cloneGame"
+        >
           Clone game
         </span>
       </div>
       <div v-if="gameStarted" class="flex flex-col">
-        <TurnStatus :game="game" :profile="profile" :controllingPlayerName="controllingPlayerName"></TurnStatus>
+        <TurnStatus
+          :game="game"
+          :profile="profile"
+          :controllingPlayerName="controllingPlayerName"
+        ></TurnStatus>
         <div class="flex flex-wrap justify-between">
-          <div class="border border-gray-500 rounded overflow-hidden" :class="mapWidth()">
+          <div
+            class="border border-gray-500 rounded overflow-hidden"
+            :class="mapWidth()"
+          >
             <Board
               :game="game"
               :profile="profile"
@@ -53,7 +71,10 @@
               @purchaseBond="purchaseBond"
             />
           </div>
-          <div class="border border-gray-500 rounded text-sm" :class="gameDetailsWidth()">
+          <div
+            class="border border-gray-500 rounded text-sm"
+            :class="gameDetailsWidth()"
+          >
             <div class="flex flex-wrap justify-between">
               <NationComponent
                 v-for="[nation] of game.nations"
@@ -106,11 +127,11 @@
           :board="board"
         />
       </div>
-      <div v-else-if="gameCancelled()">
-        This game was cancelled by the host
-      </div>
+      <div v-else-if="gameCancelled()">This game was cancelled by the host</div>
       <div v-else class="flex flex-wrap justify-between">
-        <div class="w-full sm:w-2/3 border border-gray-500 rounded overflow-hidden">
+        <div
+          class="w-full sm:w-2/3 border border-gray-500 rounded overflow-hidden"
+        >
           <Board
             v-bind:game="game"
             v-bind:select_province="() => {}"
@@ -142,7 +163,18 @@
             </div>
             <button
               @click="startGame"
-              class="rounded bg-green-800 text-white cursor-pointer block text-2xl hover:bg-green-900 p-10 m-10 mx-auto"
+              class="
+                rounded
+                bg-green-800
+                text-white
+                cursor-pointer
+                block
+                text-2xl
+                hover:bg-green-900
+                p-10
+                m-10
+                mx-auto
+              "
               v-if="playersInGame.length === 1"
             >
               Start Solo Game
@@ -150,28 +182,75 @@
             </button>
             <button
               @click="startGame"
-              class="rounded bg-green-800 text-white cursor-pointer block text-2xl hover:bg-green-900 p-10 m-10 mx-auto"
+              class="
+                rounded
+                bg-green-800
+                text-white
+                cursor-pointer
+                block
+                text-2xl
+                hover:bg-green-900
+                p-10
+                m-10
+                mx-auto
+              "
               v-else
             >
               Start Game
             </button>
             <button
               @click="addRandomBot"
-              class="rounded bg-green-800 text-white cursor-pointer block text-2xl hover:bg-green-900 p-5 m-5 mx-auto"
+              class="
+                rounded
+                bg-green-800
+                text-white
+                cursor-pointer
+                block
+                text-2xl
+                hover:bg-green-900
+                p-5
+                m-5
+                mx-auto
+              "
               v-if="playersInGame.length < 6"
             >
               Add a Random Bot
             </button>
             <button
               @click="cancelGame"
-              class="rounded bg-red-500 text-white cursor-pointer block text-2xl hover:bg-red-600 p-5 m-5 mx-auto"
+              class="
+                rounded
+                bg-red-500
+                text-white
+                cursor-pointer
+                block
+                text-2xl
+                hover:bg-red-600
+                p-5
+                m-5
+                mx-auto
+              "
             >
               Cancel Game
             </button>
-            <div v-for="player in this.otherPlayersInGame(game.id)" :key="player">
+            <div
+              v-for="player in this.otherPlayersInGame(game.id)"
+              :key="player"
+            >
               <button
                 @click="boot(player)"
-                class="rounded bg-red-500 text-white cursor-pointer block text-2xl hover:bg-red-600 p-5 m-5 mx-auto"
+                class="
+                  rounded
+                  bg-red-500
+                  text-white
+                  cursor-pointer
+                  block
+                  text-2xl
+                  hover:bg-red-600
+                  p-5
+                  m-5
+                  mx-auto
+                "
               >
                 Boot {{ player }}
               </button>
@@ -211,7 +290,18 @@
             </div>
             <button
               @click="joinGame"
-              class="rounded bg-green-800 text-white cursor-pointer block text-2xl hover:bg-green-900 p-10 m-10 mx-auto"
+              class="
+                rounded
+                bg-green-800
+                text-white
+                cursor-pointer
+                block
+                text-2xl
+                hover:bg-green-900
+                p-10
+                m-10
+                mx-auto
+              "
             >
               Join This Game
             </button>
@@ -219,9 +309,7 @@
         </div>
       </div>
     </div>
-    <div v-else class="text-center text-2xl mt-8">
-      Loading game
-    </div>
+    <div v-else class="text-center text-2xl mt-8">Loading game</div>
   </div>
 </template>
 
@@ -410,7 +498,14 @@ export default {
       } else if (baseGame === "imperial2030") {
         this.board = imperial2030Board
       }
-      this.game = Imperial.fromLog(gameLog, this.board);
+      let oldLog = localStorage.load(imperialState).log;
+      let oldState = localStorage.load(imperialState);
+      if (gameLog.length > oldLog.length) {
+        let missingTurnCount = oldLog.length - gameLog.length;
+        this.game = Imperial.fromPartialState(gameLog[..missingTurnCount], this.board, oldState);
+      } else {
+        this.game = Imperial.fromLog(gameLog, this.board);
+      };
       if (Object.keys(this.game.players).length > 0) {
         this.gameStarted = true;
         this.currentPlayer = this.game.players[this.profile.username] || {};
