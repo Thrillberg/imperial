@@ -11,19 +11,19 @@ export default ({ players, provinceNames }) => {
   let cash;
   switch (players.length) {
     case 6:
-      cash = 15
+      cash = 13
       break;
     case 5:
-      cash = 18
+      cash = 15
       break;
     case 4:
-      cash = 22
+      cash = 19
       break;
     case 3:
-      cash = 28
+      cash = 25
       break;
     case 2:
-      cash = 40
+      cash = 37
       break;
   }
 
