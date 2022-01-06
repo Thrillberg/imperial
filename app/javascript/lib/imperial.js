@@ -636,6 +636,14 @@ export default class Imperial {
         nationsAtProvince.push(nation);
       }
     }
+    for (const [nation] of this.nations) {
+      if (
+        nation !== this.currentNation &&
+        this.board.byNation.get(nation)?.has(action.payload.province)
+      ) {
+        this.units.get(action.payload.challenger).get(action.payload.province).friendly = true;
+      }
+    }
     if (nationsAtProvince.length > 0) {
       // Coexist request can be accepted or rejected
       this.previousPlayerName = this.currentPlayerName;
