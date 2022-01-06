@@ -3082,6 +3082,21 @@ describe("imperial", () => {
             ])
           );
         });
+
+        test("maneuver army to home province of another nation that also contains an army belonging to the other nation sets army to friendly if they agree to be friendly", () => {
+          const game = newGame();
+          game.units.get(Nation.AH).get("d").armies++;
+          game.units.get(Nation.IT).get("f").armies++;
+
+          game.tick(
+            Action.rondel({ slot: "maneuver1", nation: Nation.AH, cost: 0 })
+          );
+          game.tick(Action.maneuver({ origin: "d", destination: "f" }));
+          game.tick(Action.coexist({ province: "f", incumbent: Nation.IT, challenger: Nation.AH }));
+          game.tick(Action.coexist({ province: "f", incumbent: Nation.AH, challenger: Nation.IT }));
+
+          expect(game.units.get(Nation.AH).get("f").friendly).toEqual(true);
+        });
       });
 
       describe("nation controls two armies", () => {
