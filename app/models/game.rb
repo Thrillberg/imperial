@@ -61,7 +61,7 @@ class Game < ActiveRecord::Base
     actions.each do |action|
       cloned_game.actions << action.dup.tap do |cloned_action|
         parsed_data = JSON.parse(action.data)
-        if parsed_data["payload"]["soloMode"] == false
+        if parsed_data.dig("payload", "soloMode") == false
           parsed_data["payload"]["soloMode"] = true
           cloned_action.data = parsed_data.to_json
         end
