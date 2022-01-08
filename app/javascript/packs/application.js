@@ -32,7 +32,7 @@ Sentry.init({
   integrations: [
     new Integrations.BrowserTracing({
       routingInstrumentation: Sentry.vueRouterInstrumentation(router),
-      tracingOrigins: ["localhost", "imperial.club", /^\//],
+      tracingOrigins: ["imperial.club", /^\//],
     }),
   ],
   tracesSampleRate: 1.0,
