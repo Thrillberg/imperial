@@ -2153,10 +2153,10 @@ export default class Imperial {
       }
 
       return Object.keys(action1.payload).every(key => {
-        // We make an exception for "tradeInValue" because that key was added after
-        // games have been running in production for awhile.
-        // We didn't want to invalidate historical games!
-        return action1.payload[key] === action2.payload[key] || key === "tradeInValue"
+        if (key === "nation") {
+          return action1.payload[key]?.value === action2.payload[key]?.value
+        }
+        return action1.payload[key] === action2.payload[key]
       });
     } else {
       return true;
