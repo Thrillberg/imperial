@@ -18,6 +18,7 @@ export default class Imperial {
 
   static fromPartialState(log, board, oldState) {
     console.log("partialState")
+    console.log(log)
     let game = new Imperial(board, oldState);
     log.forEach(entry => game.tick(entry));
     return game;
@@ -26,34 +27,33 @@ export default class Imperial {
   constructor(board, state) {
     this.board = board || standardGameBoard;
     if (state) {
-      console.log(state)
-      // this.board = state.board;
-      this.log = state.log;
-      this.annotatedLog = state.annotatedLog;
-      this.unitsToMove = state.unitsToMove;
-      this.units = state.units;
-      this.provinces = state.provinces;
-      this.nations = state.nations;
-      this.availableActions = state.availableActions;
+      Object.assign(this, state);
+      // this.log = state.log;
+      // this.annotatedLog = state.annotatedLog;
+      // this.unitsToMove = state.unitsToMove;
+      // this.units = state.units;
+      // this.provinces = state.provinces;
+      // this.nations = state.nations;
+      // this.availableActions = state.availableActions;
 
-      this.maneuvering = state.maneuvering;
-      this.handlingConflict = state.handlingConflict;
-      this.soloMode = state.soloMode;
-      this.swissBanks = state.swissBanks;
-      this.uncontrolledNations = state.uncontrolledNations;
-      this.passingThroughInvestor = state.passingThroughInvestor;
-      this.previousPlayerName = state.previousPlayerName;
-      this.fleetConvoyCount = state.fleetConvoyCount;
-      this.maxImports = state.maxImports;
-      this.winner = state.winner;
-      this.availableBonds = state.availableBonds;
-      this.players = state.players;
-      this.investing = state.investing;
-      this.firstInvestor = state.firstInvestor;
-      this.currentNationInConflict = state.currentNationInConflict;
-      this.coexistingNations = state.coexistingNations;
-      this.swissBanksWhoDoNotInterrupt = state.swissBanksWhoDoNotInterrupt;
-      this.baseGame = state.baseGame;
+      // this.maneuvering = state.maneuvering;
+      // this.handlingConflict = state.handlingConflict;
+      // this.soloMode = state.soloMode;
+      // this.swissBanks = state.swissBanks;
+      // this.uncontrolledNations = state.uncontrolledNations;
+      // this.passingThroughInvestor = state.passingThroughInvestor;
+      // this.previousPlayerName = state.previousPlayerName;
+      // this.fleetConvoyCount = state.fleetConvoyCount;
+      // this.maxImports = state.maxImports;
+      // this.winner = state.winner;
+      // this.availableBonds = state.availableBonds;
+      // this.players = state.players;
+      // this.investing = state.investing;
+      // this.firstInvestor = state.firstInvestor;
+      // this.currentNationInConflict = state.currentNationInConflict;
+      // this.coexistingNations = state.coexistingNations;
+      // this.swissBanksWhoDoNotInterrupt = state.swissBanksWhoDoNotInterrupt;
+      // this.baseGame = state.baseGame;
       return
     }
     // This is the canonical log from which game state is derived.
@@ -105,6 +105,8 @@ export default class Imperial {
 
     // Check if the requested action is invalid.
     let validAction = false;
+    console.log(this.availableActions)
+    console.log(action)
     for (const availableAction of this.availableActionsWithUndo()) {
       if (this.isEqual(availableAction, action)) {
         validAction = true;

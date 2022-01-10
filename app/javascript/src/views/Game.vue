@@ -495,12 +495,14 @@ export default {
         }
       }
       const gameLog = getGameLog(log, baseGame);
+      console.log("our log")
+      console.log(gameLog)
       if (baseGame === "imperial") {
         this.board = imperialBoard
       } else if (baseGame === "imperial2030") {
         this.board = imperial2030Board
       }
-      const data = deserializeGame(localStorage.getItem("imperialState"));
+      const data = deserializeGame(localStorage.getItem("imperial-" + this.$route.params.id));
       let oldLog = data?.log;
       let oldState = data;
       if (oldLog && gameLog.length > oldLog.length) {
@@ -513,7 +515,7 @@ export default {
       } else {
         this.game = Imperial.fromLog(gameLog, this.board);
       }
-      localStorage.setItem("imperialState", serializeGame(this.game));
+      localStorage.setItem("imperial-" + this.$route.params.id, serializeGame(this.game));
       if (Object.keys(this.game.players).length > 0) {
         this.gameStarted = true;
         this.currentPlayer = this.game.players[this.profile.username] || {};
