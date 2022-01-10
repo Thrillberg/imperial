@@ -65,6 +65,7 @@ export default class Imperial {
     this.coexistingNations = [];
     this.swissBanksWhoDoNotInterrupt = [];
     this.baseGame = "";
+    this.unitLimits = new Map();
   }
 
   tick(action) {
