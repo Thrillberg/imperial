@@ -27,33 +27,12 @@ export default class Imperial {
   constructor(board, state) {
     this.board = board || standardGameBoard;
     if (state) {
-      Object.assign(this, state);
-      // this.log = state.log;
-      // this.annotatedLog = state.annotatedLog;
-      // this.unitsToMove = state.unitsToMove;
-      // this.units = state.units;
-      // this.provinces = state.provinces;
-      // this.nations = state.nations;
-      // this.availableActions = state.availableActions;
-
-      // this.maneuvering = state.maneuvering;
-      // this.handlingConflict = state.handlingConflict;
-      // this.soloMode = state.soloMode;
-      // this.swissBanks = state.swissBanks;
-      // this.uncontrolledNations = state.uncontrolledNations;
-      // this.passingThroughInvestor = state.passingThroughInvestor;
-      // this.previousPlayerName = state.previousPlayerName;
-      // this.fleetConvoyCount = state.fleetConvoyCount;
-      // this.maxImports = state.maxImports;
-      // this.winner = state.winner;
-      // this.availableBonds = state.availableBonds;
-      // this.players = state.players;
-      // this.investing = state.investing;
-      // this.firstInvestor = state.firstInvestor;
-      // this.currentNationInConflict = state.currentNationInConflict;
-      // this.coexistingNations = state.coexistingNations;
-      // this.swissBanksWhoDoNotInterrupt = state.swissBanksWhoDoNotInterrupt;
-      // this.baseGame = state.baseGame;
+      Object.assign(this, setOldState(state));
+      this.log = state.log;
+      this.annotatedLog = state.annotatedLog;
+      this.currentPlayerName = state.currentPlayerName;
+      this.baseGame = state.baseGame;
+      this.soloMode = state.soloMode;
       return
     }
     // This is the canonical log from which game state is derived.

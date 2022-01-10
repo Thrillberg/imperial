@@ -13,6 +13,10 @@ export default (game) => {
       units.set(Nation2030[key.value], newValue);
     }
   }
+  let unitLimits = new Map;
+  for (const [key, value] of game.unitLimits) {
+    unitLimits.set(Nation[key.value], Object.assign({}, value))
+  }
   let nations = new Map();
   for (const [key, value] of game.nations) {
     if (game.baseGame === "imperial") {
@@ -69,6 +73,7 @@ export default (game) => {
     coexistingNations,
     currentNationInConflict: game.currentNationInConflict,
     swissBanksWhoDoNotInterrupt,
-    importing: false
+    importing: false,
+    unitLimits
   }
 }
