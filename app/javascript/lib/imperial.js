@@ -85,8 +85,7 @@ export default class Imperial {
 
     // Check if the requested action is invalid.
     let validAction = false;
-    console.log(this.availableActions)
-    console.log(action)
+    console.log(this.availableActions, action)
     for (const availableAction of this.availableActionsWithUndo()) {
       if (this.isEqual(availableAction, action)) {
         validAction = true;
