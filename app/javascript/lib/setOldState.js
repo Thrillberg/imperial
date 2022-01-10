@@ -15,7 +15,11 @@ export default (game) => {
   }
   let unitLimits = new Map;
   for (const [key, value] of game.unitLimits) {
-    unitLimits.set(Nation[key.value], Object.assign({}, value))
+    if (game.baseGame === "imperial") {
+      unitLimits.set(Nation[key.value], Object.assign({}, value));
+    } else if (game.baseGame === "imperial2030") {
+      unitLimits.set(Nation2030[key.value], Object.assign({}, value));
+    }
   }
   let nations = new Map();
   for (const [key, value] of game.nations) {

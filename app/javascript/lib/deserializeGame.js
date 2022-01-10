@@ -34,7 +34,7 @@ export default (serializedGame) => {
         }
       }
       return action;
-    };
+    }
     deserializedGame.availableActions = availableActions;
   }
   return deserializedGame;
