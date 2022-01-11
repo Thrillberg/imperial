@@ -193,7 +193,7 @@ export default class Auction {
       startingControllerIndex = this.order.indexOf(game.nations.get(Nation2030.RU).controller);
     }
     if (game.variant !== "withoutInvestorCard") {
-      game.investorCardHolder = this.order[startingControllerIndex - 1] || this.order[this.order.length - 1];
+      game.investorCardHolder = this.order[startingControllerIndex + 1] || this.order[0];
     }
   }
 

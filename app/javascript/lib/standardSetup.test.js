@@ -87,7 +87,7 @@ describe("Imperial", () => {
       });
 
       test("investor card holder", () => {
-        expect(actual.investorCardHolder).toEqual("c");
+        expect(actual.investorCardHolder).toEqual("e");
       });
 
       test("available bonds", () => {
@@ -201,7 +201,7 @@ describe("Imperial", () => {
       });
 
       test("investor card holder", () => {
-        expect(actual.investorCardHolder).toEqual("a");
+        expect(actual.investorCardHolder).toEqual("c");
       });
 
       test("available bonds", () => {
@@ -308,7 +308,7 @@ describe("Imperial", () => {
       });
 
       test("investor card holder", () => {
-        expect(actual.investorCardHolder).toEqual("b");
+        expect(actual.investorCardHolder).toEqual("d");
       });
 
       test("available bonds", () => {
@@ -426,7 +426,7 @@ describe("Imperial", () => {
       });
 
       test("investor card holder", () => {
-        expect(actual.investorCardHolder).toEqual("b");
+        expect(actual.investorCardHolder).toEqual("a");
       });
 
       test("available bonds", () => {

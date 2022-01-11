@@ -140,10 +140,10 @@ export default ({ players, provinceNames }) => {
 
     const RUPlayer = out.nations.get(Nation2030.RU).controller;
     const RUPlayerIndex = out.order.indexOf(RUPlayer);
-    if (RUPlayerIndex === 0) {
-      out.investorCardHolder = out.order[out.order.length - 1];
+    if (RUPlayerIndex === out.order.length - 1) {
+      out.investorCardHolder = out.order[0];
     } else {
-      out.investorCardHolder = out.order[RUPlayerIndex - 1];
+      out.investorCardHolder = out.order[RUPlayerIndex + 1];
     }
   }
 

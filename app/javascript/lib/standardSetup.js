@@ -140,10 +140,10 @@ export default ({ players, provinceNames }) => {
 
     const AHPlayer = out.nations.get(Nation.AH).controller;
     const AHPlayerIndex = out.order.indexOf(AHPlayer);
-    if (AHPlayerIndex === 0) {
-      out.investorCardHolder = out.order[out.order.length - 1];
+    if (AHPlayerIndex === out.order.length - 1) {
+      out.investorCardHolder = out.order[0];
     } else {
-      out.investorCardHolder = out.order[AHPlayerIndex - 1];
+      out.investorCardHolder = out.order[AHPlayerIndex + 1];
     }
   }
 
