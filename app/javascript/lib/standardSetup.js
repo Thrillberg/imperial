@@ -140,10 +140,10 @@ export default ({ players, provinceNames }) => {
 
     const AHPlayer = out.nations.get(Nation.AH).controller;
     const AHPlayerIndex = out.order.indexOf(AHPlayer);
-    if (AHPlayerIndex === 0) {
-      out.investorCardHolder = out.order[out.order.length - 1];
+    if (AHPlayerIndex === out.order.length - 1) {
+      out.investorCardHolder = out.order[0];
     } else {
-      out.investorCardHolder = out.order[AHPlayerIndex - 1];
+      out.investorCardHolder = out.order[AHPlayerIndex + 1];
     }
   }
 
@@ -182,8 +182,21 @@ export default ({ players, provinceNames }) => {
     }
     provinces.set(province, { factory });
   }
+
+  const unitLimits = new Map();
+
+  for (const nation of Nation) {
+    if (nation === Nation.AH) {
+      unitLimits.set(nation, {armies: 10, fleets: 6});
+    } else if (nation === Nation.GB) {
+      unitLimits.set(nation, {armies: 6, fleets: 10});
+    } else {
+      unitLimits.set(nation, {armies: 8, fleets: 8});
+    }
+  }
+
   out.provinces = provinces;
   out.currentNation = Nation.AH;
-
+  out.unitLimits = unitLimits;
   return out;
 };

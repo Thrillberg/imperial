@@ -27,6 +27,8 @@
         :fleets="fleets(name)"
         :is_valid="isValid(name)"
         :dot="dot(name)"
+        :province_with_fight="province_with_fight === (name.replace(/\.*\s/gm, '').toLowerCase())"
+        v-on:fightResolved="$emit('fightResolved')"
         :key="name"
       ></Province>
       <Province
@@ -36,12 +38,14 @@
         :select_province="select_province"
         :fleets="fleets(name)"
         :armies="armies(name)"
-        :importing-army="importingArmy(name)"
+        :importingUnits="importingUnits(name)"
         :is_valid="isValid(name)"
         :dot="dot(name)"
         :building_factory="buildingFactory()"
         :factory="factory(name)"
         :factory_type="factoryType(name)"
+        :province_with_fight="province_with_fight === (name.replace(/\.*\s/gm, '').toLowerCase())"
+        v-on:fightResolved="$emit('fightResolved')"
         :key="name"
       ></Province>
     </g>
@@ -116,6 +120,7 @@ export default {
     profile: Object,
     gameStarted: Boolean,
     importing_units: Array,
+    province_with_fight: String,
     select_province: Function,
     valid_provinces: Array
   },
@@ -124,9 +129,17 @@ export default {
       let armies = [];
       for (const [provinceWithUnits, allUnitsInProvince] of this.allUnits()) {
         for (const [nation, provinceUnits] of allUnitsInProvince) {
-          if (province.toLowerCase() === provinceWithUnits) {
+          const normalizedProvince = province.replace(/\.*\s/gm, "").toLowerCase();
+          if (normalizedProvince === provinceWithUnits) {
             for (let i = 0; i < provinceUnits.armies; i++) {
-              armies.push(nation);
+              let onForeignLand = false;
+              for (const [homeNation, provinces] of this.game.board.byNation) {
+                if (homeNation?.value !== nation && provinces.has(normalizedProvince)) {
+                  onForeignLand = true;
+                }
+              }
+              const friendly = provinceUnits.friendly && onForeignLand;
+              armies.push({ nation, friendly });
             }
           }
         }
@@ -141,7 +154,8 @@ export default {
       let fleets = [];
       for (const [provinceWithUnits, allUnitsInProvince] of this.allUnits()) {
         for (const [nation, provinceUnits] of allUnitsInProvince) {
-          if (province.toLowerCase() === provinceWithUnits) {
+          const normalizedProvince = province.replace(/\.*\s/gm, "").toLowerCase();
+          if (normalizedProvince === provinceWithUnits) {
             for (let i = 0; i < provinceUnits.fleets; i++) {
               fleets.push(nation);
             }
@@ -150,32 +164,34 @@ export default {
       }
       return fleets;
     },
-    importingArmy(province) {
-      if (!this.gameStarted) {
-        return false;
-      } else if (this.importing_units.find(unit => unit === province)) {
-        return true;
+    importingUnits(province) {
+      const normalizedProvince = province.replace(/\.*\s/gm, "").toLowerCase();
+      if (this.gameStarted) {
+        return this.importing_units.filter(unit => unit.province === normalizedProvince)
       }
 
-      return false;
+      return [];
     },
     factory(province) {
       const factory = this.factories().find(factory => {
-        return factory.province === province;
+        const normalizedProvince = province.replace(/\.*\s/gm, "").toLowerCase();
+        return factory.normalizedProvince === normalizedProvince;
       });
       if (factory) {
         return factory.type;
       }
     },
     factoryType(province) {
-      if (this.game.board && !["corsica", "sardinia", "switzerland"].includes(province)) {
-        return this.game.board.graph.get(province).factoryType
+      if (this.game.board && !["Corsica", "Sardinia", "Switzerland"].includes(province)) {
+        const normalizedProvince = province.replace(/\.*\s/gm, "").toLowerCase();
+        return this.game.board.graph.get(normalizedProvince).factoryType
       }
     },
     dot(province) {
       let nation;
       this.dots().forEach(dot => {
-        if (province === dot.province) {
+        const normalizedProvince = province.replace(/\.*\s/gm, "").toLowerCase();
+        if (normalizedProvince === dot.normalizedProvince) {
           nation = dot.flag.value;
         }
       });
@@ -190,16 +206,17 @@ export default {
       let allUnits = new Map();
       for (const [nation, unitsByNation] of this.game.units) {
         for (const [province, units] of unitsByNation) {
+          const normalizedProvince = province.replace(/\.*\s/gm, "").toLowerCase();
           let allUnitsInProvince = new Map();
           if (units.armies > 0 || units.fleets > 0) {
             allUnitsInProvince.set(nation.value, units);
-            if (allUnits.get(province)) {
+            if (allUnits.get(normalizedProvince)) {
               allUnits.set(
-                province,
-                new Set([...allUnitsInProvince, ...allUnits.get(province)])
+                normalizedProvince,
+                new Set([...allUnitsInProvince, ...allUnits.get(normalizedProvince)])
               );
             } else {
-              allUnits.set(province, allUnitsInProvince);
+              allUnits.set(normalizedProvince, allUnitsInProvince);
             }
           }
         }
@@ -213,7 +230,8 @@ export default {
 
       let factories = [];
       for (let [province, data] of this.game.provinces) {
-        factories.push({ province, type: data.factory });
+        const normalizedProvince = province.replace(/\.*\s/gm, "").toLowerCase();
+        factories.push({ normalizedProvince, type: data.factory });
       }
       return factories;
     },
@@ -226,13 +244,15 @@ export default {
       for (const [province, data] of this.game.provinces) {
         const flag = data.flag;
         if (flag) {
-          flags.push({ province, flag });
+          const normalizedProvince = province.replace(/\.*\s/gm, "").toLowerCase();
+          flags.push({ normalizedProvince, flag });
         }
       }
       return flags;
     },
     isValid(province) {
-      if (this.valid_provinces.includes(province) && (this.profile.username in this.game.players)) {
+      const normalizedProvince = province.replace(/\.*\s/gm, "").toLowerCase();
+      if (this.valid_provinces.includes(normalizedProvince) && (this.profile.username in this.game.players)) {
         return true;
       }
 
@@ -249,65 +269,65 @@ export default {
   data() {
     return {
       sea_provinces: {
-        balticsea,
-        bayofbiscay,
-        blacksea,
-        easternmediterraneansea,
-        englishchannel,
-        ioniansea,
-        northatlantic,
-        northsea,
-        westernmediterraneansea
+        "Baltic Sea": balticsea,
+        "Bay of Biscay": bayofbiscay,
+        "Black Sea": blacksea,
+        "Eastern Mediterranean Sea": easternmediterraneansea,
+        "English Channel": englishchannel,
+        "Ionian Sea": ioniansea,
+        "North Atlantic": northatlantic,
+        "North Sea": northsea,
+        "Western Mediterranean Sea": westernmediterraneansea
       },
       land_provinces: {
-        warsaw,
-        venice,
-        algeria,
-        belgium,
-        berlin,
-        brest,
-        budapest,
-        bulgaria,
-        cologne,
-        corsica,
-        danzig,
-        denmark,
-        dijon,
-        dublin,
-        edinburgh,
-        florence,
-        genoa,
-        greece,
-        hamburg,
-        holland,
-        kiev,
-        lemberg,
-        liverpool,
-        london,
-        marseille,
-        morocco,
-        moscow,
-        munich,
-        naples,
-        norway,
-        odessa,
-        paris,
-        portugal,
-        prague,
-        romania,
-        rome,
-        sardinia,
-        sheffield,
-        spain,
-        stpetersburg,
-        sweden,
-        switzerland,
-        trieste,
-        tunis,
-        turkey,
-        vienna,
-        westbalkan,
-        bordeaux
+        "West Balkan": westbalkan,
+        "Berlin": berlin,
+        "Danzig": danzig,
+        "Prague": prague,
+        "Warsaw": warsaw,
+        "Venice": venice,
+        "Algeria": algeria,
+        "Belgium": belgium,
+        "Brest": brest,
+        "Budapest": budapest,
+        "Bulgaria": bulgaria,
+        "Cologne": cologne,
+        "Corsica": corsica,
+        "Denmark": denmark,
+        "Switzerland": switzerland,
+        "Dijon": dijon,
+        "Dublin": dublin,
+        "Edinburgh": edinburgh,
+        "Florence": florence,
+        "Marseille": marseille,
+        "Genoa": genoa,
+        "Greece": greece,
+        "Hamburg": hamburg,
+        "Holland": holland,
+        "Kiev": kiev,
+        "Lemberg": lemberg,
+        "Liverpool": liverpool,
+        "London": london,
+        "Morocco": morocco,
+        "Moscow": moscow,
+        "Munich": munich,
+        "Naples": naples,
+        "Norway": norway,
+        "Odessa": odessa,
+        "Paris": paris,
+        "Portugal": portugal,
+        "Romania": romania,
+        "Rome": rome,
+        "Sardinia": sardinia,
+        "Sheffield": sheffield,
+        "Spain": spain,
+        "St. Petersburg": stpetersburg,
+        "Sweden": sweden,
+        "Trieste": trieste,
+        "Tunis": tunis,
+        "Turkey": turkey,
+        "Vienna": vienna,
+        "Bordeaux": bordeaux
       }
     };
   },

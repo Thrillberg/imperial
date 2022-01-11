@@ -3,29 +3,29 @@
     <div v-for="(error, index) in errors" v-bind:key="index">
       {{ error }}
     </div>
-    <form class="flex flex-col w-1/4 mx-auto border-2 rounded border-green-800 p-5 mt-5" @submit="register">
+    <form class="flex flex-col mx-auto rounded bg-green-200 sm:max-w-4xl mt-10 sm:p-20" @submit="register">
       <input
         type="text"
         :placeholder="profile.username"
         v-model="username"
-        class="rounded p-5 border border-green-800 my-2"
+        class="rounded p-5 border border-green-800 my-2 sm:w-1/2 self-center"
       />
       <input
         type="text"
         placeholder="email"
         v-model="email"
-        class="rounded p-5 border border-green-800 my-2"
+        class="rounded p-5 border border-green-800 my-2 sm:w-1/2 self-center"
       />
       <input
         type="password"
         placeholder="password"
         v-model="password"
-        class="rounded p-5 border border-green-800 my-2"
+        class="rounded p-5 border border-green-800 my-2 sm:w-1/2 self-center"
       />
       <input
         type="submit"
         value="Register"
-        class="rounded p-5 bg-green-800 text-white cursor-pointer my-2 text-lg"
+        class="rounded p-5 bg-green-800 text-white cursor-pointer my-2 text-2xl sm:w-1/2 self-center"
       />
     </form>
   </div>

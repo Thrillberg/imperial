@@ -10,16 +10,30 @@
       :fleet="this.fleet"
       :filter="activeFilter"
     ></component>
+    <rect
+      v-if="friendly"
+      :x="x + 3"
+      :y="y + 2"
+      :width="7"
+      :height="4"
+      fill="white"
+      stroke="none"
+    ></rect>
   </g>
 </template>
 
 <script>
 import AHFlag from "./AHFlag.vue";
+import BRFlag from "./BRFlag.vue";
+import CNFlag from "./CNFlag.vue";
+import EUFlag from "./EUFlag.vue";
+import INFlag from "./INFlag.vue";
 import ITFlag from "./ITFlag.vue";
 import FRFlag from "./FRFlag.vue";
 import GBFlag from "./GBFlag.vue";
 import GEFlag from "./GEFlag.vue";
 import RUFlag from "./RUFlag.vue";
+import USFlag from "./USFlag.vue";
 
 export default {
   name: "Flag",
@@ -28,6 +42,7 @@ export default {
     fleet: Boolean,
     height: String,
     nation: String,
+    friendly: Boolean,
     transform: String,
     width: String,
     x: Number,
@@ -38,6 +53,14 @@ export default {
       switch (nation) {
         case "AH":
           return AHFlag;
+        case "BR":
+          return BRFlag;
+        case "CN":
+          return CNFlag;
+        case "EU":
+          return EUFlag;
+        case "IN":
+          return INFlag;
         case "IT":
           return ITFlag;
         case "FR":
@@ -48,6 +71,8 @@ export default {
           return GEFlag;
         case "RU":
           return RUFlag;
+        case "US":
+          return USFlag;
       }
     }
   },

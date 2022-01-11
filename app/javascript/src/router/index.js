@@ -89,6 +89,13 @@ class APIClient {
     this.handlers["updateGameLog"] = cb;
   }
 
+  onUpdateCurrentPlayerName(cb) {
+    if (this.handlers["updateCurrentPlayerName"] !== undefined) {
+      throw new Error("there is already a handler defined");
+    }
+    this.handlers["updateCurrentPlayerName"] = cb;
+  }
+
   joinGame(userId, gameId, userName) {
     return this.send(
       {
@@ -99,11 +106,27 @@ class APIClient {
     );
   }
 
-  openGame(host) {
+  openGame(id, base_game, variant) {
+    return fetch(
+      "/games",
+      {
+        method: "POST",
+        body: JSON.stringify({ id, base_game, variant }),
+        headers: { "Content-Type": "application/json" }
+      }
+    )
+      .then(response => response.json())
+      .then(game => {
+        this.send({ kind: "openGame" }, "GameChannel");
+        return game
+      });
+  }
+
+  addRandomBot(gameId) {
     return this.send(
       {
-        kind: "openGame",
-        data: { host }
+        kind: "addRandomBot",
+        data: { gameId }
       },
       "GameChannel"
     );
@@ -148,6 +171,66 @@ class APIClient {
       "GameChannel"
     );
   }
+
+  updateCurrentPlayerName(gameId, currentPlayerName) {
+    return this.send(
+      {
+        kind: "updateCurrentPlayerName",
+        data: { gameId, currentPlayerName }
+      },
+      "GameChannel"
+    );
+  }
+
+  updateWinner(gameId, winnerName, scores) {
+    return this.send(
+      {
+        kind: "updateWinnerName",
+        data: { gameId, winnerName, scores }
+      },
+      "GameChannel"
+    );
+  }
+
+  cancel(gameId) {
+    return this.send(
+      {
+        kind: "cancelGame",
+        data: { gameId }
+      },
+      "GameChannel"
+    );
+  }
+
+  boot(playerName, gameId) {
+    return this.send(
+      {
+        kind: "bootPlayer",
+        data: { playerName, gameId }
+      },
+      "GameChannel"
+    );
+  }
+
+  userObservingGame(playerName, gameId) {
+    return this.send(
+      {
+        kind: "userObservingGame",
+        data: { playerName, gameId }
+      },
+      "GameChannel"
+    );
+  }
+
+  userStoppedObservingGame(playerName, gameId) {
+    return this.send(
+      {
+        kind: "userStoppedObservingGame",
+        data: { playerName, gameId }
+      },
+      "GameChannel"
+    );
+  }
 }
 
 const apiClient = new APIClient();
@@ -166,6 +249,11 @@ const routes = [
     component: () => import("../views/Register.vue")
   },
   {
+    path: "/sign_in",
+    name: "Sign In",
+    component: () => import("../views/SignIn.vue")
+  },
+  {
     path: "/about",
     name: "About",
     component: () => import("../views/About.vue")
@@ -179,12 +267,55 @@ const routes = [
     path: "/game/:id",
     name: "Game",
     component: () => import("../views/Game.vue")
+  },
+  {
+    path: "/games",
+    name: "Games",
+    component: () => import("../views/Games.vue")
+  },
+  {
+    path: "/finished_games",
+    name: "Finished Games",
+    component: () => import("../views/FinishedGames.vue")
+  },
+  {
+    path: "/users/:id",
+    name: "User",
+    component: () => import("../views/User.vue")
+  },
+  {
+    path: "/games/new",
+    name: "NewGame",
+    component: () => import("../views/NewGame.vue")
+  },
+  {
+    path: "/cloned_games",
+    name: "ClonedGames",
+    component: () => import("../views/ClonedGames.vue")
+  },
+  {
+    path: "/forgot_password",
+    name: "ForgotPassword",
+    component: () => import("../views/ForgotPassword.vue")
+  },
+  {
+    path: "/reset_password",
+    name: "ResetPassword",
+    component: () => import("../views/ResetPassword.vue")
+  },
+  {
+    path: "/rankings",
+    name: "Rankings",
+    component: () => import("../views/Rankings.vue")
   }
 ];
 
 const router = new VueRouter({
   mode: "history",
-  routes
+  routes,
+  scrollBehavior() {
+    return { x: 0, y: 0 };
+  }
 });
 
 export default router;

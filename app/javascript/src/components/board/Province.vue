@@ -7,15 +7,15 @@
     @mouseleave="hideFactory()"
   >
     <text
-      v-if="this.mounted && !['sardinia', 'corsica', 'switzerland'].includes(this.name)"
-      font-size="7"
+      v-if="this.mounted && !['Sardinia', 'Corsica', 'Switzerland'].includes(this.name)"
+      font-size="8"
       stroke="#303030"
       text-align="center"
-      :x="x(0)"
-      :y="y(0)"
+      :x="x(0) + labelXAdjustment()"
+      :y="y(0) + labelYAdjustment()"
       text-anchor="middle"
       alignment-baseline="central"
-      class="font-sans font-thin"
+      class="font-sans"
     >
       {{ this.name }}
     </text>
@@ -67,23 +67,36 @@
       height="11"
     ></Flag>
     <Flag
-      v-for="(nation, index) in availableArmies()"
-      :nation="nation"
-      :key="nation + index + 'A'"
+      v-for="(army, index) in availableArmies()"
+      :nation="army.nation"
+      :key="army.nation + index + 'A'"
+      :friendly="army.friendly"
       :x="x(index)"
       :y="y(index)"
       width="13"
       height="8"
     ></Flag>
-    <circle
-      v-if="importingArmy"
-      :cx="x(0) + 6"
-      :cy="y(0) - 5"
-      r="4"
-      fill="red"
-      stroke="red"
-      stroke-dasharray="1,1"
-    ></circle>
+    <Flag
+      v-for="(army, index) in importingArmies"
+      :nation="army.nation"
+      :key="army.nation + index + 'A'"
+      :x="x(index)"
+      :y="y(index)"
+      filter="grayscale"
+      width="13"
+      height="8"
+    ></Flag>
+    <Flag
+      v-for="(fleet, index) in importingFleets"
+      :nation="fleet.nation"
+      :key="fleet.nation + index + 'F'"
+      :x="x(index) + flagFleetXAdjustment()"
+      :y="y(index) + 10 + flagFleetYAdjustment()"
+      :fleet="true"
+      filter="grayscale"
+      width="21"
+      height="11"
+    ></Flag>
   </component>
 </template>
 
@@ -99,22 +112,25 @@ export default {
     dot: String,
     factory: String,
     factory_type: String,
-    importingArmy: Boolean,
+    importingUnits: Array,
     is_valid: Boolean,
     name: String,
     province: Object,
     select_province: Function,
     armies: Array,
-    fleets: Array
+    fleets: Array,
+    province_with_fight: Boolean
   },
   data: () => {
     return {
       mounted: false,
+      originalFill: "",
       tempFactory: false
     };
   },
   mounted() {
     this.mounted = true;
+    this.originalFill = this.$refs.province.children[0].getAttribute("fill");
   },
   updated() {
     const province = this.$refs.province;
@@ -128,6 +144,32 @@ export default {
       this.$refs.province.children[0].classList.add("hoverable");
     } else {
       this.$refs.province.children[0].classList.remove("hoverable");
+    }
+    if (this.province_with_fight) {
+      this.$refs.province.children[0].animate([
+        { fill: "#EF4400" },
+        { fill: this.originalFill }
+      ], {
+        duration: 2000,
+        iterations: 1
+      });
+      this.$emit("fightResolved");
+    }
+  },
+  computed: {
+    importingArmies() {
+      if (this.importingUnits) {
+        return this.importingUnits.filter(unit => unit.type === "army");
+      }
+
+      return [];
+    },
+    importingFleets() {
+      if (this.importingUnits) {
+        return this.importingUnits.filter(unit => unit.type === "fleet");
+      }
+
+      return [];
     }
   },
   methods: {
@@ -148,67 +190,61 @@ export default {
     // x() and y() approximate the center of a province for flag placement.
     x(index) {
       switch (this.name) {
-        case "danzig":
+        case "Danzig":
           return (
             index * 2.5 +
             this.$refs.province.children[0].getBBox().x +
             this.$refs.province.children[0].getBBox().width / 2
           ) - 20;
-        case "danzig":
-          return (
-            index * 2.5 +
-            this.$refs.province.children[0].getBBox().x +
-            this.$refs.province.children[0].getBBox().width / 2
-          ) - 20;
-        case "denmark":
+        case "Denmark":
           return (
             index * 2.5 +
             this.$refs.province.children[0].getBBox().x +
             this.$refs.province.children[0].getBBox().width / 2
           ) + 30;
-        case "englishchannel":
+        case "English Channel":
           return (
             index * 2.5 +
             this.$refs.province.children[0].getBBox().x +
             this.$refs.province.children[0].getBBox().width / 2
           ) - 10;
-        case "genoa":
+        case "Genoa":
           return (
             index * 2.5 +
             this.$refs.province.children[0].getBBox().x +
             this.$refs.province.children[0].getBBox().width / 2
           ) - 15;
-        case "greece":
+        case "Greece":
           return (
             index * 2.5 +
             this.$refs.province.children[0].getBBox().x +
             this.$refs.province.children[0].getBBox().width / 2
           ) - 25;
-        case "ioniansea":
+        case "Ionian Sea":
           return (
             index * 2.5 +
             this.$refs.province.children[0].getBBox().x +
             this.$refs.province.children[0].getBBox().width / 2
           ) + 20;
-        case "norway":
+        case "Norway":
           return (
             index * 2.5 +
             this.$refs.province.children[0].getBBox().x +
             this.$refs.province.children[0].getBBox().width / 2
           ) - 45;
-        case "portugal":
+        case "Portugal":
           return (
             index * 2.5 +
             this.$refs.province.children[0].getBBox().x +
             this.$refs.province.children[0].getBBox().width / 2
           ) - 15;
-        case "sweden":
+        case "Sweden":
           return (
             index * 2.5 +
             this.$refs.province.children[0].getBBox().x +
             this.$refs.province.children[0].getBBox().width / 2
           ) - 20;
-        case "turkey":
+        case "Turkey":
           return (
             index * 2.5 +
             this.$refs.province.children[0].getBBox().x +
@@ -223,79 +259,79 @@ export default {
     },
     y(index) {
       switch (this.name) {
-        case "bayofbiscay":
+        case "Bay of Biscay":
           return (
             index * 2.5 +
             this.$refs.province.children[0].getBBox().y +
             this.$refs.province.children[0].getBBox().height / 2
           ) - 60;
-        case "belgium":
+        case "Belgium":
           return (
             index * 2.5 +
             this.$refs.province.children[0].getBBox().y +
             this.$refs.province.children[0].getBBox().height / 2
           ) - 5;
-        case "blacksea":
+        case "Black Sea":
           return (
             index * 2.5 +
             this.$refs.province.children[0].getBBox().y +
             this.$refs.province.children[0].getBBox().height / 2
           ) + 15;
-        case "denmark":
+        case "Denmark":
           return (
             index * 2.5 +
             this.$refs.province.children[0].getBBox().y +
             this.$refs.province.children[0].getBBox().height / 2
           ) + 40;
-        case "easternmediterraneansea":
+        case "Eastern Mediterranean Sea":
           return (
             index * 2.5 +
             this.$refs.province.children[0].getBBox().y +
             this.$refs.province.children[0].getBBox().height / 2
           ) + 30;
-        case "englishchannel":
+        case "English Channel":
           return (
             index * 2.5 +
             this.$refs.province.children[0].getBBox().y +
             this.$refs.province.children[0].getBBox().height / 2
           ) + 7;
-        case "greece":
+        case "Greece":
           return (
             index * 2.5 +
             this.$refs.province.children[0].getBBox().y +
             this.$refs.province.children[0].getBBox().height / 2
           ) - 10;
-        case "ioniansea":
+        case "Ionian Sea":
           return (
             index * 2.5 +
             this.$refs.province.children[0].getBBox().y +
             this.$refs.province.children[0].getBBox().height / 2
           ) + 30;
-        case "lemberg":
+        case "Lemberg":
           return (
             index * 2.5 +
             this.$refs.province.children[0].getBBox().y +
             this.$refs.province.children[0].getBBox().height / 2
           ) - 10;
-        case "naples":
+        case "Naples":
           return (
             index * 2.5 +
             this.$refs.province.children[0].getBBox().y +
             this.$refs.province.children[0].getBBox().height / 2
           ) - 20;
-        case "northatlantic":
+        case "North Atlantic":
           return (
             index * 2.5 +
             this.$refs.province.children[0].getBBox().y +
             this.$refs.province.children[0].getBBox().height / 2
           ) - 20;
-        case "norway":
+        case "Norway":
           return (
             index * 2.5 +
             this.$refs.province.children[0].getBBox().y +
             this.$refs.province.children[0].getBBox().height / 2
           ) + 100;
-        case "sweden":
+        case "Sweden":
           return (
             index * 2.5 +
             this.$refs.province.children[0].getBBox().y +
@@ -310,55 +346,97 @@ export default {
     },
     flagFleetXAdjustment() {
       switch (this.name) {
-        case "bordeaux":
+        case "Bordeaux":
           return -20
-        case "liverpool":
+        case "Liverpool":
           return -10
-        case "englishchannel":
+        case "English Channel":
           return -30
-        case "marseille":
-        case "hamburg":
+        case "Hamburg":
+        case "Marseille":
           return -15
-        case "marseille":
-          return -15
-        case "stpetersburg":
+        case "St. Petersburg":
           return -20
       }
       return 0
     },
     flagFleetYAdjustment() {
       switch (this.name) {
-        case "brest":
+        case "Brest":
           return -30
-        case "englishchannel":
+        case "English Channel":
           return -10
+      }
+      return 0
+    },
+    labelXAdjustment() {
+      switch (this.name) {
+        case "Danzig":
+          return 10
+        case "Vienna":
+          return 10
+        case "Venice":
+          return -5
+        case "Genoa":
+          return 10
+        case "Marseille":
+          return 15
+      }
+      return 0
+    },
+    labelYAdjustment() {
+      switch (this.name) {
+        case "Western Mediterranean Sea":
+          return 30
+        case "Morocco":
+          return 10
+        case "Ionian Sea":
+          return 30
+        case "Turkey":
+          return 30
+        case "Romania":
+          return 20
+        case "Odessa":
+          return -10
+        case "Venice":
+          return 14
+        case "Marseille":
+          return 5
+        case "West Balkan":
+          return 7
+        case "Sweden":
+          return 5
       }
       return 0
     },
     factoryXAdjustment() {
       switch (this.name) {
-        case "danzig":
+        case "Danzig":
           return 20
-        case "genoa":
+        case "Edinburgh":
           return 15
-        case "stpetersburg":
+        case "Genoa":
+          return 15
+        case "St. Petersburg":
           return -20
-        case "venice":
+        case "Venice":
           return 15
       }
       return 0
     },
     factoryYAdjustment() {
       switch (this.name) {
-        case "brest":
+        case "Brest":
           return -20
-        case "danzig":
+        case "Danzig":
           return -30
-        case "genoa":
+        case "Edinburgh":
+          return 5
+        case "Genoa":
           return 10
-        case "stpetersburg":
+        case "St. Petersburg":
           return -25
-        case "trieste":
+        case "Trieste":
           return 10
       }
       return 0

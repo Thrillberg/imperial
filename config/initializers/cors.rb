@@ -7,7 +7,7 @@
 
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
-    origins "localhost:8081", "playimperial.club"
+    origins "playimperial.club", "imperial-staging.herokuapp.com"
 
     resource "*",
       headers: :any,

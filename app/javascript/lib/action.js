@@ -52,13 +52,15 @@ export default {
   // The following are only for annotations
   playerGainsCash: makeAction("playerGainsCash", ["player", "amount"]),
   playerTradedInForABond: makeAction("playerTradedInForABond", ["player", "bondNation", "bondCost"]),
+  playerAutoSkipsBondPurchase: makeAction("playerAutoSkipsBondPurchase", ["player", "bondNation"]),
   playerPaysForRondel: makeAction("playerPaysForRondel", ["player", "cost", "slot"]),
   playerInvests: makeAction("playerInvests", ["player"]),
   nationGainsTreasury: makeAction("nationGainsTreasury", ["nation", "amount"]),
   nationGainsPowerPoints: makeAction("nationGainsPowerPoints", ["nation", "powerPoints"]),
+  nationPaysPlayer: makeAction("nationPaysPlayer", ["player", "nation", "amount"]),
   // The remaining actions are for the main log
-  initialize: makeAction("initialize", ["players", "soloMode"]),
-  bondPurchase: makeAction("bondPurchase", ["nation", "player", "cost"]),
+  initialize: makeAction("initialize", ["players", "soloMode", "variant", "baseGame"]),
+  bondPurchase: makeAction("bondPurchase", ["nation", "player", "cost", "tradeInValue"]),
   buildFactory: makeAction("buildFactory", ["province"]),
   coexist: makeAction("coexist", ["province", "incumbent", "challenger"]),
   destroyFactory: makeAction("destroyFactory", ["province"]),
@@ -76,8 +78,10 @@ export default {
   maneuver: makeAction("maneuver", ["origin", "destination"]),
   production: makeAction("production", ["province"]),
   rondel: makeAction("rondel", ["nation", "cost", "slot"]),
-  skipBondPurchase: makeAction("skipBondPurchase", ["player"]),
+  skipBuildFactory: makeAction("skipBuildFactory", ["player", "nation"]),
+  skipBondPurchase: makeAction("skipBondPurchase", ["player", "nation"]),
   skipDestroyFactory: makeAction("skipDestroyFactory", ["province"]),
   skipForceInvestor: makeAction("skipForceInvestor", ["player"]),
+  undo: makeAction("undo", ["player"]),
   unfriendlyEntrance: makeAction("unfriendlyEntrance", ["incumbent", "challenger", "province"])
 };

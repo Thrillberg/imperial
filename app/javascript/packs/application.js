@@ -14,16 +14,30 @@
 // const images = require.context('../images', true)
 // const imagePath = (name) => images(name, true)
 
-import 'core-js/stable'
 import 'regenerator-runtime/runtime'
 
 import Vue from "vue";
 import App from "../src/App.vue";
 import router from "../src/router";
 import VueCookies from "vue-cookies";
+import * as Sentry from "@sentry/vue";
+import { Integrations } from "@sentry/tracing";
 
 Vue.config.productionTip = false;
 Vue.use(VueCookies);
+
+Sentry.init({
+  Vue,
+  dsn: "https://fd248a7ee8904fec99cfee9a4ea6f51c@o987046.ingest.sentry.io/5943913",
+  integrations: [
+    new Integrations.BrowserTracing({
+      routingInstrumentation: Sentry.vueRouterInstrumentation(router),
+      tracingOrigins: ["imperial.club", /^\//],
+    }),
+  ],
+  tracesSampleRate: 1.0,
+  environment: "production",
+});
 
 const app = document.createElement("div");
 app.setAttribute("id", "app");

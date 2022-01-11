@@ -28,40 +28,111 @@ const nodes = [
   { isOcean: false, name: "sweden" },
   { nation: Nation.RU, factoryType: "armaments", name: "moscow", isHome: true },
   { nation: Nation.RU, factoryType: "armaments", name: "warsaw" },
-  { nation: Nation.RU, factoryType: "shipyard", name: "stpetersburg" },
+  {
+    nation: Nation.RU,
+    factoryType: "shipyard",
+    name: "stpetersburg",
+    egress: "balticsea"
+  },
   { nation: Nation.RU, factoryType: "armaments", name: "kiev" },
-  { nation: Nation.RU, factoryType: "shipyard", name: "odessa", isHome: true },
-  { nation: Nation.GE, factoryType: "shipyard", name: "danzig" },
+  {
+    nation: Nation.RU,
+    factoryType: "shipyard",
+    name: "odessa",
+    isHome: true,
+    egress: "blacksea"
+  },
+  {
+    nation: Nation.GE,
+    factoryType: "shipyard",
+    name: "danzig",
+    egress: "balticsea"
+  },
   { nation: Nation.GE, factoryType: "armaments", name: "berlin", isHome: true },
   { nation: Nation.GE, factoryType: "armaments", name: "munich" },
   { nation: Nation.GE, factoryType: "armaments", name: "cologne" },
-  { nation: Nation.GE, factoryType: "shipyard", name: "hamburg", isHome: true },
-  { nation: Nation.GB, factoryType: "shipyard", name: "dublin" },
-  { nation: Nation.GB, factoryType: "shipyard", name: "edinburgh" },
+  {
+    nation: Nation.GE,
+    factoryType: "shipyard",
+    name: "hamburg",
+    isHome: true,
+    egress: "northsea"
+  },
+  {
+    nation: Nation.GB,
+    factoryType: "shipyard",
+    name: "dublin",
+    egress: "northatlantic"
+  },
+  {
+    nation: Nation.GB,
+    factoryType: "shipyard",
+    name: "edinburgh",
+    egress: "northsea"
+  },
   {
     nation: Nation.GB,
     factoryType: "shipyard",
     name: "liverpool",
-    isHome: true
+    isHome: true,
+    egress: "northatlantic"
   },
   { nation: Nation.GB, factoryType: "armaments", name: "sheffield" },
-  { nation: Nation.GB, factoryType: "shipyard", name: "london", isHome: true },
+  {
+    nation: Nation.GB,
+    factoryType: "shipyard",
+    name: "london",
+    isHome: true,
+    egress: "englishchannel"
+  },
   { nation: Nation.FR, factoryType: "armaments", name: "paris", isHome: true },
   { nation: Nation.FR, factoryType: "armaments", name: "dijon" },
-  { nation: Nation.FR, factoryType: "shipyard", name: "marseille" },
+  {
+    nation: Nation.FR,
+    factoryType: "shipyard",
+    name: "marseille",
+    egress: "westernmediterraneansea"
+  },
   {
     nation: Nation.FR,
     factoryType: "shipyard",
     name: "bordeaux",
-    isHome: true
+    isHome: true,
+    egress: "bayofbiscay"
   },
-  { nation: Nation.FR, factoryType: "shipyard", name: "brest" },
-  { nation: Nation.IT, factoryType: "shipyard", name: "genoa" },
-  { nation: Nation.IT, factoryType: "shipyard", name: "venice" },
+  {
+    nation: Nation.FR,
+    factoryType: "shipyard",
+    name: "brest",
+    egress: "englishchannel"
+  },
+  {
+    nation: Nation.IT,
+    factoryType: "shipyard",
+    name: "genoa",
+    egress: "westernmediterraneansea"
+  },
+  {
+    nation: Nation.IT,
+    factoryType: "shipyard",
+    name: "venice",
+    egress: "ioniansea"
+  },
   { nation: Nation.IT, factoryType: "armaments", name: "florence" },
   { nation: Nation.IT, factoryType: "armaments", name: "rome", isHome: true },
-  { nation: Nation.IT, factoryType: "shipyard", name: "naples", isHome: true },
-  { nation: Nation.AH, factoryType: "shipyard", name: "trieste" },
+  {
+    nation: Nation.IT,
+    factoryType: "shipyard",
+    name: "naples",
+    isHome: true,
+    egress: "westernmediterraneansea"
+  },
+  {
+    nation: Nation.AH,
+    factoryType: "shipyard",
+    name: "trieste",
+    egress: "ioniansea"
+  },
   { nation: Nation.AH, factoryType: "armaments", name: "vienna", isHome: true },
   {
     nation: Nation.AH,
@@ -219,7 +290,6 @@ const edges = [
   ["dijon", "marseille"],
   ["dijon", "bordeaux"],
   ["dijon", "brest"],
-  ["tunis", "easternmediterraneansea"],
   ["tunis", "westernmediterraneansea"],
   ["tunis", "algeria"],
   ["algeria", "westernmediterraneansea"],

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_02_19_143927) do
+ActiveRecord::Schema.define(version: 2021_10_16_001545) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -33,6 +33,7 @@ ActiveRecord::Schema.define(version: 2021_02_19_143927) do
     t.uuid "game_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.datetime "originally_created_at"
     t.index ["game_id"], name: "index_actions_on_game_id"
   end
 
@@ -42,7 +43,17 @@ ActiveRecord::Schema.define(version: 2021_02_19_143927) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.datetime "force_ended_at"
+    t.datetime "cancelled_at"
+    t.datetime "started_at"
+    t.uuid "winner_id"
+    t.integer "base_game", default: 0
+    t.uuid "current_player_id"
+    t.integer "variant", default: 0
+    t.uuid "cloned_from_game_id"
+    t.index ["cloned_from_game_id"], name: "index_games_on_cloned_from_game_id"
+    t.index ["current_player_id"], name: "index_games_on_current_player_id"
     t.index ["host_id"], name: "index_games_on_host_id"
+    t.index ["winner_id"], name: "index_games_on_winner_id"
   end
 
   create_table "players", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -50,6 +61,7 @@ ActiveRecord::Schema.define(version: 2021_02_19_143927) do
     t.uuid "game_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.integer "score"
     t.index ["game_id"], name: "index_players_on_game_id"
     t.index ["user_id"], name: "index_players_on_user_id"
   end
@@ -59,9 +71,15 @@ ActiveRecord::Schema.define(version: 2021_02_19_143927) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.uuid "account_id"
+    t.datetime "anonymity_confirmed_at"
+    t.boolean "is_bot"
+    t.boolean "turn_notifications_enabled", default: false
     t.index ["account_id"], name: "index_users_on_account_id"
   end
 
+  add_foreign_key "games", "games", column: "cloned_from_game_id"
+  add_foreign_key "games", "users", column: "current_player_id"
   add_foreign_key "games", "users", column: "host_id"
+  add_foreign_key "games", "users", column: "winner_id"
   add_foreign_key "users", "accounts"
 end

@@ -2,8 +2,8 @@
   <div>
     <div class="flex justify-around">
       <svg
-        width="450px"
-        height="450px"
+        width="350px"
+        height="350px"
         viewBox="-20 -20 240 240"
         version="1.1"
         xmlns="http://www.w3.org/2000/svg"
@@ -13,7 +13,7 @@
           v-for="(rondel_slot, index) in slots"
           v-on:slot-clicked="slotClicked(rondel_slot.type)"
           v-on:slot-hovered="slotHovered(rondel_slot.type)"
-          v-on:slot-silent="slotSilent(rondel_slot.type)"
+          v-on:slot-silent="slotSilent()"
           :index="index"
           :is_valid="isValid(rondel_slot.type)"
           :nations="nationsOnSlot(rondel_slot.type)"
@@ -24,23 +24,41 @@
     </div>
     <div v-if="!!helperText" class="w-1/2 mx-auto border border-gray-600 rounded m-2 p-2">
       <div v-if="onInvestorSlot" class="mb-2">
-        <div v-for="bearer of bondBearers" :bearer="bearer">
-          <b>{{ bearer.player }}</b> would receive {{ bearer.dividend }}m
+        <div v-for="[bearer, amount] of bondBearers" :key="bearer">
+          <b>{{ bearer }}</b> would receive {{ amount }}m
         </div>
-        <b>{{ game.investorCardHolder }}</b> has the investor card
+        <div v-if="game.variant !== 'withoutInvestorCard'">
+          <b>{{ game.investorCardHolder }}</b> has the investor card
+        </div>
       </div>
       <div v-if="onTaxationSlot" class="mb-2">
-        <div>
-          <b>Current Tax Chart Position:</b> {{ game.nations.get(game.currentNation).taxChartPosition }}
+        <div v-if="game.baseGame === 'imperial'">
+          <div>
+            <b>Current Tax Chart Position:</b> {{ game.nations.get(game.currentNation).taxChartPosition }}
+          </div>
+          <div>
+            <b>Next Tax Chart Position:</b> {{ nextTaxChartPosition() }}
+          </div>
+          <div>
+            <b>{{ game.currentPlayerName }}</b> would receive {{ nextTaxChartPosition() - game.nations.get(game.currentNation).taxChartPosition }}m
+          </div>
+          <div>
+            <b>{{ stringify(game.currentNation.value) }}</b> would receive {{ nextTaxChartPosition() - game.unitCount(game.currentNation) }}m
+          </div>
+          <div>
+            <b>{{ stringify(game.currentNation.value) }}</b>'s power points would be {{ postTaxationGameState.nations.get(game.currentNation).powerPoints }}
+          </div>
         </div>
-        <div>
-          <b>Next Tax Chart Position:</b> {{ nextTaxChartPosition() }}
-        </div>
-        <div>
-          <b>{{ game.currentPlayerName }}</b> would receive {{ nextTaxChartPosition() - game.nations.get(game.currentNation).taxChartPosition }}m
-        </div>
-        <div>
-          <b>{{ stringify(game.currentNation.value) }}</b> would receive {{ nationTaxes() }}m
+        <div v-else-if="game.baseGame === 'imperial2030'">
+          <div>
+            <b>{{ game.currentPlayerName }}</b> would receive {{ playerRevenue2030() }}m
+          </div>
+          <div>
+            <b>{{ stringify(game.currentNation.value) }}</b> would receive {{ nationRevenue2030() }}m
+          </div>
+          <div>
+            <b>{{ stringify(game.currentNation.value) }}</b>'s power points would be {{ postTaxationGameState.nations.get(game.currentNation).powerPoints }}
+          </div>
         </div>
       </div>
       <div v-if="!!cost">
@@ -52,8 +70,8 @@
 </template>
 
 <script>
-import Imperial from "../../lib/imperial.js";
 import stringify from "../stringify.js";
+import Imperial from "../../lib/imperial.js";
 
 import RondelSlot from "./RondelSlot.vue";
 
@@ -68,15 +86,41 @@ export default {
   },
   computed: {
     bondBearers() {
-      let bearers = [];
+      let bearers = {};
       for (const player of Object.keys(this.game.players)) {
         for (const bond of this.game.players[player].bonds) {
           if (bond.nation === this.game.currentNation) {
-            bearers.push({ player, dividend: bond.number });
+            if (bearers[player]) {
+              bearers[player] += bond.number;
+            } else {
+              bearers[player] = bond.number;
+            }
           }
         }
       }
-      return bearers;
+      let bearersArray = Object.keys(bearers).map(name => [name, bearers[name]]).sort((a, b) => a[1] - b[1]);
+      let remainingTreasury = this.game.nations.get(this.game.currentNation).treasury;
+      return bearersArray.map(bearer => {
+        if (remainingTreasury === 0) return;
+        if (remainingTreasury >= bearer[1]) {
+          remainingTreasury -= bearer[1];
+          return bearer;
+        }
+        const lastPayment = remainingTreasury;
+        remainingTreasury = 0;
+        return [bearer[0], lastPayment];
+      }).filter(Boolean);
+    },
+    postTaxationGameState() {
+      const hypotheticalGame = Imperial.fromLog(this.game.log, this.game.board);
+      let taxationAction = {};
+      for (const action of hypotheticalGame.availableActions) {
+        if (action.type === "rondel" && action.payload.slot === "taxation") {
+          taxationAction = action;
+        }
+      }
+      hypotheticalGame.tick(taxationAction);
+      return hypotheticalGame;
     }
   },
   methods: {
@@ -106,7 +150,11 @@ export default {
           case "investor": {
             this.onInvestorSlot = true;
             this.onTaxationSlot = false;
-            this.helperText = "Nation pays players interest, investor card holder receives 2m and may purchase a bond, Swiss Banks may invest."
+            if (this.game.variant === "withoutInvestorCard") {
+              this.helperText = "Nation pays players interest"
+            } else {
+              this.helperText = "Nation pays players interest, investor card holder receives 2m and may purchase a bond, Swiss Banks may invest."
+            }
             break;
           }
           case "import": {
@@ -153,7 +201,7 @@ export default {
     showRondelHelperText: function() {
       let allActionsAreRondel = true;
       for (const action of this.game.availableActions) {
-        if (action.type !== "rondel") {
+        if (action.type !== "rondel" && action.type !== "undo") {
           allActionsAreRondel = false;
         }
       }
@@ -161,7 +209,7 @@ export default {
         this.game.currentPlayerName === this.name || (this.game.soloMode && this.name in this.game.players)
       )
     },
-    slotSilent(slot) {
+    slotSilent() {
       this.helperText = "";
     },
     slotClicked: function(slot) {
@@ -183,23 +231,42 @@ export default {
       return slots;
     },
     nextTaxChartPosition() {
-      const calculatedGame = Imperial.fromLog(this.game.log)
       const nation = this.game.currentNation;
-      const factories = calculatedGame.unoccupiedFactoryCount(nation);
-      const flags = calculatedGame.flagCount(nation);
-      const currentTaxChartPosition = this.game.nations.get(nation).taxChartPosition;
-
-      let taxChartPosition = factories * 2 + flags;
-      if (taxChartPosition > 20) taxChartPosition = 20;
-      if (taxChartPosition < currentTaxChartPosition) taxChartPosition = currentTaxChartPosition;
-
-      return taxChartPosition;
+      return this.postTaxationGameState.nations.get(nation).taxChartPosition;
     },
-    nationTaxes() {
-      const nation = this.game.currentNation;
-      let taxes = this.nextTaxChartPosition() - Imperial.fromLog(this.game.log).unitCount(nation)
-      if (taxes < 0) taxes = 0;
-      return taxes;
+    playerRevenue2030() {
+      const taxes = this.game.unoccupiedFactoryCount(this.game.currentNation) * 2 + this.game.flagCount(this.game.currentNation);
+      const bonusByTaxes = {
+        0: 0,
+        1: 0,
+        2: 0,
+        3: 0,
+        4: 0,
+        5: 0,
+        6: 1,
+        7: 1,
+        8: 1,
+        9: 1,
+        10: 2,
+        11: 2,
+        12: 3,
+        13: 3,
+        14: 4,
+        15: 4,
+        16: 5,
+        17: 5,
+        18: 5,
+        19: 5,
+        20: 5,
+        21: 5,
+        22: 5,
+        23: 5
+      }
+      return bonusByTaxes[taxes];
+    },
+    nationRevenue2030() {
+      const taxes = this.game.unoccupiedFactoryCount(this.game.currentNation) * 2 + this.game.flagCount(this.game.currentNation);
+      return taxes - this.game.unitCount(this.game.currentNation) - this.playerRevenue2030();
     },
     stringify(string) {
       return stringify(string)

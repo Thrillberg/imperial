@@ -1,22 +1,12 @@
 require "faker"
 
-class UsersController < ApplicationController
+class API::UsersController < ApplicationController
   skip_before_action :verify_authenticity_token
 
   def show
-    user = User.find_by(id: params[:id])
-    profile = {}
-    if user
-      account = Account.find_by(user: user)
-      if account
-        profile[:registered] = true
-        if account == current_account
-          profile[:email] = account.email
-        end
-      end
-      profile[:name] = user.name
-    end
-    render json: profile
+    user = User.find(params[:id])
+    games = Game.joins(:users).where(users: {id: user.id}).map(&:to_json)
+    render json: {user: user, games: games}
   end
 
   def create
@@ -32,7 +22,18 @@ class UsersController < ApplicationController
     render json: user
   end
 
+  def update
+    user = User.find(user_params[:id])
+    user.turn_notifications_enabled = user_params[:turn_notifications_enabled]
+    user.save
+    render json: user
+  end
+
   private
+
+  def user_params
+    params.require(:user).permit(:id, :turn_notifications_enabled)
+  end
 
   def lovely_string
     Faker::Name.first_name + " the " + Faker::Creature::Animal.name.capitalize

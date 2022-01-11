@@ -1,20 +1,22 @@
 <template>
-  <div class="container mx-auto w-1/2">
+  <div class="container mx-auto sm:w-1/2">
     <b class="text-xl">How to Play Imperial (A Brief and Incomplete Guide)</b>
     <div class="mt-5">
       <b class="text-lg">Introduction</b>
-      <div class="ml-10">
+      <div class="ml-5 sm:ml-10">
         <p>
           <b>Imperial</b> is a board game in which you play as an investor in pre-World War I European imperial powers. Players own bonds in various nations and whoever owns the majority stake in a nation controls that nation.
         </p>
         <p>
-        Each nation takes their turn to do one action on the <b>rondel</b>. Whoever happens to control that nation when it is the nation's turn is the person who decides what that nation will do on that turn. Countries gain <b>power points</b> (which are increased by building factories and conquering territory). The first nation to gain <b>25 power points</b> signals the end of the game. The winner of the game is determined by evaluating the bonds controlled by each player and calculating who has the most valuable portfolio. The <b>raw score</b> in the player cards represents the player's score, taking into acount only the bonds they control. For each of the player's bonds, the following calculation is made and added to the player's raw score: 
+        Each nation takes their turn to do one action on the <b>rondel</b>. Whoever happens to control that nation when it is the nation's turn is the person who decides what that nation will do on that turn. Countries gain <b>power points</b> (which are increased by building factories and conquering territory). The first nation to gain <b>25 power points</b> signals the end of the game. The winner of the game is determined by evaluating the bonds controlled by each player and calculating who has the most valuable portfolio. The <b>raw score</b> in the player cards represents the player's score, taking into acount only the bonds they control. For each of the player's bonds, the following calculation is made and added to the player's raw score:
+        </p>
         <div class="text-center">(nation power points / 5) * bond number</div>
+        <p>
         The bond number is the lefthand number on the bond. For determining the winner at the end of the game, each player's cash is added to their raw score to make up their total Victory Points.
         </p>
       </div>
       <b class="text-lg">The Game Turn</b>
-      <div class="ml-10">
+      <div class="ml-5 sm:ml-10">
         <p>When a nation's turn occurs, the current controller of that nation is allowed to place the nation's flag on a rondel slot (the effects of which are detailed below). Moving around the rondel in a clockwise fashion, players are allowed to advance their nation's flag up to <b>3 slots</b> for free and each additional slot costs <b>2m per slot</b> beyond the free 3, up to 3 additional slots.</p>
         <b>Production</b>
         <p>
@@ -60,7 +62,7 @@
         </p>
       </div>
       <b class="text-lg">The Investor Card</b>
-      <div class="ml-10">
+      <div class="ml-5 sm:ml-10">
         <p>
           The investor card rotates independently through the players as the game progresses. Each time the <b>Investor</b> rondel slot is landed on, the following steps are followed:
           <ol class="border rounded border-gray-400 p-2 mx-10">

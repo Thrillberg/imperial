@@ -27,7 +27,6 @@
         v-bind:class="hoverable(is_valid)"
       ></path>
       <text
-        font-family="Baskerville"
         font-weight="normal"
         font-size="10"
         letter-spacing="0.3"
@@ -47,6 +46,7 @@
     >
       <circle
         v-for="(nation, index) in nations"
+        :key="index"
         :cx="xPosition(index)"
         :cy="yPosition(index)"
         r="7"
@@ -59,13 +59,8 @@
 </template>
 
 <script>
-import Flag from "./flags/Flag.vue";
-
 export default {
   name: "RondelSlot",
-  components: {
-    Flag
-  },
   props: {
     index: Number,
     is_valid: Boolean,
@@ -134,6 +129,16 @@ export default {
           return "#8F8F8F"
         case "RU":
           return "#9C6BAE"
+        case "CN":
+          return "#ebe084"
+        case "IN":
+          return "silver"
+        case "BR":
+          return "#6E8D4E"
+        case "US":
+          return "#EF7F72"
+        case "EU":
+          return "#54bff9"
       }
     }
   }

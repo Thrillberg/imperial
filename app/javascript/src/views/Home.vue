@@ -1,75 +1,119 @@
 <template>
   <div class="container mx-auto">
-    <div class="mt-4">
-      <div class="w-1/3 absolute right-2">
-        <div v-if="!profile.registered" class="border-red-500 border-2 rounded p-4 mb-4">
-          <div class="text-lg text-red-500">
-            <b>Uh oh! You're not registered!</b>
+    <div class="mt-10">
+      <div v-if="!profile.anonymity_confirmed_at && !profile.registered" class="flex flex-col items-center rounded p-20 mx-auto max-w-4xl bg-green-200">
+        <button
+          class="rounded bg-green-800 text-white cursor-pointer text-2xl block sm:w-1/2 hover:bg-green-900 p-3 m-3 sm:p-10 sm:m-10"
+          @click="setAnonymous"
+          v-if="profile.username"
+        >
+          Play as {{ profile.username }}
+        </button>
+        <button
+          class="rounded bg-green-800 text-white cursor-pointer text-2xl block sm:w-1/2 hover:bg-green-900 p-3 m-3 sm:p-10 sm:m-10"
+          @click="register"
+          >
+          Register an Account
+        </button>
+      </div>
+      <div v-else class="flex justify-around items-start">
+        <div class="sm:w-3/4" v-if="gamesFetched">
+          <div class="bg-green-200 p-4 my-2 flex">
+            <a href="http://discord.gg/VnxKwuQmg8">
+              <DiscordLogo height="50" fill="#7289DA" class="mr-2" />
+            </a>
+            <p>
+              Please join us <b><a href="https://discord.gg/VnxKwuQmg8" class="underline">on Discord</a></b> if you want to find others to play a live or asynchronous game!
+            </p>
           </div>
-          <div>
-            You can play a game or two without registering but you might not keep access to your games. If you want to be sure to be able to access your games in the future, please register.
+          <YourGames :games="yourGames" :profile="profile"></YourGames>
+          <UnstartedGameList :games="unstartedGames" :profile="profile"></UnstartedGameList>
+          <CurrentGames :games="currentGames"></CurrentGames>
+          <div class="px-4">
+            <router-link to="/cloned_games">
+              <b class="underline">Your Cloned Games</b>
+            </router-link>
           </div>
-          <div class="text-center mt-5">
-            <router-link
-              :to="{ path: '/register' }"
-              class="rounded p-2 mt-2 bg-green-800 text-white cursor-pointer text-lg"
-            >
-              Register
+          <div class="px-4">
+            <router-link to="/games">
+              <b class="underline">All Games</b>
+            </router-link>
+          </div>
+          <div class="px-4">
+            <router-link to="/finished_games">
+              <b class="underline">All Finished Games</b>
             </router-link>
           </div>
         </div>
-        <div class="border-green-500 border-2 rounded p-4">
-          <b>Who's online?</b>
-          <div v-for="user in this.users" :key="user">
-            {{ user }}
-          </div>
+        <div v-else class="sm:w-3/4 text-center text-2xl mt-8">
+          Loading games
         </div>
       </div>
-      <div
-        v-on:click="openGame()"
-        class="border-2 border-green-800 rounded p-4 mt-2 cursor-pointer inline-block text-lg hover:bg-green-100"
-      >
-        <b>Open New Game</b>
-      </div>
-      <UnstartedGameList :games="unstartedGames" :profile="profile"></UnstartedGameList>
-      <StartedGameList :games="startedGames" :profile="profile"></StartedGameList>
-      <EndedGameList :games="endedGames" :profile="profile"></EndedGameList>
     </div>
   </div>
 </template>
 
 <script>
-import { apiClient } from "../router/index.js";
-
-import EndedGameList from "../components/EndedGameList.vue";
-import StartedGameList from "../components/StartedGameList.vue";
+import CurrentGames from "../components/CurrentGames.vue";
 import UnstartedGameList from "../components/UnstartedGameList.vue";
+import YourGames from "../components/YourGames.vue";
+
+import DiscordLogo from "../assets/discord_logo.svg";
 
 export default {
   name: "Home",
-  components: { EndedGameList, StartedGameList, UnstartedGameList },
-  props: { profile: Object, users: Array, games: Array },
+  components: { CurrentGames, UnstartedGameList, YourGames, DiscordLogo },
+  props: { profile: Object, users: Array, games: Array, gamesFetched: Boolean },
   computed: {
+    yourGames() {
+      return this.games.filter(game => {
+        let inGame = false;
+        game.players.forEach(player => {
+          if (player.name === this.profile.username) {
+            inGame = true;
+          }
+        });
+        return inGame && !game.forceEndedAt && !game.clonedFromGame;
+      })
+    },
     unstartedGames() {
-      return this.games.filter(game => {
-        return game.log.length === 0 && !game.forceEndedAt
-      })
+      let games = this.games.filter(game => {
+        let inGame = false;
+        game.players.forEach(player => {
+          if (player.name === this.profile.username) {
+            inGame = true;
+          }
+        });
+        return !game.startedAt && !inGame && !game.forceEndedAt && !game.clonedFromGame;
+      });
+      return games.sort((a, b) => {
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      });
     },
-    startedGames() {
-      return this.games.filter(game => {
-        return game.log.length > 0 && !game.winner && !game.forceEndedAt
-      })
-    },
-    endedGames() {
-      return this.games.filter(game => {
-        return game.winner || game.forceEndedAt
-      })
+    currentGames() {
+      return this.games.filter(
+        game => game.startedAt && !game.forceEndedAt && !game.winner && !game.clonedFromGame
+      )
     }
   },
   methods: {
-    openGame: function() {
-      apiClient.openGame(this.profile.username);
+    setAnonymous() {
+      fetch(
+        "/anonymity_confirmations",
+        {
+          method: "POST",
+          body: JSON.stringify({ id: this.$cookies.get("user_id") }),
+          headers: { "Content-Type": "application/json" }
+        }
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          this.$emit("anonymity_confirmed", data.anonymity_confirmed_at)
+        })
     },
+    register() {
+      this.$router.push("/register");
+    }
   }
 };
 </script>

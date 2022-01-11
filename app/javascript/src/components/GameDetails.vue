@@ -1,138 +1,86 @@
 <template>
-  <div class="flex flex-col text-sm">
+  <div class="flex flex-col">
+    <TaxChart :showBonus="game.baseGame === 'imperial2030'" :taxes="taxes()" />
     <div class="flex flex-wrap justify-evenly">
       <Player
-        v-for="player in game.players"
+        v-for="(player, index) of players()"
+        @toggleTradeIn="toggleTradeIn"
         :player="player"
         :current_player="controllingPlayerName"
         :game="game"
         :profile="profile"
         :online_users="online_users"
+        :purchasingBond="purchasingBond"
+        :tradedInBondNation="tradedInBondNation"
+        :tradedInValue="tradedInValue"
+        :index="game.winner ? index + 1 : null"
         :key="player.name"
       ></Player>
     </div>
-    <TurnStatus :game="game"></TurnStatus>
-    <BondPurchase
-      :game="game"
-      :current_player="controllingPlayerName"
-      :profile="profile"
-      v-on:purchaseBond="purchaseBond"
-      v-on:skip="this.skipPurchaseBond"
-    ></BondPurchase>
-    <div v-if="destroyingFactory">
-      <div class="text-lg">Do you want to destroy the factory at <b>{{ this.game.log[this.game.log.length - 1].payload.destination }}</b>?</div>
-      <div class="flex flex-wrap justify-evenly">
-        <div @click="destroyFactory" class="rounded p-2 bg-green-800 text-white cursor-pointer inline-block mt-8">
-          Yes
-        </div>
-        <div @click="skipDestroyFactory" class="rounded p-2 bg-green-800 text-white cursor-pointer inline-block mt-8">
-          No
-        </div>
-      </div>
-    </div>
-    <div v-else>
+    <div v-if="!game.winner">
       <Rondel
-        v-bind:game="game"
-        v-bind:name="profile.username"
-        v-on:tick-with-action="tickWithAction"
+        :game="game"
+        :name="profile.username"
+        @tick-with-action="tickWithAction"
       ></Rondel>
-    </div>
-    <div
-      v-if="game.importing && !chooseImportType && (profile.username === controllingPlayerName || (game.soloMode && profile.username in game.players))"
-      class="text-center text-lg"
-    >
-      <div>
-        You have
-        <b>{{ this.game.maxImports - importPlacements.length }}</b> imports left.
-      </div>
-      <div
-        @click="$emit('runImport')"
-        class="rounded p-2 bg-green-800 text-white cursor-pointer"
-      >
-        End import
-      </div>
-    </div>
-    <div
-      v-if="game.importing && !!chooseImportType && (profile.username === controllingPlayerName || (game.soloMode && profile.username in game.players))"
-      class="text-center text-lg"
-    >
-      <div>Please choose if you want to import an <b>army</b> or a <b>fleet</b>.</div>
-      <div
-        @click="$emit('chooseImportType', 'army')"
-        class="rounded p-2 bg-green-800 text-white cursor-pointer"
-      >
-        Army
-      </div>
-      <div
-        @click="$emit('chooseImportType', 'fleet')"
-        class="rounded p-2 bg-green-800 text-white cursor-pointer"
-      >
-        Fleet
-      </div>
-    </div>
-    <div
-      v-if="game.maneuvering && !destroyingFactory && !game.handlingConflict && (profile.username === controllingPlayerName || (game.soloMode && profile.username in game.players))"
-      class="text-center text-lg"
-    >
-      <div
-        v-on:click="endManeuver"
-        class="rounded p-2 bg-green-800 text-white cursor-pointer"
-      >
-        End maneuver
-      </div>
-    </div>
-    <ConflictHandler :game="game" :profile="profile" :controllingPlayerName="controllingPlayerName" v-on:tick-with-action="tickWithAction"></ConflictHandler>
-    <div class="buttons" v-if="canForceInvestor">
-      <ActionComponent
-        v-for="action in game.availableActions"
-        v-bind:key="JSON.stringify(action)"
-        v-bind:action="action"
-        v-bind:text="actionToText(action)"
-        v-bind:dispatch="tickWithAction"
-      ></ActionComponent>
     </div>
   </div>
 </template>
 
 <script>
-import Action from "../../lib/action.js";
-import ActionComponent from "../components/ActionComponent.vue";
-import BondPurchase from "../components/BondPurchase.vue";
-import ConflictHandler from "../components/ConflictHandler.vue";
 import Player from "../components/Player.vue";
 import Rondel from "../components/Rondel.vue";
-import TurnStatus from "../components/TurnStatus.vue";
+import TaxChart from "../components/TaxChart.vue";
 
 export default {
   name: "GameDetails",
   components: {
-    ActionComponent,
-    BondPurchase,
-    ConflictHandler,
     Player,
     Rondel,
-    TurnStatus
+    TaxChart
   },
-  props: ["game", "chooseImportType", "controllingPlayerName", "profile", "importPlacements", "online_users"],
+  props: ["game", "controllingPlayerName", "profile", "online_users", "gameData"],
   computed: {
-    destroyingFactory: function () {
-      const destroyingFactory = this.game.availableActions.size > 0 &&
+    purchasingBond() {
+      const purchasingBond = this.game.availableActions.size > 0 &&
         Array.from(this.game.availableActions).every(
-          (action) => action.type === "destroyFactory" || action.type === "skipDestroyFactory"
+          (action) => action.type === "bondPurchase" || action.type === "skipBondPurchase" || action.type === "undo"
         );
-      return destroyingFactory && (this.profile.username === this.controllingPlayerName || (this.game.soloMode && this.profile.username in this.game.players));
-    },
-    canForceInvestor: function () {
-      if (this.game.availableActions.size > 0 &&
-        Array.from(this.game.availableActions).every((action) => action.type === "forceInvestor" || action.type === "skipForceInvestor")) {
-          this.controllingPlayerName = "";
-          if (this.game.swissBanks.includes(this.profile.username) || (this.game.soloMode && this.profile.username in this.game.players)) {
-            return true;
-          }
-      }
+      return purchasingBond && (this.profile.username === this.controllingPlayerName || (this.game.soloMode && this.profile.username in this.game.players));
+    }
+  },
+  data() {
+    return {
+      tradedInBondNation: "",
+      tradedInValue: 0
     }
   },
   methods: {
+    players() {
+      let players = {};
+      for (const name in this.game.players) {
+        this.gameData.players.forEach(dataPlayer => {
+          if (name === dataPlayer.name) {
+            players[name] = Object.assign(
+              {},
+              this.game.players[name],
+              {id: dataPlayer.id}
+            );
+          }
+        });
+        if (!players[name]) {
+          // Computer player
+          players[name] = this.game.players[name];
+        }
+      }
+      if (this.game.winner) {
+        return Object.values(players).sort((a, b) => {
+          return a.cash + a.rawScore < b.cash + b.rawScore;
+        });
+      } else {
+        return Object.values(players);
+      }
+    },
     powerPoints() {
       return [...Array(26).keys()].map(slot => {
         let nations = [];
@@ -145,64 +93,83 @@ export default {
       });
     },
     taxes() {
-      return [15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5].map(slot => {
-        let nations = [];
-        for (const [nation, data] of this.game.nations) {
-          if (data.taxChartPosition === slot) {
-            nations.push(nation.value);
+      if (this.game.baseGame === "imperial") {
+        return [15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5].map(slot => {
+          let nations = [];
+          for (const [nation, data] of this.game.nations) {
+            if (data.taxChartPosition === slot) {
+              nations.push(nation.value);
+            }
           }
-        }
-        return { slot, nations };
-      });
+          const powerPointIncrease = slot - 5;
+          return { slot, nations, powerPointIncrease };
+        });
+      } else if (this.game.baseGame === "imperial2030") {
+        const taxes = [18, 16, 15, 14, 13, 12, 11, 10, 8, 6, 5]
+        return taxes.map((slot, index) => {
+          let nations = [];
+          for (const [nation, data] of this.game.nations) {
+            if (data.taxChartPosition >= slot) {
+              nations.push(nation.value);
+            }
+          } 
+          const powerPointIncrease = taxes.length - index - 1;
+          let bonus;
+          switch (slot) {
+            case 5: {
+              bonus = 0;
+              break;
+            }
+            case 6: {
+              bonus = 1;
+              break;
+            }
+            case 8: {
+              bonus = 1;
+              break;
+            }
+            case 10: {
+              bonus = 2;
+              break;
+            }
+            case 11: {
+              bonus = 2;
+              break;
+            }
+            case 12: {
+              bonus = 3;
+              break;
+            }
+            case 13: {
+              bonus = 3;
+              break;
+            }
+            case 14: {
+              bonus = 4;
+              break;
+            }
+            case 15: {
+              bonus = 4;
+              break;
+            }
+            case 16: {
+              bonus = 5;
+              break;
+            }
+            case 18: {
+              bonus = 5;
+              break;
+            }
+          }
+          return { slot, nations, powerPointIncrease, bonus };
+        });
+      }
     },
     tickWithAction: function(action) {
       this.$emit("tick", action);
     },
-    purchaseBond(bond) {
-      for (const action of this.game.availableActions) {
-        if (bond.cost === action.payload.cost && bond.nation.value === action.payload.nation.value) {
-          this.tickWithAction(action);
-        }
-      }
-    },
-    skipPurchaseBond() {
-      for (const action of this.game.availableActions) {
-        if (action.type === "skipBondPurchase") {
-          this.tickWithAction(action);
-        }
-      }
-    },
-    actionToText: function(action) {
-      if (action.type === "coexist") {
-        return `Coexist`;
-      } else if (action.type === "fight") {
-        return `Fight`;
-      } else if (action.type === "forceInvestor") {
-        return "Force investor";
-      } else if (action.type === "skipForceInvestor") {
-        return "Do not force investor";
-      }
-    },
-    endManeuver: function() {
-      this.$emit("endManeuver", Action.endManeuver());
-    },
-    destroyFactory: function() {
-      let destroyAction = {};
-      for (const action of this.game.availableActions) {
-        if (action.type === "destroyFactory") {
-          destroyAction = action;
-        }
-      }
-      this.tickWithAction(destroyAction);
-    },
-    skipDestroyFactory: function() {
-      let skipAction = {};
-      for (const action of this.game.availableActions) {
-        if (action.type === "skipDestroyFactory") {
-          skipAction = action;
-        }
-      }
-      this.tickWithAction(skipAction);
+    toggleTradeIn(bond) {
+      this.$emit("toggleTradeIn", bond);
     }
   }
 };

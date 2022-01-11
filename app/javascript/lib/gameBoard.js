@@ -8,12 +8,13 @@ export default class GameBoard {
   }
 
   setupGraph(nodes) {
-    for (const { name: province, nation, isOcean, factoryType } of nodes) {
+    for (const { name: province, nation, isOcean, factoryType, egress } of nodes) {
       this.graph.set(province, {
         nation,
         neighbors: new Set(),
         isOcean,
-        factoryType
+        factoryType,
+        egress
       });
 
       if (!this.byNation.has(nation)) {
@@ -35,7 +36,7 @@ export default class GameBoard {
     return allPaths.map(path => path[path.length - 1])
   }
 
-  pathsFrom({ origin, nation, isFleet, friendlyFleets, isOccupied }, currentPath) {
+  pathsFrom({ origin, nation, isFleet, friendlyFleets, occupiedHomeProvinces = [], hasMoved = false }, currentPath) {
     this.validate(origin);
     let paths = [currentPath];
 
@@ -48,20 +49,33 @@ export default class GameBoard {
       // Fleet maneuvering to the ocean
       if (isFleet && this.graph.get(province).isOcean) {
         paths.push(currentPath.concat([province]));
-      // Army maneuvering to its own land
-      } else if (!isFleet && !this.graph.get(province).isOcean && this.graph.get(province).nation === nation && !isOccupied) {
+      // Army maneuvering from its own unoccupied land to its own unoccupied land
+      } else if (!isFleet && !this.graph.get(province).isOcean && this.graph.get(origin).nation === nation && this.graph.get(province).nation === nation && !occupiedHomeProvinces.includes(province)) {
         const newPaths = this.pathsFrom(
-          { origin: province, nation, isFleet, friendlyFleets, isOccupied },
+          { origin: province, nation, isFleet, friendlyFleets, occupiedHomeProvinces, hasMoved },
           currentPath.concat([province])
         );
         paths = paths.concat(newPaths);
+      // Army maneuvering from foreign land to its own unoccupied land
+      } else if (!isFleet && !this.graph.get(province).isOcean && this.graph.get(origin).nation !== nation && this.graph.get(province).nation === nation && !occupiedHomeProvinces.includes(province)) {
+        const newPaths = this.pathsFrom(
+          { origin: province, nation, isFleet, friendlyFleets, occupiedHomeProvinces, hasMoved: true },
+          currentPath.concat([province])
+        );
+        paths = paths.concat(newPaths);
+      // Army maneuvering from its own unoccupied land to foreign land
+      } else if (!isFleet && !this.graph.get(province).isOcean && this.graph.get(origin).nation === nation && this.graph.get(province).nation !== nation && !hasMoved) {
+        paths.push(currentPath.concat([province]));
+      // Army maneuvering to its own occupied land
+      } else if (!isFleet && !this.graph.get(province).isOcean && this.graph.get(province).nation === nation && occupiedHomeProvinces.includes(province) && !hasMoved) {
+        paths.push(currentPath.concat([province]));
       // Army maneuvering to foreign land
-      } else if (!isFleet && !this.graph.get(province).isOcean) {
+      } else if (!isFleet && !this.graph.get(province).isOcean && !hasMoved) {
         paths.push(currentPath.concat([province]));
       // Army convoying over ocean
       } else if (!isFleet && this.graph.get(province).isOcean && friendlyFleets.has(province)) {
         const newPaths = this.pathsFrom(
-          { origin: province, nation, isFleet, friendlyFleets, isOccupied },
+          { origin: province, nation, isFleet, friendlyFleets, occupiedHomeProvinces },
           currentPath.concat([province])
         );
         paths = paths.concat(newPaths);
@@ -79,6 +93,14 @@ export default class GameBoard {
     // Units cannot begin and end in the same spot
     paths = paths.filter(path => path.length > 1);
 
+    // Fleets can only exit a home province into one particular egress
+    paths = paths.filter((path) => {
+      const destinationIsNotCorrectEgress = path[path.length - 1] !== this.graph.get(origin).egress;
+      if (isFleet && this.graph.get(origin).nation && destinationIsNotCorrectEgress) {
+        return false;
+      }
+      return true;
+    });
     return paths;
   }
 
