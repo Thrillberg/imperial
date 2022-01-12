@@ -16,8 +16,23 @@ export default class Imperial {
     return game;
   }
 
-  constructor(board) {
+  static fromPartialState(log, board, state) {
+    let game = new Imperial(board, state);
+    log.forEach(entry => game.tick(entry));
+    return game;
+  }
+
+  constructor(board, state) {
     this.board = board || standardGameBoard;
+    if (state) {
+      Object.assign(this, setOldState(state));
+      this.log = state.log;
+      this.annotatedLog = state.annotatedLog;
+      this.currentPlayerName = state.currentPlayerName;
+      this.baseGame = state.baseGame;
+      this.soloMode = state.soloMode;
+      return
+    }
     // This is the canonical log from which game state is derived.
     this.log = [];
     // This includes everything from this.log plus extra actions that are
@@ -25,7 +40,8 @@ export default class Imperial {
     // calculations.
     this.annotatedLog = [];
     this.unitsToMove = [];
-    this.units = new Set();
+    this.units = new Map();
+    this.unitLimits = new Map();
     this.provinces = new Map();
     this.nations = new Map();
     this.availableActions = new Set();

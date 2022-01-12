@@ -243,6 +243,8 @@ import getGameLog from "../getGameLog.js";
 import assignNations from "../assignNations.js";
 import imperialBoard from "../../lib/board.js";
 import imperial2030Board from "../../lib/board2030.js";
+import serializeGame from "../../lib/serializeGame.js";
+import deserializeGame from "../../lib/deserializeGame.js";
 
 import favicon2 from "../assets/favicon2.ico";
 // import notification from "../assets/notification.mp3";
@@ -410,7 +412,19 @@ export default {
       } else if (baseGame === "imperial2030") {
         this.board = imperial2030Board
       }
-      this.game = Imperial.fromLog(gameLog, this.board);
+      const deserializedGame = deserializeGame(localStorage.getItem("imperial-" + this.$route.params.id));
+      let oldLog = deserializedGame?.log;
+      if (oldLog && gameLog.length > oldLog.length) {
+        let missingTurnCount = oldLog.length - gameLog.length;
+        this.game = Imperial.fromPartialState(
+          gameLog.slice(missingTurnCount),
+          this.board,
+          deserializedGame
+        );
+      } else {
+        this.game = Imperial.fromLog(gameLog, this.board);
+      }
+      localStorage.setItem("imperial-" + this.$route.params.id, serializeGame(this.game));
       if (Object.keys(this.game.players).length > 0) {
         this.gameStarted = true;
         this.currentPlayer = this.game.players[this.profile.username] || {};
