@@ -2,6 +2,7 @@ import { Nation, Nation2030 } from "./constants.js";
 
 export default (game) => {
   let units = new Map;
+  console.log(game)
   for (const [key, value] of game.units) {
     const newValue = new Map;
     for (const [key2, value2] of value) {
@@ -65,6 +66,7 @@ export default (game) => {
   for (const bank of game.swissBanksWhoDoNotInterrupt) {
     swissBanksWhoDoNotInterrupt.push(bank);
   }
+  console.log(availableActions)
 
   return {
     units,

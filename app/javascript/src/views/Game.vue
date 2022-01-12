@@ -495,22 +495,19 @@ export default {
         }
       }
       const gameLog = getGameLog(log, baseGame);
-      console.log("our log")
-      console.log(gameLog)
       if (baseGame === "imperial") {
         this.board = imperialBoard
       } else if (baseGame === "imperial2030") {
         this.board = imperial2030Board
       }
-      const data = deserializeGame(localStorage.getItem("imperial-" + this.$route.params.id));
-      let oldLog = data?.log;
-      let oldState = data;
+      const deserializedGame = deserializeGame(localStorage.getItem("imperial-" + this.$route.params.id));
+      let oldLog = deserializedGame?.log;
       if (oldLog && gameLog.length > oldLog.length) {
         let missingTurnCount = oldLog.length - gameLog.length;
         this.game = Imperial.fromPartialState(
           gameLog.slice(missingTurnCount),
           this.board,
-          oldState
+          deserializedGame
         );
       } else {
         this.game = Imperial.fromLog(gameLog, this.board);

@@ -3,9 +3,9 @@ import { Nation, Nation2030 } from "./constants.js";
 export default (serializedGame) => {
   let deserializedGame = eval('(' + serializedGame + ')');
   if (deserializedGame) {
-    const availableActions = new Map();
-    for (const action of deserializedGame.availableActions) {
-      const baseGame = deserializedGame.baseGame;
+    const baseGame = deserializedGame.baseGame;
+    const availableActions = new Set();
+    for (const [action,] of deserializedGame.availableActions) {
       if (
         (
           action.type === "rondel" ||
@@ -33,7 +33,7 @@ export default (serializedGame) => {
           action.payload.challenger = Nation2030[action.payload.challenger.value];
         }
       }
-      return action;
+      availableActions.add(action)
     }
     deserializedGame.availableActions = availableActions;
   }

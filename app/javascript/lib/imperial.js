@@ -17,8 +17,6 @@ export default class Imperial {
   }
 
   static fromPartialState(log, board, oldState) {
-    console.log("partialState")
-    console.log(log)
     let game = new Imperial(board, oldState);
     log.forEach(entry => game.tick(entry));
     return game;
@@ -66,6 +64,7 @@ export default class Imperial {
     this.swissBanksWhoDoNotInterrupt = [];
     this.baseGame = "";
     this.unitLimits = new Map();
+    this.currentNationInConflict = "";
   }
 
   tick(action) {
@@ -85,7 +84,6 @@ export default class Imperial {
 
     // Check if the requested action is invalid.
     let validAction = false;
-    console.log(this.availableActions, action)
     for (const availableAction of this.availableActionsWithUndo()) {
       if (this.isEqual(availableAction, action)) {
         validAction = true;
