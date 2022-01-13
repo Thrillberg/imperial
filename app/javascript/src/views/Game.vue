@@ -418,7 +418,6 @@ export default {
         let missingTurnCount = oldLog.length - gameLog.length;
         this.game = Imperial.fromPartialState(
           gameLog.slice(missingTurnCount),
-          this.board,
           deserializedGame
         );
       } else {

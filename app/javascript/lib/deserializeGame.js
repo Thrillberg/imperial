@@ -1,10 +1,12 @@
+import imperialBoard from "./board.js";
+import imperial2030Board from "./board2030.js";
 import { Bond, Nation, Nation2030 } from "./constants.js";
 import convertAction from "./convertAction.js";
 
 export default (serializedGame) => {
   const parsedGame = eval('(' + serializedGame + ')');
-  const baseGame = parsedGame.baseGame;
   if (parsedGame) {
+    const baseGame = parsedGame.baseGame;
     let game = Object.assign({}, parsedGame);
     game.availableActions = new Set();
     parsedGame.availableActions.forEach(action => {
@@ -74,6 +76,11 @@ export default (serializedGame) => {
         }
       }
     });
+    if (baseGame === "imperial") {
+      game.board = imperialBoard
+    } else if (baseGame === "imperial2030") {
+      game.board = imperial2030Board
+    }
     return game
   }
   return serializedGame;

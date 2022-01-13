@@ -18,7 +18,9 @@ export default (serializableGame) => {
     players[playerName].bonds = [...game.players[playerName].bonds];
   });
   game.players = players;
+  game.board = {};
   game.oldState = {};
+  console.log(game)
 
   return JSON.stringify(game)
 }
