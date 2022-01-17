@@ -37,16 +37,16 @@
             <b>Current Tax Chart Position:</b> {{ game.nations.get(game.currentNation).taxChartPosition }}
           </div>
           <div>
-            <b>Next Tax Chart Position:</b> {{ nextTaxChartPosition() }}
+            <b>Next Tax Chart Position:</b> {{ nextTaxChartPosition }}
           </div>
           <div>
-            <b>{{ game.currentPlayerName }}</b> would receive {{ nextTaxChartPosition() - game.nations.get(game.currentNation).taxChartPosition }}m
+            <b>{{ game.currentPlayerName }}</b> would receive {{ nextTaxChartPosition - game.nations.get(game.currentNation).taxChartPosition }}m
           </div>
           <div>
-            <b>{{ stringify(game.currentNation.value) }}</b> would receive {{ nextTaxChartPosition() - game.unitCount(game.currentNation) }}m
+            <b>{{ stringify(game.currentNation.value) }}</b> would receive {{ nextTaxChartPosition - game.unitCount(game.currentNation) }}m
           </div>
           <div>
-            <b>{{ stringify(game.currentNation.value) }}</b>'s power points would be {{ postTaxationGameState.nations.get(game.currentNation).powerPoints }}
+            <b>{{ stringify(game.currentNation.value) }}</b>'s power points would be {{ nextTaxationPowerPoints }}
           </div>
         </div>
         <div v-else-if="game.baseGame === 'imperial2030'">
@@ -57,7 +57,7 @@
             <b>{{ stringify(game.currentNation.value) }}</b> would receive {{ nationRevenue2030() }}m
           </div>
           <div>
-            <b>{{ stringify(game.currentNation.value) }}</b>'s power points would be {{ postTaxationGameState.nations.get(game.currentNation).powerPoints }}
+            <b>{{ stringify(game.currentNation.value) }}</b>'s power points would be {{ nextTaxationPowerPoints }}
           </div>
         </div>
       </div>
@@ -71,7 +71,10 @@
 
 <script>
 import stringify from "../stringify.js";
-import Imperial from "../../lib/imperial.js";
+import {
+  nextTaxChartPosition,
+  nextTaxationPowerPoints,
+} from "../taxChartHelpers.js";
 
 import RondelSlot from "./RondelSlot.vue";
 
@@ -111,17 +114,12 @@ export default {
         return [bearer[0], lastPayment];
       }).filter(Boolean);
     },
-    postTaxationGameState() {
-      const hypotheticalGame = Imperial.fromLog(this.game.log, this.game.board);
-      let taxationAction = {};
-      for (const action of hypotheticalGame.availableActions) {
-        if (action.type === "rondel" && action.payload.slot === "taxation") {
-          taxationAction = action;
-        }
-      }
-      hypotheticalGame.tick(taxationAction);
-      return hypotheticalGame;
-    }
+    nextTaxationPowerPoints() {
+      return nextTaxationPowerPoints(this.game);
+    },
+    nextTaxChartPosition() {
+      return nextTaxChartPosition(this.game);
+    },
   },
   methods: {
     isValid(slot) {
@@ -229,10 +227,6 @@ export default {
         }
       }
       return slots;
-    },
-    nextTaxChartPosition() {
-      const nation = this.game.currentNation;
-      return this.postTaxationGameState.nations.get(nation).taxChartPosition;
     },
     playerRevenue2030() {
       const taxes = this.game.unoccupiedFactoryCount(this.game.currentNation) * 2 + this.game.flagCount(this.game.currentNation);
