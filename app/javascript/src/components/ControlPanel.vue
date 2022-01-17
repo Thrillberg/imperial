@@ -7,30 +7,6 @@
     >
       Undo
     </button>
-    <BondPurchase
-      v-if="purchasingBond"
-      :game="game"
-      :current_player="controllingPlayerName"
-      :profile="profile"
-      :tradedInValue="tradedInValue"
-      @purchaseBond="purchaseBond"
-      @skip="this.skipPurchaseBond"
-    ></BondPurchase>
-    <AvailableBonds
-      v-else
-      :game="game"
-    ></AvailableBonds>
-    <div v-if="destroyingFactory">
-      <div class="text-lg">Do you want to destroy the factory at <b>{{ this.factoryToDestroy }}</b>?</div>
-      <div class="flex flex-wrap justify-evenly">
-        <button @click="destroyFactory" class="rounded p-2 bg-green-800 text-white cursor-pointer inline-block mt-8">
-          Yes
-        </button>
-        <button @click="skipDestroyFactory" class="rounded p-2 bg-green-800 text-white cursor-pointer inline-block mt-8">
-          No
-        </button>
-      </div>
-    </div>
     <div
       v-if="game.importing && !chooseImportType && (profile.username === controllingPlayerName || (game.soloMode && profile.username in game.players))"
       class="text-center text-lg inline-flex flex-col"
@@ -67,7 +43,7 @@
     <button
       v-if="canEndManeuver"
       v-on:click="endManeuver"
-      class="rounded py-2 px-6 m-4 bg-green-800 text-white cursor-pointer"
+      class="rounded py-2 px-6 m-4 bg-green-800 text-white cursor-pointer self-start"
     >
       End maneuver
     </button>
@@ -87,6 +63,28 @@
     >
       Skip building a factory
     </button>
+    <BondPurchase
+      v-if="purchasingBond"
+      :game="game"
+      :current_player="controllingPlayerName"
+      :profile="profile"
+      :tradedInValue="tradedInValue"
+      @purchaseBond="purchaseBond"
+      @skip="this.skipPurchaseBond"
+    ></BondPurchase>
+    <AvailableBonds v-else :game="game"></AvailableBonds>
+    <TaxStatus :game="game"></TaxStatus>
+    <div v-if="destroyingFactory">
+      <div class="text-lg">Do you want to destroy the factory at <b>{{ this.factoryToDestroy }}</b>?</div>
+      <div class="flex flex-wrap justify-evenly">
+        <button @click="destroyFactory" class="rounded p-2 bg-green-800 text-white cursor-pointer inline-block mt-8">
+          Yes
+        </button>
+        <button @click="skipDestroyFactory" class="rounded p-2 bg-green-800 text-white cursor-pointer inline-block mt-8">
+          No
+        </button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -96,10 +94,11 @@ import Action from "../../lib/action.js";
 import AvailableBonds from "../components/AvailableBonds.vue";
 import BondPurchase from "../components/BondPurchase.vue";
 import ConflictHandler from "../components/ConflictHandler.vue";
+import TaxStatus from "../components/TaxStatus.vue";
 
 export default {
   name: "ControlPanel",
-  components: { AvailableBonds, BondPurchase, ConflictHandler },
+  components: { AvailableBonds, BondPurchase, ConflictHandler, TaxStatus },
   props: [
     "game",
     "chooseImportType",
