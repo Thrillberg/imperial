@@ -15,4 +15,12 @@ environment.plugins.append(
   new HtmlWebpackHarddiskPlugin()
 )
 
+environment.config.merge({
+  resolve: {
+    alias: {
+      vue: '@vue/compat',
+    },
+  },
+});
+
 module.exports = environment

@@ -1,13 +1,29 @@
-const VueLoaderPlugin = require('vue-loader/lib/plugin')
+const { VueLoaderPlugin } = require('vue-loader')
 const HtmlWebpackHarddiskPlugin = require('html-webpack-harddisk-plugin')
 const path = require('path')
+const webpack = require('webpack')
 
 module.exports = {
+  resolve: {
+    alias: {
+      vue: '@vue/compat'
+    }
+  },
   module: {
     rules: [
       {
         test: /\.vue$/,
-        use: { loader: 'vue-loader' }
+        use: [{
+          loader: 'vue-loader',
+          options: {
+            compilerOptions: {
+              compatConfig: {
+                MODE: 2,
+                COMPILER_V_ON_NATIVE: false
+              }
+            }
+          }
+        }]
       },
       {
         test: /\.js$/,
@@ -16,7 +32,7 @@ module.exports = {
       {
         test: /\.svg$/,
         use: [
-          'babel-loader',
+          'vue-loader',
           'vue-svg-loader',
         ],
       },
@@ -34,5 +50,9 @@ module.exports = {
       outputPath: path.resolve(__dirname, '../../../public/packs')
     }),
     new VueLoaderPlugin(),
+    new webpack.DefinePlugin({
+      __VUE_OPTIONS_API__: true,
+      __VUE_PROD_DEVTOOLS__: false,
+    }),
   ]
 }

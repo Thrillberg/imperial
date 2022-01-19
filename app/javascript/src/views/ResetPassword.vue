@@ -17,8 +17,14 @@
 </template>
 
 <script>
+import { useCookies } from "vue3-cookies";
+
 export default {
   name: "ResetPassword",
+  setup() {
+    const { cookies } = useCookies();
+    return { cookies };
+  },
   data: function () {
     return { password: "" }
   },
@@ -27,7 +33,7 @@ export default {
       fetch("accounts/password", {
         method: "PUT",
         headers: {
-          "X-CSRF-Token": this.$cookies.get("CSRF-TOKEN"),
+          "X-CSRF-Token": this.cookies.get("CSRF-TOKEN"),
           "Content-Type": "application/json"
         },
         body: JSON.stringify({ account: {

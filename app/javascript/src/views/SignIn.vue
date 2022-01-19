@@ -44,7 +44,7 @@ export default {
       fetch("/accounts/sign_in", {
         method: "POST",
         headers: {
-          "X-CSRF-Token": this.$cookies.get("CSRF-TOKEN"),
+          "X-CSRF-Token": this.cookies.get("CSRF-TOKEN"),
           "Content-Type": "application/json"
         },
         body: JSON.stringify({ email: this.email, password: this.password })

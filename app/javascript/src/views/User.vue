@@ -64,8 +64,14 @@
 </template>
 
 <script>
+import { useCookies } from "vue3-cookies";
+
 export default {
   name: "User",
+  setup() {
+    const { cookies } = useCookies();
+    return { cookies };
+  },
   created() {
     fetch("/api/users/" + this.$route.params.id)
       .then(response => response.json())
@@ -100,7 +106,7 @@ export default {
       fetch("/api/users/update", {
         method: "PUT",
         body: JSON.stringify({
-          id: this.$cookies.get("user_id"),
+          id: this.cookies.get("user_id"),
           turn_notifications_enabled: this.turnNotificationsEnabled
         }),
         headers: { "Content-Type": "application/json" }

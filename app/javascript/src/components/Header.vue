@@ -58,9 +58,15 @@
 </template>
 
 <script>
+import { useCookies } from "vue3-cookies";
+
 export default {
   name: "Header",
   props: ["profile"],
+  setup() {
+    const { cookies } = useCookies();
+    return { cookies };
+  },
   data: () => {
     return {
       email: "",
@@ -79,7 +85,7 @@ export default {
       fetch("/accounts/sign_out", {
         method: "DELETE",
         headers: {
-          "X-CSRF-Token": this.$cookies.get("CSRF-TOKEN")
+          "X-CSRF-Token": this.cookies.get("CSRF-TOKEN")
         }
       })
       this.$emit("signOut");

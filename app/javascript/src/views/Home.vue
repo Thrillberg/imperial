@@ -60,10 +60,16 @@ import YourGames from "../components/YourGames.vue";
 
 import DiscordLogo from "../assets/discord_logo.svg";
 
+import { useCookies } from "vue3-cookies";
+
 export default {
   name: "Home",
   components: { CurrentGames, UnstartedGameList, YourGames, DiscordLogo },
   props: { profile: Object, users: Array, games: Array, gamesFetched: Boolean },
+  setup() {
+    const { cookies } = useCookies();
+    return { cookies };
+  },
   computed: {
     yourGames() {
       return this.games.filter(game => {
@@ -102,7 +108,7 @@ export default {
         "/anonymity_confirmations",
         {
           method: "POST",
-          body: JSON.stringify({ id: this.$cookies.get("user_id") }),
+          body: JSON.stringify({ id: this.cookies.get("user_id") }),
           headers: { "Content-Type": "application/json" }
         }
       )

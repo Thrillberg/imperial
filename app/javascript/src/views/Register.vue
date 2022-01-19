@@ -32,9 +32,15 @@
 </template>
 
 <script>
+import { useCookies } from "vue3-cookies";
+
 export default {
   name: "Register",
   props: ["profile"],
+  setup() {
+    const { cookies } = useCookies();
+    return { cookies };
+  },
   data: function () {
     return {
       email: "",
@@ -48,7 +54,7 @@ export default {
       fetch("/accounts", {
         method: "POST",
         headers: {
-          "X-CSRF-Token": this.$cookies.get("CSRF-TOKEN"),
+          "X-CSRF-Token": this.cookies.get("CSRF-TOKEN"),
           "Content-Type": "application/json"
         },
         body: JSON.stringify({ name: this.username, email: this.email, password: this.password })

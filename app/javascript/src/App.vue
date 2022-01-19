@@ -7,20 +7,23 @@
         v-on:signedIn="signIn"
         v-on:identified="identify"
       />
-      <router-view
-        :profile="profile"
-        :users="onlineUsers"
-        :games="games"
-        :gamesFetched="gamesFetched"
-        :observers="observers"
-        :gameData="gameData"
-        v-on:registered="register"
-        v-on:signedIn="signIn"
-        v-on:anonymity_confirmed="anonymityConfirmed"
-        v-on:openGame="openGame"
-        v-on:receiveGameData="receiveGameData"
-        ref="game"
-      />
+      <router-view v-slot="{ Component }">
+        <component
+          :profile="profile"
+          :users="onlineUsers"
+          :games="games"
+          :gamesFetched="gamesFetched"
+          :observers="observers"
+          :gameData="gameData"
+          v-on:registered="register"
+          v-on:signedIn="signIn"
+          v-on:anonymity_confirmed="anonymityConfirmed"
+          v-on:openGame="openGame"
+          v-on:receiveGameData="receiveGameData"
+          ref="game"
+          :is="Component"
+        />
+      </router-view>
     </div>
     <div v-else class="text-center text-2xl mt-8">
       Loading
@@ -31,6 +34,10 @@
 <script>
 import { apiClient } from "./router/index.js";
 import translateToGameData from "./translateToGameData.js";
+
+import { useCookies } from "vue3-cookies";
+import { useRoute } from 'vue-router'
+import { ref, onMounted } from "vue";
 
 import Header from "./components/Header.vue";
 
@@ -48,17 +55,19 @@ export default {
       gamesFetched: false
     };
   },
-  beforeDestroy() {
-    apiClient.clearHandlers();
-    apiClient.ws.close();
+  setup() {
+    const { cookies } = useCookies();
+    return { cookies };
   },
-  created() {
+  mounted() {
+    const route = useRoute();
+
     apiClient.onUpdateUsers(({ users }) => {
       this.onlineUsers = users;
     });
     apiClient.onUpdateGames(({ games }) => {
       this.games = games.map(game => {
-        if (game.id === this.$route.params.id) {
+        if (game.id === route.params.id) {
           this.observers = game.observers;
           this.gameData = translateToGameData(game)
         }
@@ -67,14 +76,14 @@ export default {
       this.gamesFetched = true;
     });
     apiClient.onUpdateGameLog(({ gameId, log, logTimestamps, game }) => {
-      if (gameId === this.$route.params.id) {
+      if (gameId === route.params.id) {
         this.gameData = translateToGameData(game);
-        this.$refs.game.updateGameLog(log, logTimestamps, this.gameData.baseGame);
+        this.$refs.game.$.ctx.updateGameLog(log, logTimestamps, this.gameData.baseGame);
       }
     });
-    if (this.$cookies.get("user_id")) {
+    if (this.cookies.get("user_id")) {
       // Fetch user profile
-      fetch(`/profiles/${this.$cookies.get("user_id")}`, { method: "GET" })
+      fetch(`/profiles/${this.cookies.get("user_id")}`, { method: "GET" })
         .then(response => response.json())
         .then(({ name, email, registered, anonymity_confirmed_at, id }) => {
           if (!name) {
@@ -88,6 +97,10 @@ export default {
       // Create user profile
       this.createUserProfile();
     }
+  },
+  beforeUnmount() {
+    apiClient.clearHandlers();
+    apiClient.ws.close();
   },
   methods: {
     createUserProfile() {

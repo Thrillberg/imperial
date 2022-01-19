@@ -245,6 +245,9 @@ import imperialBoard from "../../lib/board.js";
 import imperial2030Board from "../../lib/board2030.js";
 
 import favicon2 from "../assets/favicon2.ico";
+
+import { useCookies } from "vue3-cookies";
+
 // import notification from "../assets/notification.mp3";
 
 // import { Howl } from "howler";
@@ -262,6 +265,10 @@ export default {
     TurnStatus
   },
   props: ["profile", "users", "gameData", "games", "observers"],
+  setup() {
+    const { cookies } = useCookies();
+    return { cookies };
+  },
   data: () => {
     return {
       importProvince: "",
@@ -287,7 +294,7 @@ export default {
     window.addEventListener("beforeunload", this.beforeWindowUnload)
     apiClient.userObservingGame(this.profile.username, this.$route.params.id);
   },
-  beforeDestroy() {
+  beforeUnmount() {
     window.removeEventListener("beforeunload", this.beforeWindowUnload)
   },
   beforeRouteLeave(to, from, next) {
@@ -334,7 +341,7 @@ export default {
     },
     joinGame() {
       this.joinedGame = true;
-      apiClient.joinGame(this.$cookies.get("user_id"), this.$route.params.id, this.profile.username);
+      apiClient.joinGame(this.cookies.get("user_id"), this.$route.params.id, this.profile.username);
     },
     startGame() {
       const playerNames = this.playerNames(this.gameData);

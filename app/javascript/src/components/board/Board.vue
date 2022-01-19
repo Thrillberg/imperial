@@ -53,6 +53,8 @@
 </template>
 
 <script>
+import { shallowRef } from "vue";
+
 import algeria from "./algeria.svg";
 import balticsea from "./balticsea.svg";
 import bayofbiscay from "./bay_of_biscay.svg";
@@ -268,7 +270,7 @@ export default {
   },
   data() {
     return {
-      sea_provinces: {
+      sea_provinces: shallowRef({
         "Baltic Sea": balticsea,
         "Bay of Biscay": bayofbiscay,
         "Black Sea": blacksea,
@@ -278,8 +280,8 @@ export default {
         "North Atlantic": northatlantic,
         "North Sea": northsea,
         "Western Mediterranean Sea": westernmediterraneansea
-      },
-      land_provinces: {
+      }),
+      land_provinces: shallowRef({
         "West Balkan": westbalkan,
         "Berlin": berlin,
         "Danzig": danzig,
@@ -328,7 +330,7 @@ export default {
         "Turkey": turkey,
         "Vienna": vienna,
         "Bordeaux": bordeaux
-      }
+      })
     };
   },
   components: {

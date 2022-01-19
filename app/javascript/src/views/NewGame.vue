@@ -43,9 +43,14 @@
 
 <script>
 import { apiClient } from "../router/index.js";
+import { useCookies } from "vue3-cookies";
 
 export default {
   name: "NewGame",
+  setup() {
+    const { cookies } = useCookies();
+    return { cookies };
+  },
   data() {
     return {
       baseGame: "imperial",
@@ -55,7 +60,7 @@ export default {
   methods: {
     openGame(e) {
       e.preventDefault();
-      apiClient.openGame(this.$cookies.get("user_id"), this.baseGame, this.variant)
+      apiClient.openGame(this.cookies.get("user_id"), this.baseGame, this.variant)
         .then(game => {
           this.$emit("openGame", game);
           this.$router.push(`/game/${game.id}`);

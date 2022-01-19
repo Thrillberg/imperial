@@ -16,18 +16,16 @@
 
 import 'regenerator-runtime/runtime'
 
-import Vue from "vue";
+import { createApp } from "vue";
 import App from "../src/App.vue";
 import router from "../src/router";
-import VueCookies from "vue-cookies";
 import * as Sentry from "@sentry/vue";
 import { Integrations } from "@sentry/tracing";
 
-Vue.config.productionTip = false;
-Vue.use(VueCookies);
+const app = createApp(App);
 
 Sentry.init({
-  Vue,
+  app,
   dsn: "https://fd248a7ee8904fec99cfee9a4ea6f51c@o987046.ingest.sentry.io/5943913",
   integrations: [
     new Integrations.BrowserTracing({
@@ -39,11 +37,4 @@ Sentry.init({
   environment: "production",
 });
 
-const app = document.createElement("div");
-app.setAttribute("id", "app");
-document.body.appendChild(app);
-
-new Vue({
-  router,
-  render: h => h(App)
-}).$mount("#app");
+app.use(router).mount("#app");
