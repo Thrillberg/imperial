@@ -2,20 +2,22 @@
   <div>
     <div class="text-lg m-2">Purchase a bond - You have {{ game.players[current_player].cash }}m in cash.</div>
     <div class="flex flex-wrap">
-      <div v-for="bond of game.availableBonds" :key="bond.nation+bond.cost">
+      <div v-for="bond of game.availableBonds">
         <Bond
           v-if="canBePurchased(bond)"
           :bond="bond"
           :canBePurchased="true"
-          @click.native="purchase(bond)"
+          :purchase="purchase"
           class="cursor-pointer"
           :isBeingAppliedToTradeIn="tradedInValue > 0"
           :tradedInValue="tradedInValue"
+          :key="bond.cost+bond.nation.value"
         />
         <Bond
           v-else
           :bond="bond"
           :filter="'grayscale'"
+          :key="bond.cost+bond.nation.value"
         />
       </div>
     </div>

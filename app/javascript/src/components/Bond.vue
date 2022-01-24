@@ -29,13 +29,17 @@ export default {
     canBeAppliedToTradeIn: Boolean,
     isBeingAppliedToTradeIn: Boolean,
     filter: String,
-    canBePurchased: Boolean
+    canBePurchased: Boolean,
+    purchase: Function
   },
   components: { Flag },
   methods: {
     click() {
       if (this.canBeAppliedToTradeIn) {
         this.toggleTradeIn(this.bond)
+      }
+      if (this.canBePurchased) {
+        this.purchase(this.bond)
       }
     },
     border() {

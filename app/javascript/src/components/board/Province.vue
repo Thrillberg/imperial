@@ -2,7 +2,7 @@
   <component
     ref="province"
     :is="province"
-    @click.native="select_province(name)"
+    @click="select_province(name)"
     @mouseover="showFactory()"
     @mouseleave="hideFactory()"
   >
@@ -465,6 +465,7 @@ export default {
       }
     },
     showFactory() {
+      console.log('showFactory')
       if (this.is_valid && this.building_factory) {
         this.tempFactory = this.factory_type
       }

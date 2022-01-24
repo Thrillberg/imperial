@@ -19,7 +19,7 @@ module.exports = {
             compilerOptions: {
               compatConfig: {
                 MODE: 2,
-                COMPILER_V_ON_NATIVE: false
+                COMPILER_V_ON_NATIVE: true
               }
             }
           }

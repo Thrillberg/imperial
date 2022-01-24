@@ -54,6 +54,8 @@
 </template>
 
 <script>
+import { shallowRef } from "vue";
+
 import alaska from "./alaska.svg";
 import afghanistan from "./afghanistan.svg";
 import argentina from "./argentina.svg";
@@ -271,7 +273,7 @@ export default {
   },
   data() {
     return {
-      sea_provinces: {
+      sea_provinces: shallowRef({
         "Caribbean Sea": caribbean_sea,
         "Caspian Sea": caspian_sea,
         "Gulf of Guinea": gulf_of_guinea,
@@ -285,8 +287,8 @@ export default {
         "South Pacific": south_pacific,
         "Tasman Sea": tasman_sea,
         "China Sea": china_sea
-      },
-      land_provinces: {
+      }),
+      land_provinces: shallowRef({
         "Alaska": alaska,
         "Afghanistan": afghanistan,
         "Argentina": argentina,
@@ -338,7 +340,7 @@ export default {
         "Philippines": philippines,
         "Vladivostok": vladivostok,
         "Indochina": indochina,
-      }
+      })
     };
   },
   components: {

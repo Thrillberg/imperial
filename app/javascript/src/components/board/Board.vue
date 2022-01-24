@@ -21,6 +21,7 @@
     <g stroke="#000000" stroke-width="0.5">
       <Province
         v-for="(province, name) in sea_provinces"
+        @click="thing"
         :province="province"
         :name="name"
         :select_province="select_province"
@@ -127,6 +128,9 @@ export default {
     valid_provinces: Array
   },
   methods: {
+    thing() {
+      console.log('thing')
+    },
     armies(province) {
       let armies = [];
       for (const [provinceWithUnits, allUnitsInProvince] of this.allUnits()) {

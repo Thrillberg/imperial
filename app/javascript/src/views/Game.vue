@@ -475,6 +475,7 @@ export default {
       return Array.from(provinces);
     },
     selectProvince(inputProvince) {
+      console.log('hello')
       const province = inputProvince.replace(/\.*\s/gm, "").toLowerCase();
       let provinceIsValid = false;
       for (const validProvince of this.validProvinces()) {

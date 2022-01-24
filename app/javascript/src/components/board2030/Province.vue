@@ -117,10 +117,10 @@ export default {
   },
   mounted() {
     this.mounted = true;
-    this.originalFill = this.$refs.province.children[0].getAttribute("fill");
+    this.originalFill = this.$refs.province.$.ctx.$el.children[0].getAttribute("fill");
   },
   updated() {
-    const province = this.$refs.province;
+    const province = this.$refs.province.$.ctx.$el;
     // Background the province
     const provincePath = [...province.children].find(
       node => node.nodeName === "path"
@@ -128,12 +128,12 @@ export default {
     province.prepend(provincePath, province.children[0]);
     // Add hoverable effect for maneuvers
     if (this.is_valid) {
-      this.$refs.province.children[0].classList.add("hoverable");
+      this.$refs.province.$.ctx.$el.children[0].classList.add("hoverable");
     } else {
-      this.$refs.province.children[0].classList.remove("hoverable");
+      this.$refs.province.$.ctx.$el.children[0].classList.remove("hoverable");
     }
     if (this.province_with_fight) {
-      this.$refs.province.children[0].animate([
+      this.$refs.province.$.ctx.$el.children[0].animate([
         { fill: "#EF4400" },
         { fill: this.originalFill }
       ], {
@@ -164,14 +164,14 @@ export default {
         case "Danzig":
           return (
             index * 2.5 +
-            this.$refs.province.children[0].getBBox().x +
-            this.$refs.province.children[0].getBBox().width / 2
+            this.$refs.province.$.ctx.$el.children[0].getBBox().x +
+            this.$refs.province.$.ctx.$el.children[0].getBBox().width / 2
           ) - 20;
       }
       return (
         index * 2.5 +
-        this.$refs.province.children[0].getBBox().x +
-        this.$refs.province.children[0].getBBox().width / 2
+        this.$refs.province.$.ctx.$el.children[0].getBBox().x +
+        this.$refs.province.$.ctx.$el.children[0].getBBox().width / 2
       );
     },
     y(index) {
@@ -179,14 +179,14 @@ export default {
         case "Bay of Biscay":
           return (
             index * 2.5 +
-            this.$refs.province.children[0].getBBox().y +
-            this.$refs.province.children[0].getBBox().height / 2
+            this.$refs.province.$.ctx.$el.children[0].getBBox().y +
+            this.$refs.province.$.ctx.$el.children[0].getBBox().height / 2
           ) - 60;
       }
       return (
         index * 2.5 +
-        this.$refs.province.children[0].getBBox().y +
-        this.$refs.province.children[0].getBBox().height / 2
+        this.$refs.province.$.ctx.$el.children[0].getBBox().y +
+        this.$refs.province.$.ctx.$el.children[0].getBBox().height / 2
       );
     },
     flagFleetXAdjustment() {
