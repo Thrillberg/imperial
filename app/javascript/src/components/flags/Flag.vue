@@ -1,7 +1,7 @@
 <template>
   <g :transform="transform">
     <component
-      :is="this.flag(nation)"
+      :is="flags[nation]"
       :width="width"
       :height="height"
       :transform="transform"
@@ -23,18 +23,6 @@
 </template>
 
 <script>
-import AHFlag from "./AHFlag.vue";
-import BRFlag from "./BRFlag.vue";
-import CNFlag from "./CNFlag.vue";
-import EUFlag from "./EUFlag.vue";
-import INFlag from "./INFlag.vue";
-import ITFlag from "./ITFlag.vue";
-import FRFlag from "./FRFlag.vue";
-import GBFlag from "./GBFlag.vue";
-import GEFlag from "./GEFlag.vue";
-import RUFlag from "./RUFlag.vue";
-import USFlag from "./USFlag.vue";
-
 export default {
   name: "Flag",
   props: {
@@ -48,31 +36,20 @@ export default {
     x: Number,
     y: Number
   },
-  methods: {
-    flag: nation => {
-      switch (nation) {
-        case "AH":
-          return AHFlag;
-        case "BR":
-          return BRFlag;
-        case "CN":
-          return CNFlag;
-        case "EU":
-          return EUFlag;
-        case "IN":
-          return INFlag;
-        case "IT":
-          return ITFlag;
-        case "FR":
-          return FRFlag;
-        case "GB":
-          return GBFlag;
-        case "GE":
-          return GEFlag;
-        case "RU":
-          return RUFlag;
-        case "US":
-          return USFlag;
+  data: () => {
+    return {
+      flags: {
+        "AH": () => import("./AHFlag.vue"),
+        "BR": () => import("./BRFlag.vue"),
+        "CN": () => import("./CNFlag.vue"),
+        "EU": () => import("./EUFlag.vue"),
+        "IN": () => import("./INFlag.vue"),
+        "IT": () => import("./ITFlag.vue"),
+        "FR": () => import("./FRFlag.vue"),
+        "GB": () => import("./GBFlag.vue"),
+        "GE": () => import("./GEFlag.vue"),
+        "RU": () => import("./RUFlag.vue"),
+        "US": () => import("./USFlag.vue"),
       }
     }
   },
