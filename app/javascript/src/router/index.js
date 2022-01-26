@@ -122,16 +122,6 @@ class APIClient {
       });
   }
 
-  addRandomBot(gameId) {
-    return this.send(
-      {
-        kind: "addRandomBot",
-        data: { gameId }
-      },
-      "GameChannel"
-    );
-  }
-
   getGameLog(gameId) {
     return this.send(
       {
