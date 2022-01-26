@@ -15,12 +15,6 @@ class GameChannel < ApplicationCable::Channel
       game.users << user
       broadcast_games "game_channel", "updateGames"
 
-    when "addRandomBot"
-      game = game_from_data(data)
-      user = User.bots.find { |bot| !game.users.include?(bot) }
-      game.users << user
-      broadcast_games "game_channel", "updateGames"
-
     when "getGameLog"
       game = game_from_data(data)
       broadcast_update_game_log "game_channel", "updateGameLog", game
