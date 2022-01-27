@@ -22,6 +22,7 @@
               :valid_provinces="validProvinces()"
               :importing_units="importPlacements"
               :province_with_fight="provinceWithFight"
+              :paused="paused"
               v-on:fightResolved="resolveFight"
               v-if="game.baseGame === 'imperial'"
             ></Board>
@@ -33,9 +34,38 @@
               :valid_provinces="validProvinces()"
               :importing_units="importPlacements"
               :province_with_fight="provinceWithFight"
+              :paused="paused"
               v-on:fightResolved="resolveFight"
               v-if="game.baseGame === 'imperial2030'"
             ></Board2030>
+            <div class="flex justify-center my-2">
+              <div
+                v-if="this.game.log.length > 1"
+                class="rounded p-2 mx-2 bg-green-800 text-white cursor-pointer"
+                @click="back"
+              >
+                ◀
+              </div>
+              <div
+                v-else
+                class="rounded p-2 mx-2 bg-gray-600 text-white cursor-not-allowed"
+              >
+                ◀
+              </div>
+              <div
+                v-if="poppedTurns.length > 0"
+                class="rounded p-2 mx-2 bg-green-800 text-white cursor-pointer"
+                @click="forward"
+              >
+                ▶
+              </div>
+              <div
+                v-else
+                class="rounded p-2 mx-2 bg-gray-600 text-white cursor-not-allowed"
+              >
+                ▶
+              </div>
+            </div>
             <ControlPanel
               :game="game"
               :chooseImportType="importProvince"
@@ -45,6 +75,7 @@
               :gameData="gameData"
               :tradedInBondNation="tradedInBondNation"
               :tradedInValue="tradedInValue"
+              :paused="paused"
               @tick="tickWithAction"
               @endManeuver="endManeuver"
               @chooseImportType="makeImportTypeChoice"
@@ -84,6 +115,7 @@
               :controllingPlayerName="controllingPlayerName"
               :profile="profile"
               :online_users="users"
+              :paused="paused"
               @tick="tickWithAction"
               @toggleTradeIn="toggleTradeIn"
             ></GameDetails>
@@ -315,7 +347,14 @@ export default {
       return this.games.find(
         game => game.id === this.$route.params.id
       ).players.map(player => player.name);
-    }
+    },
+    paused() {
+      if (this.poppedTurns.length > 0) {
+        return true;
+      }
+
+      return false;
+    },
   },
   methods: {
     beforeWindowUnload() {
@@ -494,7 +533,7 @@ export default {
     },
     tickWithAction: function(action) {
       this.controllingPlayerName = this.game.currentPlayerName;
-      if (this.poppedTurns.length === 0) {
+      if (!this.paused) {
         apiClient.tick(this.$route.params.id, action);
         this.displayFight(action);
       }

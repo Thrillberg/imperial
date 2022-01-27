@@ -7,84 +7,86 @@
     >
       Undo
     </button>
-    <div
-      v-if="game.importing && !chooseImportType && (profile.username === controllingPlayerName || (game.soloMode && profile.username in game.players))"
-      class="text-center text-lg inline-flex flex-col"
-    >
-      <div>
-        You have
-        <b>{{ this.game.maxImports - importPlacements.length }}</b> imports left.
+    <div v-if="!paused">
+      <div
+        v-if="game.importing && !chooseImportType && (profile.username === controllingPlayerName || (game.soloMode && profile.username in game.players))"
+        class="text-center text-lg inline-flex flex-col"
+      >
+        <div>
+          You have
+          <b>{{ this.game.maxImports - importPlacements.length }}</b> imports left.
+        </div>
+        <button
+          @click="$emit('runImport')"
+          class="rounded p-2 bg-green-800 text-white cursor-pointer"
+        >
+          End import
+        </button>
+      </div>
+      <div
+        v-if="game.importing && !!chooseImportType && (profile.username === controllingPlayerName || (game.soloMode && profile.username in game.players))"
+        class="text-center text-lg"
+      >
+        <div>Please choose if you want to import an <b>army</b> or a <b>fleet</b>.</div>
+        <button
+          @click="$emit('chooseImportType', 'army')"
+          class="rounded p-2 bg-green-800 text-white cursor-pointer"
+        >
+          Army
+        </button>
+        <button
+          @click="$emit('chooseImportType', 'fleet')"
+          class="rounded p-2 bg-green-800 text-white cursor-pointer"
+        >
+          Fleet
+        </button>
       </div>
       <button
-        @click="$emit('runImport')"
-        class="rounded p-2 bg-green-800 text-white cursor-pointer"
+        v-if="canEndManeuver"
+        v-on:click="endManeuver"
+        class="rounded py-2 px-6 m-4 bg-green-800 text-white cursor-pointer self-start"
       >
-        End import
+        End maneuver
       </button>
-    </div>
-    <div
-      v-if="game.importing && !!chooseImportType && (profile.username === controllingPlayerName || (game.soloMode && profile.username in game.players))"
-      class="text-center text-lg"
-    >
-      <div>Please choose if you want to import an <b>army</b> or a <b>fleet</b>.</div>
+      <ConflictHandler :game="game" :profile="profile" :controllingPlayerName="controllingPlayerName" v-on:tick-with-action="tickWithAction"></ConflictHandler>
+      <div class="text-center" v-if="canForceInvestor">
+        <button @click="forceInvestor" class="rounded p-2 bg-green-800 text-white cursor-pointer">
+          Force investor
+        </button>
+        <button @click="skipForceInvestor" class="rounded p-2 bg-green-800 text-white cursor-pointer">
+          Do not force investor
+        </button>
+      </div>
       <button
-        @click="$emit('chooseImportType', 'army')"
-        class="rounded p-2 bg-green-800 text-white cursor-pointer"
+        v-if="game.buildingFactory && (profile.username === controllingPlayerName || (game.soloMode && profile.username in game.players))"
+        class="rounded py-2 px-6 my-4 bg-green-800 text-white cursor-pointer"
+        @click="$emit('skipBuildFactory')"
       >
-        Army
+        Skip building a factory
       </button>
-      <button
-        @click="$emit('chooseImportType', 'fleet')"
-        class="rounded p-2 bg-green-800 text-white cursor-pointer"
-      >
-        Fleet
-      </button>
+      <BondPurchase
+        v-if="purchasingBond"
+        :game="game"
+        :current_player="controllingPlayerName"
+        :profile="profile"
+        :tradedInValue="tradedInValue"
+        @purchaseBond="purchaseBond"
+        @skip="this.skipPurchaseBond"
+      ></BondPurchase>
+      <div v-if="destroyingFactory">
+        <div class="text-lg">Do you want to destroy the factory at <b>{{ this.factoryToDestroy }}</b>?</div>
+        <div class="flex flex-wrap justify-evenly">
+          <button @click="destroyFactory" class="rounded p-2 bg-green-800 text-white cursor-pointer inline-block mt-8">
+            Yes
+          </button>
+          <button @click="skipDestroyFactory" class="rounded p-2 bg-green-800 text-white cursor-pointer inline-block mt-8">
+            No
+          </button>
+        </div>
+      </div>
     </div>
-    <button
-      v-if="canEndManeuver"
-      v-on:click="endManeuver"
-      class="rounded py-2 px-6 m-4 bg-green-800 text-white cursor-pointer self-start"
-    >
-      End maneuver
-    </button>
-    <ConflictHandler :game="game" :profile="profile" :controllingPlayerName="controllingPlayerName" v-on:tick-with-action="tickWithAction"></ConflictHandler>
-    <div class="text-center" v-if="canForceInvestor">
-      <button @click="forceInvestor" class="rounded p-2 bg-green-800 text-white cursor-pointer">
-        Force investor
-      </button>
-      <button @click="skipForceInvestor" class="rounded p-2 bg-green-800 text-white cursor-pointer">
-        Do not force investor
-      </button>
-    </div>
-    <button
-      v-if="game.buildingFactory && (profile.username === controllingPlayerName || (game.soloMode && profile.username in game.players))"
-      class="rounded py-2 px-6 my-4 bg-green-800 text-white cursor-pointer"
-      @click="$emit('skipBuildFactory')"
-    >
-      Skip building a factory
-    </button>
-    <BondPurchase
-      v-if="purchasingBond"
-      :game="game"
-      :current_player="controllingPlayerName"
-      :profile="profile"
-      :tradedInValue="tradedInValue"
-      @purchaseBond="purchaseBond"
-      @skip="this.skipPurchaseBond"
-    ></BondPurchase>
     <AvailableBonds v-else :game="game"></AvailableBonds>
     <TaxStatus :game="game"></TaxStatus>
-    <div v-if="destroyingFactory">
-      <div class="text-lg">Do you want to destroy the factory at <b>{{ this.factoryToDestroy }}</b>?</div>
-      <div class="flex flex-wrap justify-evenly">
-        <button @click="destroyFactory" class="rounded p-2 bg-green-800 text-white cursor-pointer inline-block mt-8">
-          Yes
-        </button>
-        <button @click="skipDestroyFactory" class="rounded p-2 bg-green-800 text-white cursor-pointer inline-block mt-8">
-          No
-        </button>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -103,6 +105,7 @@ export default {
     "game",
     "chooseImportType",
     "controllingPlayerName",
+    "paused",
     "profile",
     "importPlacements",
     "gameData",
@@ -194,6 +197,8 @@ export default {
       this.tickWithAction(skipAction);
     },
     canUndo() {
+      if (this.paused) return false;
+
       let canUndo = false;
       for (const action of this.game.availableActionsWithUndo()) {
         if (
