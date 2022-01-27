@@ -85,7 +85,8 @@ export default {
   },
   props: {
     game: Object,
-    name: String
+    name: String,
+    paused: Boolean,
   },
   computed: {
     bondBearers() {
@@ -123,6 +124,8 @@ export default {
   },
   methods: {
     isValid(slot) {
+      if (this.paused) return false;
+
       if (
         this.validSlots().includes(slot) &&
         (this.game.currentPlayerName === this.name ||
@@ -197,6 +200,8 @@ export default {
       }
     },
     showRondelHelperText: function() {
+      if (this.paused) return false;
+
       let allActionsAreRondel = true;
       for (const action of this.game.availableActions) {
         if (action.type !== "rondel" && action.type !== "undo") {

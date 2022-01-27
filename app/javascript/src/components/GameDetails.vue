@@ -21,6 +21,7 @@
       <Rondel
         :game="game"
         :name="profile.username"
+        :paused="paused"
         @tick-with-action="tickWithAction"
       ></Rondel>
     </div>
@@ -39,9 +40,18 @@ export default {
     Rondel,
     TaxChart
   },
-  props: ["game", "controllingPlayerName", "profile", "online_users", "gameData"],
+  props: [
+    "game",
+    "controllingPlayerName",
+    "paused",
+    "profile",
+    "online_users",
+    "gameData",
+  ],
   computed: {
     purchasingBond() {
+      if (this.paused) return false;
+
       const purchasingBond = this.game.availableActions.size > 0 &&
         Array.from(this.game.availableActions).every(
           (action) => action.type === "bondPurchase" || action.type === "skipBondPurchase" || action.type === "undo"

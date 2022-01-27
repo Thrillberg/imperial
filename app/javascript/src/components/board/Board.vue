@@ -120,6 +120,7 @@ export default {
     profile: Object,
     gameStarted: Boolean,
     importing_units: Array,
+    paused: Boolean,
     province_with_fight: String,
     select_province: Function,
     valid_provinces: Array
@@ -165,6 +166,8 @@ export default {
       return fleets;
     },
     importingUnits(province) {
+      if (this.paused) return [];
+
       const normalizedProvince = province.replace(/\.*\s/gm, "").toLowerCase();
       if (this.gameStarted) {
         return this.importing_units.filter(unit => unit.province === normalizedProvince)
@@ -251,6 +254,8 @@ export default {
       return flags;
     },
     isValid(province) {
+      if (this.paused) return false;
+
       const normalizedProvince = province.replace(/\.*\s/gm, "").toLowerCase();
       if (this.valid_provinces.includes(normalizedProvince) && (this.profile.username in this.game.players)) {
         return true;
@@ -259,6 +264,8 @@ export default {
       return false;
     },
     buildingFactory() {
+      if (this.paused) return false;
+
       if (this.game.availableActions) {
         return [...this.game.availableActions].every(action => action.type === "buildFactory");
       }
