@@ -315,4 +315,88 @@ describe("imperial2030", () => {
       });
     });
   });
+
+  describe("blocking canals", () => {
+    const newGame = () => {
+      const board = new GameBoard({
+        nodes: [
+          { name: "northpacific", nation: null, isOcean: true },
+          { name: "colombia", nation: null },
+          { name: "caribbeansea", nation: null, isOcean: true },
+          { name: "mediterraneansea", nation: null, isOcean: true },
+          { name: "northafrica", nation: null },
+          { name: "indianocean", nation: null, isOcean: true },
+        ],
+        edges: [
+          ["northpacific", "caribbeansea"],
+          ["northpacific", "colombia"],
+          ["colombia", "caribbeansea"],
+          ["mediterraneansea", "indianocean"],
+          ["mediterraneansea", "northafrica"],
+          ["northafrica", "indianocean"],
+        ]
+      });
+
+      const game = new Imperial(board);
+      initialize(game);
+      return game;
+    };
+
+    test("a nation can block another nation's army from moving from North Pacific to the Caribbean Sea if the nation has a flag in Colombia", () => {
+      const game = newGame();
+      game.provinces.get("colombia").flag = Nation2030.CN;
+      game.units.get(Nation2030.RU).get("northpacific").fleets = 1;
+
+      game.tick(
+        Action.rondel({ nation: Nation2030.RU, cost: 0, slot: "maneuver1" })
+      );
+      game.tick(
+        Action.maneuver({ origin: "northpacific", destination: "caribbeansea" })
+      );
+      
+      const expected = new Set();
+      expected.add(Action.blockCanal());
+      expected.add(Action.unblockCanal());
+
+      expect(game.availableActions).toEqual(expected);
+    });
+
+    test("fleets can freely move through canals if nobody has a flag in Colombia", () => {
+      const game = newGame();
+      game.units.get(Nation2030.RU).get("northpacific").fleets = 1;
+
+      game.tick(
+        Action.rondel({ nation: Nation2030.RU, cost: 0, slot: "maneuver1" })
+      );
+      game.tick(
+        Action.maneuver({ origin: "northpacific", destination: "caribbeansea" })
+      );
+      
+      const expected = new Set();
+      ["factory", "investor", "import", "production2", "production1", "maneuver1", "maneuver2", "taxation"].forEach(slot => {
+        expected.add(Action.rondel({ nation: Nation2030.CN, cost: 0, slot }));
+      });
+
+      expect(game.availableActions).toEqual(expected);
+    });
+
+    test("a nation can block another nation's army from moving from Mediterranean Sea to the Indian Ocean if the nation has a flag in North Africa", () => {
+      const game = newGame();
+      game.provinces.get("northafrica").flag = Nation2030.CN;
+      game.units.get(Nation2030.RU).get("mediterraneansea").fleets = 1;
+
+      game.tick(
+        Action.rondel({ nation: Nation2030.RU, cost: 0, slot: "maneuver1" })
+      );
+      game.tick(
+        Action.maneuver({ origin: "mediterraneansea", destination: "indianocean" })
+      );
+      
+      const expected = new Set();
+      expected.add(Action.blockCanal());
+      expected.add(Action.unblockCanal());
+
+      expect(game.availableActions).toEqual(expected);
+    });
+  });
 });

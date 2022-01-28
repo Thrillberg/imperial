@@ -874,6 +874,49 @@ export default class Imperial {
 
     // Execute the unit movement
     if (unitType === "fleet") {
+      // Interrupt in case a fleet is manuevering through a canal in 2030!
+      if (this.baseGame === "imperial2030") {
+        const colombiaCanalOwner = this.provinces.get("colombia").flag;
+        const movingBetweenNorthPacificAndCaribbean = (
+          (
+            origin === "northpacific" &&
+            destination === "caribbeansea"
+          ) || (
+            origin === "caribbeansea" &&
+            destination === "northpacific"
+          )
+        )
+        const northAfricaCanalOwner = this.provinces.get("northafrica").flag;
+        const movingBetweenMediterraneanAndIndianOcean = (
+          (
+            origin === "mediterraneansea" &&
+            destination === "indianocean"
+          ) || (
+            origin === "indianocean" &&
+            destination === "mediterraneansea"
+          )
+        )
+        const canalCanBeBlocked = (
+          (
+            movingBetweenNorthPacificAndCaribbean &&
+            colombiaCanalOwner &&
+            colombiaCanalOwner !== this.currentNation
+          ) || (
+            movingBetweenMediterraneanAndIndianOcean &&
+            northAfricaCanalOwner &&
+            northAfricaCanalOwner !== this.currentNation
+          )
+        )
+        if (canalCanBeBlocked) {
+          const canalOwner = colombiaCanalOwner || northAfricaCanalOwner;
+          this.availableActions = new Set();
+          this.availableActions.add(Action.blockCanal());
+          this.availableActions.add(Action.unblockCanal());
+          this.currentPlayerName = this.nations.get(canalOwner).controller
+          return;
+        }
+      }
+
       this.units.get(this.currentNation).get(origin).fleets--;
       this.units.get(this.currentNation).get(destination).fleets++;
     }
