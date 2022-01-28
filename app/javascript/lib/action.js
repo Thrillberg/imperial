@@ -60,6 +60,7 @@ export default {
   nationPaysPlayer: makeAction("nationPaysPlayer", ["player", "nation", "amount"]),
   // The remaining actions are for the main log
   initialize: makeAction("initialize", ["players", "soloMode", "variant", "baseGame"]),
+  blockCanal: makeAction("blockCanal", []),
   bondPurchase: makeAction("bondPurchase", ["nation", "player", "cost", "tradeInValue"]),
   buildFactory: makeAction("buildFactory", ["province"]),
   coexist: makeAction("coexist", ["province", "incumbent", "challenger"]),
@@ -82,6 +83,7 @@ export default {
   skipBondPurchase: makeAction("skipBondPurchase", ["player", "nation"]),
   skipDestroyFactory: makeAction("skipDestroyFactory", ["province"]),
   skipForceInvestor: makeAction("skipForceInvestor", ["player"]),
+  unblockCanal: makeAction("unblockCanal", []),
   undo: makeAction("undo", ["player"]),
   unfriendlyEntrance: makeAction("unfriendlyEntrance", ["incumbent", "challenger", "province"])
 };
