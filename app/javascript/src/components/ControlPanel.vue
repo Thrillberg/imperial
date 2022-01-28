@@ -121,21 +121,27 @@ export default {
       return purchasingBond && (this.profile.username === this.controllingPlayerName || (this.game.soloMode && this.profile.username in this.game.players));
     },
     destroyingFactory: function () {
-      const destroyingFactory = this.game.availableActions.size > 0 &&
-        Array.from(this.game.availableActions).every(
-          (action) => {
-            if (
-              action.type === "destroyFactory" ||
-              action.type === "skipDestroyFactory"
-            ) {
-              this.factoryToDestroy = action.payload.province;
-              return true;
-            }
+      if (
+        this.profile.username !== this.controllingPlayerName &&
+        !(this.game.soloMode && this.profile.username in this.game.players)
+      ) {
+        return false
+      }
 
-            return false;
-          }
-        );
-      return destroyingFactory && (this.profile.username === this.controllingPlayerName || (this.game.soloMode && this.profile.username in this.game.players));
+      const destroyingFactory = Array.from(
+        this.game.availableActions
+      ).every((action) => {
+        if (
+          action.type === "destroyFactory" ||
+          action.type === "skipDestroyFactory"
+        ) {
+          this.factoryToDestroy = action.payload.province;
+          return true;
+        }
+
+        return false;
+      });
+      return destroyingFactory
     },
     canForceInvestor: function () {
       if (this.game.availableActions.size > 0 &&
@@ -185,7 +191,6 @@ export default {
       }
       this.tickWithAction(destroyAction);
       this.factoryToDestroy = "";
-      this.destroyingFactory = false;
     },
     skipDestroyFactory: function() {
       let skipAction = {};

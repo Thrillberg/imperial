@@ -69,6 +69,7 @@ export default (game) => {
     coexistingNations,
     currentNationInConflict: game.currentNationInConflict,
     swissBanksWhoDoNotInterrupt,
-    importing: false
+    importing: false,
+    buildingFactory: game.buildingFactory
   }
 }
