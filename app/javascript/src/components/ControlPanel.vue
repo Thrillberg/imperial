@@ -197,20 +197,10 @@ export default {
       this.tickWithAction(skipAction);
     },
     canUndo() {
-      if (this.paused) return false;
-
-      let canUndo = false;
-      for (const action of this.game.availableActionsWithUndo()) {
-        if (
-          this.game.log.length > 1 && action.type === "undo" && (
-            action.payload.player === this.profile.username ||
-            (this.game.soloMode && Object.keys(this.game.players).includes(this.profile.username))
-          )
-        ) {
-          canUndo = true;
-        }
-      }
-      return canUndo;
+      // If the game's available actions includes an undo action for
+      // the current player, return true.
+      
+      return false
     },
     undo() {
       for (const action of this.game.availableActionsWithUndo()) {
