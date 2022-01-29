@@ -179,6 +179,38 @@ export default class Imperial {
         this.maneuver(action);
         return;
       }
+      case "blockCanal": {
+        this.availableActions = new Set();
+        const reversedLog = this.log.slice().reverse();
+        const lastManeuverRondelAction = reversedLog.find(
+          this.actionIsRondelAndManeuver
+        );
+        this.beginManeuver(lastManeuverRondelAction);
+        const attemptedManeuverActionPayload = this.log[
+          this.log.length - 2
+        ].payload;
+        this.availableActions.delete(
+          Action.maneuver({
+            origin: attemptedManeuverActionPayload.origin,
+            destination: attemptedManeuverActionPayload.destination,
+          })
+        );
+        this.currentPlayerName = this.previousPlayerName;
+        return;
+      }
+      case "unblockCanal": {
+        const attemptedManeuverActionPayload = this.log[
+          this.log.length - 2
+        ].payload;
+        const action = Action.maneuver({
+          origin: attemptedManeuverActionPayload.origin,
+          destination: attemptedManeuverActionPayload.destination,
+        });
+        // The second argument to this.maneuver (a boolean) indicates if the
+        // canal is unblocked.
+        this.maneuver(action, true);
+        return;
+      }
       case "rondel": {
         this.previousPlayerName = this.currentPlayerName;
         this.rondel(action);
@@ -639,7 +671,7 @@ export default class Imperial {
   }
 
   actionIsRondelAndManeuver(action) {
-    const slot = action.payload.slot;
+    const slot = action.payload?.slot;
     return action.type === "rondel" &&
       (slot === "maneuver1" || slot === "maneuver2");
   }
@@ -865,7 +897,7 @@ export default class Imperial {
     this.handlePassingThroughInvestor();
   }
 
-  maneuver(action) {
+  maneuver(action, unblocked) {
     const origin = action.payload.origin;
     const destination = action.payload.destination;
     const unitType = this.board.graph.get(destination).isOcean
@@ -875,7 +907,7 @@ export default class Imperial {
     // Execute the unit movement
     if (unitType === "fleet") {
       // Interrupt in case a fleet is manuevering through a canal in 2030!
-      if (this.baseGame === "imperial2030") {
+      if (this.baseGame === "imperial2030" && !unblocked) {
         const colombiaCanalOwner = this.provinces.get("colombia").flag;
         const movingBetweenNorthPacificAndCaribbean = (
           (

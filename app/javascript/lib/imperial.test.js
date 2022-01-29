@@ -1860,10 +1860,6 @@ describe("imperial", () => {
             );
           });
         });
-
-        describe("3. Investing without a flag", () => {
-          test.todo("test me plz");
-        });
       });
 
       describe("investor slot is skipped", () => {
