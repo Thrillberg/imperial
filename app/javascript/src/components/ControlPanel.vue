@@ -57,6 +57,14 @@
           Do not force investor
         </button>
       </div>
+      <div class="text-center" v-if="canBlockCanal">
+        <button @click="blockCanal" class="rounded p-2 bg-green-800 text-white cursor-pointer">
+          Block canal
+        </button>
+        <button @click="unblockCanal" class="rounded p-2 bg-green-800 text-white cursor-pointer">
+          Do not block canal
+        </button>
+      </div>
       <button
         v-if="game.buildingFactory && (profile.username === controllingPlayerName || (game.soloMode && profile.username in game.players))"
         class="rounded py-2 px-6 my-4 bg-green-800 text-white cursor-pointer"
@@ -152,6 +160,23 @@ export default {
       }
       return false;
     },
+    canBlockCanal: function () {
+      if (
+        Array.from(this.game.availableActions).every(
+          (action) => action.type === "blockCanal" ||
+            action.type === "unblockCanal" ||
+            action.type === "undo"
+        )
+      ) {
+        if (
+          this.profile.username === this.currentPlayerName ||
+          this.game.soloMode && this.profile.username in this.game.players
+        ) {
+          return true;
+        }
+      }
+      return false;
+    },
     canEndManeuver() {
       return this.game.maneuvering &&
       !this.destroyingFactory &&
@@ -238,6 +263,20 @@ export default {
     skipForceInvestor() {
       for (const action of this.game.availableActions) {
         if (action.type === "skipForceInvestor") {
+          this.tickWithAction(action);
+        }
+      }
+    },
+    blockCanal() {
+      for (const action of this.game.availableActions) {
+        if (action.type === "blockCanal") {
+          this.tickWithAction(action);
+        }
+      }
+    },
+    unblockCanal() {
+      for (const action of this.game.availableActions) {
+        if (action.type === "unblockCanal") {
           this.tickWithAction(action);
         }
       }
