@@ -320,12 +320,13 @@ describe("imperial2030", () => {
     const newGame = () => {
       const board = new GameBoard({
         nodes: [
-          { name: "northpacific", nation: null, isOcean: true },
-          { name: "colombia", nation: null },
-          { name: "caribbeansea", nation: null, isOcean: true },
-          { name: "mediterraneansea", nation: null, isOcean: true },
-          { name: "northafrica", nation: null },
-          { name: "indianocean", nation: null, isOcean: true },
+          { name: "northpacific", isOcean: true },
+          { name: "colombia" },
+          { name: "caribbeansea", isOcean: true },
+          { name: "mediterraneansea", isOcean: true },
+          { name: "northafrica" },
+          { name: "indianocean", isOcean: true },
+          { name: "northatlantic", isOcean: true }
         ],
         edges: [
           ["northpacific", "caribbeansea"],
@@ -334,6 +335,7 @@ describe("imperial2030", () => {
           ["mediterraneansea", "indianocean"],
           ["mediterraneansea", "northafrica"],
           ["northafrica", "indianocean"],
+          ["northatlantic", "mediterraneansea"]
         ]
       });
 
@@ -397,6 +399,64 @@ describe("imperial2030", () => {
       expected.add(Action.unblockCanal());
 
       expect(game.availableActions).toEqual(expected);
+    });
+
+    test("if a canal is blocked, maneuver does not succeed", () => {
+      const game = newGame();
+      game.provinces.get("northafrica").flag = Nation2030.CN;
+      game.units.get(Nation2030.RU).get("mediterraneansea").fleets = 1;
+
+      game.tick(
+        Action.rondel({ nation: Nation2030.RU, cost: 0, slot: "maneuver1" })
+      );
+      game.tick(
+        Action.maneuver({ origin: "mediterraneansea", destination: "indianocean" })
+      );
+
+      expect(game.currentPlayerName).toEqual("player2");
+      expect(game.currentNation).toEqual(Nation2030.RU);
+
+      game.tick(Action.blockCanal());
+      
+      const expected = new Set();
+      expected.add(
+        Action.endManeuver()
+      );
+      expected.add(
+        Action.maneuver({
+          origin: "mediterraneansea",
+          destination: "northatlantic"
+        })
+      );
+
+      expect(game.availableActions).toEqual(expected);
+      expect(game.currentPlayerName).toEqual("player1");
+    });
+
+    test("if a canal is unblocked, maneuver succeeds", () => {
+      const game = newGame();
+      game.provinces.get("northafrica").flag = Nation2030.CN;
+      game.units.get(Nation2030.RU).get("mediterraneansea").fleets = 1;
+
+      game.tick(
+        Action.rondel({ nation: Nation2030.RU, cost: 0, slot: "maneuver1" })
+      );
+      game.tick(
+        Action.maneuver({ origin: "mediterraneansea", destination: "indianocean" })
+      );
+
+      expect(game.currentPlayerName).toEqual("player2");
+      expect(game.currentNation).toEqual(Nation2030.RU);
+
+      game.tick(Action.unblockCanal());
+      
+      const expected = new Set();
+      ["factory", "investor", "import", "production2", "production1", "maneuver1", "maneuver2", "taxation"].forEach(slot => {
+        expected.add(Action.rondel({ nation: Nation2030.CN, cost: 0, slot }));
+      });
+
+      expect(game.availableActions).toEqual(expected);
+      expect(game.currentPlayerName).toEqual("player2");
     });
   });
 });
