@@ -93,7 +93,7 @@
         </div>
       </div>
     </div>
-    <AvailableBonds v-else :game="game"></AvailableBonds>
+    <AvailableBonds :game="game"></AvailableBonds>
     <TaxStatus :game="game"></TaxStatus>
   </div>
 </template>
