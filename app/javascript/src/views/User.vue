@@ -1,6 +1,9 @@
 <template>
   <div class="container mx-auto w-3/4">
-    <div class="border border-gray-400 rounded p-4 my-2 inline-block">
+    <div
+      v-if="$attrs.profile.id === $route.params.id"
+      class="border border-gray-400 rounded p-4 my-2 inline-block"
+    >
       <b>Settings:</b>
       <div>
         <p>Send me turn notifications via email:</p>
