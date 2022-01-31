@@ -29,6 +29,7 @@
           <YourGames :games="yourGames" :profile="profile"></YourGames>
           <UnstartedGameList :games="unstartedGames" :profile="profile"></UnstartedGameList>
           <CurrentGames :games="currentGames"></CurrentGames>
+          <CurrentSoloGames :games="currentSoloGames"></CurrentSoloGames>
           <div class="px-4">
             <router-link to="/cloned_games">
               <b class="underline">Your Cloned Games</b>
@@ -55,6 +56,7 @@
 
 <script>
 import CurrentGames from "../components/CurrentGames.vue";
+import CurrentSoloGames from "../components/CurrentSoloGames.vue";
 import UnstartedGameList from "../components/UnstartedGameList.vue";
 import YourGames from "../components/YourGames.vue";
 
@@ -62,7 +64,7 @@ import DiscordLogo from "../assets/discord_logo.svg";
 
 export default {
   name: "Home",
-  components: { CurrentGames, UnstartedGameList, YourGames, DiscordLogo },
+  components: { CurrentGames, CurrentSoloGames, UnstartedGameList, YourGames, DiscordLogo },
   props: { profile: Object, users: Array, games: Array, gamesFetched: Boolean },
   computed: {
     yourGames() {
@@ -92,7 +94,12 @@ export default {
     },
     currentGames() {
       return this.games.filter(
-        game => game.startedAt && !game.forceEndedAt && !game.winner && !game.clonedFromGame
+        game => game.startedAt && !game.forceEndedAt && !game.winner && !game.clonedFromGame && game.players.length > 1
+      )
+    },
+    currentSoloGames() {
+      return this.games.filter(
+        game => game.startedAt && !game.forceEndedAt && !game.winner && !game.clonedFromGame && game.players.length === 1
       )
     }
   },
