@@ -7,7 +7,7 @@
     xmlns="http://www.w3.org/2000/svg"
     version="1.1"
     viewBox="0 0 1016.371 540"
-    class="sm:-mt-20 -mt-6"
+    class="sm:-mt-32 -mt-6"
   >
     <filter id="brightness">
       <feComponentTransfer>
