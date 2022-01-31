@@ -9,3 +9,11 @@
     </div>
   </div>
 </template>
+
+<script>
+export default {
+  created() {
+    document.title = "About - Imperial";
+  }
+}
+</script>

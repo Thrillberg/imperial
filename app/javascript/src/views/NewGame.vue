@@ -52,6 +52,9 @@ export default {
       variant: "standard"
     }
   },
+  created() {
+    document.title = "New Game - Imperial";
+  },
   methods: {
     openGame(e) {
       e.preventDefault();

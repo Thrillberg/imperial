@@ -22,6 +22,9 @@ export default {
   data: function () {
     return { password: "" }
   },
+  created() {
+    document.title = "Reset Password - Imperial";
+  },
   methods: {
     submitResetPassword: function(e) {
       fetch("accounts/password", {

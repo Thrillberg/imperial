@@ -312,6 +312,9 @@ export default {
     window.addEventListener("beforeunload", this.beforeWindowUnload)
     apiClient.userObservingGame(this.profile.username, this.$route.params.id);
   },
+  updated() {
+    document.title = this.gameData.name + " - Imperial";
+  },
   beforeDestroy() {
     window.removeEventListener("beforeunload", this.beforeWindowUnload)
   },

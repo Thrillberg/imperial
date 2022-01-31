@@ -35,6 +35,9 @@
 export default {
   name: "Register",
   props: ["profile"],
+  created() {
+    document.title = "Register - Imperial";
+  },
   data: function () {
     return {
       email: "",

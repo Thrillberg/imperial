@@ -39,6 +39,9 @@ export default {
       password: ""
     }
   },
+  created() {
+    document.title = "Sign In - Imperial";
+  },
   methods: {
     signIn: function(e) {
       fetch("/accounts/sign_in", {

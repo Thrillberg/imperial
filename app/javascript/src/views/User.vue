@@ -82,6 +82,7 @@ export default {
         this.wonGames = this.finishedGames.filter(game => game.winner_name === this.user.name)
         this.turnNotificationsEnabled = data.user.turn_notifications_enabled;
         this.gamesFetched = true;
+        document.title = this.user.name + "'s Profile - Imperial";
       });
   },
   data() {

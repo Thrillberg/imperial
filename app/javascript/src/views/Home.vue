@@ -66,6 +66,9 @@ export default {
   name: "Home",
   components: { CurrentGames, CurrentSoloGames, UnstartedGameList, YourGames, DiscordLogo },
   props: { profile: Object, users: Array, games: Array, gamesFetched: Boolean },
+  created() {
+    document.title = "Imperial";
+  },
   computed: {
     yourGames() {
       return this.games.filter(game => {

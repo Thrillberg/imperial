@@ -33,6 +33,9 @@ export default {
       passwordResetEmailSent: false
     }
   },
+  created() {
+    document.title = "Forgot Password - Imperial";
+  },
   methods: {
     submitForgotPassword: function(e) {
       this.passwordResetEmailRequested = true;

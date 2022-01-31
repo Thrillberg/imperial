@@ -18,6 +18,7 @@ export default {
   name: "Rankings",
   data: () => ({ games: [] }),
   created() {
+    document.title = "Rankings - Imperial";
     fetch("/api/games")
       .then(response => response.json())
       .then(games => {

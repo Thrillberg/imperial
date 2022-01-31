@@ -82,3 +82,11 @@
     </div>
   </div>
 </template>
+
+<script>
+export default {
+  created() {
+    document.title = "How to Play - Imperial";
+  }
+}
+</script>

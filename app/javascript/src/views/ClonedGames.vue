@@ -22,6 +22,7 @@ export default {
     }
   },
   created() {
+    document.title = "Your Cloned Games - Imperial";
     fetch("/get_games", { method: "GET" })
       .then(response => response.json())
       .then(data => this.games = data.filter(
