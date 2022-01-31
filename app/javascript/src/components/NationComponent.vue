@@ -1,27 +1,23 @@
 <template>
   <div class="p-0.5 border border-gray-500" :class="currentNation() + width()">
     <p><b>{{ stringify(nation) }}</b></p>
-    <div class="flex">
-      <div class="p-2">
-        <svg xmlns="http://www.w3.org/2000/svg" height="30" width="45">
-          <Flag
-            :nation="nation"
-            :filter="controller === current_player ? '' : 'grayscale'"
-          ></Flag>
-        </svg>
-        <p>{{ controller }}</p>
-      </div>
-      <div class="flex flex-col justify-center">
-        <div :class="canPayOut ? '' : 'text-red-500 font-bold'">{{ treasury }}m</div>
-        <div>{{ power_points }} power</div>
-        <div
-          v-if="winner"
-          class="text-center font-bold text-xl"
-        >
-          x{{ Math.floor(power_points / 5) }}
-        </div>
+    <svg xmlns="http://www.w3.org/2000/svg" height="30" width="45">
+      <Flag
+        :nation="nation"
+        :filter="controller === current_player ? '' : 'grayscale'"
+      ></Flag>
+    </svg>
+    <div class="flex flex-col justify-center">
+      <div :class="canPayOut ? '' : 'text-red-500 font-bold'">{{ treasury }}m</div>
+      <div>{{ power_points }} power</div>
+      <div
+        v-if="winner"
+        class="text-center font-bold text-xl"
+      >
+        x{{ Math.floor(power_points / 5) }}
       </div>
     </div>
+    <p class="pt-2 text-base"><b>{{ controller }}</b></p>
   </div>
 </template>
 
@@ -58,9 +54,9 @@ export default {
     },
     width() {
       if (this.baseGame === "imperial") {
-        return "lg:w-1/3 xl:w-1/3 2xl:w-1/6"
+        return "w-1/3 lg:w-1/3 xl:w-1/3 2xl:w-1/6"
       } else if (this.baseGame === "imperial2030") {
-        return "lg:w-1/3 xl:w-1/3 2xl:w-1/6"
+        return "w-1/3 lg:w-1/3 xl:w-1/3 2xl:w-1/6"
       }
     },
     stringify(nation) {
