@@ -17,7 +17,7 @@
         x{{ Math.floor(power_points / 5) }}
       </div>
     </div>
-    <p class="pt-2 text-base"><b>{{ controller }}</b></p>
+    <p class="pt-2 text-base">{{ truncate(controller) }}</p>
   </div>
 </template>
 
@@ -61,7 +61,14 @@ export default {
     },
     stringify(nation) {
       return stringify(nation);
-    }
+    },
+    truncate(string) {
+      if (string.length > 10) {
+        return string.slice(0, 10) + "...";
+      }
+
+      return string;
+    },
   }
 };
 </script>
