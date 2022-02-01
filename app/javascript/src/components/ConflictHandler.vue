@@ -4,11 +4,11 @@
   >
     <div
       v-if="fighting()"
-      class="text-center text-lg inline-flex flex-col"
+      class="text-center inline-flex"
     >
       <button
         v-on:click="coexist"
-        class="rounded p-2 m-1 bg-green-800 text-white cursor-pointer"
+        class="rounded p-2 m-4 bg-green-800 text-white cursor-pointer"
       >
         Coexist
       </button>
@@ -16,30 +16,30 @@
         v-for="fightAction in fightActions()"
         v-on:click="$emit('tick-with-action', fightAction)"
         :key="fightAction.payload.incumbent.value + fightAction.payload.targetType"
-        class="rounded p-2 m-1 bg-green-800 text-white cursor-pointer"
+        class="rounded p-2 m-4 bg-green-800 text-white cursor-pointer"
       >
         Fight {{ stringify(fightAction.payload.incumbent.value) }} ({{ fightAction.payload.targetType }})
       </button>
     </div>
     <div
       v-if="occupying()"
-      class="text-center text-lg inline-flex flex-col"
+      class="text-center inline-flex"
     >
       <button
         v-on:click="friendlyEntrance"
-        class="rounded p-2 m-1 bg-green-800 text-white cursor-pointer"
+        class="rounded p-2 m-4 bg-green-800 text-white cursor-pointer"
       >
         Enter friendly
       </button>
       <button
         v-on:click="unfriendlyEntrance"
-        class="rounded p-2 m-1 bg-green-800 text-white cursor-pointer"
+        class="rounded p-2 m-4 bg-green-800 text-white cursor-pointer"
       >
         Enter unfriendly
       </button>
     </div>
   </div>
-  <div v-else-if="fighting() && (profile.username === controllingPlayerName || (game.soloMode && profile.username in game.players))" class="text-center text-lg">
+  <div v-else-if="fighting() && (profile.username === controllingPlayerName || (game.soloMode && profile.username in game.players))" class="text-center">
     <button
       v-for="fightAction in fightActions()"
       v-on:click="$emit('tick-with-action', fightAction)"
