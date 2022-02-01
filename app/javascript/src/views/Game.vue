@@ -41,7 +41,7 @@
             <div class="flex justify-center my-2">
               <div
                 v-if="this.game.log.length > 1"
-                class="rounded p-2 mx-2 bg-green-800 text-white cursor-pointer"
+                class="rounded p-2 mx-2 bg-green-200 cursor-pointer"
                 @click="back"
               >
                 ◀
@@ -54,7 +54,7 @@
               </div>
               <div
                 v-if="poppedTurns.length > 0"
-                class="rounded p-2 mx-2 bg-green-800 text-white cursor-pointer"
+                class="rounded p-2 mx-2 bg-green-200 cursor-pointer"
                 @click="forward"
               >
                 ▶
