@@ -25,6 +25,7 @@ class API::UsersController < ApplicationController
   def update
     user = User.find(user_params[:id])
     user.turn_notifications_enabled = user_params[:turn_notifications_enabled]
+    user.discord_id = user_params[:discord_id]
     user.save
     render json: user
   end
@@ -32,7 +33,7 @@ class API::UsersController < ApplicationController
   private
 
   def user_params
-    params.require(:user).permit(:id, :turn_notifications_enabled)
+    params.require(:user).permit(:id, :turn_notifications_enabled, :discord_id)
   end
 
   def lovely_string

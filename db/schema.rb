@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_01_26_145735) do
+ActiveRecord::Schema.define(version: 2022_02_02_180538) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -73,6 +73,7 @@ ActiveRecord::Schema.define(version: 2022_01_26_145735) do
     t.uuid "account_id"
     t.datetime "anonymity_confirmed_at"
     t.boolean "turn_notifications_enabled", default: false
+    t.string "discord_id"
     t.index ["account_id"], name: "index_users_on_account_id"
   end
 
