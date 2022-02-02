@@ -1,29 +1,50 @@
 <template>
   <div class="container mx-auto w-3/4">
+    <div v-for="(error, index) in errors" v-bind:key="index">
+      {{ error }}
+    </div>
     <div
       v-if="$attrs.profile.id === $route.params.id"
-      class="border border-gray-400 rounded p-4 my-2 inline-block"
+      class="border border-gray-400 rounded p-4 my-2 inline-block w-full"
     >
-      <b>Settings:</b>
-      <div>
-        <p>Send me turn notifications via email:</p>
+      <b>Settings</b>
+      <div class="flex justify-around">
         <div>
-          <input
-            type="radio"
-            :value="true"
-            v-model="turnNotificationsEnabled"
-            @change="resetTurnNotifications"
-          >
-          <label>On</label>
+          <p>Send me turn notifications via email</p>
+          <div>
+            <input
+              type="radio"
+              :value="true"
+              v-model="turnNotificationsEnabled"
+              @change="resetTurnNotifications"
+            >
+            <label>On</label>
+          </div>
+          <div>
+            <input
+              type="radio"
+              :value="false"
+              v-model="turnNotificationsEnabled"
+              @change="resetTurnNotifications"
+            >
+            <label>Off</label>
+          </div>
         </div>
         <div>
-          <input
-            type="radio"
-            :value="false"
-            v-model="turnNotificationsEnabled"
-            @change="resetTurnNotifications"
-          >
-          <label>Off</label>
+          <p>Send me turn notifications via Discord</p>
+          <p class="text-xs">
+            Leave blank if you do not want turn notifications on Discord
+          </p>
+          <div>
+            <label class="text-sm">Discord User Id</label>
+            <input
+              type="text"
+              placeholder="123456789123456789"
+              class="rounded p-2 border border-green-800 my-2"
+              v-model="discordId"
+              @input="resetTurnNotifications"
+            />
+          </div>
         </div>
       </div>
       <div>
@@ -81,18 +102,21 @@ export default {
         this.finishedGames = data.games.filter(game => !!game.winner_name);
         this.wonGames = this.finishedGames.filter(game => game.winner_name === this.user.name)
         this.turnNotificationsEnabled = data.user.turn_notifications_enabled;
+        this.discordId = data.user.discord_id;
         this.gamesFetched = true;
         document.title = this.user.name + "'s Profile - Imperial";
       });
   },
   data() {
     return {
+      errors: [],
       user: {},
       finishedGames: [],
       wonGames: [],
       gamesFetched: false,
       successfullyUpdated: false,
-      turnNotificationsEnabled: false
+      turnNotificationsEnabled: false,
+      discordId: ""
     }
   },
   computed: {
@@ -105,18 +129,26 @@ export default {
   },
   methods: {
     save() {
+      if (this.discordId.length > 0 && this.discordId.length !== 18) {
+        this.errors.push("Your Discord Id must be exactly 18 characters long.");
+        this.discordId = "";
+      } else {
+        this.errors = []
+      }
       fetch("/api/users/update", {
         method: "PUT",
         body: JSON.stringify({
           id: this.$cookies.get("user_id"),
-          turn_notifications_enabled: this.turnNotificationsEnabled
+          turn_notifications_enabled: this.turnNotificationsEnabled,
+          discord_id: this.discordId
         }),
         headers: { "Content-Type": "application/json" }
       })
         .then((response) => response.json())
         .then((data) => {
           this.turnNotificationsEnabled = data.turn_notifications_enabled;
-            this.successfullyUpdated = true;
+          this.discordId = data.discord_id;
+          this.successfullyUpdated = true;
         })
     },
     resetTurnNotifications() {
