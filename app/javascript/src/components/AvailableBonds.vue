@@ -1,14 +1,14 @@
 <template>
   <div>
     <button
-      class="rounded py-2 px-6 m-4 bg-green-200 cursor-pointer"
+      class="rounded py-2 px-6 m-1 sm:m-4 bg-green-200 cursor-pointer"
       v-if="!showBonds"
       @click="showBonds = true"
     >
       Show available bonds
     </button>
     <button
-      class="rounded py-2 px-6 m-4 bg-green-200 cursor-pointer"
+      class="rounded py-2 px-6 m-1 sm:m-4 bg-green-200 cursor-pointer"
       v-if="showBonds"
       @click="showBonds = false"
     >

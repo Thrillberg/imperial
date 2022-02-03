@@ -1,14 +1,14 @@
 <template>
   <div>
     <button
-      class="rounded py-2 px-6 m-4 bg-green-200 cursor-pointer"
+      class="rounded py-2 px-6 m-1 sm:m-4 bg-green-200 cursor-pointer"
       v-if="!showTaxStatus"
       @click="showTaxStatus = true"
     >
       Show tax status
     </button>
     <button
-      class="rounded py-2 px-6 m-4 bg-green-200 cursor-pointer"
+      class="rounded py-2 px-6 m-1 sm:m-4 bg-green-200 cursor-pointer"
       v-if="showTaxStatus"
       @click="showTaxStatus = false"
     >

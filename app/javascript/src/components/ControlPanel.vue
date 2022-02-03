@@ -1,14 +1,16 @@
 <template>
-  <div class="flex">
+  <div class="flex flex-col sm:flex-row">
     <button
       v-if="canUndo()"
-      class="rounded py-2 px-6 m-4 bg-yellow-300 cursor-pointer self-start"
+      class="rounded py-2 px-6 m-1 sm:m-4 bg-yellow-300 cursor-pointer self-start"
       @click="undo"
     >
       Undo
     </button>
-    <AvailableBonds :game="game"></AvailableBonds>
-    <TaxStatus :game="game"></TaxStatus>
+    <div class="flex flex-wrap">
+      <AvailableBonds :game="game"></AvailableBonds>
+      <TaxStatus :game="game"></TaxStatus>
+    </div>
     <div v-if="!paused">
       <div
         v-if="game.importing && !chooseImportType && (profile.username === controllingPlayerName || (game.soloMode && profile.username in game.players))"
@@ -16,7 +18,7 @@
       >
         <button
           @click="$emit('runImport')"
-          class="rounded py-2 px-6 m-4 bg-red-500 text-white cursor-pointer"
+          class="rounded py-2 px-6 m-1 sm:m-4 bg-red-500 text-white cursor-pointer"
         >
           End import
         </button>
@@ -31,13 +33,13 @@
       >
         <button
           @click="$emit('chooseImportType', 'army')"
-          class="rounded p-2 m-4 bg-green-800 text-white cursor-pointer"
+          class="rounded p-2 m-1 sm:m-4 bg-green-800 text-white cursor-pointer"
         >
           Army
         </button>
         <button
           @click="$emit('chooseImportType', 'fleet')"
-          class="rounded p-2 m-4 bg-green-800 text-white cursor-pointer"
+          class="rounded p-2 m-1 sm:m-4 bg-green-800 text-white cursor-pointer"
         >
           Fleet
         </button>
@@ -46,30 +48,30 @@
       <button
         v-if="canEndManeuver"
         v-on:click="endManeuver"
-        class="rounded py-2 px-6 m-4 bg-red-500 text-white cursor-pointer self-start"
+        class="rounded py-2 px-6 m-1 sm:m-4 bg-red-500 text-white cursor-pointer self-start"
       >
         End maneuver
       </button>
       <ConflictHandler :game="game" :profile="profile" :controllingPlayerName="controllingPlayerName" v-on:tick-with-action="tickWithAction"></ConflictHandler>
       <div class="text-center" v-if="canForceInvestor">
-        <button @click="forceInvestor" class="rounded p-2 m-4 bg-green-800 text-white cursor-pointer">
+        <button @click="forceInvestor" class="rounded p-2 m-1 sm:m-4 bg-green-800 text-white cursor-pointer">
           Force investor
         </button>
-        <button @click="skipForceInvestor" class="rounded p-2 m-4 bg-green-800 text-white cursor-pointer">
+        <button @click="skipForceInvestor" class="rounded p-2 m-1 sm:m-4 bg-green-800 text-white cursor-pointer">
           Do not force investor
         </button>
       </div>
       <div class="text-center" v-if="canBlockCanal">
-        <button @click="blockCanal" class="rounded p-2 m-4 bg-green-800 text-white cursor-pointer">
+        <button @click="blockCanal" class="rounded p-2 m-1 sm:m-4 bg-green-800 text-white cursor-pointer">
           Block canal
         </button>
-        <button @click="unblockCanal" class="rounded p-2 m-4 bg-green-800 text-white cursor-pointer">
+        <button @click="unblockCanal" class="rounded p-2 m-1 sm:m-4 bg-green-800 text-white cursor-pointer">
           Do not block canal
         </button>
       </div>
       <button
         v-if="game.buildingFactory && (profile.username === controllingPlayerName || (game.soloMode && profile.username in game.players))"
-        class="rounded py-2 px-6 m-4 bg-green-800 text-white cursor-pointer"
+        class="rounded py-2 px-6 m-1 sm:m-4 bg-green-800 text-white cursor-pointer"
         @click="$emit('skipBuildFactory')"
       >
         Skip building a factory
@@ -86,10 +88,10 @@
       <div v-if="destroyingFactory">
         <div class="text-lg">Do you want to destroy the factory at <b>{{ this.factoryToDestroy }}</b>?</div>
         <div class="flex flex-wrap justify-evenly">
-          <button @click="destroyFactory" class="rounded p-2 m-4 bg-green-800 text-white cursor-pointer inline-block mt-8">
+          <button @click="destroyFactory" class="rounded p-2 m-1 sm:m-4 bg-green-800 text-white cursor-pointer inline-block mt-8">
             Yes
           </button>
-          <button @click="skipDestroyFactory" class="rounded p-2 m-4 bg-green-800 text-white cursor-pointer inline-block mt-8">
+          <button @click="skipDestroyFactory" class="rounded p-2 m-1 sm:m-4 bg-green-800 text-white cursor-pointer inline-block mt-8">
             No
           </button>
         </div>

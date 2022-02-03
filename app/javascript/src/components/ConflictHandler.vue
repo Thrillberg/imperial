@@ -8,7 +8,7 @@
     >
       <button
         v-on:click="coexist"
-        class="rounded p-2 m-4 bg-green-800 text-white cursor-pointer"
+        class="rounded p-2 m-1 sm:m-4 bg-green-800 text-white cursor-pointer"
       >
         Coexist
       </button>
@@ -16,7 +16,7 @@
         v-for="fightAction in fightActions()"
         v-on:click="$emit('tick-with-action', fightAction)"
         :key="fightAction.payload.incumbent.value + fightAction.payload.targetType"
-        class="rounded p-2 m-4 bg-green-800 text-white cursor-pointer"
+        class="rounded p-2 m-1 sm:m-4 bg-green-800 text-white cursor-pointer"
       >
         Fight {{ stringify(fightAction.payload.incumbent.value) }} ({{ fightAction.payload.targetType }})
       </button>
@@ -27,13 +27,13 @@
     >
       <button
         v-on:click="friendlyEntrance"
-        class="rounded p-2 m-4 bg-green-800 text-white cursor-pointer"
+        class="rounded p-2 m-1 sm:m-4 bg-green-800 text-white cursor-pointer"
       >
         Enter friendly
       </button>
       <button
         v-on:click="unfriendlyEntrance"
-        class="rounded p-2 m-4 bg-green-800 text-white cursor-pointer"
+        class="rounded p-2 m-1 sm:m-4 bg-green-800 text-white cursor-pointer"
       >
         Enter unfriendly
       </button>
@@ -44,7 +44,7 @@
       v-for="fightAction in fightActions()"
       v-on:click="$emit('tick-with-action', fightAction)"
       :key="fightAction.payload.province + fightAction.payload.challenger"
-      class="rounded p-2 m-4 bg-green-800 text-white cursor-pointer"
+      class="rounded p-2 m-1 sm:m-4 bg-green-800 text-white cursor-pointer"
     >
     Fight {{ stringify(fightAction.payload.challenger.value) }} in {{ fightAction.payload.province }}
     </button>
