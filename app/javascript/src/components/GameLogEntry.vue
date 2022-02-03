@@ -94,12 +94,14 @@ export default {
           return this.fightAction(action.payload);
         case "destroyFactory":
           return this.destroyFactoryAction(action.payload);
+        case "skipDestroyFactory":
+          return `A factory was not destroyed in ${action.payload.province}.`
         case "endManeuver":
           return this.endManeuverAction();
         case "forceInvestor":
-          return notImplemented;
+          return `${action.payload.player} forced a move on the Investor slot.`
         case "skipForceInvestor":
-          return notImplemented;
+          return `${action.payload.player} did not force a move on the Investor slot.`
         case "endGame":
           return "Game Over!";
         case "playerGainsCash":
@@ -118,8 +120,21 @@ export default {
           let slot = this.capitalize(action.payload.slot).replace(/\d/g,"");
           return `${action.payload.player} paid ${action.payload.cost}m to move to the ${slot} slot on the rondel.`;
         }
-        case "playerInvests":
+        case "playerInvests": {
           return `${action.payload.player} received 2m for holding the investor card.`;
+        }
+        case "unfriendlyEntrance": {
+          return `${action.payload.challenger} has violently entered ${action.payload.province} (${action.payload.incumbent}).`
+        }
+        case "friendlyEntrance": {
+          return `${action.payload.challenger} has peacefully entered ${action.payload.province} (${action.payload.incumbent}).`
+        }
+        case "blockCanal": {
+          return "A canal has been blocked."
+        }
+        case "unblockCanal": {
+          return "A canal has not been blocked."
+        }
       }
       return notImplemented;
     },
