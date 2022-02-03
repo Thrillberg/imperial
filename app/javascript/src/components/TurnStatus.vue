@@ -46,7 +46,7 @@ export default {
       }
       if (actionsWithoutUndo.every(action => action.type === "rondel")) {
         return "choosing a rondel slot"
-      } else if (actionsWithoutUndo.every(action => action.type === "buildFactory")) {
+      } else if (actionsWithoutUndo.every(action => action.type === "buildFactory" || action.type === "skipBuildFactory")) {
         return "choosing where to build a factory"
       } else if (actionsWithoutUndo.every(action => action.type === "maneuver" || action.type === "endManeuver")) {
         return "choosing where to maneuver their military units. Fleets move first, then armies"
@@ -60,6 +60,10 @@ export default {
         return "choosing whether to force the current nation to stop on the Investor rondel slot"
       } else if (actionsWithoutUndo.every(action => action.type === "destroyFactory" || action.type === "skipDestroyFactory")) {
         return "choosing whether to destroy a factory"
+      } else if (actionsWithoutUndo.every(action => action.type === "unfriendlyEntrance" || action.type === "friendlyEntrance")) {
+        return "choosing whether to enter peacefully or not"
+      } else if (actionsWithoutUndo.every(action => action.type === "blockCanal" || action.type === "unblockCanal")) {
+        return "choosing whether or not to block a canal"
       } else {
         return "doing something mysterious"
       }
