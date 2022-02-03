@@ -27,7 +27,7 @@ class GameChannel < ApplicationCable::Channel
       game.actions << Action.create(data: data)
 
       current_player_discord_id = game.current_player&.discord_id
-      if current_player_discord_id
+      if current_player_discord_id && ENV["RAILS_ENV"] == "production"
         uri = URI(ENV["DISCORD_WEBHOOK_URL"])
         Net::HTTP.post(
           uri,
