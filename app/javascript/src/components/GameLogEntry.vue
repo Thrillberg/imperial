@@ -124,10 +124,10 @@ export default {
           return `${action.payload.player} received 2m for holding the investor card.`;
         }
         case "unfriendlyEntrance": {
-          return `${action.payload.challenger} has violently entered ${action.payload.province} (${action.payload.incumbent}).`
+          return `${stringify(action.payload.challenger.value)} has violently entered ${this.capitalize(action.payload.province)} (${stringify(action.payload.incumbent.value)}).`
         }
         case "friendlyEntrance": {
-          return `${action.payload.challenger} has peacefully entered ${action.payload.province} (${action.payload.incumbent}).`
+          return `${stringify(action.payload.challenger.value)} has peacefully entered ${this.capitalize(action.payload.province)} (${stringify(action.payload.incumbent.value)}).`
         }
         case "blockCanal": {
           return "A canal has been blocked."
