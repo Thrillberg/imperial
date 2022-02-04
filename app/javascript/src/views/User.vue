@@ -99,8 +99,12 @@ export default {
       .then(response => response.json())
       .then(data => {
         this.user = data.user;
-        this.finishedGames = data.games.filter(game => !!game.winner_name);
-        this.wonGames = this.finishedGames.filter(game => game.winner_name === this.user.name)
+        this.finishedGames = data.games.filter(
+          game => !!game.winner_name
+        ).sort((a, b) => a.last_move_at < b.last_move_at);
+        this.wonGames = this.finishedGames.filter(
+          game => game.winner_name === this.user.name
+        );
         this.turnNotificationsEnabled = data.user.turn_notifications_enabled;
         this.discordId = data.user.discord_id;
         this.gamesFetched = true;
