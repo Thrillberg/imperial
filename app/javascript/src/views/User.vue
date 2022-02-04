@@ -1,5 +1,5 @@
 <template>
-  <div class="container mx-auto w-3/4">
+  <div class="container mx-auto sm:w-3/4">
     <div v-for="(error, index) in errors" v-bind:key="index">
       {{ error }}
     </div>
@@ -69,17 +69,19 @@
       </p>
       <b>{{ user.name }}'s Finished Games</b>
       <div class="flex border-b border-black mt-2">
-        <div class="w-1/4"><b>Name</b></div>
-        <div class="w-1/4"><b>Players</b></div>
-        <div class="w-1/4"><b>Winner</b></div>
-        <div class="w-1/4"><b>Finished On</b></div>
+        <div class="w-1/3 sm:w-1/5"><b>Name</b></div>
+        <div class="hidden sm:w-1/5 sm:inline-block"><b>Players</b></div>
+        <div class="w-1/3 sm:w-1/5"><b>Winner</b></div>
+        <div class="hidden sm:w-1/5 sm:inline-block"><b>Variant</b></div>
+        <div class="w-1/3 sm:w-1/5"><b>Finished On</b></div>
       </div>
       <div v-for="game of finishedGames" :key="game.id">
         <router-link :to="{ path: '/game/' + game.id }" class="flex justify-between items-center hover:bg-gray-200 py-2">
-          <div class="w-1/4">{{ game.name }}</div>
-          <div class="w-1/4">{{ game.players.length }}</div>
-          <div class="w-1/4">{{ game.winner_name }}</div>
-          <div class="w-1/4">{{ toDate(game.last_move_at) }}</div>
+          <div class="w-1/3 sm:w-1/5">{{ game.name }}</div>
+          <div class="hidden sm:w-1/5 sm:inline-block">{{ game.players.length }}</div>
+          <div class="w-1/3 sm:w-1/5">{{ truncate(game.winner_name) }}</div>
+          <div class="hidden sm:w-1/5 sm:inline-block">{{ variant(game.base_game) }}</div>
+          <div class="w-1/3 sm:w-1/5">{{ toDate(game.last_move_at) }}</div>
         </router-link>
       </div>
     </div>
@@ -160,7 +162,21 @@ export default {
     },
     toDate(timestamp) {
       return DateTime.fromISO(timestamp).toLocaleString();
-    }
+    },
+    variant(baseGame) {
+      if (baseGame === "imperial") {
+        return "Imperial"
+      } else if (baseGame === "imperial2030") {
+        return "Imperial 2030"
+      }
+    },
+    truncate(string) {
+      if (string.length > 10) {
+        return string.slice(0, 10) + "...";
+      }
+
+      return string;
+    },
   }
 }
 </script>

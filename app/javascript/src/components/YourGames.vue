@@ -6,7 +6,7 @@
       <div class="hidden sm:w-1/5 sm:inline-block mx-2"><b>Players</b></div>
       <div class="w-1/3 sm:w-1/5 mx-2"><b>Current Player</b></div>
       <div class="w-1/3 sm:w-1/5 mx-2"><b>Last Move At</b></div>
-      <div class="hidden sm:w-1/5 sm:inline-block mx-2"></div>
+      <div class="hidden sm:w-1/5 sm:inline-block mx-2"><b>Variant</b></div>
     </div>
     <a
       href="/games/new"
@@ -27,15 +27,9 @@
         <div class="hidden sm:w-1/5 sm:inline-block mx-2">{{ game.players.length }}</div>
         <div class="w-1/3 sm:w-1/5 mx-2">{{ currentPlayer(game) }}</div>
         <div class="w-1/3 sm:w-1/5 mx-2">{{ toTime(game.lastMoveAt) }}</div>
-        <div class="hidden sm:w-1/5 sm:inline-block mx-2" v-if="!game.winner">
-          <button v-if="game.startedAt" class="rounded bg-green-800 text-white cursor-pointer block hover:bg-green-900 p-2">
-            View Game
-          </button>
-          <button v-else class="rounded bg-green-800 text-white cursor-pointer block hover:bg-green-900 p-2">
-            Start Game
-          </button>
+        <div class="hidden sm:w-1/5 sm:inline-block mx-2">
+          {{ variant(game.baseGame) }}
         </div>
-        <div v-else class="hidden sm:w-1/5 sm:inline-block mx-2"></div>
       </router-link>
     </div>
     <div v-if="games.length === 0">
@@ -78,6 +72,13 @@ export default {
     },
     toTime(date) {
       return toTime(date);
+    },
+    variant(baseGame) {
+      if (baseGame === "imperial") {
+        return "Imperial"
+      } else if (baseGame === "imperial2030") {
+        return "Imperial 2030"
+      }
     }
   }
 }

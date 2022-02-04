@@ -15,12 +15,7 @@
         <div class="w-1/3 sm:w-1/5 mx-2">{{ game.host }}</div>
         <div class="w-1/3 sm:w-1/5 mx-2">{{ toTime(game.createdAt) }}</div>
         <div class="hidden sm:w-1/5 sm:inline-block mx-2">
-          <button v-if="game.players.length < 6" class="rounded bg-green-800 text-white cursor-pointer block hover:bg-green-900 p-2">
-            Join Game
-          </button>
-          <button v-else class="rounded bg-gray-800 text-white cursor-not-allowed block p-2">
-            Game Full
-          </button>
+          {{ variant(game.baseGame) }}
         </div>
       </router-link>
     </div>
@@ -36,6 +31,13 @@ export default {
   methods: {
     toTime(date) {
       return toTime(date);
+    },
+    variant(baseGame) {
+      if (baseGame === "imperial") {
+        return "Imperial"
+      } else if (baseGame === "imperial2030") {
+        return "Imperial 2030"
+      }
     }
   }
 }

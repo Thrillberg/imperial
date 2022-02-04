@@ -15,9 +15,7 @@
         <div class="w-1/3 sm:w-1/5 mx-2">{{ toTime(game.startedAt) }}</div>
         <div class="w-1/3 sm:w-1/5 mx-2">{{ toTime(game.lastMoveAt) }}</div>
         <div class="hidden sm:w-1/5 sm:inline-block mx-2">
-          <button class="rounded bg-green-800 text-white cursor-pointer block hover:bg-green-900 p-2">
-            View Game
-          </button>
+          {{ variant(game.baseGame) }}
         </div>
       </router-link>
     </div>
@@ -33,6 +31,13 @@ export default {
   methods: {
     toTime(date) {
       return toTime(date);
+    },
+    variant(baseGame) {
+      if (baseGame === "imperial") {
+        return "Imperial"
+      } else if (baseGame === "imperial2030") {
+        return "Imperial 2030"
+      }
     }
   }
 }
