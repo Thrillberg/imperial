@@ -85,7 +85,7 @@
         @purchaseBond="purchaseBond"
         @skip="this.skipPurchaseBond"
       ></BondPurchase>
-      <div v-if="destroyingFactory">
+      <div v-if="destroyingFactory()">
         <div class="text-lg">Do you want to destroy the factory at <b>{{ this.factoryToDestroy }}</b>?</div>
         <div class="flex flex-wrap justify-evenly">
           <button @click="destroyFactory" class="rounded p-2 m-1 sm:m-4 bg-green-800 text-white cursor-pointer inline-block mt-8">
@@ -130,29 +130,6 @@ export default {
         );
       return purchasingBond && (this.profile.username === this.controllingPlayerName || (this.game.soloMode && this.profile.username in this.game.players));
     },
-    destroyingFactory: function () {
-      if (
-        this.profile.username !== this.controllingPlayerName &&
-        !(this.game.soloMode && this.profile.username in this.game.players)
-      ) {
-        return false
-      }
-
-      const destroyingFactory = Array.from(
-        this.game.availableActions
-      ).every((action) => {
-        if (
-          action.type === "destroyFactory" ||
-          action.type === "skipDestroyFactory"
-        ) {
-          this.factoryToDestroy = action.payload.province;
-          return true;
-        }
-
-        return false;
-      });
-      return destroyingFactory
-    },
     canForceInvestor: function () {
       if (this.game.availableActions.size > 0 &&
         Array.from(this.game.availableActions).every((action) => action.type === "forceInvestor" || action.type === "skipForceInvestor" || action.type === "undo")) {
@@ -181,7 +158,7 @@ export default {
     },
     canEndManeuver() {
       return this.game.maneuvering &&
-      !this.destroyingFactory &&
+      this.factoryToDestroy === "" &&
       !this.game.handlingConflict &&
       (
         this.profile.username === this.controllingPlayerName ||
@@ -208,6 +185,23 @@ export default {
     },
     tickWithAction: function(action) {
       this.$emit("tick", action);
+    },
+    destroyingFactory: function () {
+      if (
+        this.profile.username !== this.controllingPlayerName &&
+        !(this.game.soloMode && this.profile.username in this.game.players)
+      ) {
+        return false
+      }
+
+      let destroyingFactory = false;
+      for (const action of this.game.availableActions) {
+        if (action.type === "destroyFactory" || action.type === "skipDestroyFactory") {
+          destroyingFactory = true;
+          this.factoryToDestroy = action.payload.province;
+        }
+      }
+      return destroyingFactory
     },
     destroyFactory: function() {
       let destroyAction = {};
