@@ -25,23 +25,6 @@ class GameChannel < ApplicationCable::Channel
       game.update(force_ended_at: nil) if game.force_ended_at
       data = data["data"]["action"]
       game.actions << Action.create(data: data)
-
-      current_player_discord_id = game.current_player&.discord_id
-      if !current_player_discord_id.blank? && ENV["RAILS_ENV"] == "production"
-        uri = URI(ENV["DISCORD_WEBHOOK_URL"])
-        Net::HTTP.post(
-          uri,
-          {
-            content: "<@#{current_player_discord_id}> it is your turn!",
-            allowed_mentions: {parse: ["users"]},
-            embeds: [
-              title: game.name,
-              url: "https://www.playimperial.club/game/#{game.id}"
-            ]
-          }.to_json,
-          "Content-Type" => "application/json"
-        )
-      end
       broadcast_update_game_log "game_channel", "updateGameLog", game
       broadcast_games "game_channel", "updateGames"
 
@@ -70,6 +53,24 @@ class GameChannel < ApplicationCable::Channel
       if should_send_turn_notification
         TurnNotificationJob.set(wait: 1.hour)
           .perform_later(player.id, game.id)
+      end
+      if player_changed && !game.winner
+        current_player_discord_id = player&.discord_id
+        if !current_player_discord_id.blank? && ENV["RAILS_ENV"] == "production"
+          uri = URI(ENV["DISCORD_WEBHOOK_URL"])
+          Net::HTTP.post(
+            uri,
+            {
+              content: "<@#{current_player_discord_id}> it is your turn!",
+              allowed_mentions: {parse: ["users"]},
+              embeds: [
+                title: game.name,
+                url: "https://www.playimperial.club/game/#{game.id}"
+              ]
+            }.to_json,
+            "Content-Type" => "application/json"
+          )
+        end
       end
       game.update(current_player: player)
       broadcast_games "game_channel", "updateGames"
