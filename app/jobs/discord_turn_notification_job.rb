@@ -5,6 +5,7 @@ class DiscordTurnNotificationJob < ApplicationJob
     player = User.find(player_id)
     game = Game.find(game_id)
     if game.current_player == player
+      puts "Sending Discord notification to #{player.name}"
       uri = URI(ENV["DISCORD_WEBHOOK_URL"])
       Net::HTTP.post(
         uri,

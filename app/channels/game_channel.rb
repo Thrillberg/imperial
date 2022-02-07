@@ -59,11 +59,12 @@ class GameChannel < ApplicationCable::Channel
         should_send_turn_notification = next_player&.turn_notifications_enabled
         if should_send_turn_notification
           TurnNotificationJob.set(wait: 1.hour)
-            .perform_later(new_player.id, game.id)
+            .perform_later(next_player.id, game.id)
         end
         # Send Discord notification
         current_player_discord_id = next_player&.discord_id
-        if !current_player_discord_id.blank? && ENV["RAILS_ENV"] == "production"
+        if current_player_discord_id.present? && ENV["RAILS_ENV"] == "production"
+          puts "Preparing to send Discord notification"
           DiscordTurnNotificationJob.set(wait: 5.minutes)
             .perform_later(current_player_discord_id, game.id, game.name)
         end
