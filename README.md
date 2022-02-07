@@ -38,7 +38,7 @@ npm install
 ```
 5. In one terminal window, run webpack:
 ```
-bin/webpack --watch
+bin/webpack-dev-server
 ```
 6. Keep webpack running and in a separate terminal window, run the Rails server:
 ```
