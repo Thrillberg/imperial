@@ -72,7 +72,12 @@ export default {
     apiClient.onUpdateGameLog(({ gameId, log, logTimestamps, game }) => {
       if (gameId === this.$route.params.id) {
         this.gameData = translateToGameData(game);
-        this.$refs.game.updateGameLog(log, logTimestamps, this.gameData.baseGame);
+        this.$refs.game.updateGameLog(
+          log,
+          logTimestamps,
+          this.gameData.baseGame,
+          this.gameData.currentPlayerName,
+        );
       }
     });
     if (this.$cookies.get("user_id")) {
