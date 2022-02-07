@@ -6,6 +6,7 @@
         v-on:signOut="signOut"
         v-on:signedIn="signIn"
         v-on:identified="identify"
+        v-on:anonymity_confirmed="anonymityConfirmed"
       />
       <router-view
         :profile="profile"
@@ -16,7 +17,6 @@
         :gameData="gameData"
         v-on:registered="register"
         v-on:signedIn="signIn"
-        v-on:anonymity_confirmed="anonymityConfirmed"
         v-on:openGame="openGame"
         v-on:receiveGameData="receiveGameData"
         ref="game"
