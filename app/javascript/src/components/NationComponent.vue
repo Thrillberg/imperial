@@ -63,6 +63,7 @@ export default {
       return stringify(nation);
     },
     truncate(string) {
+      string = string || "";
       if (string.length > 10) {
         return string.slice(0, 10) + "...";
       }
