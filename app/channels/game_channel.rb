@@ -64,19 +64,8 @@ class GameChannel < ApplicationCable::Channel
         # Send Discord notification
         current_player_discord_id = next_player&.discord_id
         if !current_player_discord_id.blank? && ENV["RAILS_ENV"] == "production"
-          uri = URI(ENV["DISCORD_WEBHOOK_URL"])
-          Net::HTTP.post(
-            uri,
-            {
-              content: "<@#{current_player_discord_id}> it is your turn!",
-              allowed_mentions: {parse: ["users"]},
-              embeds: [
-                title: game.name,
-                url: "https://www.playimperial.club/game/#{game.id}"
-              ]
-            }.to_json,
-            "Content-Type" => "application/json"
-          )
+          DiscordTurnNotificationJob.set(wait: 5.minutes)
+            .perform_later(current_player_discord_id, game.id, game.name)
         end
       end
 
