@@ -426,7 +426,7 @@ export default {
         return { id: player }
       });
     },
-    updateGameLog(log, logTimestamps, baseGame) {
+    updateGameLog(log, logTimestamps, baseGame, oldPlayerName) {
       this.logTimestamps = logTimestamps;
       this.poppedTurns = [];
       if (!baseGame) {
@@ -449,6 +449,12 @@ export default {
         this.controllingPlayerName = this.game.currentPlayerName;
         this.updateFavicon();
         this.audioNotification();
+      }
+      if (
+        oldPlayerName !== this.game.currentPlayerName &&
+        oldPlayerName === this.profile.username
+      ) {
+        apiClient.notifyNextPlayer(this.$route.params.id, this.game.currentPlayerName);
       }
       apiClient.updateCurrentPlayerName(this.$route.params.id, this.game.currentPlayerName);
       if (this.game.winner) {

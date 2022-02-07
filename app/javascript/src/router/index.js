@@ -15,29 +15,27 @@ class APIClient {
     const ws = ActionCable.createConsumer("/ws");
     ws.subscriptions.create("GameChannel", {
       connected: () => {
-        this.messageQueue.forEach(data =>
-          this.send(data, "GameChannel")
-        );
+        this.messageQueue.forEach((data) => this.send(data, "GameChannel"));
         this.messageQueue = [];
       },
-      received: envelope => {
+      received: (envelope) => {
         if (this.handlers[envelope.kind]) {
           this.handlers[envelope.kind](envelope.data);
         } else {
           console.error(envelope);
           throw new Error(`unhandled kind: ${envelope.kind}`);
         }
-      }
+      },
     });
     ws.subscriptions.create("AppearanceChannel", {
-      received: envelope => {
+      received: (envelope) => {
         if (this.handlers[envelope.kind]) {
           this.handlers[envelope.kind](envelope.data);
         } else {
           console.error(envelope);
           throw new Error(`unhandled kind: ${envelope.kind}`);
         }
-      }
+      },
     });
     return ws;
   }
@@ -56,7 +54,7 @@ class APIClient {
       const sendableData = {
         command: "message",
         identifier: JSON.stringify({ channel }),
-        data: JSON.stringify(data)
+        data: JSON.stringify(data),
       };
       this.ws.send(sendableData);
     } else {
@@ -100,25 +98,22 @@ class APIClient {
     return this.send(
       {
         kind: "joinGame",
-        data: { userName, userId, gameId }
+        data: { userName, userId, gameId },
       },
       "GameChannel"
     );
   }
 
   openGame(id, base_game, variant) {
-    return fetch(
-      "/games",
-      {
-        method: "POST",
-        body: JSON.stringify({ id, base_game, variant }),
-        headers: { "Content-Type": "application/json" }
-      }
-    )
-      .then(response => response.json())
-      .then(game => {
+    return fetch("/games", {
+      method: "POST",
+      body: JSON.stringify({ id, base_game, variant }),
+      headers: { "Content-Type": "application/json" },
+    })
+      .then((response) => response.json())
+      .then((game) => {
         this.send({ kind: "openGame" }, "GameChannel");
-        return game
+        return game;
       });
   }
 
@@ -126,7 +121,7 @@ class APIClient {
     return this.send(
       {
         kind: "getGameLog",
-        data: { gameId }
+        data: { gameId },
       },
       "GameChannel"
     );
@@ -136,7 +131,7 @@ class APIClient {
     return this.send(
       {
         kind: "updateUser",
-        data: { username, oldUsername }
+        data: { username, oldUsername },
       },
       "AppearanceChannel"
     );
@@ -146,7 +141,7 @@ class APIClient {
     return this.send(
       {
         kind: "updateGames",
-        data: {}
+        data: {},
       },
       "GameChannel"
     );
@@ -156,7 +151,7 @@ class APIClient {
     return this.send(
       {
         kind: "tick",
-        data: { gameId, action: JSON.stringify(action) }
+        data: { gameId, action: JSON.stringify(action) },
       },
       "GameChannel"
     );
@@ -166,7 +161,17 @@ class APIClient {
     return this.send(
       {
         kind: "updateCurrentPlayerName",
-        data: { gameId, currentPlayerName }
+        data: { gameId, currentPlayerName },
+      },
+      "GameChannel"
+    );
+  }
+
+  notifyNextPlayer(gameId, nextPlayerName) {
+    return this.send(
+      {
+        kind: "notifyNextPlayer",
+        data: { gameId, nextPlayerName },
       },
       "GameChannel"
     );
@@ -176,7 +181,7 @@ class APIClient {
     return this.send(
       {
         kind: "updateWinnerName",
-        data: { gameId, winnerName, scores }
+        data: { gameId, winnerName, scores },
       },
       "GameChannel"
     );
@@ -186,7 +191,7 @@ class APIClient {
     return this.send(
       {
         kind: "cancelGame",
-        data: { gameId }
+        data: { gameId },
       },
       "GameChannel"
     );
@@ -196,7 +201,7 @@ class APIClient {
     return this.send(
       {
         kind: "bootPlayer",
-        data: { playerName, gameId }
+        data: { playerName, gameId },
       },
       "GameChannel"
     );
@@ -206,7 +211,7 @@ class APIClient {
     return this.send(
       {
         kind: "userObservingGame",
-        data: { playerName, gameId }
+        data: { playerName, gameId },
       },
       "GameChannel"
     );
@@ -216,7 +221,7 @@ class APIClient {
     return this.send(
       {
         kind: "userStoppedObservingGame",
-        data: { playerName, gameId }
+        data: { playerName, gameId },
       },
       "GameChannel"
     );
@@ -231,73 +236,73 @@ const routes = [
   {
     path: "/",
     name: "Home",
-    component: Home
+    component: Home,
   },
   {
     path: "/register",
     name: "Register",
-    component: () => import("../views/Register.vue")
+    component: () => import("../views/Register.vue"),
   },
   {
     path: "/sign_in",
     name: "Sign In",
-    component: () => import("../views/SignIn.vue")
+    component: () => import("../views/SignIn.vue"),
   },
   {
     path: "/about",
     name: "About",
-    component: () => import("../views/About.vue")
+    component: () => import("../views/About.vue"),
   },
   {
     path: "/rules",
     name: "How to play",
-    component: () => import("../views/Rules.vue")
+    component: () => import("../views/Rules.vue"),
   },
   {
     path: "/game/:id",
     name: "Game",
-    component: () => import("../views/Game.vue")
+    component: () => import("../views/Game.vue"),
   },
   {
     path: "/games",
     name: "Games",
-    component: () => import("../views/Games.vue")
+    component: () => import("../views/Games.vue"),
   },
   {
     path: "/finished_games",
     name: "Finished Games",
-    component: () => import("../views/FinishedGames.vue")
+    component: () => import("../views/FinishedGames.vue"),
   },
   {
     path: "/users/:id",
     name: "User",
-    component: () => import("../views/User.vue")
+    component: () => import("../views/User.vue"),
   },
   {
     path: "/games/new",
     name: "NewGame",
-    component: () => import("../views/NewGame.vue")
+    component: () => import("../views/NewGame.vue"),
   },
   {
     path: "/cloned_games",
     name: "ClonedGames",
-    component: () => import("../views/ClonedGames.vue")
+    component: () => import("../views/ClonedGames.vue"),
   },
   {
     path: "/forgot_password",
     name: "ForgotPassword",
-    component: () => import("../views/ForgotPassword.vue")
+    component: () => import("../views/ForgotPassword.vue"),
   },
   {
     path: "/reset_password",
     name: "ResetPassword",
-    component: () => import("../views/ResetPassword.vue")
+    component: () => import("../views/ResetPassword.vue"),
   },
   {
     path: "/rankings",
     name: "Rankings",
-    component: () => import("../views/Rankings.vue")
-  }
+    component: () => import("../views/Rankings.vue"),
+  },
 ];
 
 const router = new VueRouter({
@@ -305,7 +310,7 @@ const router = new VueRouter({
   routes,
   scrollBehavior() {
     return { x: 0, y: 0 };
-  }
+  },
 });
 
 export default router;

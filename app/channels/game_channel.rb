@@ -45,17 +45,24 @@ class GameChannel < ApplicationCable::Channel
     when "updateCurrentPlayerName"
       game = game_from_data(data)
       current_player_name = data["data"]["currentPlayerName"]
-      player = game.users.find_by(name: current_player_name)
-      player_changed = game.current_player != player
-      should_send_turn_notification = player&.turn_notifications_enabled &&
-        player_changed &&
-        !game.winner
-      if should_send_turn_notification
-        TurnNotificationJob.set(wait: 1.hour)
-          .perform_later(player.id, game.id)
-      end
-      if player_changed && !game.winner
-        current_player_discord_id = player&.discord_id
+      new_player = game.users.find_by(name: current_player_name)
+      game.update(current_player: new_player)
+      broadcast_games "game_channel", "updateGames"
+
+    when "notifyNextPlayer"
+      game = game_from_data(data)
+      next_player_name = data["data"]["nextPlayerName"]
+      next_player = game.users.find_by(name: next_player_name)
+
+      if !game.winner
+        # Send email notification
+        should_send_turn_notification = next_player&.turn_notifications_enabled
+        if should_send_turn_notification
+          TurnNotificationJob.set(wait: 1.hour)
+            .perform_later(new_player.id, game.id)
+        end
+        # Send Discord notification
+        current_player_discord_id = next_player&.discord_id
         if !current_player_discord_id.blank? && ENV["RAILS_ENV"] == "production"
           uri = URI(ENV["DISCORD_WEBHOOK_URL"])
           Net::HTTP.post(
@@ -72,8 +79,6 @@ class GameChannel < ApplicationCable::Channel
           )
         end
       end
-      game.update(current_player: player)
-      broadcast_games "game_channel", "updateGames"
 
     when "updateWinnerName"
       game = game_from_data(data)
