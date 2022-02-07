@@ -1,22 +1,7 @@
 <template>
   <div class="container mx-auto">
     <div class="mt-10">
-      <div v-if="!profile.anonymity_confirmed_at && !profile.registered" class="flex flex-col items-center rounded p-20 mx-auto max-w-4xl bg-green-200">
-        <button
-          class="rounded bg-green-800 text-white cursor-pointer text-2xl block sm:w-1/2 hover:bg-green-900 p-3 m-3 sm:p-10 sm:m-10"
-          @click="setAnonymous"
-          v-if="profile.username"
-        >
-          Play as {{ profile.username }}
-        </button>
-        <button
-          class="rounded bg-green-800 text-white cursor-pointer text-2xl block sm:w-1/2 hover:bg-green-900 p-3 m-3 sm:p-10 sm:m-10"
-          @click="register"
-          >
-          Register an Account
-        </button>
-      </div>
-      <div v-else class="flex justify-around items-start">
+      <div class="flex justify-around items-start">
         <div class="sm:w-3/4" v-if="gamesFetched">
           <div class="bg-green-200 p-4 my-2 flex">
             <a href="http://discord.gg/VnxKwuQmg8">
@@ -26,7 +11,11 @@
               Please join us <b><a href="https://discord.gg/VnxKwuQmg8" class="underline">on Discord</a></b> if you want to find others to play a live or asynchronous game!
             </p>
           </div>
-          <YourGames :games="yourGames" :profile="profile"></YourGames>
+          <YourGames
+            v-if="profile.registered || profile.anonymity_confirmed_at"
+            :games="yourGames"
+            :profile="profile"
+          ></YourGames>
           <UnstartedGameList :games="unstartedGames" :profile="profile"></UnstartedGameList>
           <CurrentGames :games="currentGames"></CurrentGames>
           <CurrentSoloGames :games="currentSoloGames"></CurrentSoloGames>
@@ -104,25 +93,6 @@ export default {
       return this.games.filter(
         game => game.startedAt && !game.forceEndedAt && !game.winner && !game.clonedFromGame && game.players.length === 1
       )
-    }
-  },
-  methods: {
-    setAnonymous() {
-      fetch(
-        "/anonymity_confirmations",
-        {
-          method: "POST",
-          body: JSON.stringify({ id: this.$cookies.get("user_id") }),
-          headers: { "Content-Type": "application/json" }
-        }
-      )
-        .then((response) => response.json())
-        .then((data) => {
-          this.$emit("anonymity_confirmed", data.anonymity_confirmed_at)
-        })
-    },
-    register() {
-      this.$router.push("/register");
     }
   }
 };
