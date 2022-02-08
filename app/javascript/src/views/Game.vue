@@ -582,15 +582,17 @@ export default {
     back: function() {
       this.poppedTurns.push(this.game.log.pop());
       const log = this.game.log;
+      const board = this.game.board;
       this.$delete(this.game);
-      this.game = Imperial.fromLog(log);
+      this.game = Imperial.fromLog(log, board);
     },
     forward: function() {
       const nextTurn = this.poppedTurns.pop();
       this.game.log.push(nextTurn);
       const log = this.game.log;
+      const board = this.game.board;
       this.$delete(this.game);
-      this.game = Imperial.fromLog(log);
+      this.game = Imperial.fromLog(log, board);
     },
     updateFavicon() {
       if (this.currentPlayer.name === this.game.currentPlayerName) {
