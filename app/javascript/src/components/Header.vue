@@ -10,16 +10,16 @@
             Home
           </router-link>
           <router-link
-            :to="{ path: '/rules' }"
-            class="self-center underline px-1 sm:pr-8"
-          >
-            How to play
-          </router-link>
-          <router-link
             :to="{ path: '/about' }"
             class="self-center underline px-1 sm:pr-8"
           >
             About
+          </router-link>
+          <router-link
+            :to="{ path: '/rankings' }"
+            class="self-center underline px-1 sm:pr-8"
+          >
+            Rankings
           </router-link>
           <div v-for="(error, index) in errors" v-bind:key="index" class="text-red-700 px-1 sm:pr-8">
             <b>{{ error }}</b>
