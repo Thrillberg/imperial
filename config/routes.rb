@@ -20,7 +20,7 @@ Rails.application.routes.draw do
 
   namespace :api do
     resources :users, only: [:show, :create, :update]
-    resources :games, only: [:index, :show]
+    resources :ranked_games, only: [:index]
   end
 
   resources :profiles, only: [:show]
