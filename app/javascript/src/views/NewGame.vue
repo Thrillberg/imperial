@@ -31,6 +31,18 @@
         </div>
       </div>
       <div class="my-2">
+        <b>Do You Want a Discord Channel to Automatically be Created?</b>
+        (Optional)
+        <div>
+          <input type="radio" id="yes" :value="true" v-model="createDiscordChannel" />
+          <label for="yes">Yes</label>
+        </div>
+        <div>
+          <input type="radio" id="no" :value="false" v-model="createDiscordChannel" />
+          <label for="no">No</label>
+        </div>
+      </div>
+      <div class="my-2">
         <input
           type="submit"
           value="New Game"
@@ -49,6 +61,7 @@ export default {
   data() {
     return {
       baseGame: "imperial",
+      createDiscordChannel: false,
       variant: "standard"
     }
   },
@@ -58,7 +71,12 @@ export default {
   methods: {
     openGame(e) {
       e.preventDefault();
-      apiClient.openGame(this.$cookies.get("user_id"), this.baseGame, this.variant)
+      apiClient.openGame(
+        this.$cookies.get("user_id"),
+        this.baseGame,
+        this.variant,
+        this.createDiscordChannel,
+      )
         .then(game => {
           this.$emit("openGame", game);
           this.$router.push(`/game/${game.id}`);

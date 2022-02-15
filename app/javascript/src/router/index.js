@@ -104,10 +104,10 @@ class APIClient {
     );
   }
 
-  openGame(id, base_game, variant) {
+  openGame(id, base_game, variant, create_discord_channel) {
     return fetch("/games", {
       method: "POST",
-      body: JSON.stringify({ id, base_game, variant }),
+      body: JSON.stringify({ id, base_game, variant, create_discord_channel }),
       headers: { "Content-Type": "application/json" },
     })
       .then((response) => response.json())
