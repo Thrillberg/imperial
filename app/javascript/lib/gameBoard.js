@@ -1,20 +1,37 @@
+// Adapted from https://stackoverflow.com/questions/51319147/map-default-value
+class MapWithDefault extends Map {
+  get(key) {
+    if (!this.has(key)) {
+      this.set(key, new Set());
+    }
+
+    return super.get(key);
+  }
+}
+
 export default class GameBoard {
   constructor({ nodes, edges }) {
     this.graph = new Map();
-    this.byNation = new Map();
+    this.byNation = new MapWithDefault();
 
     this.setupGraph(nodes);
     this.setImmediateNeighbors(edges);
   }
 
   setupGraph(nodes) {
-    for (const { name: province, nation, isOcean, factoryType, egress } of nodes) {
+    for (const {
+      name: province,
+      nation,
+      isOcean,
+      factoryType,
+      egress,
+    } of nodes) {
       this.graph.set(province, {
         nation,
         neighbors: new Set(),
         isOcean,
         factoryType,
-        egress
+        egress,
       });
 
       if (!this.byNation.has(nation)) {
@@ -33,10 +50,20 @@ export default class GameBoard {
 
   neighborsFor(originData) {
     const allPaths = this.pathsFrom(originData, [originData.origin]);
-    return allPaths.map(path => path[path.length - 1])
+    return allPaths.map((path) => path[path.length - 1]);
   }
 
-  pathsFrom({ origin, nation, isFleet, friendlyFleets, occupiedHomeProvinces = [], hasMoved = false }, currentPath) {
+  pathsFrom(
+    {
+      origin,
+      nation,
+      isFleet,
+      friendlyFleets,
+      occupiedHomeProvinces = [],
+      hasMoved = false,
+    },
+    currentPath
+  ) {
     this.validate(origin);
     let paths = [currentPath];
 
@@ -49,33 +76,81 @@ export default class GameBoard {
       // Fleet maneuvering to the ocean
       if (isFleet && this.graph.get(province).isOcean) {
         paths.push(currentPath.concat([province]));
-      // Army maneuvering from its own unoccupied land to its own unoccupied land
-      } else if (!isFleet && !this.graph.get(province).isOcean && this.graph.get(origin).nation === nation && this.graph.get(province).nation === nation && !occupiedHomeProvinces.includes(province)) {
+        // Army maneuvering from its own unoccupied land to its own unoccupied land
+      } else if (
+        !isFleet &&
+        !this.graph.get(province).isOcean &&
+        this.graph.get(origin).nation === nation &&
+        this.graph.get(province).nation === nation &&
+        !occupiedHomeProvinces.includes(province)
+      ) {
         const newPaths = this.pathsFrom(
-          { origin: province, nation, isFleet, friendlyFleets, occupiedHomeProvinces, hasMoved },
+          {
+            origin: province,
+            nation,
+            isFleet,
+            friendlyFleets,
+            occupiedHomeProvinces,
+            hasMoved,
+          },
           currentPath.concat([province])
         );
         paths = paths.concat(newPaths);
-      // Army maneuvering from foreign land to its own unoccupied land
-      } else if (!isFleet && !this.graph.get(province).isOcean && this.graph.get(origin).nation !== nation && this.graph.get(province).nation === nation && !occupiedHomeProvinces.includes(province)) {
+        // Army maneuvering from foreign land to its own unoccupied land
+      } else if (
+        !isFleet &&
+        !this.graph.get(province).isOcean &&
+        this.graph.get(origin).nation !== nation &&
+        this.graph.get(province).nation === nation &&
+        !occupiedHomeProvinces.includes(province)
+      ) {
         const newPaths = this.pathsFrom(
-          { origin: province, nation, isFleet, friendlyFleets, occupiedHomeProvinces, hasMoved: true },
+          {
+            origin: province,
+            nation,
+            isFleet,
+            friendlyFleets,
+            occupiedHomeProvinces,
+            hasMoved: true,
+          },
           currentPath.concat([province])
         );
         paths = paths.concat(newPaths);
-      // Army maneuvering from its own unoccupied land to foreign land
-      } else if (!isFleet && !this.graph.get(province).isOcean && this.graph.get(origin).nation === nation && this.graph.get(province).nation !== nation && !hasMoved) {
+        // Army maneuvering from its own unoccupied land to foreign land
+      } else if (
+        !isFleet &&
+        !this.graph.get(province).isOcean &&
+        this.graph.get(origin).nation === nation &&
+        this.graph.get(province).nation !== nation &&
+        !hasMoved
+      ) {
         paths.push(currentPath.concat([province]));
-      // Army maneuvering to its own occupied land
-      } else if (!isFleet && !this.graph.get(province).isOcean && this.graph.get(province).nation === nation && occupiedHomeProvinces.includes(province) && !hasMoved) {
+        // Army maneuvering to its own occupied land
+      } else if (
+        !isFleet &&
+        !this.graph.get(province).isOcean &&
+        this.graph.get(province).nation === nation &&
+        occupiedHomeProvinces.includes(province) &&
+        !hasMoved
+      ) {
         paths.push(currentPath.concat([province]));
-      // Army maneuvering to foreign land
+        // Army maneuvering to foreign land
       } else if (!isFleet && !this.graph.get(province).isOcean && !hasMoved) {
         paths.push(currentPath.concat([province]));
-      // Army convoying over ocean
-      } else if (!isFleet && this.graph.get(province).isOcean && friendlyFleets.has(province)) {
+        // Army convoying over ocean
+      } else if (
+        !isFleet &&
+        this.graph.get(province).isOcean &&
+        friendlyFleets.has(province)
+      ) {
         const newPaths = this.pathsFrom(
-          { origin: province, nation, isFleet, friendlyFleets, occupiedHomeProvinces },
+          {
+            origin: province,
+            nation,
+            isFleet,
+            friendlyFleets,
+            occupiedHomeProvinces,
+          },
           currentPath.concat([province])
         );
         paths = paths.concat(newPaths);
@@ -91,12 +166,17 @@ export default class GameBoard {
     });
 
     // Units cannot begin and end in the same spot
-    paths = paths.filter(path => path.length > 1);
+    paths = paths.filter((path) => path.length > 1);
 
     // Fleets can only exit a home province into one particular egress
     paths = paths.filter((path) => {
-      const destinationIsNotCorrectEgress = path[path.length - 1] !== this.graph.get(origin).egress;
-      if (isFleet && this.graph.get(origin).nation && destinationIsNotCorrectEgress) {
+      const destinationIsNotCorrectEgress =
+        path[path.length - 1] !== this.graph.get(origin).egress;
+      if (
+        isFleet &&
+        this.graph.get(origin).nation &&
+        destinationIsNotCorrectEgress
+      ) {
         return false;
       }
       return true;
@@ -108,7 +188,7 @@ export default class GameBoard {
     if (!this.graph.has(origin))
       throw new Error(
         `province ${origin} not found. Available provinces are: ${[
-          ...this.graph.keys()
+          ...this.graph.keys(),
         ]}`
       );
   }
