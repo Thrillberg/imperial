@@ -581,18 +581,21 @@ export default {
     },
     back: function() {
       this.poppedTurns.push(this.game.log.pop());
+      while (this.game.log[this.game.log.length - 1].type !== "rondel") {
+        this.poppedTurns.push(this.game.log.pop());
+      }
       const log = this.game.log;
       const board = this.game.board;
-      this.$delete(this.game);
       this.game = Imperial.fromLog(log, board);
     },
     forward: function() {
-      const nextTurn = this.poppedTurns.pop();
-      this.game.log.push(nextTurn);
-      const log = this.game.log;
+      let newLog = this.game.log;
+      newLog.push(this.poppedTurns.pop());
+      while (this.poppedTurns[this.poppedTurns.length - 1]?.type === "maneuver") {
+        newLog.push(this.poppedTurns.pop());
+      }
       const board = this.game.board;
-      this.$delete(this.game);
-      this.game = Imperial.fromLog(log, board);
+      this.game = Imperial.fromLog(newLog, board);
     },
     updateFavicon() {
       if (this.currentPlayer.name === this.game.currentPlayerName) {
