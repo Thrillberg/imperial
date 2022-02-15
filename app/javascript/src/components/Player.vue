@@ -5,7 +5,10 @@
     </div>
     <div class="p-2 m-1 border border-gray-500" :class="player.name === current_player ? 'bg-green-300' : ''">
       <div class="flex justify-between">
-        <span>
+        <div v-if="!index" class="text-xs -mt-2 -ml-2 h-5 mr-0.5 p-0.5 bg-gray-600 text-white">
+          {{ turnIndex }}
+        </div>
+        <span class="mx-0.5">
           <span
             v-if="online_users.includes(player.name)"
             class="h-2 w-2 bg-blue-700 border-blue-700 border-2 rounded-full inline-block"
@@ -21,7 +24,7 @@
         <span>{{ player.cash }}m</span>
         <span>{{ player.rawScore + player.cash }} points</span>
       </div>
-      <div class="flex flex-wrap">
+      <div class="flex flex-wrap justify-center">
         <Bond
           v-for="bond in sortedBonds(player.bonds)"
           :bond="bond"
@@ -58,7 +61,8 @@ export default {
     name: String,
     purchasingBond: Boolean,
     tradedInBondNation: String,
-    tradedInValue: Number
+    tradedInValue: Number,
+    turnIndex: Number
   },
   methods: {
     canTradeIn(bond) {
