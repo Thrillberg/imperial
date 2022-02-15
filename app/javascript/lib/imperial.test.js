@@ -3,7 +3,7 @@ import GameBoard from "./gameBoard.js";
 import Imperial from "./imperial.js";
 import { Bond, Nation } from "./constants.js";
 
-const cloneUnits = units => {
+const cloneUnits = (units) => {
   const out = new Map();
   units.forEach((provinces, nation) => {
     out.set(nation, new Map());
@@ -14,16 +14,16 @@ const cloneUnits = units => {
   return out;
 };
 
-const initialize = game => {
+const initialize = (game) => {
   game.tick(
     Action.initialize({
       players: [
         { id: "player1", nation: Nation.AH },
-        { id: "player2", nation: Nation.IT }
+        { id: "player2", nation: Nation.IT },
       ],
       soloMode: false,
       variant: "standard",
-      baseGame: "imperial"
+      baseGame: "imperial",
     })
   );
 };
@@ -35,9 +35,9 @@ describe("imperial", () => {
         const board = new GameBoard({
           nodes: [
             { name: "a", nation: Nation.AH },
-            { name: "b", nation: Nation.AH }
+            { name: "b", nation: Nation.AH },
           ],
-          edges: []
+          edges: [],
         });
 
         const game = new Imperial(board);
@@ -57,7 +57,12 @@ describe("imperial", () => {
           Action.rondel({ nation: Nation.AH, cost: 0, slot: "investor" })
         );
         game.tick(
-          Action.bondPurchase({ player: "player1", cost: 4, nation: Nation.IT, tradeInValue: 0 })
+          Action.bondPurchase({
+            player: "player1",
+            cost: 4,
+            nation: Nation.IT,
+            tradeInValue: 0,
+          })
         );
 
         expect(game.players["player1"].bonds).toEqual(
@@ -73,8 +78,8 @@ describe("imperial", () => {
               "import",
               "production2",
               "maneuver2",
-              "taxation"
-            ].map(slot => Action.rondel({ nation: Nation.IT, cost: 0, slot }))
+              "taxation",
+            ].map((slot) => Action.rondel({ nation: Nation.IT, cost: 0, slot }))
           )
         );
       });
@@ -84,11 +89,21 @@ describe("imperial", () => {
         // Give player one bond to trade in
         game.players["player1"].bonds = new Set([Bond(Nation.AH, 1)]);
         game.availableActions = new Set([
-          Action.bondPurchase({ player: "player1", cost: 4, nation: Nation.AH, tradeInValue: 2 })
+          Action.bondPurchase({
+            player: "player1",
+            cost: 4,
+            nation: Nation.AH,
+            tradeInValue: 2,
+          }),
         ]);
 
         game.tick(
-          Action.bondPurchase({ player: "player1", cost: 4, nation: Nation.AH, tradeInValue: 2 })
+          Action.bondPurchase({
+            player: "player1",
+            cost: 4,
+            nation: Nation.AH,
+            tradeInValue: 2,
+          })
         );
 
         expect(game.players["player1"].bonds).toEqual(
@@ -100,15 +115,25 @@ describe("imperial", () => {
         const game = newGame();
         game.players["player1"].bonds = new Set([
           Bond(Nation.AH, 3),
-          Bond(Nation.AH, 5)
+          Bond(Nation.AH, 5),
         ]);
         game.players["player1"].cash = 12;
         game.availableActions = new Set([
-          Action.bondPurchase({ player: "player1", cost: 20, nation: Nation.AH, tradeInValue: 12 })
+          Action.bondPurchase({
+            player: "player1",
+            cost: 20,
+            nation: Nation.AH,
+            tradeInValue: 12,
+          }),
         ]);
 
         game.tick(
-          Action.bondPurchase({ player: "player1", cost: 20, nation: Nation.AH, tradeInValue: 12 })
+          Action.bondPurchase({
+            player: "player1",
+            cost: 20,
+            nation: Nation.AH,
+            tradeInValue: 12,
+          })
         );
 
         expect(game.players["player1"].bonds).toEqual(
@@ -124,9 +149,16 @@ describe("imperial", () => {
         // Nobody controls Italy
         game.nations.get(Nation.IT).controller = null;
 
-        game.tick(Action.rondel({nation: Nation.AH, cost: 0, slot: "investor"}));
         game.tick(
-          Action.bondPurchase({ player: "player2", cost: 4, nation: Nation.IT, tradeInValue: 0 })
+          Action.rondel({ nation: Nation.AH, cost: 0, slot: "investor" })
+        );
+        game.tick(
+          Action.bondPurchase({
+            player: "player2",
+            cost: 4,
+            nation: Nation.IT,
+            tradeInValue: 0,
+          })
         );
 
         expect(game.nations.get(Nation.IT).controller).toEqual("player2");
@@ -138,9 +170,9 @@ describe("imperial", () => {
         const board = new GameBoard({
           nodes: [
             { name: "a", nation: Nation.AH },
-            { name: "b", nation: Nation.AH }
+            { name: "b", nation: Nation.AH },
           ],
-          edges: []
+          edges: [],
         });
 
         const game = new Imperial(board);
@@ -155,9 +187,7 @@ describe("imperial", () => {
         game.tick(
           Action.rondel({ nation: Nation.AH, cost: 0, slot: "investor" })
         );
-        game.tick(
-          Action.skipBondPurchase({ player: "player1", nation: null })
-        );
+        game.tick(Action.skipBondPurchase({ player: "player1", nation: null }));
 
         expect(game.availableActions).toEqual(
           new Set(
@@ -169,8 +199,8 @@ describe("imperial", () => {
               "import",
               "production2",
               "maneuver2",
-              "taxation"
-            ].map(slot => Action.rondel({ nation: Nation.IT, cost: 0, slot }))
+              "taxation",
+            ].map((slot) => Action.rondel({ nation: Nation.IT, cost: 0, slot }))
           )
         );
       });
@@ -180,7 +210,7 @@ describe("imperial", () => {
       const newGame = () => {
         const board = new GameBoard({
           nodes: [{ name: "a" }],
-          edges: []
+          edges: [],
         });
 
         const game = new Imperial(board);
@@ -191,7 +221,7 @@ describe("imperial", () => {
       test("it is IT's turn to select a rondel slot", () => {
         const game = newGame();
         const expected = new Set();
-        ["investor", "import", "production2"].forEach(slot => {
+        ["investor", "import", "production2"].forEach((slot) => {
           expected.add(Action.rondel({ nation: Nation.IT, cost: 0, slot }));
         });
         expected.add(
@@ -221,7 +251,7 @@ describe("imperial", () => {
       const newGame = () => {
         const board = new GameBoard({
           nodes: [],
-          edges: []
+          edges: [],
         });
 
         const game = new Imperial(board);
@@ -235,11 +265,11 @@ describe("imperial", () => {
         game.nations.get(Nation.IT).powerPoints = 15;
         game.players["player1"].bonds = new Set([
           Bond(Nation.AH, 5),
-          Bond(Nation.IT, 2)
+          Bond(Nation.IT, 2),
         ]);
         game.players["player2"].bonds = new Set([
           Bond(Nation.AH, 2),
-          Bond(Nation.IT, 5)
+          Bond(Nation.IT, 5),
         ]);
         game.players["player1"].cash = 2;
         game.players["player2"].cash = 10;
@@ -259,11 +289,11 @@ describe("imperial", () => {
         game.nations.get(Nation.IT).powerPoints = 15;
         game.players["player2"].bonds = new Set([
           Bond(Nation.AH, 5),
-          Bond(Nation.IT, 2)
+          Bond(Nation.IT, 2),
         ]);
         game.players["player1"].bonds = new Set([
           Bond(Nation.AH, 2),
-          Bond(Nation.IT, 5)
+          Bond(Nation.IT, 5),
         ]);
         game.players["player2"].cash = 4;
         game.players["player1"].cash = 10;
@@ -275,7 +305,7 @@ describe("imperial", () => {
         // player2 has 35 points
         // player1 has AH bond 2 * 5 (powerPoints) + IT bond 5 * 3 (powerPoints) + 10 cash
         // player1 has 35 points
-        // Players points are equal but player1 controls more of the "winning" 
+        // Players points are equal but player1 controls more of the "winning"
         // country, so player2 wins the game
         expect(game.winner).toEqual("player2");
       });
@@ -285,7 +315,7 @@ describe("imperial", () => {
       const newGame = () => {
         const board = new GameBoard({
           nodes: [{ name: "a", nation: Nation.AH, factoryType: "armaments" }],
-          edges: []
+          edges: [],
         });
 
         const game = new Imperial(board);
@@ -311,8 +341,8 @@ describe("imperial", () => {
               "import",
               "production2",
               "maneuver2",
-              "taxation"
-            ].map(slot => Action.rondel({ nation: Nation.IT, cost: 0, slot }))
+              "taxation",
+            ].map((slot) => Action.rondel({ nation: Nation.IT, cost: 0, slot }))
           )
         );
         expect(game.buildingFactory).toEqual(false);
@@ -324,9 +354,9 @@ describe("imperial", () => {
         const board = new GameBoard({
           nodes: [
             { name: "a", nation: Nation.AH, factoryType: "shipyard" },
-            { name: "b", nation: Nation.AH }
+            { name: "b", nation: Nation.AH },
           ],
-          edges: []
+          edges: [],
         });
 
         const game = new Imperial(board);
@@ -339,7 +369,9 @@ describe("imperial", () => {
         const beforeUnits = cloneUnits(game.units);
         expect(game.nations.get(Nation.AH).treasury).toEqual(11);
 
-        game.rondel(Action.rondel({nation: Nation.AH, cost: 0, slot: "import"}));
+        game.rondel(
+          Action.rondel({ nation: Nation.AH, cost: 0, slot: "import" })
+        );
         game.tick(Action.import({ placements: [] }));
 
         expect(game.units).toEqual(beforeUnits);
@@ -354,8 +386,8 @@ describe("imperial", () => {
               "import",
               "production2",
               "maneuver2",
-              "taxation"
-            ].map(slot => Action.rondel({ nation: Nation.IT, cost: 0, slot }))
+              "taxation",
+            ].map((slot) => Action.rondel({ nation: Nation.IT, cost: 0, slot }))
           )
         );
         expect(game.importing).toEqual(false);
@@ -367,7 +399,9 @@ describe("imperial", () => {
         expected.get(Nation.AH).get("a").armies++;
         expect(game.nations.get(Nation.AH).treasury).toEqual(11);
 
-        game.rondel(Action.rondel({nation: Nation.AH, cost: 0, slot: "import"}));
+        game.rondel(
+          Action.rondel({ nation: Nation.AH, cost: 0, slot: "import" })
+        );
         game.tick(
           Action.import({ placements: [{ province: "a", type: "army" }] })
         );
@@ -385,13 +419,15 @@ describe("imperial", () => {
 
         expect(game.nations.get(Nation.AH).treasury).toEqual(11);
 
-        game.tick(Action.rondel({nation: Nation.AH, cost: 0, slot: "import"}));
+        game.tick(
+          Action.rondel({ nation: Nation.AH, cost: 0, slot: "import" })
+        );
         game.tick(
           Action.import({
             placements: [
               { province: "a", type: "army" },
-              { province: "a", type: "fleet" }
-            ]
+              { province: "a", type: "fleet" },
+            ],
           })
         );
 
@@ -408,14 +444,16 @@ describe("imperial", () => {
         expected.get(Nation.AH).get("a").fleets++;
         expect(game.nations.get(Nation.AH).treasury).toEqual(11);
 
-        game.rondel(Action.rondel({nation: Nation.AH, cost: 0, slot: "import"}));
+        game.rondel(
+          Action.rondel({ nation: Nation.AH, cost: 0, slot: "import" })
+        );
         game.tick(
           Action.import({
             placements: [
               { province: "a", type: "army" },
               { province: "b", type: "army" },
-              { province: "a", type: "fleet" }
-            ]
+              { province: "a", type: "fleet" },
+            ],
           })
         );
 
@@ -429,7 +467,7 @@ describe("imperial", () => {
       const newGame = () => {
         const board = new GameBoard({
           nodes: [],
-          edges: []
+          edges: [],
         });
 
         const game = new Imperial(board);
@@ -443,11 +481,11 @@ describe("imperial", () => {
           Action.initialize({
             players: [
               { id: "player1", nation: Nation.AH },
-              { id: "player2", nation: Nation.IT }
+              { id: "player2", nation: Nation.IT },
             ],
             soloMode: false,
             variant: "standard",
-            baseGame: "imperial"
+            baseGame: "imperial",
           })
         );
 
@@ -461,8 +499,8 @@ describe("imperial", () => {
               "import",
               "production2",
               "maneuver2",
-              "taxation"
-            ].map(slot => Action.rondel({ nation: Nation.AH, cost: 0, slot }))
+              "taxation",
+            ].map((slot) => Action.rondel({ nation: Nation.AH, cost: 0, slot }))
           )
         );
       });
@@ -480,7 +518,7 @@ describe("imperial", () => {
               { name: "e", nation: Nation.GE },
               { name: "f", nation: Nation.RU },
             ],
-            edges: []
+            edges: [],
           });
 
           const game = new Imperial(board);
@@ -504,17 +542,29 @@ describe("imperial", () => {
 
           game.players["player1"].cash = 2;
 
-          game.tick(Action.rondel({ slot: "import", cost: 0, nation: Nation.AH }));
+          game.tick(
+            Action.rondel({ slot: "import", cost: 0, nation: Nation.AH })
+          );
           game.tick(Action.import({ placements: [] }));
-          game.tick(Action.rondel({ slot: "import", cost: 0, nation: Nation.IT }));
+          game.tick(
+            Action.rondel({ slot: "import", cost: 0, nation: Nation.IT })
+          );
           game.tick(Action.import({ placements: [] }));
-          game.tick(Action.rondel({ slot: "import", cost: 0, nation: Nation.FR }));
+          game.tick(
+            Action.rondel({ slot: "import", cost: 0, nation: Nation.FR })
+          );
           game.tick(Action.import({ placements: [] }));
-          game.tick(Action.rondel({ slot: "import", cost: 0, nation: Nation.GB }));
+          game.tick(
+            Action.rondel({ slot: "import", cost: 0, nation: Nation.GB })
+          );
           game.tick(Action.import({ placements: [] }));
-          game.tick(Action.rondel({ slot: "import", cost: 0, nation: Nation.GE }));
+          game.tick(
+            Action.rondel({ slot: "import", cost: 0, nation: Nation.GE })
+          );
           game.tick(Action.import({ placements: [] }));
-          game.tick(Action.rondel({ slot: "import", cost: 0, nation: Nation.RU }));
+          game.tick(
+            Action.rondel({ slot: "import", cost: 0, nation: Nation.RU })
+          );
           game.tick(Action.import({ placements: [] }));
           game.tick(
             Action.rondel({ slot: "factory", cost: 2, nation: Nation.AH })
@@ -528,22 +578,38 @@ describe("imperial", () => {
 
           game.players["player1"].cash = 0;
 
-          game.tick(Action.rondel({ slot: "import", cost: 0, nation: Nation.AH }));
+          game.tick(
+            Action.rondel({ slot: "import", cost: 0, nation: Nation.AH })
+          );
           game.tick(Action.import({ placements: [] }));
-          game.tick(Action.rondel({ slot: "import", cost: 0, nation: Nation.IT }));
+          game.tick(
+            Action.rondel({ slot: "import", cost: 0, nation: Nation.IT })
+          );
           game.tick(Action.import({ placements: [] }));
-          game.tick(Action.rondel({ slot: "import", cost: 0, nation: Nation.FR }));
+          game.tick(
+            Action.rondel({ slot: "import", cost: 0, nation: Nation.FR })
+          );
           game.tick(Action.import({ placements: [] }));
-          game.tick(Action.rondel({ slot: "import", cost: 0, nation: Nation.GB }));
+          game.tick(
+            Action.rondel({ slot: "import", cost: 0, nation: Nation.GB })
+          );
           game.tick(Action.import({ placements: [] }));
-          game.tick(Action.rondel({ slot: "import", cost: 0, nation: Nation.GE }));
+          game.tick(
+            Action.rondel({ slot: "import", cost: 0, nation: Nation.GE })
+          );
           game.tick(Action.import({ placements: [] }));
-          game.tick(Action.rondel({ slot: "import", cost: 0, nation: Nation.RU }));
+          game.tick(
+            Action.rondel({ slot: "import", cost: 0, nation: Nation.RU })
+          );
           game.tick(Action.import({ placements: [] }));
 
           expect(game.availableActions).toEqual(
             new Set([
-              Action.rondel({ slot: "production2", cost: 0, nation: Nation.AH }),
+              Action.rondel({
+                slot: "production2",
+                cost: 0,
+                nation: Nation.AH,
+              }),
               Action.rondel({ slot: "maneuver2", cost: 0, nation: Nation.AH }),
               Action.rondel({ slot: "taxation", cost: 0, nation: Nation.AH }),
             ])
@@ -555,18 +621,34 @@ describe("imperial", () => {
 
           game.nations.get(Nation.AH).treasury = 0;
 
-          game.tick(Action.rondel({ slot: "maneuver2", cost: 0, nation: Nation.AH }));
+          game.tick(
+            Action.rondel({ slot: "maneuver2", cost: 0, nation: Nation.AH })
+          );
           game.tick(Action.endManeuver());
-          game.tick(Action.rondel({ slot: "taxation", cost: 0, nation: Nation.IT }));
-          game.tick(Action.rondel({ slot: "taxation", cost: 0, nation: Nation.FR }));
-          game.tick(Action.rondel({ slot: "taxation", cost: 0, nation: Nation.GB }));
-          game.tick(Action.rondel({ slot: "taxation", cost: 0, nation: Nation.GE }));
-          game.tick(Action.rondel({ slot: "taxation", cost: 0, nation: Nation.RU }));
+          game.tick(
+            Action.rondel({ slot: "taxation", cost: 0, nation: Nation.IT })
+          );
+          game.tick(
+            Action.rondel({ slot: "taxation", cost: 0, nation: Nation.FR })
+          );
+          game.tick(
+            Action.rondel({ slot: "taxation", cost: 0, nation: Nation.GB })
+          );
+          game.tick(
+            Action.rondel({ slot: "taxation", cost: 0, nation: Nation.GE })
+          );
+          game.tick(
+            Action.rondel({ slot: "taxation", cost: 0, nation: Nation.RU })
+          );
 
           expect(game.availableActions).toEqual(
             new Set([
               Action.rondel({ slot: "taxation", cost: 0, nation: Nation.AH }),
-              Action.rondel({ slot: "production1", cost: 0, nation: Nation.AH }),
+              Action.rondel({
+                slot: "production1",
+                cost: 0,
+                nation: Nation.AH,
+              }),
               Action.rondel({ slot: "maneuver1", cost: 2, nation: Nation.AH }),
             ])
           );
@@ -579,9 +661,9 @@ describe("imperial", () => {
             nodes: [
               { name: "a", nation: Nation.AH },
               { name: "b", nation: null },
-              { name: "c", nation: Nation.IT }
+              { name: "c", nation: Nation.IT },
             ],
-            edges: []
+            edges: [],
           });
 
           const game = new Imperial(board);
@@ -595,8 +677,8 @@ describe("imperial", () => {
             Action.import({
               placements: [
                 { province: "a", type: "army" },
-                { province: "a", type: "army" }
-              ]
+                { province: "a", type: "army" },
+              ],
             })
           );
           availableActions.add(
@@ -604,8 +686,8 @@ describe("imperial", () => {
               placements: [
                 { province: "a", type: "army" },
                 { province: "a", type: "army" },
-                { province: "a", type: "army" }
-              ]
+                { province: "a", type: "army" },
+              ],
             })
           );
 
@@ -623,14 +705,16 @@ describe("imperial", () => {
             nodes: [
               { name: "a", nation: Nation.AH },
               { name: "b", nation: null },
-              { name: "c", nation: Nation.IT }
+              { name: "c", nation: Nation.IT },
             ],
-            edges: []
+            edges: [],
           });
 
           const game = new Imperial(board);
           initialize(game);
-          game.units.get(Nation.AH).get("a").armies = game.unitLimits.get(Nation.AH).armies;
+          game.units.get(Nation.AH).get("a").armies = game.unitLimits.get(
+            Nation.AH
+          ).armies;
           const availableActions = new Set([Action.import({ placements: [] })]);
 
           game.tick(
@@ -647,14 +731,15 @@ describe("imperial", () => {
             nodes: [
               { name: "a", nation: Nation.AH },
               { name: "b", nation: null },
-              { name: "c", nation: Nation.IT }
+              { name: "c", nation: Nation.IT },
             ],
-            edges: []
+            edges: [],
           });
 
           const game = new Imperial(board);
           initialize(game);
-          game.units.get(Nation.AH).get("a").armies = game.unitLimits.get(Nation.AH).armies - 1;
+          game.units.get(Nation.AH).get("a").armies =
+            game.unitLimits.get(Nation.AH).armies - 1;
           const availableActions = new Set([Action.import({ placements: [] })]);
 
           availableActions.add(
@@ -675,21 +760,27 @@ describe("imperial", () => {
             nodes: [
               { name: "a", nation: Nation.AH },
               { name: "b", nation: null },
-              { name: "c", nation: Nation.IT }
+              { name: "c", nation: Nation.IT },
             ],
-            edges: []
+            edges: [],
           });
 
           const game = new Imperial(board);
           initialize(game);
-          game.units.get(Nation.AH).get("a").armies = game.unitLimits.get(Nation.AH).armies - 2;
+          game.units.get(Nation.AH).get("a").armies =
+            game.unitLimits.get(Nation.AH).armies - 2;
           const availableActions = new Set([Action.import({ placements: [] })]);
 
           availableActions.add(
             Action.import({ placements: [{ province: "a", type: "army" }] })
           );
           availableActions.add(
-            Action.import({ placements: [{ province: "a", type: "army" }, { province: "a", type: "army" }] })
+            Action.import({
+              placements: [
+                { province: "a", type: "army" },
+                { province: "a", type: "army" },
+              ],
+            })
           );
           game.tick(
             Action.rondel({ slot: "import", cost: 0, nation: Nation.AH })
@@ -705,24 +796,36 @@ describe("imperial", () => {
             nodes: [
               { name: "a", nation: Nation.AH },
               { name: "b", nation: null },
-              { name: "c", nation: Nation.IT }
+              { name: "c", nation: Nation.IT },
             ],
-            edges: []
+            edges: [],
           });
 
           const game = new Imperial(board);
           initialize(game);
-          game.units.get(Nation.AH).get("a").armies = game.unitLimits.get(Nation.AH).armies - 3;
+          game.units.get(Nation.AH).get("a").armies =
+            game.unitLimits.get(Nation.AH).armies - 3;
           const availableActions = new Set([Action.import({ placements: [] })]);
 
           availableActions.add(
             Action.import({ placements: [{ province: "a", type: "army" }] })
           );
           availableActions.add(
-            Action.import({ placements: [{ province: "a", type: "army" }, { province: "a", type: "army" }] })
+            Action.import({
+              placements: [
+                { province: "a", type: "army" },
+                { province: "a", type: "army" },
+              ],
+            })
           );
           availableActions.add(
-            Action.import({ placements: [{ province: "a", type: "army" }, { province: "a", type: "army" }, { province: "a", type: "army" }] })
+            Action.import({
+              placements: [
+                { province: "a", type: "army" },
+                { province: "a", type: "army" },
+                { province: "a", type: "army" },
+              ],
+            })
           );
           game.tick(
             Action.rondel({ slot: "import", cost: 0, nation: Nation.AH })
@@ -733,15 +836,14 @@ describe("imperial", () => {
           expect(game.importing).toEqual(true);
         });
 
-
         test("nation can import fleets in their coastal province", () => {
           const board = new GameBoard({
             nodes: [
               { name: "a", nation: Nation.AH, factoryType: "shipyard" },
               { name: "b", nation: null },
-              { name: "c", nation: Nation.IT }
+              { name: "c", nation: Nation.IT },
             ],
-            edges: []
+            edges: [],
           });
 
           const game = new Imperial(board);
@@ -758,50 +860,16 @@ describe("imperial", () => {
             Action.import({
               placements: [
                 { province: "a", type: "army" },
-                { province: "a", type: "army" }
-              ]
+                { province: "a", type: "army" },
+              ],
             })
           );
           availableActions.add(
             Action.import({
               placements: [
                 { province: "a", type: "fleet" },
-                { province: "a", type: "fleet" }
-              ]
-            })
-          );
-          availableActions.add(
-            Action.import({
-              placements: [
-                { province: "a", type: "army" },
-                { province: "a", type: "fleet" }
-              ]
-            })
-          );
-          availableActions.add(
-            Action.import({
-              placements: [
                 { province: "a", type: "fleet" },
-                { province: "a", type: "army" }
-              ]
-            })
-          );
-          availableActions.add(
-            Action.import({
-              placements: [
-                { province: "a", type: "army" },
-                { province: "a", type: "army" },
-                { province: "a", type: "army" }
-              ]
-            })
-          );
-          availableActions.add(
-            Action.import({
-              placements: [
-                { province: "a", type: "army" },
-                { province: "a", type: "army" },
-                { province: "a", type: "fleet" }
-              ]
+              ],
             })
           );
           availableActions.add(
@@ -809,35 +877,7 @@ describe("imperial", () => {
               placements: [
                 { province: "a", type: "army" },
                 { province: "a", type: "fleet" },
-                { province: "a", type: "fleet" }
-              ]
-            })
-          );
-          availableActions.add(
-            Action.import({
-              placements: [
-                { province: "a", type: "army" },
-                { province: "a", type: "fleet" },
-                { province: "a", type: "army" }
-              ]
-            })
-          );
-          availableActions.add(
-            Action.import({
-              placements: [
-                { province: "a", type: "fleet" },
-                { province: "a", type: "fleet" },
-                { province: "a", type: "fleet" }
-              ]
-            })
-          );
-          availableActions.add(
-            Action.import({
-              placements: [
-                { province: "a", type: "fleet" },
-                { province: "a", type: "fleet" },
-                { province: "a", type: "army" }
-              ]
+              ],
             })
           );
           availableActions.add(
@@ -845,8 +885,61 @@ describe("imperial", () => {
               placements: [
                 { province: "a", type: "fleet" },
                 { province: "a", type: "army" },
-                { province: "a", type: "army" }
-              ]
+              ],
+            })
+          );
+          availableActions.add(
+            Action.import({
+              placements: [
+                { province: "a", type: "army" },
+                { province: "a", type: "army" },
+                { province: "a", type: "army" },
+              ],
+            })
+          );
+          availableActions.add(
+            Action.import({
+              placements: [
+                { province: "a", type: "army" },
+                { province: "a", type: "army" },
+                { province: "a", type: "fleet" },
+              ],
+            })
+          );
+          availableActions.add(
+            Action.import({
+              placements: [
+                { province: "a", type: "army" },
+                { province: "a", type: "fleet" },
+                { province: "a", type: "fleet" },
+              ],
+            })
+          );
+          availableActions.add(
+            Action.import({
+              placements: [
+                { province: "a", type: "army" },
+                { province: "a", type: "fleet" },
+                { province: "a", type: "army" },
+              ],
+            })
+          );
+          availableActions.add(
+            Action.import({
+              placements: [
+                { province: "a", type: "fleet" },
+                { province: "a", type: "fleet" },
+                { province: "a", type: "fleet" },
+              ],
+            })
+          );
+          availableActions.add(
+            Action.import({
+              placements: [
+                { province: "a", type: "fleet" },
+                { province: "a", type: "fleet" },
+                { province: "a", type: "army" },
+              ],
             })
           );
           availableActions.add(
@@ -854,8 +947,17 @@ describe("imperial", () => {
               placements: [
                 { province: "a", type: "fleet" },
                 { province: "a", type: "army" },
-                { province: "a", type: "fleet" }
-              ]
+                { province: "a", type: "army" },
+              ],
+            })
+          );
+          availableActions.add(
+            Action.import({
+              placements: [
+                { province: "a", type: "fleet" },
+                { province: "a", type: "army" },
+                { province: "a", type: "fleet" },
+              ],
             })
           );
           game.tick(
@@ -867,20 +969,21 @@ describe("imperial", () => {
           expect(game.importing).toEqual(true);
         });
 
-
         test("importing when fleets are at the limit", () => {
           const board = new GameBoard({
             nodes: [
               { name: "a", nation: Nation.AH, factoryType: "shipyard" },
               { name: "b", nation: null },
-              { name: "c", nation: Nation.IT }
+              { name: "c", nation: Nation.IT },
             ],
-            edges: []
+            edges: [],
           });
 
           const game = new Imperial(board);
           initialize(game);
-          game.units.get(Nation.AH).get("a").fleets = game.unitLimits.get(Nation.AH).fleets;
+          game.units.get(Nation.AH).get("a").fleets = game.unitLimits.get(
+            Nation.AH
+          ).fleets;
           const availableActions = new Set([Action.import({ placements: [] })]);
 
           availableActions.add(
@@ -890,8 +993,8 @@ describe("imperial", () => {
             Action.import({
               placements: [
                 { province: "a", type: "army" },
-                { province: "a", type: "army" }
-              ]
+                { province: "a", type: "army" },
+              ],
             })
           );
           availableActions.add(
@@ -899,8 +1002,8 @@ describe("imperial", () => {
               placements: [
                 { province: "a", type: "army" },
                 { province: "a", type: "army" },
-                { province: "a", type: "army" }
-              ]
+                { province: "a", type: "army" },
+              ],
             })
           );
 
@@ -918,14 +1021,15 @@ describe("imperial", () => {
             nodes: [
               { name: "a", nation: Nation.AH, factoryType: "shipyard" },
               { name: "b", nation: null },
-              { name: "c", nation: Nation.IT }
+              { name: "c", nation: Nation.IT },
             ],
-            edges: []
+            edges: [],
           });
 
           const game = new Imperial(board);
           initialize(game);
-          game.units.get(Nation.AH).get("a").fleets = game.unitLimits.get(Nation.AH).fleets - 1;
+          game.units.get(Nation.AH).get("a").fleets =
+            game.unitLimits.get(Nation.AH).fleets - 1;
           const availableActions = new Set([Action.import({ placements: [] })]);
 
           availableActions.add(
@@ -938,42 +1042,8 @@ describe("imperial", () => {
             Action.import({
               placements: [
                 { province: "a", type: "army" },
-                { province: "a", type: "army" }
-              ]
-            })
-          );
-          availableActions.add(
-            Action.import({
-              placements: [
                 { province: "a", type: "army" },
-                { province: "a", type: "fleet" }
-              ]
-            })
-          );
-          availableActions.add(
-            Action.import({
-              placements: [
-                { province: "a", type: "fleet" },
-                { province: "a", type: "army" }
-              ]
-            })
-          );
-          availableActions.add(
-            Action.import({
-              placements: [
-                { province: "a", type: "army" },
-                { province: "a", type: "army" },
-                { province: "a", type: "army" }
-              ]
-            })
-          );
-          availableActions.add(
-            Action.import({
-              placements: [
-                { province: "a", type: "army" },
-                { province: "a", type: "army" },
-                { province: "a", type: "fleet" }
-              ]
+              ],
             })
           );
           availableActions.add(
@@ -981,8 +1051,7 @@ describe("imperial", () => {
               placements: [
                 { province: "a", type: "army" },
                 { province: "a", type: "fleet" },
-                { province: "a", type: "army" }
-              ]
+              ],
             })
           );
           availableActions.add(
@@ -990,8 +1059,43 @@ describe("imperial", () => {
               placements: [
                 { province: "a", type: "fleet" },
                 { province: "a", type: "army" },
-                { province: "a", type: "army" }
-              ]
+              ],
+            })
+          );
+          availableActions.add(
+            Action.import({
+              placements: [
+                { province: "a", type: "army" },
+                { province: "a", type: "army" },
+                { province: "a", type: "army" },
+              ],
+            })
+          );
+          availableActions.add(
+            Action.import({
+              placements: [
+                { province: "a", type: "army" },
+                { province: "a", type: "army" },
+                { province: "a", type: "fleet" },
+              ],
+            })
+          );
+          availableActions.add(
+            Action.import({
+              placements: [
+                { province: "a", type: "army" },
+                { province: "a", type: "fleet" },
+                { province: "a", type: "army" },
+              ],
+            })
+          );
+          availableActions.add(
+            Action.import({
+              placements: [
+                { province: "a", type: "fleet" },
+                { province: "a", type: "army" },
+                { province: "a", type: "army" },
+              ],
             })
           );
 
@@ -1009,14 +1113,15 @@ describe("imperial", () => {
             nodes: [
               { name: "a", nation: Nation.AH, factoryType: "shipyard" },
               { name: "b", nation: null },
-              { name: "c", nation: Nation.IT }
+              { name: "c", nation: Nation.IT },
             ],
-            edges: []
+            edges: [],
           });
 
           const game = new Imperial(board);
           initialize(game);
-          game.units.get(Nation.AH).get("a").fleets = game.unitLimits.get(Nation.AH).fleets - 2;
+          game.units.get(Nation.AH).get("a").fleets =
+            game.unitLimits.get(Nation.AH).fleets - 2;
           const availableActions = new Set([Action.import({ placements: [] })]);
 
           availableActions.add(
@@ -1029,68 +1134,8 @@ describe("imperial", () => {
             Action.import({
               placements: [
                 { province: "a", type: "army" },
-                { province: "a", type: "army" }
-              ]
-            })
-          );
-          availableActions.add(
-            Action.import({
-              placements: [
-                { province: "a", type: "fleet" },
-                { province: "a", type: "fleet" }
-              ]
-            })
-          );
-          availableActions.add(
-            Action.import({
-              placements: [
                 { province: "a", type: "army" },
-                { province: "a", type: "fleet" }
-              ]
-            })
-          );
-          availableActions.add(
-            Action.import({
-              placements: [
-                { province: "a", type: "fleet" },
-                { province: "a", type: "army" }
-              ]
-            })
-          );
-          availableActions.add(
-            Action.import({
-              placements: [
-                { province: "a", type: "army" },
-                { province: "a", type: "army" },
-                { province: "a", type: "army" }
-              ]
-            })
-          );
-          availableActions.add(
-            Action.import({
-              placements: [
-                { province: "a", type: "army" },
-                { province: "a", type: "army" },
-                { province: "a", type: "fleet" }
-              ]
-            })
-          );
-          availableActions.add(
-            Action.import({
-              placements: [
-                { province: "a", type: "army" },
-                { province: "a", type: "fleet" },
-                { province: "a", type: "fleet" }
-              ]
-            })
-          );
-          availableActions.add(
-            Action.import({
-              placements: [
-                { province: "a", type: "army" },
-                { province: "a", type: "fleet" },
-                { province: "a", type: "army" }
-              ]
+              ],
             })
           );
           availableActions.add(
@@ -1098,8 +1143,15 @@ describe("imperial", () => {
               placements: [
                 { province: "a", type: "fleet" },
                 { province: "a", type: "fleet" },
-                { province: "a", type: "army" }
-              ]
+              ],
+            })
+          );
+          availableActions.add(
+            Action.import({
+              placements: [
+                { province: "a", type: "army" },
+                { province: "a", type: "fleet" },
+              ],
             })
           );
           availableActions.add(
@@ -1107,8 +1159,52 @@ describe("imperial", () => {
               placements: [
                 { province: "a", type: "fleet" },
                 { province: "a", type: "army" },
-                { province: "a", type: "army" }
-              ]
+              ],
+            })
+          );
+          availableActions.add(
+            Action.import({
+              placements: [
+                { province: "a", type: "army" },
+                { province: "a", type: "army" },
+                { province: "a", type: "army" },
+              ],
+            })
+          );
+          availableActions.add(
+            Action.import({
+              placements: [
+                { province: "a", type: "army" },
+                { province: "a", type: "army" },
+                { province: "a", type: "fleet" },
+              ],
+            })
+          );
+          availableActions.add(
+            Action.import({
+              placements: [
+                { province: "a", type: "army" },
+                { province: "a", type: "fleet" },
+                { province: "a", type: "fleet" },
+              ],
+            })
+          );
+          availableActions.add(
+            Action.import({
+              placements: [
+                { province: "a", type: "army" },
+                { province: "a", type: "fleet" },
+                { province: "a", type: "army" },
+              ],
+            })
+          );
+          availableActions.add(
+            Action.import({
+              placements: [
+                { province: "a", type: "fleet" },
+                { province: "a", type: "fleet" },
+                { province: "a", type: "army" },
+              ],
             })
           );
           availableActions.add(
@@ -1116,8 +1212,17 @@ describe("imperial", () => {
               placements: [
                 { province: "a", type: "fleet" },
                 { province: "a", type: "army" },
-                { province: "a", type: "fleet" }
-              ]
+                { province: "a", type: "army" },
+              ],
+            })
+          );
+          availableActions.add(
+            Action.import({
+              placements: [
+                { province: "a", type: "fleet" },
+                { province: "a", type: "army" },
+                { province: "a", type: "fleet" },
+              ],
             })
           );
           game.tick(
@@ -1134,14 +1239,15 @@ describe("imperial", () => {
             nodes: [
               { name: "a", nation: Nation.AH, factoryType: "shipyard" },
               { name: "b", nation: null },
-              { name: "c", nation: Nation.IT }
+              { name: "c", nation: Nation.IT },
             ],
-            edges: []
+            edges: [],
           });
 
           const game = new Imperial(board);
           initialize(game);
-          game.units.get(Nation.AH).get("a").fleets = game.unitLimits.get(Nation.AH).fleets - 3;
+          game.units.get(Nation.AH).get("a").fleets =
+            game.unitLimits.get(Nation.AH).fleets - 3;
           const availableActions = new Set([Action.import({ placements: [] })]);
 
           availableActions.add(
@@ -1154,50 +1260,16 @@ describe("imperial", () => {
             Action.import({
               placements: [
                 { province: "a", type: "army" },
-                { province: "a", type: "army" }
-              ]
+                { province: "a", type: "army" },
+              ],
             })
           );
           availableActions.add(
             Action.import({
               placements: [
                 { province: "a", type: "fleet" },
-                { province: "a", type: "fleet" }
-              ]
-            })
-          );
-          availableActions.add(
-            Action.import({
-              placements: [
-                { province: "a", type: "army" },
-                { province: "a", type: "fleet" }
-              ]
-            })
-          );
-          availableActions.add(
-            Action.import({
-              placements: [
                 { province: "a", type: "fleet" },
-                { province: "a", type: "army" }
-              ]
-            })
-          );
-          availableActions.add(
-            Action.import({
-              placements: [
-                { province: "a", type: "army" },
-                { province: "a", type: "army" },
-                { province: "a", type: "army" }
-              ]
-            })
-          );
-          availableActions.add(
-            Action.import({
-              placements: [
-                { province: "a", type: "army" },
-                { province: "a", type: "army" },
-                { province: "a", type: "fleet" }
-              ]
+              ],
             })
           );
           availableActions.add(
@@ -1205,35 +1277,7 @@ describe("imperial", () => {
               placements: [
                 { province: "a", type: "army" },
                 { province: "a", type: "fleet" },
-                { province: "a", type: "fleet" }
-              ]
-            })
-          );
-          availableActions.add(
-            Action.import({
-              placements: [
-                { province: "a", type: "army" },
-                { province: "a", type: "fleet" },
-                { province: "a", type: "army" }
-              ]
-            })
-          );
-          availableActions.add(
-            Action.import({
-              placements: [
-                { province: "a", type: "fleet" },
-                { province: "a", type: "fleet" },
-                { province: "a", type: "fleet" }
-              ]
-            })
-          );
-          availableActions.add(
-            Action.import({
-              placements: [
-                { province: "a", type: "fleet" },
-                { province: "a", type: "fleet" },
-                { province: "a", type: "army" }
-              ]
+              ],
             })
           );
           availableActions.add(
@@ -1241,8 +1285,61 @@ describe("imperial", () => {
               placements: [
                 { province: "a", type: "fleet" },
                 { province: "a", type: "army" },
-                { province: "a", type: "army" }
-              ]
+              ],
+            })
+          );
+          availableActions.add(
+            Action.import({
+              placements: [
+                { province: "a", type: "army" },
+                { province: "a", type: "army" },
+                { province: "a", type: "army" },
+              ],
+            })
+          );
+          availableActions.add(
+            Action.import({
+              placements: [
+                { province: "a", type: "army" },
+                { province: "a", type: "army" },
+                { province: "a", type: "fleet" },
+              ],
+            })
+          );
+          availableActions.add(
+            Action.import({
+              placements: [
+                { province: "a", type: "army" },
+                { province: "a", type: "fleet" },
+                { province: "a", type: "fleet" },
+              ],
+            })
+          );
+          availableActions.add(
+            Action.import({
+              placements: [
+                { province: "a", type: "army" },
+                { province: "a", type: "fleet" },
+                { province: "a", type: "army" },
+              ],
+            })
+          );
+          availableActions.add(
+            Action.import({
+              placements: [
+                { province: "a", type: "fleet" },
+                { province: "a", type: "fleet" },
+                { province: "a", type: "fleet" },
+              ],
+            })
+          );
+          availableActions.add(
+            Action.import({
+              placements: [
+                { province: "a", type: "fleet" },
+                { province: "a", type: "fleet" },
+                { province: "a", type: "army" },
+              ],
             })
           );
           availableActions.add(
@@ -1250,8 +1347,17 @@ describe("imperial", () => {
               placements: [
                 { province: "a", type: "fleet" },
                 { province: "a", type: "army" },
-                { province: "a", type: "fleet" }
-              ]
+                { province: "a", type: "army" },
+              ],
+            })
+          );
+          availableActions.add(
+            Action.import({
+              placements: [
+                { province: "a", type: "fleet" },
+                { province: "a", type: "army" },
+                { province: "a", type: "fleet" },
+              ],
             })
           );
 
@@ -1269,15 +1375,19 @@ describe("imperial", () => {
             nodes: [
               { name: "a", nation: Nation.AH, factoryType: "shipyard" },
               { name: "b", nation: null },
-              { name: "c", nation: Nation.IT }
+              { name: "c", nation: Nation.IT },
             ],
-            edges: []
+            edges: [],
           });
 
           const game = new Imperial(board);
           initialize(game);
-          game.units.get(Nation.AH).get("a").armies = game.unitLimits.get(Nation.AH).armies;
-          game.units.get(Nation.AH).get("a").fleets = game.unitLimits.get(Nation.AH).fleets;
+          game.units.get(Nation.AH).get("a").armies = game.unitLimits.get(
+            Nation.AH
+          ).armies;
+          game.units.get(Nation.AH).get("a").fleets = game.unitLimits.get(
+            Nation.AH
+          ).fleets;
           const availableActions = new Set([Action.import({ placements: [] })]);
 
           game.tick(
@@ -1294,15 +1404,17 @@ describe("imperial", () => {
             nodes: [
               { name: "a", nation: Nation.AH, factoryType: "shipyard" },
               { name: "b", nation: null },
-              { name: "c", nation: Nation.IT }
+              { name: "c", nation: Nation.IT },
             ],
-            edges: []
+            edges: [],
           });
 
           const game = new Imperial(board);
           initialize(game);
-          game.units.get(Nation.AH).get("a").armies = game.unitLimits.get(Nation.AH).armies - 1;
-          game.units.get(Nation.AH).get("a").fleets = game.unitLimits.get(Nation.AH).fleets - 1;
+          game.units.get(Nation.AH).get("a").armies =
+            game.unitLimits.get(Nation.AH).armies - 1;
+          game.units.get(Nation.AH).get("a").fleets =
+            game.unitLimits.get(Nation.AH).fleets - 1;
           const availableActions = new Set([Action.import({ placements: [] })]);
 
           availableActions.add(
@@ -1315,16 +1427,16 @@ describe("imperial", () => {
             Action.import({
               placements: [
                 { province: "a", type: "army" },
-                { province: "a", type: "fleet" }
-              ]
+                { province: "a", type: "fleet" },
+              ],
             })
           );
           availableActions.add(
             Action.import({
               placements: [
                 { province: "a", type: "fleet" },
-                { province: "a", type: "army" }
-              ]
+                { province: "a", type: "army" },
+              ],
             })
           );
           game.tick(
@@ -1339,7 +1451,7 @@ describe("imperial", () => {
         test("nation can only afford one army", () => {
           const board = new GameBoard({
             nodes: [{ name: "a", nation: Nation.AH, factoryType: "shipyard" }],
-            edges: []
+            edges: [],
           });
 
           const game = new Imperial(board);
@@ -1366,7 +1478,7 @@ describe("imperial", () => {
         test("nation cannot import into an occupied province", () => {
           const board = new GameBoard({
             nodes: [{ name: "a", nation: Nation.AH }],
-            edges: []
+            edges: [],
           });
 
           const game = new Imperial(board);
@@ -1396,15 +1508,15 @@ describe("imperial", () => {
               { name: "d", nation: null },
               { name: "e", nation: Nation.AH },
               { name: "f", nation: Nation.AH },
-              { name: "g", nation: Nation.AH }
+              { name: "g", nation: Nation.AH },
             ],
             edges: [
               ["a", "b"],
               ["c", "d"],
               ["b", "c"],
               ["e", "f"],
-              ["f", "g"]
-            ]
+              ["f", "g"],
+            ],
           });
 
           const game = new Imperial(board);
@@ -1412,7 +1524,7 @@ describe("imperial", () => {
           return game;
         };
 
-        ["maneuver1", "maneuver2"].forEach(maneuver => {
+        ["maneuver1", "maneuver2"].forEach((maneuver) => {
           test("nation has no units", () => {
             const game = newGame();
 
@@ -1438,8 +1550,8 @@ describe("imperial", () => {
                 Action.endManeuver(),
                 Action.maneuver({
                   origin: "a",
-                  destination: "b"
-                })
+                  destination: "b",
+                }),
               ])
             );
           });
@@ -1458,12 +1570,12 @@ describe("imperial", () => {
                 Action.endManeuver(),
                 Action.maneuver({
                   origin: "a",
-                  destination: "b"
+                  destination: "b",
                 }),
                 Action.maneuver({
                   origin: "c",
-                  destination: "d"
-                })
+                  destination: "d",
+                }),
               ])
             );
           });
@@ -1482,7 +1594,7 @@ describe("imperial", () => {
                 Action.endManeuver(),
                 Action.maneuver({
                   origin: "e",
-                  destination: "f"
+                  destination: "f",
                 }),
               ])
             );
@@ -1494,7 +1606,7 @@ describe("imperial", () => {
         const newGame = () => {
           const board = new GameBoard({
             nodes: [{ name: "a", nation: Nation.AH }],
-            edges: []
+            edges: [],
           });
 
           const game = new Imperial(board);
@@ -1502,7 +1614,7 @@ describe("imperial", () => {
           return game;
         };
 
-        ["production1", "production2"].forEach(production => {
+        ["production1", "production2"].forEach((production) => {
           describe("units are produced", () => {
             test("a unit is produced in a province that has a factory", () => {
               const game = newGame();
@@ -1540,33 +1652,41 @@ describe("imperial", () => {
             test("no more armies are produced when that unit limit is reached", () => {
               const game = newGame();
               game.provinces.get("a").factory = "armaments";
-              game.units.get(Nation.AH).get("a").armies = game.unitLimits.get(Nation.AH).armies;
-              
+              game.units.get(Nation.AH).get("a").armies = game.unitLimits.get(
+                Nation.AH
+              ).armies;
+
               game.tick(
                 Action.rondel({ slot: production, cost: 0, nation: Nation.AH })
               );
 
               expect(game.units.get(Nation.AH).get("a").fleets).toEqual(0);
-              expect(game.units.get(Nation.AH).get("a").armies).toEqual(game.unitLimits.get(Nation.AH).armies);
+              expect(game.units.get(Nation.AH).get("a").armies).toEqual(
+                game.unitLimits.get(Nation.AH).armies
+              );
             });
 
             test("no more fleets are produced when that unit limit is reached", () => {
               const game = newGame();
               game.provinces.get("a").factory = "shipyard";
-              game.units.get(Nation.AH).get("a").fleets = game.unitLimits.get(Nation.AH).fleets;
+              game.units.get(Nation.AH).get("a").fleets = game.unitLimits.get(
+                Nation.AH
+              ).fleets;
 
               game.tick(
                 Action.rondel({ slot: production, cost: 0, nation: Nation.AH })
               );
               expect(game.units.get(Nation.AH).get("a").armies).toEqual(0);
-              expect(game.units.get(Nation.AH).get("a").fleets).toEqual(game.unitLimits.get(Nation.AH).fleets);
+              expect(game.units.get(Nation.AH).get("a").fleets).toEqual(
+                game.unitLimits.get(Nation.AH).fleets
+              );
             });
           });
 
           test("it is IT's turn to select a rondel slot", () => {
             const game = newGame();
             const expected = new Set();
-            ["factory", "production1", "maneuver1"].forEach(slot => {
+            ["factory", "production1", "maneuver1"].forEach((slot) => {
               expected.add(Action.rondel({ nation: Nation.IT, cost: 0, slot }));
             });
             expected.add(
@@ -1594,7 +1714,7 @@ describe("imperial", () => {
         const newGame = () => {
           const board = new GameBoard({
             nodes: [],
-            edges: []
+            edges: [],
           });
 
           const game = new Imperial(board);
@@ -1714,38 +1834,38 @@ describe("imperial", () => {
                   nation: Nation.AH,
                   player: "player2",
                   tradeInValue: 0,
-                  cost: 4
+                  cost: 4,
                 }),
                 Action.bondPurchase({
                   nation: Nation.IT,
                   player: "player2",
                   tradeInValue: 0,
-                  cost: 4
+                  cost: 4,
                 }),
                 Action.bondPurchase({
                   nation: Nation.FR,
                   player: "player2",
                   tradeInValue: 0,
-                  cost: 4
+                  cost: 4,
                 }),
                 Action.bondPurchase({
                   nation: Nation.GB,
                   player: "player2",
                   tradeInValue: 0,
-                  cost: 4
+                  cost: 4,
                 }),
                 Action.bondPurchase({
                   nation: Nation.GE,
                   player: "player2",
                   tradeInValue: 0,
-                  cost: 4
+                  cost: 4,
                 }),
                 Action.bondPurchase({
                   nation: Nation.RU,
                   player: "player2",
                   tradeInValue: 0,
-                  cost: 4
-                })
+                  cost: 4,
+                }),
               ])
             );
           });
@@ -1758,9 +1878,10 @@ describe("imperial", () => {
             game.availableBonds.delete(Bond(Nation.AH, 1));
             game.availableBonds.delete(Bond(Nation.AH, 3));
             game.availableBonds.add(Bond(Nation.AH, 4));
-            game.players["player2"].bonds = new Set(
-              [Bond(Nation.AH, 1), Bond(Nation.AH, 3)]
-            );
+            game.players["player2"].bonds = new Set([
+              Bond(Nation.AH, 1),
+              Bond(Nation.AH, 3),
+            ]);
             game.players["player2"].cash = 0;
 
             game.tick(
@@ -1775,87 +1896,87 @@ describe("imperial", () => {
                   nation: Nation.AH,
                   player: "player2",
                   tradeInValue: 0,
-                  cost: 4
+                  cost: 4,
                 }),
                 Action.bondPurchase({
                   nation: Nation.AH,
                   player: "player2",
                   tradeInValue: 2,
-                  cost: 4
+                  cost: 4,
                 }),
                 Action.bondPurchase({
                   nation: Nation.AH,
                   player: "player2",
                   tradeInValue: 6,
-                  cost: 12
+                  cost: 12,
                 }),
                 Action.bondPurchase({
                   nation: Nation.AH,
                   player: "player2",
                   tradeInValue: 6,
-                  cost: 9
+                  cost: 9,
                 }),
                 Action.bondPurchase({
                   nation: Nation.IT,
                   player: "player2",
                   tradeInValue: 0,
-                  cost: 4
+                  cost: 4,
                 }),
                 Action.bondPurchase({
                   nation: Nation.IT,
                   player: "player2",
                   tradeInValue: 0,
-                  cost: 6
+                  cost: 6,
                 }),
                 Action.bondPurchase({
                   nation: Nation.FR,
                   player: "player2",
                   tradeInValue: 0,
-                  cost: 4
+                  cost: 4,
                 }),
                 Action.bondPurchase({
                   nation: Nation.FR,
                   player: "player2",
                   tradeInValue: 0,
-                  cost: 6
+                  cost: 6,
                 }),
                 Action.bondPurchase({
                   nation: Nation.GB,
                   player: "player2",
                   tradeInValue: 0,
-                  cost: 4
+                  cost: 4,
                 }),
                 Action.bondPurchase({
                   nation: Nation.GB,
                   player: "player2",
                   tradeInValue: 0,
-                  cost: 6
+                  cost: 6,
                 }),
                 Action.bondPurchase({
                   nation: Nation.GE,
                   player: "player2",
                   tradeInValue: 0,
-                  cost: 4
+                  cost: 4,
                 }),
                 Action.bondPurchase({
                   nation: Nation.GE,
                   player: "player2",
                   tradeInValue: 0,
-                  cost: 6
+                  cost: 6,
                 }),
                 Action.bondPurchase({
                   nation: Nation.RU,
                   player: "player2",
                   tradeInValue: 0,
-                  cost: 4
+                  cost: 4,
                 }),
                 Action.bondPurchase({
                   nation: Nation.RU,
                   player: "player2",
                   tradeInValue: 0,
-                  cost: 6
+                  cost: 6,
                 }),
-                Action.skipBondPurchase({ player: "player2", nation: null })
+                Action.skipBondPurchase({ player: "player2", nation: null }),
               ])
             );
           });
@@ -1866,7 +1987,7 @@ describe("imperial", () => {
         const newGame = () => {
           const board = new GameBoard({
             nodes: [{ name: "a", nation: Nation.AH }],
-            edges: []
+            edges: [],
           });
 
           const game = new Imperial(board);
@@ -1875,18 +1996,18 @@ describe("imperial", () => {
               players: [
                 { id: "player1", nation: Nation.AH },
                 { id: "player2", nation: Nation.IT },
-                { id: "player3", nation: Nation.FR }
+                { id: "player3", nation: Nation.FR },
               ],
               soloMode: false,
               variant: "standard",
-              baseGame: "imperial"
+              baseGame: "imperial",
             })
           );
           return game;
         };
 
         ["maneuver1", "production1", "factory", "taxation"].forEach(
-          startingPosition => {
+          (startingPosition) => {
             describe("2. Investor is activated", () => {
               test("investor card holder gets 2m", () => {
                 const game = newGame();
@@ -1904,7 +2025,7 @@ describe("imperial", () => {
                   Action.rondel({
                     slot: "production2",
                     nation: Nation.AH,
-                    cost: 0
+                    cost: 0,
                   })
                 );
 
@@ -1926,49 +2047,52 @@ describe("imperial", () => {
                   Action.rondel({
                     slot: "production2",
                     nation: Nation.AH,
-                    cost: 0
+                    cost: 0,
                   })
                 );
 
                 expect(game.availableActions).toEqual(
                   new Set([
-                    Action.skipBondPurchase({ player: "player1", nation: null }),
+                    Action.skipBondPurchase({
+                      player: "player1",
+                      nation: null,
+                    }),
                     Action.bondPurchase({
                       nation: Nation.AH,
                       player: "player1",
                       tradeInValue: 0,
-                      cost: 4
+                      cost: 4,
                     }),
                     Action.bondPurchase({
                       nation: Nation.IT,
                       player: "player1",
                       tradeInValue: 0,
-                      cost: 4
+                      cost: 4,
                     }),
                     Action.bondPurchase({
                       nation: Nation.FR,
                       player: "player1",
                       tradeInValue: 0,
-                      cost: 4
+                      cost: 4,
                     }),
                     Action.bondPurchase({
                       nation: Nation.GB,
                       player: "player1",
                       tradeInValue: 0,
-                      cost: 4
+                      cost: 4,
                     }),
                     Action.bondPurchase({
                       nation: Nation.GE,
                       player: "player1",
                       tradeInValue: 0,
-                      cost: 4
+                      cost: 4,
                     }),
                     Action.bondPurchase({
                       nation: Nation.RU,
                       player: "player1",
                       tradeInValue: 0,
-                      cost: 4
-                    })
+                      cost: 4,
+                    }),
                   ])
                 );
               });
@@ -1988,7 +2112,7 @@ describe("imperial", () => {
                   Action.rondel({
                     slot: "production2",
                     nation: Nation.AH,
-                    cost: 0
+                    cost: 0,
                   })
                 );
 
@@ -1996,43 +2120,46 @@ describe("imperial", () => {
                 // from their AH, 2 bond to buy the AH, 3 bond
                 expect(game.availableActions).toEqual(
                   new Set([
-                    Action.skipBondPurchase({ player: "player2", nation: null }),
+                    Action.skipBondPurchase({
+                      player: "player2",
+                      nation: null,
+                    }),
                     Action.bondPurchase({
                       nation: Nation.AH,
                       player: "player2",
                       tradeInValue: 4,
-                      cost: 6
+                      cost: 6,
                     }),
                     Action.bondPurchase({
                       nation: Nation.IT,
                       player: "player2",
                       tradeInValue: 0,
-                      cost: 4
+                      cost: 4,
                     }),
                     Action.bondPurchase({
                       nation: Nation.FR,
                       player: "player2",
                       tradeInValue: 0,
-                      cost: 4
+                      cost: 4,
                     }),
                     Action.bondPurchase({
                       nation: Nation.GB,
                       player: "player2",
                       tradeInValue: 0,
-                      cost: 4
+                      cost: 4,
                     }),
                     Action.bondPurchase({
                       nation: Nation.GE,
                       player: "player2",
                       tradeInValue: 0,
-                      cost: 4
+                      cost: 4,
                     }),
                     Action.bondPurchase({
                       nation: Nation.RU,
                       player: "player2",
                       tradeInValue: 0,
-                      cost: 4
-                    })
+                      cost: 4,
+                    }),
                   ])
                 );
               });
@@ -2054,7 +2181,7 @@ describe("imperial", () => {
                 game.nations.get(Nation.GE).controller = "player1";
                 game.nations.get(Nation.RU).controller = "player1";
                 game.players["player2"].bonds = new Set();
-                game.swissBanks = ["player2"]
+                game.swissBanks = ["player2"];
                 // Set AH's rondel position to be something *before* investor
                 game.nations.get(Nation.AH).rondelPosition = startingPosition;
 
@@ -2063,22 +2190,24 @@ describe("imperial", () => {
                   Action.rondel({
                     slot: "production2",
                     nation: Nation.AH,
-                    cost: 0
+                    cost: 0,
                   })
                 );
-                game.tick(Action.skipForceInvestor({player: "player2"}));
+                game.tick(Action.skipForceInvestor({ player: "player2" }));
                 // InvestorCardHolder buys a bond first
                 game.tick(
                   Action.bondPurchase({
                     nation: Nation.AH,
                     player: "player1",
                     tradeInValue: 0,
-                    cost: 4
+                    cost: 4,
                   })
                 );
 
                 // For testing purposes, we delete the skip  bond purchase action
-                game.availableActions.delete(Action.skipBondPurchase({ player: "player2", nation: null }));
+                game.availableActions.delete(
+                  Action.skipBondPurchase({ player: "player2", nation: null })
+                );
                 game.availableActions.forEach((action) => {
                   expect(action.type).toEqual("bondPurchase");
                   expect(action.payload.player).toEqual("player2");
@@ -2106,17 +2235,17 @@ describe("imperial", () => {
                   Action.rondel({
                     slot: "production2",
                     nation: Nation.AH,
-                    cost: 0
+                    cost: 0,
                   })
                 );
-                game.tick(Action.skipForceInvestor({player: "player2"}));
+                game.tick(Action.skipForceInvestor({ player: "player2" }));
                 // InvestorCardHolder buys a bond first
                 game.tick(
                   Action.bondPurchase({
                     nation: Nation.AH,
                     player: "player2",
                     tradeInValue: 0,
-                    cost: 4
+                    cost: 4,
                   })
                 );
 
@@ -2146,7 +2275,7 @@ describe("imperial", () => {
                   Action.rondel({
                     slot: "production2",
                     nation: Nation.AH,
-                    cost: 0
+                    cost: 0,
                   })
                 );
                 // InvestorCardHolder buys a bond first
@@ -2155,7 +2284,7 @@ describe("imperial", () => {
                     nation: Nation.AH,
                     player: "player1",
                     tradeInValue: 0,
-                    cost: 4
+                    cost: 4,
                   })
                 );
 
@@ -2176,7 +2305,7 @@ describe("imperial", () => {
                 game.players["player3"].bonds = new Set();
                 game.players["player1"].cash = 30;
                 game.players["player3"].cash = 30;
-                game.swissBanks = ["player3", "player1"]
+                game.swissBanks = ["player3", "player1"];
                 // Set AH's rondel position to be something *before* investor
                 game.nations.get(Nation.AH).rondelPosition = startingPosition;
 
@@ -2185,7 +2314,7 @@ describe("imperial", () => {
                   Action.rondel({
                     slot: "production2",
                     nation: Nation.AH,
-                    cost: 0
+                    cost: 0,
                   })
                 );
                 game.tick(Action.skipForceInvestor({ player: "player3" }));
@@ -2196,12 +2325,14 @@ describe("imperial", () => {
                     nation: Nation.AH,
                     player: "player2",
                     tradeInValue: 0,
-                    cost: 4
+                    cost: 4,
                   })
                 );
 
                 // For testing purposes, we delete the skip  bond purchase action
-                game.availableActions.delete(Action.skipBondPurchase({ player: "player3", nation: null }));
+                game.availableActions.delete(
+                  Action.skipBondPurchase({ player: "player3", nation: null })
+                );
                 game.availableActions.forEach((action) => {
                   expect(action.type).toEqual("bondPurchase");
                   expect(action.payload.player).toEqual("player3");
@@ -2213,12 +2344,14 @@ describe("imperial", () => {
                     nation: Nation.IT,
                     player: "player3",
                     tradeInValue: 0,
-                    cost: 4
+                    cost: 4,
                   })
                 );
 
                 // For testing purposes, we delete the skip  bond purchase action
-                game.availableActions.delete(Action.skipBondPurchase({ player: "player1", nation: null }));
+                game.availableActions.delete(
+                  Action.skipBondPurchase({ player: "player1", nation: null })
+                );
                 game.availableActions.forEach((action) => {
                   expect(action.type).toEqual("bondPurchase");
                   expect(action.payload.player).toEqual("player1");
@@ -2230,7 +2363,7 @@ describe("imperial", () => {
                     nation: Nation.FR,
                     player: "player1",
                     tradeInValue: 0,
-                    cost: 4
+                    cost: 4,
                   })
                 );
 
@@ -2261,20 +2394,22 @@ describe("imperial", () => {
                   Action.rondel({
                     slot: "production2",
                     nation: Nation.AH,
-                    cost: 0
+                    cost: 0,
                   })
                 );
 
-                expect(game.availableActions).toEqual(new Set([
-                  Action.forceInvestor({ player: "player2" }),
-                  Action.skipForceInvestor({ player: "player2" }),
-                  Action.forceInvestor({ player: "player3" }),
-                  Action.skipForceInvestor({ player: "player3" })
-                ]))
+                expect(game.availableActions).toEqual(
+                  new Set([
+                    Action.forceInvestor({ player: "player2" }),
+                    Action.skipForceInvestor({ player: "player2" }),
+                    Action.forceInvestor({ player: "player3" }),
+                    Action.skipForceInvestor({ player: "player3" }),
+                  ])
+                );
 
                 game.tick(
                   Action.forceInvestor({
-                    player: "player2"
+                    player: "player2",
                   })
                 );
 
@@ -2282,132 +2417,137 @@ describe("imperial", () => {
                 expect(game.units.get(Nation.AH).get("a")).toEqual({
                   armies: 0,
                   fleets: 0,
-                  friendly: true
+                  friendly: true,
                 });
-                expect(game.nations.get(Nation.AH).rondelPosition).toEqual("investor");
+                expect(game.nations.get(Nation.AH).rondelPosition).toEqual(
+                  "investor"
+                );
                 expect(game.availableActions).toEqual(
                   new Set([
-                    Action.skipBondPurchase({ player: "player1", nation: null }),
-                    Action.bondPurchase({
-                      nation: Nation.AH,
+                    Action.skipBondPurchase({
                       player: "player1",
-                      tradeInValue: 0,
-                      cost: 4
+                      nation: null,
                     }),
                     Action.bondPurchase({
                       nation: Nation.AH,
                       player: "player1",
                       tradeInValue: 0,
-                      cost: 6
+                      cost: 4,
+                    }),
+                    Action.bondPurchase({
+                      nation: Nation.AH,
+                      player: "player1",
+                      tradeInValue: 0,
+                      cost: 6,
                     }),
                     Action.bondPurchase({
                       nation: Nation.AH,
                       player: "player1",
                       tradeInValue: 9,
-                      cost: 12
+                      cost: 12,
                     }),
                     Action.bondPurchase({
                       nation: Nation.AH,
                       player: "player1",
                       tradeInValue: 9,
-                      cost: 16
+                      cost: 16,
                     }),
                     Action.bondPurchase({
                       nation: Nation.IT,
                       player: "player1",
                       tradeInValue: 0,
-                      cost: 4
+                      cost: 4,
                     }),
                     Action.bondPurchase({
                       nation: Nation.IT,
                       player: "player1",
                       tradeInValue: 0,
-                      cost: 6
+                      cost: 6,
                     }),
                     Action.bondPurchase({
                       nation: Nation.FR,
                       player: "player1",
                       tradeInValue: 0,
-                      cost: 4
+                      cost: 4,
                     }),
                     Action.bondPurchase({
                       nation: Nation.FR,
                       player: "player1",
                       tradeInValue: 0,
-                      cost: 6
+                      cost: 6,
                     }),
                     Action.bondPurchase({
                       nation: Nation.GB,
                       player: "player1",
                       tradeInValue: 0,
-                      cost: 4
+                      cost: 4,
                     }),
                     Action.bondPurchase({
                       nation: Nation.GB,
                       player: "player1",
                       tradeInValue: 0,
-                      cost: 6
-                    }),
-                    Action.bondPurchase({
-                      nation: Nation.GB,
-                      player: "player1",
-                      tradeInValue: 9,
-                      cost: 12
+                      cost: 6,
                     }),
                     Action.bondPurchase({
                       nation: Nation.GB,
                       player: "player1",
                       tradeInValue: 9,
-                      cost: 16
+                      cost: 12,
+                    }),
+                    Action.bondPurchase({
+                      nation: Nation.GB,
+                      player: "player1",
+                      tradeInValue: 9,
+                      cost: 16,
                     }),
                     Action.bondPurchase({
                       nation: Nation.GE,
                       player: "player1",
                       tradeInValue: 0,
-                      cost: 4
+                      cost: 4,
                     }),
                     Action.bondPurchase({
                       nation: Nation.GE,
                       player: "player1",
                       tradeInValue: 2,
-                      cost: 4
+                      cost: 4,
                     }),
                     Action.bondPurchase({
                       nation: Nation.GE,
                       player: "player1",
                       tradeInValue: 0,
-                      cost: 6
+                      cost: 6,
                     }),
                     Action.bondPurchase({
                       nation: Nation.GE,
                       player: "player1",
                       tradeInValue: 2,
-                      cost: 6
+                      cost: 6,
                     }),
                     Action.bondPurchase({
                       nation: Nation.RU,
                       player: "player1",
                       tradeInValue: 0,
-                      cost: 4
+                      cost: 4,
                     }),
                     Action.bondPurchase({
                       nation: Nation.RU,
                       player: "player1",
                       tradeInValue: 2,
-                      cost: 4
+                      cost: 4,
                     }),
                     Action.bondPurchase({
                       nation: Nation.RU,
                       player: "player1",
                       tradeInValue: 0,
-                      cost: 6
+                      cost: 6,
                     }),
                     Action.bondPurchase({
                       nation: Nation.RU,
                       player: "player1",
                       tradeInValue: 2,
-                      cost: 6
-                    })
+                      cost: 6,
+                    }),
                   ])
                 );
               });
@@ -2434,85 +2574,88 @@ describe("imperial", () => {
                   Action.rondel({
                     slot: "production2",
                     nation: Nation.AH,
-                    cost: 0
+                    cost: 0,
                   })
                 );
 
                 expect(game.availableActions).toEqual(
                   new Set([
-                    Action.skipBondPurchase({ player: "player1", nation: null }),
+                    Action.skipBondPurchase({
+                      player: "player1",
+                      nation: null,
+                    }),
                     Action.bondPurchase({
                       nation: Nation.AH,
                       player: "player1",
                       tradeInValue: 0,
-                      cost: 4
+                      cost: 4,
                     }),
                     Action.bondPurchase({
                       nation: Nation.AH,
                       player: "player1",
                       tradeInValue: 9,
-                      cost: 12
+                      cost: 12,
                     }),
                     Action.bondPurchase({
                       nation: Nation.IT,
                       player: "player1",
                       tradeInValue: 0,
-                      cost: 4
+                      cost: 4,
                     }),
                     Action.bondPurchase({
                       nation: Nation.FR,
                       player: "player1",
                       tradeInValue: 0,
-                      cost: 4
+                      cost: 4,
                     }),
                     Action.bondPurchase({
                       nation: Nation.GB,
                       player: "player1",
                       tradeInValue: 0,
-                      cost: 4
+                      cost: 4,
                     }),
                     Action.bondPurchase({
                       nation: Nation.GB,
                       player: "player1",
                       tradeInValue: 9,
-                      cost: 12
+                      cost: 12,
                     }),
                     Action.bondPurchase({
                       nation: Nation.GE,
                       player: "player1",
                       tradeInValue: 0,
-                      cost: 4
+                      cost: 4,
                     }),
                     Action.bondPurchase({
                       nation: Nation.GE,
                       player: "player1",
                       tradeInValue: 2,
-                      cost: 4
+                      cost: 4,
                     }),
                     Action.bondPurchase({
                       nation: Nation.GE,
                       player: "player1",
                       tradeInValue: 2,
-                      cost: 6
+                      cost: 6,
                     }),
                     Action.bondPurchase({
                       nation: Nation.RU,
                       player: "player1",
                       tradeInValue: 0,
-                      cost: 4
+                      cost: 4,
                     }),
                     Action.bondPurchase({
                       nation: Nation.RU,
                       player: "player1",
                       tradeInValue: 2,
-                      cost: 4
+                      cost: 4,
                     }),
                     Action.bondPurchase({
                       nation: Nation.RU,
                       player: "player1",
                       tradeInValue: 2,
-                      cost: 6
-                    })
+                      cost: 6,
+                    }),
                   ])
                 );
               });
@@ -2540,9 +2683,9 @@ describe("imperial", () => {
               { name: "m", nation: null },
               { name: "n", nation: null },
               { name: "o", nation: null },
-              { name: "p", nation: null }
+              { name: "p", nation: null },
             ],
-            edges: []
+            edges: [],
           });
 
           const game = new Imperial(board);
@@ -2638,7 +2781,6 @@ describe("imperial", () => {
             // Arbitrarily give AH 5 treasury; we want this to increase by 20, not 21
             game.nations.get(Nation.AH).treasury = 5;
 
-
             game.tick(
               Action.rondel({ cost: 0, nation: Nation.AH, slot: "taxation" })
             );
@@ -2646,7 +2788,7 @@ describe("imperial", () => {
             expect(game.nations.get(Nation.AH).treasury).toEqual(25);
             expect(game.nations.get(Nation.AH).taxChartPosition).toEqual(15);
             expect(game.nations.get(Nation.AH).powerPoints).toEqual(10);
-            expect(game.players["player1"].cash).toEqual(12)
+            expect(game.players["player1"].cash).toEqual(12);
           });
 
           test("nation's taxChartPosition cannot fall below 5", () => {
@@ -2786,9 +2928,9 @@ describe("imperial", () => {
           const board = new GameBoard({
             nodes: [
               { name: "a", nation: Nation.AH },
-              { name: "b", nation: Nation.AH }
+              { name: "b", nation: Nation.AH },
             ],
-            edges: []
+            edges: [],
           });
 
           const game = new Imperial(board);
@@ -2807,7 +2949,7 @@ describe("imperial", () => {
             new Set([
               Action.buildFactory({ province: "a" }),
               Action.buildFactory({ province: "b" }),
-              Action.skipBuildFactory({ nation: Nation.AH, player: "player1" })
+              Action.skipBuildFactory({ nation: Nation.AH, player: "player1" }),
             ])
           );
           expect(game.buildingFactory).toEqual(true);
@@ -2824,7 +2966,7 @@ describe("imperial", () => {
           expect(game.availableActions).toEqual(
             new Set([
               Action.buildFactory({ province: "b" }),
-              Action.skipBuildFactory({ nation: Nation.AH, player: "player1" })
+              Action.skipBuildFactory({ nation: Nation.AH, player: "player1" }),
             ])
           );
           expect(game.buildingFactory).toEqual(true);
@@ -2841,7 +2983,7 @@ describe("imperial", () => {
           expect(game.availableActions).toEqual(
             new Set([
               Action.buildFactory({ province: "b" }),
-              Action.skipBuildFactory({ nation: Nation.AH, player: "player1" })
+              Action.skipBuildFactory({ nation: Nation.AH, player: "player1" }),
             ])
           );
           expect(game.buildingFactory).toEqual(true);
@@ -2860,6 +3002,7 @@ describe("imperial", () => {
             { name: "e", nation: null },
             { name: "f", nation: Nation.IT },
             { name: "g", nation: null },
+            { name: "h", nation: Nation.IT },
           ],
           //"g" - "a" - "e"
           //     /   \  /
@@ -2871,8 +3014,8 @@ describe("imperial", () => {
             ["a", "e"],
             ["c", "f"],
             ["d", "e"],
-            ["a", "g"]
-          ]
+            ["a", "g"],
+          ],
         });
 
         const game = new Imperial(board);
@@ -2905,8 +3048,10 @@ describe("imperial", () => {
                 "import",
                 "production2",
                 "maneuver2",
-                "taxation"
-              ].map(slot => Action.rondel({ nation: Nation.IT, cost: 0, slot }))
+                "taxation",
+              ].map((slot) =>
+                Action.rondel({ nation: Nation.IT, cost: 0, slot })
+              )
             )
           );
         });
@@ -2927,13 +3072,13 @@ describe("imperial", () => {
                 province: "b",
                 incumbent: Nation.IT,
                 challenger: Nation.AH,
-                targetType: "fleet"
+                targetType: "fleet",
               }),
               Action.coexist({
                 province: "b",
                 incumbent: Nation.IT,
-                challenger: Nation.AH
-              })
+                challenger: Nation.AH,
+              }),
             ])
           );
           expect(game.currentPlayerName).toEqual("player1");
@@ -2956,7 +3101,7 @@ describe("imperial", () => {
           expect(game.availableActions).toEqual(
             new Set([
               Action.endManeuver(),
-              Action.maneuver({ origin: "b", destination: "a" })
+              Action.maneuver({ origin: "b", destination: "a" }),
             ])
           );
         });
@@ -2985,8 +3130,10 @@ describe("imperial", () => {
                 "import",
                 "production2",
                 "maneuver2",
-                "taxation"
-              ].map(slot => Action.rondel({ nation: Nation.IT, cost: 0, slot }))
+                "taxation",
+              ].map((slot) =>
+                Action.rondel({ nation: Nation.IT, cost: 0, slot })
+              )
             )
           );
         });
@@ -3006,17 +3153,17 @@ describe("imperial", () => {
               Action.coexist({
                 province: "d",
                 incumbent: Nation.IT,
-                challenger: Nation.AH
+                challenger: Nation.AH,
               }),
               Action.fight({
                 province: "d",
                 incumbent: Nation.IT,
                 challenger: Nation.AH,
-                targetType: "army"
-              })
+                targetType: "army",
+              }),
             ])
           );
-          expect(game.currentPlayerName).toEqual("player1")
+          expect(game.currentPlayerName).toEqual("player1");
         });
 
         test("maneuver army to destination occupied by two others allows occupier to decide who to fight", () => {
@@ -3035,23 +3182,23 @@ describe("imperial", () => {
               Action.coexist({
                 province: "d",
                 incumbent: Nation.IT,
-                challenger: Nation.AH
+                challenger: Nation.AH,
               }),
               Action.fight({
                 province: "d",
                 incumbent: Nation.IT,
                 challenger: Nation.AH,
-                targetType: "army"
+                targetType: "army",
               }),
               Action.fight({
                 province: "d",
                 incumbent: Nation.FR,
                 challenger: Nation.AH,
-                targetType: "army"
-              })
+                targetType: "army",
+              }),
             ])
           );
-          expect(game.currentPlayerName).toEqual("player1")
+          expect(game.currentPlayerName).toEqual("player1");
         });
 
         test("maneuver army to home province of another nation allows challenger to decide whether to be friendly or not", () => {
@@ -3068,13 +3215,13 @@ describe("imperial", () => {
               Action.friendlyEntrance({
                 province: "f",
                 incumbent: Nation.IT,
-                challenger: Nation.AH
+                challenger: Nation.AH,
               }),
               Action.unfriendlyEntrance({
                 province: "f",
                 incumbent: Nation.IT,
-                challenger: Nation.AH
-              })
+                challenger: Nation.AH,
+              }),
             ])
           );
         });
@@ -3088,8 +3235,20 @@ describe("imperial", () => {
             Action.rondel({ slot: "maneuver1", nation: Nation.AH, cost: 0 })
           );
           game.tick(Action.maneuver({ origin: "d", destination: "f" }));
-          game.tick(Action.coexist({ province: "f", incumbent: Nation.IT, challenger: Nation.AH }));
-          game.tick(Action.coexist({ province: "f", incumbent: Nation.AH, challenger: Nation.IT }));
+          game.tick(
+            Action.coexist({
+              province: "f",
+              incumbent: Nation.IT,
+              challenger: Nation.AH,
+            })
+          );
+          game.tick(
+            Action.coexist({
+              province: "f",
+              incumbent: Nation.AH,
+              challenger: Nation.IT,
+            })
+          );
 
           expect(game.units.get(Nation.AH).get("f").friendly).toEqual(true);
         });
@@ -3113,7 +3272,7 @@ describe("imperial", () => {
               Action.endManeuver(),
               Action.maneuver({ origin: "d", destination: "c" }),
               Action.maneuver({ origin: "d", destination: "e" }),
-              Action.maneuver({ origin: "d", destination: "f" })
+              Action.maneuver({ origin: "d", destination: "f" }),
             ])
           );
         });
@@ -3135,7 +3294,7 @@ describe("imperial", () => {
               Action.endManeuver(),
               Action.maneuver({ origin: "c", destination: "d" }),
               Action.maneuver({ origin: "c", destination: "e" }),
-              Action.maneuver({ origin: "c", destination: "f" })
+              Action.maneuver({ origin: "c", destination: "f" }),
             ])
           );
         });
@@ -3157,7 +3316,7 @@ describe("imperial", () => {
               Action.endManeuver(),
               Action.maneuver({ origin: "c", destination: "d" }),
               Action.maneuver({ origin: "c", destination: "e" }),
-              Action.maneuver({ origin: "c", destination: "f" })
+              Action.maneuver({ origin: "c", destination: "f" }),
             ])
           );
         });
@@ -3183,8 +3342,10 @@ describe("imperial", () => {
                 "import",
                 "production2",
                 "maneuver2",
-                "taxation"
-              ].map(slot => Action.rondel({ nation: Nation.IT, cost: 0, slot }))
+                "taxation",
+              ].map((slot) =>
+                Action.rondel({ nation: Nation.IT, cost: 0, slot })
+              )
             )
           );
         });
@@ -3216,7 +3377,7 @@ describe("imperial", () => {
               Action.maneuver({ origin: "d", destination: "e" }),
               Action.maneuver({ origin: "d", destination: "c" }),
               Action.maneuver({ origin: "d", destination: "f" }),
-              Action.maneuver({ origin: "d", destination: "g" })
+              Action.maneuver({ origin: "d", destination: "g" }),
             ])
           );
         });
@@ -3237,7 +3398,7 @@ describe("imperial", () => {
               Action.maneuver({ origin: "b", destination: "a" }),
               Action.maneuver({ origin: "c", destination: "d" }),
               Action.maneuver({ origin: "c", destination: "e" }),
-              Action.maneuver({ origin: "c", destination: "f" })
+              Action.maneuver({ origin: "c", destination: "f" }),
             ])
           );
 
@@ -3260,7 +3421,7 @@ describe("imperial", () => {
               Action.endManeuver(),
               Action.maneuver({ origin: "c", destination: "d" }),
               Action.maneuver({ origin: "c", destination: "e" }),
-              Action.maneuver({ origin: "c", destination: "f" })
+              Action.maneuver({ origin: "c", destination: "f" }),
             ])
           );
         });
@@ -3270,12 +3431,13 @@ describe("imperial", () => {
         test("3 armies may destroy a foreign factory", () => {
           const game = newGame();
           game.provinces.get("f").factory = "armaments";
+          game.provinces.get("h").factory = "armaments";
           game.units.get(Nation.AH).get("f").armies++;
           game.units.get(Nation.AH).get("f").armies++;
           game.units.get(Nation.AH).get("c").armies++;
           const availableActions = new Set([
             Action.destroyFactory({ province: "f" }),
-            Action.skipDestroyFactory({ province: "f" })
+            Action.skipDestroyFactory({ province: "f" }),
           ]);
 
           game.tick(
@@ -3286,11 +3448,39 @@ describe("imperial", () => {
             Action.unfriendlyEntrance({
               challenger: Nation.AH,
               incumbent: Nation.IT,
-              province: "f"
+              province: "f",
             })
           );
 
           expect(game.availableActions).toEqual(availableActions);
+        });
+
+        test("an army cannot unfriendly enter a province with the last factory", () => {
+          const game = newGame();
+          game.provinces.get("f").factory = "armaments";
+          game.units.get(Nation.AH).get("c").armies++;
+
+          game.tick(
+            Action.rondel({ slot: "maneuver1", nation: Nation.AH, cost: 0 })
+          );
+          game.tick(Action.maneuver({ origin: "c", destination: "f" }));
+
+          expect(game.log[game.log.length - 1]).toEqual(
+            Action.friendlyEntrance({
+              challenger: Nation.AH,
+              incumbent: Nation.IT,
+              province: "f",
+            })
+          );
+          for (const action of game.availableActions) {
+            expect(action).not.toEqual(
+              Action.unfriendlyEntrance({
+                challenger: Nation.AH,
+                incumbent: Nation.IT,
+                province: "f",
+              })
+            );
+          }
         });
       });
 
@@ -3326,7 +3516,7 @@ describe("imperial", () => {
           // automatically end after its one maneuver
           game.units.get(Nation.AH).get("g").armies++;
           game.units.get(Nation.IT).get("f").armies++;
-          game.provinces.get("f").flag = Nation.AH
+          game.provinces.get("f").flag = Nation.AH;
 
           game.tick(
             Action.rondel({ slot: "maneuver1", nation: Nation.AH, cost: 0 })
@@ -3336,7 +3526,7 @@ describe("imperial", () => {
           // The turn isn't over yet so the flag should still be Austrian
           expect(game.provinces.get("f").flag).toEqual(Nation.AH);
 
-          game.tick(Action.endManeuver())
+          game.tick(Action.endManeuver());
 
           // The turn is over now and the flag should switch to Italy
           expect(game.provinces.get("f").flag).toEqual(Nation.IT);
@@ -3347,7 +3537,7 @@ describe("imperial", () => {
           game.units.get(Nation.AH).get("f").armies++;
           game.units.get(Nation.AH).get("c").armies++;
           game.units.get(Nation.IT).get("f").armies++;
-          game.provinces.get("f").flag = Nation.AH
+          game.provinces.get("f").flag = Nation.AH;
 
           game.tick(
             Action.rondel({ slot: "maneuver1", nation: Nation.AH, cost: 0 })
@@ -3364,7 +3554,7 @@ describe("imperial", () => {
           game.units.get(Nation.AH).get("f").armies++;
           game.units.get(Nation.IT).get("f").armies++;
           game.units.get(Nation.FR).get("f").armies++;
-          game.provinces.get("f").flag = Nation.AH
+          game.provinces.get("f").flag = Nation.AH;
 
           game.tick(
             Action.rondel({ slot: "maneuver1", nation: Nation.AH, cost: 0 })
@@ -3382,9 +3572,12 @@ describe("imperial", () => {
           nodes: [
             { name: "a", nation: null },
             { name: "b", nation: null, isOcean: true },
-            { name: "c", nation: null }
+            { name: "c", nation: null },
           ],
-          edges: [["a", "b"], ["a", "c"]]
+          edges: [
+            ["a", "b"],
+            ["a", "c"],
+          ],
         });
 
         const game = new Imperial(board);
@@ -3406,7 +3599,7 @@ describe("imperial", () => {
               province: "a",
               incumbent: Nation.AH,
               challenger: Nation.IT,
-              targetType: null
+              targetType: null,
             })
           );
 
@@ -3425,18 +3618,16 @@ describe("imperial", () => {
             Action.rondel({
               nation: Nation.AH,
               cost: 0,
-              slot: "maneuver1"
+              slot: "maneuver1",
             })
           );
-          game.tick(
-            Action.maneuver({ origin: "b", destination: "a" })
-          );
+          game.tick(Action.maneuver({ origin: "b", destination: "a" }));
           game.tick(
             Action.fight({
               province: "a",
               incumbent: Nation.IT,
               challenger: Nation.AH,
-              targetType: "army"
+              targetType: "army",
             })
           );
 
@@ -3456,18 +3647,16 @@ describe("imperial", () => {
             Action.rondel({
               nation: Nation.AH,
               cost: 0,
-              slot: "maneuver1"
+              slot: "maneuver1",
             })
           );
-          game.tick(
-            Action.maneuver({ origin: "b", destination: "a" })
-          );
+          game.tick(Action.maneuver({ origin: "b", destination: "a" }));
           game.tick(
             Action.fight({
               province: "a",
               incumbent: Nation.IT,
               challenger: Nation.AH,
-              targetType: "army"
+              targetType: "army",
             })
           );
 
@@ -3479,26 +3668,28 @@ describe("imperial", () => {
           game.units.get(Nation.AH).get("c").armies++;
           game.units.get(Nation.IT).get("a").armies++;
 
-          game.tick(Action.rondel({nation: Nation.AH, cost: 0, slot: "maneuver1"}));
-          game.tick(Action.maneuver({origin: "c", destination: "a"}));
+          game.tick(
+            Action.rondel({ nation: Nation.AH, cost: 0, slot: "maneuver1" })
+          );
+          game.tick(Action.maneuver({ origin: "c", destination: "a" }));
           game.tick(
             Action.fight({
               province: "a",
               incumbent: Nation.IT,
               challenger: Nation.AH,
-              targetType: "army"
+              targetType: "army",
             })
           );
 
           expect(game.units.get(Nation.AH).get("a")).toEqual({
             armies: 0,
             fleets: 0,
-            friendly: false
+            friendly: false,
           });
           expect(game.units.get(Nation.IT).get("a")).toEqual({
             armies: 0,
             fleets: 0,
-            friendly: false
+            friendly: false,
           });
         });
 
@@ -3507,26 +3698,28 @@ describe("imperial", () => {
           game.units.get(Nation.AH).get("a").fleets++;
           game.units.get(Nation.IT).get("b").fleets++;
 
-          game.tick(Action.rondel({nation: Nation.AH, cost: 0, slot: "maneuver1"}));
-          game.tick(Action.maneuver({origin: "a", destination: "b"}));
+          game.tick(
+            Action.rondel({ nation: Nation.AH, cost: 0, slot: "maneuver1" })
+          );
+          game.tick(Action.maneuver({ origin: "a", destination: "b" }));
           game.tick(
             Action.fight({
               province: "b",
               incumbent: Nation.IT,
               challenger: Nation.AH,
-              targetType: "fleet"
+              targetType: "fleet",
             })
           );
 
           expect(game.units.get(Nation.AH).get("b")).toEqual({
             armies: 0,
             fleets: 0,
-            friendly: false
+            friendly: false,
           });
           expect(game.units.get(Nation.IT).get("b")).toEqual({
             armies: 0,
             fleets: 0,
-            friendly: false
+            friendly: false,
           });
         });
       });
@@ -3539,14 +3732,16 @@ describe("imperial", () => {
           game.units.get(Nation.IT).get("a").armies++;
           game.provinces.get("a").flag = Nation.IT;
 
-          game.tick(Action.rondel({nation: Nation.AH, cost: 0, slot: "maneuver1"}));
-          game.tick(Action.maneuver({origin: "b", destination: "a"}));
+          game.tick(
+            Action.rondel({ nation: Nation.AH, cost: 0, slot: "maneuver1" })
+          );
+          game.tick(Action.maneuver({ origin: "b", destination: "a" }));
           game.tick(
             Action.fight({
               province: "a",
               incumbent: Nation.IT,
               challenger: Nation.AH,
-              targetType: "army"
+              targetType: "army",
             })
           );
 
@@ -3559,26 +3754,28 @@ describe("imperial", () => {
           game.units.get(Nation.IT).get("a").armies++;
           game.units.get(Nation.AH).get("b").armies++;
 
-          game.tick(Action.rondel({nation: Nation.AH, cost: 0, slot: "maneuver1"}));
-          game.tick(Action.maneuver({origin: "b", destination: "a"}));
+          game.tick(
+            Action.rondel({ nation: Nation.AH, cost: 0, slot: "maneuver1" })
+          );
+          game.tick(Action.maneuver({ origin: "b", destination: "a" }));
           game.tick(
             Action.fight({
               province: "a",
               incumbent: Nation.IT,
               challenger: Nation.AH,
-              targetType: "army"
+              targetType: "army",
             })
           );
 
           expect(game.units.get(Nation.IT).get("a")).toEqual({
             armies: 1,
             fleets: 0,
-            friendly: false
+            friendly: false,
           });
           expect(game.units.get(Nation.AH).get("a")).toEqual({
             armies: 0,
             fleets: 0,
-            friendly: false
+            friendly: false,
           });
         });
       });
@@ -3590,31 +3787,33 @@ describe("imperial", () => {
           game.units.get(Nation.IT).get("a").fleets++;
           game.units.get(Nation.AH).get("b").armies++;
 
-          game.tick(Action.rondel({nation: Nation.AH, cost: 0, slot: "maneuver1"}));
-          game.tick(Action.maneuver({origin: "b", destination: "a"}));
+          game.tick(
+            Action.rondel({ nation: Nation.AH, cost: 0, slot: "maneuver1" })
+          );
+          game.tick(Action.maneuver({ origin: "b", destination: "a" }));
           game.tick(
             Action.fight({
               province: "a",
               incumbent: Nation.IT,
               challenger: Nation.AH,
-              targetType: "fleet"
+              targetType: "fleet",
             })
           );
 
           expect(game.units.get(Nation.IT).get("a")).toEqual({
             armies: 1,
             fleets: 0,
-            friendly: false
+            friendly: false,
           });
           expect(game.units.get(Nation.AH).get("b")).toEqual({
             armies: 0,
             fleets: 0,
-            friendly: false
+            friendly: false,
           });
           expect(game.units.get(Nation.AH).get("a")).toEqual({
             armies: 0,
             fleets: 0,
-            friendly: false
+            friendly: false,
           });
         });
 
@@ -3624,31 +3823,33 @@ describe("imperial", () => {
           game.units.get(Nation.IT).get("a").fleets++;
           game.units.get(Nation.AH).get("b").armies++;
 
-          game.tick(Action.rondel({nation: Nation.AH, cost: 0, slot: "maneuver1"}));
-          game.tick(Action.maneuver({origin: "b", destination: "a"}));
+          game.tick(
+            Action.rondel({ nation: Nation.AH, cost: 0, slot: "maneuver1" })
+          );
+          game.tick(Action.maneuver({ origin: "b", destination: "a" }));
           game.tick(
             Action.fight({
               province: "a",
               incumbent: Nation.IT,
               challenger: Nation.AH,
-              targetType: "army"
+              targetType: "army",
             })
           );
 
           expect(game.units.get(Nation.IT).get("a")).toEqual({
             armies: 0,
             fleets: 1,
-            friendly: false
+            friendly: false,
           });
           expect(game.units.get(Nation.AH).get("b")).toEqual({
             armies: 0,
             fleets: 0,
-            friendly: false
+            friendly: false,
           });
           expect(game.units.get(Nation.AH).get("a")).toEqual({
             armies: 0,
             fleets: 0,
-            friendly: false
+            friendly: false,
           });
         });
       });
@@ -3668,7 +3869,7 @@ describe("imperial", () => {
               province: "a",
               incumbent: Nation.IT,
               challenger: Nation.AH,
-              targetType: "army"
+              targetType: "army",
             })
           );
 
@@ -3682,8 +3883,10 @@ describe("imperial", () => {
                 "import",
                 "production2",
                 "maneuver2",
-                "taxation"
-              ].map(slot => Action.rondel({ nation: Nation.IT, cost: 0, slot }))
+                "taxation",
+              ].map((slot) =>
+                Action.rondel({ nation: Nation.IT, cost: 0, slot })
+              )
             )
           );
         });
@@ -3703,14 +3906,14 @@ describe("imperial", () => {
               province: "a",
               incumbent: Nation.IT,
               challenger: Nation.AH,
-              targetType: "army"
+              targetType: "army",
             })
           );
 
           expect(game.availableActions).toEqual(
             new Set([
               Action.maneuver({ origin: "b", destination: "a" }),
-              Action.endManeuver()
+              Action.endManeuver(),
             ])
           );
         });
@@ -3722,9 +3925,9 @@ describe("imperial", () => {
         const board = new GameBoard({
           nodes: [
             { name: "a", nation: null },
-            { name: "b", nation: null }
+            { name: "b", nation: null },
           ],
-          edges: [["a", "b"]]
+          edges: [["a", "b"]],
         });
 
         const game = new Imperial(board);
@@ -3744,57 +3947,57 @@ describe("imperial", () => {
           Action.rondel({
             slot: "maneuver1",
             cost: 0,
-            nation: Nation.IT
-          })
+            nation: Nation.IT,
+          }),
         ]);
 
         game.tick(
           Action.rondel({
             slot: "maneuver1",
             cost: 0,
-            nation: Nation.IT
+            nation: Nation.IT,
           })
         );
         game.tick(
           Action.maneuver({
             destination: "a",
-            origin: "b"
+            origin: "b",
           })
         );
         game.tick(
           Action.coexist({
             province: "a",
             incumbent: Nation.AH,
-            challenger: Nation.IT
+            challenger: Nation.IT,
           })
         );
-        
+
         expect(game.availableActions).toEqual(
           new Set([
             Action.fight({
               province: "a",
               incumbent: Nation.IT,
               challenger: Nation.AH,
-              targetType: "army"
+              targetType: "army",
             }),
             Action.coexist({
               province: "a",
               incumbent: Nation.IT,
-              challenger: Nation.AH
-            })
+              challenger: Nation.AH,
+            }),
           ])
         );
-        expect(game.currentPlayerName).toEqual("player1")
+        expect(game.currentPlayerName).toEqual("player1");
 
         game.tick(
           Action.fight({
             province: "a",
             incumbent: Nation.IT,
             challenger: Nation.AH,
-            targetType: "army"
+            targetType: "army",
           })
         );
-        expect(game.currentPlayerName).toEqual("player2")
+        expect(game.currentPlayerName).toEqual("player2");
       });
 
       test("multiple other nations can choose to fight", () => {
@@ -3806,32 +4009,34 @@ describe("imperial", () => {
           Action.coexist({
             province: "a",
             incumbent: Nation.AH,
-            challenger: Nation.IT
-          })
+            challenger: Nation.IT,
+          }),
         ]);
 
         game.tick(
           Action.coexist({
             province: "a",
             incumbent: Nation.AH,
-            challenger: Nation.IT
+            challenger: Nation.IT,
           })
         );
-        
-        expect(game.currentPlayerName).toEqual(game.nations.get(Nation.AH).controller);
+
+        expect(game.currentPlayerName).toEqual(
+          game.nations.get(Nation.AH).controller
+        );
         expect(game.availableActions).toEqual(
           new Set([
             Action.fight({
               province: "a",
               incumbent: Nation.IT,
               challenger: Nation.AH,
-              targetType: "army"
+              targetType: "army",
             }),
             Action.coexist({
               province: "a",
               incumbent: Nation.IT,
-              challenger: Nation.AH
-            })
+              challenger: Nation.AH,
+            }),
           ])
         );
       });
@@ -3844,27 +4049,27 @@ describe("imperial", () => {
           Action.coexist({
             province: "a",
             incumbent: Nation.AH,
-            challenger: Nation.IT
-          })
+            challenger: Nation.IT,
+          }),
         ]);
 
         game.tick(
           Action.coexist({
             province: "a",
             incumbent: Nation.AH,
-            challenger: Nation.IT
+            challenger: Nation.IT,
           })
         );
 
         expect(game.units.get(Nation.AH).get("a")).toEqual({
           armies: 1,
           fleets: 0,
-          friendly: false
+          friendly: false,
         });
         expect(game.units.get(Nation.IT).get("a")).toEqual({
           armies: 1,
           fleets: 0,
-          friendly: false
+          friendly: false,
         });
       });
 
@@ -3878,15 +4083,15 @@ describe("imperial", () => {
           Action.coexist({
             province: "a",
             incumbent: Nation.AH,
-            challenger: Nation.IT
-          })
+            challenger: Nation.IT,
+          }),
         ]);
 
         game.tick(
           Action.coexist({
             province: "a",
             incumbent: Nation.AH,
-            challenger: Nation.IT
+            challenger: Nation.IT,
           })
         );
 
@@ -3899,7 +4104,7 @@ describe("imperial", () => {
           game.units.get(Nation.AH).get("b").armies++;
           game.units.get(Nation.IT).get("a").armies++;
           game.availableActions = new Set([
-            Action.rondel({ slot: "maneuver1", nation: Nation.AH, cost: 0 })
+            Action.rondel({ slot: "maneuver1", nation: Nation.AH, cost: 0 }),
           ]);
 
           game.tick(
@@ -3910,14 +4115,14 @@ describe("imperial", () => {
             Action.coexist({
               province: "a",
               incumbent: Nation.IT,
-              challenger: Nation.AH
+              challenger: Nation.AH,
             })
           );
           game.tick(
             Action.coexist({
               province: "a",
               incumbent: Nation.AH,
-              challenger: Nation.IT
+              challenger: Nation.IT,
             })
           );
 
@@ -3931,11 +4136,13 @@ describe("imperial", () => {
                 "import",
                 "production2",
                 "maneuver2",
-                "taxation"
-              ].map(slot => Action.rondel({ nation: Nation.IT, cost: 0, slot }))
+                "taxation",
+              ].map((slot) =>
+                Action.rondel({ nation: Nation.IT, cost: 0, slot })
+              )
             )
           );
-          expect(game.currentPlayerName).toEqual("player2")
+          expect(game.currentPlayerName).toEqual("player2");
         });
 
         test("challenger can maneuver if challenger has more units to move", () => {
@@ -3944,7 +4151,7 @@ describe("imperial", () => {
           game.units.get(Nation.AH).get("b").armies++;
           game.units.get(Nation.IT).get("a").armies++;
           game.availableActions = new Set([
-            Action.rondel({ slot: "maneuver1", nation: Nation.AH, cost: 0 })
+            Action.rondel({ slot: "maneuver1", nation: Nation.AH, cost: 0 }),
           ]);
 
           game.tick(
@@ -3955,21 +4162,21 @@ describe("imperial", () => {
             Action.coexist({
               province: "a",
               incumbent: Nation.IT,
-              challenger: Nation.AH
+              challenger: Nation.AH,
             })
           );
           game.tick(
             Action.coexist({
               province: "a",
               incumbent: Nation.AH,
-              challenger: Nation.IT
+              challenger: Nation.IT,
             })
           );
 
           expect(game.availableActions).toEqual(
             new Set([
               Action.endManeuver(),
-              Action.maneuver({ origin: "b", destination: "a" })
+              Action.maneuver({ origin: "b", destination: "a" }),
             ])
           );
         });
@@ -3981,9 +4188,9 @@ describe("imperial", () => {
         const board = new GameBoard({
           nodes: [
             { name: "a", nation: Nation.AH },
-            { name: "b", nation: Nation.AH }
+            { name: "b", nation: Nation.AH },
           ],
-          edges: []
+          edges: [],
         });
 
         const game = new Imperial(board);
@@ -3997,7 +4204,9 @@ describe("imperial", () => {
         game.nations.get(Nation.IT).controller = null;
 
         // End maneuver just because it is simple; the action is unimportant
-        game.tick(Action.rondel({nation: Nation.AH, cost: 0, slot: "production1"}));
+        game.tick(
+          Action.rondel({ nation: Nation.AH, cost: 0, slot: "production1" })
+        );
 
         expect(game.currentNation).toEqual(Nation.FR);
         expect(game.currentPlayerName).toEqual("player1");
@@ -4010,9 +4219,9 @@ describe("imperial", () => {
           nodes: [
             { name: "a", nation: Nation.AH },
             { name: "b", nation: Nation.IT },
-            { name: "c", nation: Nation.FR }
+            { name: "c", nation: Nation.FR },
           ],
-          edges: []
+          edges: [],
         });
 
         const game = new Imperial(board);
@@ -4023,8 +4232,10 @@ describe("imperial", () => {
       test("player can undo their last move", () => {
         const game = newGame();
 
-        game.tick(Action.rondel({nation: Nation.AH, cost: 0, slot: "production1"}));
-        game.tick(Action.undo({player: "player1"}));
+        game.tick(
+          Action.rondel({ nation: Nation.AH, cost: 0, slot: "production1" })
+        );
+        game.tick(Action.undo({ player: "player1" }));
 
         expect(game.currentNation).toEqual(Nation.AH);
         expect(game.currentPlayerName).toEqual("player1");
@@ -4033,12 +4244,20 @@ describe("imperial", () => {
       test("multiple undos work", () => {
         const game = newGame();
 
-        game.tick(Action.rondel({nation: Nation.AH, cost: 0, slot: "production1"}));
-        game.tick(Action.undo({player: "player1"}));
-        game.tick(Action.rondel({nation: Nation.AH, cost: 0, slot: "production1"}));
-        game.tick(Action.rondel({nation: Nation.IT, cost: 0, slot: "production1"}));
-        game.tick(Action.rondel({nation: Nation.FR, cost: 0, slot: "production1"}));
-        game.tick(Action.undo({player: "player1"}));
+        game.tick(
+          Action.rondel({ nation: Nation.AH, cost: 0, slot: "production1" })
+        );
+        game.tick(Action.undo({ player: "player1" }));
+        game.tick(
+          Action.rondel({ nation: Nation.AH, cost: 0, slot: "production1" })
+        );
+        game.tick(
+          Action.rondel({ nation: Nation.IT, cost: 0, slot: "production1" })
+        );
+        game.tick(
+          Action.rondel({ nation: Nation.FR, cost: 0, slot: "production1" })
+        );
+        game.tick(Action.undo({ player: "player1" }));
 
         expect(game.currentNation).toEqual(Nation.FR);
         expect(game.currentPlayerName).toEqual("player1");
@@ -4047,16 +4266,30 @@ describe("imperial", () => {
       test("undo after an automated action", () => {
         const game = newGame();
         game.availableBonds = new Set([Bond(Nation.IT, 1)]);
-        game.swissBanks = ["player1"]
+        game.swissBanks = ["player1"];
 
-        game.tick(Action.rondel({nation: Nation.AH, cost: 0, slot: "investor"}));
-        game.tick(Action.bondPurchase({ player: "player2", cost: 2, nation: Nation.IT, tradeInValue: 0 }));
-        game.tick(Action.undo({player: "player2"}));
+        game.tick(
+          Action.rondel({ nation: Nation.AH, cost: 0, slot: "investor" })
+        );
+        game.tick(
+          Action.bondPurchase({
+            player: "player2",
+            cost: 2,
+            nation: Nation.IT,
+            tradeInValue: 0,
+          })
+        );
+        game.tick(Action.undo({ player: "player2" }));
 
         expect(game.availableActions).toEqual(
           new Set([
-            Action.bondPurchase({ player: "player2", cost: 2, nation: Nation.IT, tradeInValue: 0 }),
-            Action.skipBondPurchase({ player: "player2", nation: null })
+            Action.bondPurchase({
+              player: "player2",
+              cost: 2,
+              nation: Nation.IT,
+              tradeInValue: 0,
+            }),
+            Action.skipBondPurchase({ player: "player2", nation: null }),
           ])
         );
       });
@@ -4068,9 +4301,9 @@ describe("imperial", () => {
           nodes: [
             { name: "a", nation: null },
             { name: "b", nation: null },
-            { name: "c", nation: null }
+            { name: "c", nation: null },
           ],
-          edges: [["a", "c"]]
+          edges: [["a", "c"]],
         });
 
         const game = new Imperial(board);
@@ -4082,20 +4315,22 @@ describe("imperial", () => {
         const game = newGame();
         game.units.get(Nation.AH).get("a").armies = 1;
 
-        game.tick(Action.rondel({nation: Nation.AH, cost: 0, slot: "maneuver1"}));
-        game.tick(Action.maneuver({origin: "a", destination: "b"}));
+        game.tick(
+          Action.rondel({ nation: Nation.AH, cost: 0, slot: "maneuver1" })
+        );
+        game.tick(Action.maneuver({ origin: "a", destination: "b" }));
 
         expect(game.log).toEqual([
           Action.initialize({
             players: [
               { id: "player1", nation: Nation.AH },
-              { id: "player2", nation: Nation.IT }
+              { id: "player2", nation: Nation.IT },
             ],
             soloMode: false,
             variant: "standard",
-            baseGame: "imperial"
+            baseGame: "imperial",
           }),
-          Action.rondel({nation: Nation.AH, cost: 0, slot: "maneuver1"})
+          Action.rondel({ nation: Nation.AH, cost: 0, slot: "maneuver1" }),
         ]);
       });
     });
