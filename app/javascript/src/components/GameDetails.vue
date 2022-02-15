@@ -14,6 +14,7 @@
         :tradedInBondNation="tradedInBondNation"
         :tradedInValue="tradedInValue"
         :index="game.winner ? index + 1 : null"
+        :turnIndex="index + 1"
         :key="player.name"
       ></Player>
     </div>
