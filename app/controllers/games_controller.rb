@@ -18,6 +18,22 @@ class GamesController < ApplicationController
     )
     host.games << game
 
+    if ENV["RAILS_ENV"] == "production" && params[:create_discord_channel]
+      uri = URI(ENV["DISCORD_CREATE_CHANNEL_URL"])
+      payload = {
+        name: lovely_string.tr(" ", "-"),
+        type: 0,
+        parent_id: ENV["DISCORD_GAME_CHANNEL_CATEGORY"]
+      }.to_json
+
+      Net::HTTP.post(
+        uri,
+        payload,
+        "Content-Type" => "application/json",
+        "authorization" => "Bot #{ENV["DISCORD_TOKEN"]}"
+      )
+    end
+
     render json: game.to_json
   end
 
