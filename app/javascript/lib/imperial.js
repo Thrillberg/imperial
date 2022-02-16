@@ -1322,26 +1322,8 @@ export default class Imperial {
         const nation = this.nations.get(nationName);
         const previousTaxChartPosition = nation.taxChartPosition;
         // 1. Tax revenue / success bonus
-        let taxes =
-          this.unoccupiedFactoryCount(nationName) * 2 +
-          this.flagCount(nationName);
-        if (this.baseGame === "imperial") {
-          // Taxes cannot exceed 20m
-          if (taxes > 20) taxes = 20;
-        } else if (this.baseGame === "imperial2030") {
-          // Taxes cannot exceed 23m
-          if (taxes > 23) taxes = 23;
-        }
-        if (this.baseGame === "imperial") {
-          // Nation's taxChartPosition matches taxes with a floor of 5
-          if (taxes >= 5) {
-            nation.taxChartPosition = taxes;
-          } else {
-            nation.taxChartPosition = 5;
-          }
-          // The tax chart maxes out at 15
-          if (nation.taxChartPosition > 15) nation.taxChartPosition = 15;
-        }
+        const taxes = this.getTaxes(nationName);
+        nation.taxChartPosition = this.getTaxChartPosition(taxes);
         let excessTaxes = nation.taxChartPosition - previousTaxChartPosition;
         // Players can never lose money here
         if (excessTaxes < 0) {
@@ -2396,6 +2378,35 @@ export default class Imperial {
         }
       }
     }
+  }
+
+  getTaxes(nationName) {
+    let taxes =
+      this.unoccupiedFactoryCount(nationName) * 2 + this.flagCount(nationName);
+    if (this.baseGame === "imperial") {
+      // Taxes cannot exceed 20m
+      if (taxes > 20) return 20;
+    } else if (this.baseGame === "imperial2030") {
+      // Taxes cannot exceed 23m
+      if (taxes > 23) return 23;
+    }
+    return taxes;
+  }
+
+  getTaxChartPosition(taxes) {
+    if (this.baseGame === "imperial") {
+      // Nation's taxChartPosition matches taxes with a floor
+      // of 5 and ceiling of 15
+      if (taxes >= 15) {
+        return 15;
+      }
+      if (taxes >= 5) {
+        return taxes;
+      }
+      return 5;
+    }
+
+    return 0;
   }
 
   isEqual(action1, action2) {

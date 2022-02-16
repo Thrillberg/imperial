@@ -18,7 +18,7 @@
       <div class="flex justify-between">
         <span class="w-1/3"></span>
         <span class="w-1/3">Power points</span>
-        <span class="w-1/3">Tax chart position</span>
+        <span v-if="game.baseGame === 'imperial'" class="w-1/3">Tax chart position</span>
       </div>
       <div v-for="[nation,] of game.nations" :key="nation.value" class="flex justify-between">
         <span class="w-1/3">
@@ -27,7 +27,7 @@
         <span class="w-1/3">
           {{ nextTaxationPowerPoints(nation) }}
         </span>
-        <span class="w-1/3">
+        <span v-if="game.baseGame === 'imperial'" class="w-1/3">
           {{ nextTaxChartPosition(nation) }}
         </span>
       </div>
