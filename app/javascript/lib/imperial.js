@@ -1412,12 +1412,12 @@ export default class Imperial {
             15: 8,
             16: 9,
             17: 9,
-            18: 9,
-            19: 9,
-            20: 9,
-            21: 9,
-            22: 9,
-            23: 9,
+            18: 10,
+            19: 10,
+            20: 10,
+            21: 10,
+            22: 10,
+            23: 10,
           };
           powerPoints = powerPointsByTax[taxes];
           nation.powerPoints += powerPoints;
