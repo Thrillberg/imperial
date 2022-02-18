@@ -40,7 +40,7 @@
       width="12"
       height="12"
       :x="x(0) - 12 + factoryXAdjustment()"
-      :y="y(0) - 1"
+      :y="y(0) - 1 + factoryYAdjustment()"
       fill-opacity="0.4"
       fill="brown"
       stroke="none"
@@ -202,6 +202,12 @@ export default {
             this.$refs.province.children[0].getBBox().x +
             this.$refs.province.children[0].getBBox().width / 2
           ) + 30;
+        case "Edinburgh":
+          return (
+            index * 2.5 +
+            this.$refs.province.children[0].getBBox().x +
+            this.$refs.province.children[0].getBBox().width / 2
+          ) - 10;
         case "English Channel":
           return (
             index * 2.5 +
@@ -250,6 +256,12 @@ export default {
             this.$refs.province.children[0].getBBox().x +
             this.$refs.province.children[0].getBBox().width / 2
           ) - 15;
+        case "Sheffield":
+          return (
+            index * 2.5 +
+            this.$refs.province.children[0].getBBox().x +
+            this.$refs.province.children[0].getBBox().width / 2
+          ) - 5;
         case "Sweden":
           return (
             index * 2.5 +
@@ -301,12 +313,24 @@ export default {
             this.$refs.province.children[0].getBBox().y +
             this.$refs.province.children[0].getBBox().height / 2
           ) + 7;
+        case "Cologne":
+          return (
+            index * 2.5 +
+            this.$refs.province.children[0].getBBox().y +
+            this.$refs.province.children[0].getBBox().height / 2
+          ) + 3;
         case "Denmark":
           return (
             index * 2.5 +
             this.$refs.province.children[0].getBBox().y +
             this.$refs.province.children[0].getBBox().height / 2
           ) + 40;
+        case "Edinburgh":
+          return (
+            index * 2.5 +
+            this.$refs.province.children[0].getBBox().y +
+            this.$refs.province.children[0].getBBox().height / 2
+          ) + 5;
         case "Eastern Mediterranean Sea":
           return (
             index * 2.5 +
@@ -337,6 +361,18 @@ export default {
             this.$refs.province.children[0].getBBox().y +
             this.$refs.province.children[0].getBBox().height / 2
           ) - 10;
+        case "London":
+          return (
+            index * 2.5 +
+            this.$refs.province.children[0].getBBox().y +
+            this.$refs.province.children[0].getBBox().height / 2
+          ) + 3;
+        case "Munich":
+          return (
+            index * 2.5 +
+            this.$refs.province.children[0].getBBox().y +
+            this.$refs.province.children[0].getBBox().height / 2
+          ) + 5;
         case "Morocco":
           return (
             index * 2.5 +
@@ -400,11 +436,18 @@ export default {
           return -20
         case "Bordeaux":
           return -20
+        case "Danzig":
+          return -5
+        case "Edinburgh":
+          return 10
+        case "Hamburg":
+          return -18
         case "Liverpool":
-          return -10
+          return -23
+        case "London":
+          return 10
         case "English Channel":
           return 25
-        case "Hamburg":
         case "Marseille":
           return -15
         case "Odessa":
@@ -424,10 +467,18 @@ export default {
           return 5
         case "Brest":
           return -30
+        case "Danzig":
+          return -35
         case "Eastern Mediterranean Sea":
           return -5
+        case "Edinburgh":
+          return -15
         case "English Channel":
           return -40
+        case "Hamburg":
+          return -7
+        case "London":
+          return -10
         case "North Atlantic":
           return -5
         case "St. Petersburg":
@@ -443,10 +494,16 @@ export default {
           return -30
         case "Danzig":
           return 10
+        case "Edinburgh":
+          return 15
         case "English Channel":
           return -5
         case "Greece":
           return 2
+        case "Liverpool":
+          return -5
+        case "London":
+          return 15
         case "Morocco":
           return 10
         case "Norway":
@@ -455,6 +512,8 @@ export default {
           return 40
         case "Portugal":
           return 12
+        case "Sheffield":
+          return 15
         case "Spain":
           return -15
         case "Sweden":
@@ -478,9 +537,19 @@ export default {
           return 5
         case "Bay of Biscay":
           return -10
+        case "Berlin":
+          return -10
         case "Black Sea":
           return 10
         case "Bulgaria":
+          return -5
+        case "Cologne":
+          return -3
+        case "Danzig":
+          return -5
+        case "Dublin":
+          return -5
+        case "Edinburgh":
           return -5
         case "Greece":
           return 15
@@ -488,12 +557,18 @@ export default {
           return 30
         case "Kiev":
           return -5
+        case "Liverpool":
+          return -5
+        case "London":
+          return -2
         case "Marseille":
           return 5
         case "Morocco":
           return 15
         case "Moscow":
           return -5
+        case "Munich":
+          return -3
         case "Norway":
           return 20
         case "Odessa":
@@ -502,6 +577,8 @@ export default {
           return -15
         case "Romania":
           return 20
+        case "Sheffield":
+          return -3
         case "St. Petersburg":
           return -5
         case "Sweden":
@@ -526,13 +603,17 @@ export default {
         case "Danzig":
           return 20
         case "Edinburgh":
-          return 15
+          return 20
         case "Genoa":
           return 15
+        case "Hamburg":
+          return 5
         case "Moscow":
           return -5
         case "Odessa":
           return 40
+        case "Sheffield":
+          return 13
         case "St. Petersburg":
           return -15
         case "Venice":
@@ -544,11 +625,19 @@ export default {
       switch (this.name) {
         case "Brest":
           return -20
+        case "Cologne":
+          return -21
         case "Danzig":
           return -30
         case "Edinburgh":
-          return 5
+          return 7
         case "Genoa":
+          return 10
+        case "Hamburg":
+          return -20
+        case "London":
+          return 2
+        case "Sheffield":
           return 10
         case "Trieste":
           return 10
