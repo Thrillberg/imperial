@@ -60,7 +60,19 @@ export default {
   methods: {
     capitalize(word) {
       if (word) {
-      return (word[0].toUpperCase() + word.substring(1));
+        switch (word) {
+          case "bayofbiscay": return "Bay of Biscay"
+          case "blacksea": return "Black Sea"
+          case "westernmediterraneansea": return "Western Mediterranean Sea"
+          case "easternmediterraneansea": return "Eastern Mediterranean Sea"
+          case "northsea": return "North Sea"
+          case "northatlantic": return "North Atlantic"
+          case "balticsea": return "Baltic Sea"
+          case "englishchannel": return "English Channel"
+          case "westbalkan": return "West Balkan"
+          case "stpetersburg": return "St. Petersburg"
+        }
+        return (word[0].toUpperCase() + word.substring(1));
       } else {
         return "";
       }
