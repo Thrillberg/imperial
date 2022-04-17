@@ -12,8 +12,23 @@
       </div>
       <div v-if="gameStarted" class="flex flex-col">
         <TurnStatus :game="game" :profile="profile" :controllingPlayerName="controllingPlayerName"></TurnStatus>
-        <div class="flex flex-wrap justify-between">
-          <div class="border border-gray-500 rounded overflow-hidden" :class="mapWidth()">
+        <div v-if="game.baseGame === 'imperial'" class="flex flex-wrap items-start">
+          <div class="flex flex-wrap w-1/12 divide-y divide-gray-500 hidden md:inline-block lg:inline-block xl:inline-block 2xl:inline-block">
+            <NationComponent
+              v-for="[nation] of game.nations"
+              :current_nation="game.currentNation.value"
+              :nation="nation.value"
+              :treasury="game.nations.get(nation).treasury"
+              :canPayOut="canPayOut(nation)"
+              :power_points="game.nations.get(nation).powerPoints"
+              :controller="game.nations.get(nation).controller"
+              :current_player="profile.username"
+              :baseGame="game.baseGame"
+              :winner="game.winner"
+              :key="nation.value"
+            ></NationComponent>
+          </div>
+          <div class="overflow-hidden" :class="mapWidth()">
             <Board
               :game="game"
               :profile="profile"
@@ -24,8 +39,101 @@
               :province_with_fight="provinceWithFight"
               :paused="paused"
               v-on:fightResolved="resolveFight"
-              v-if="game.baseGame === 'imperial'"
             ></Board>
+            <!-- <b class="underline">Points Multipliers</b>
+            <div class="flex flex-wrap justify-around">
+              <span class="mx-2"><b>0x:</b> 0-4 power points</span>
+              <span class="mx-2"><b>1x:</b> 5-9 power points</span>
+              <span class="mx-2"><b>2x:</b> 10-14 power points</span>
+              <span class="mx-2"><b>3x:</b> 15-19 power points</span>
+              <span class="mx-2"><b>4x:</b> 20-24 power points</span>
+              <span class="mx-2"><b>5x:</b> 25 power points</span>
+            </div> -->
+            <TaxChart :showBonus="game.baseGame === 'imperial2030'" :taxes="taxes()" />
+            <div class="flex justify-center my-2">
+              <div
+                v-if="this.game.log.length > 1"
+                class="rounded p-2 mx-2 bg-green-200 cursor-pointer"
+                @click="back"
+              >
+                ◀
+              </div>
+              <div
+                v-else
+                class="rounded p-2 mx-2 bg-gray-600 text-white cursor-not-allowed"
+              >
+                ◀
+              </div>
+              <div
+                v-if="poppedTurns.length > 0"
+                class="rounded p-2 mx-2 bg-green-200 cursor-pointer"
+                @click="forward"
+              >
+                ▶
+              </div>
+              <div
+                v-else
+                class="rounded p-2 mx-2 bg-gray-600 text-white cursor-not-allowed"
+              >
+                ▶
+              </div>
+            </div>
+          </div>
+          <div class="text-sm" :class="gameDetailsWidth()">
+            <div class="flex flex-wrap divide-y divide-gray-500 md:hidden lg:hidden xl:hidden 2xl:hidden">
+              <NationComponent
+                v-for="[nation] of game.nations"
+                :current_nation="game.currentNation.value"
+                :nation="nation.value"
+                :treasury="game.nations.get(nation).treasury"
+                :canPayOut="canPayOut(nation)"
+                :power_points="game.nations.get(nation).powerPoints"
+                :controller="game.nations.get(nation).controller"
+                :current_player="profile.username"
+                :baseGame="game.baseGame"
+                :winner="game.winner"
+                :key="nation.value"
+              ></NationComponent>
+            </div>
+            <GameDetails
+              :game="game"
+              :gameData="gameData"
+              :controllingPlayerName="controllingPlayerName"
+              :profile="profile"
+              :online_users="users"
+              :paused="paused"
+              @tick="tickWithAction"
+              @toggleTradeIn="toggleTradeIn"
+            ></GameDetails>
+            <ControlPanel
+              :game="game"
+              :chooseImportType="importProvince"
+              :controllingPlayerName="controllingPlayerName"
+              :profile="profile"
+              :importPlacements="importPlacements"
+              :gameData="gameData"
+              :tradedInBondNation="tradedInBondNation"
+              :tradedInValue="tradedInValue"
+              :paused="paused"
+              @tick="tickWithAction"
+              @endManeuver="endManeuver"
+              @chooseImportType="makeImportTypeChoice"
+              @runImport="runImport"
+              @skipBuildFactory="skipBuildFactory"
+              @purchaseBond="purchaseBond"
+            />
+            <div v-if="!game.winner">
+              <Rondel
+                :game="game"
+                :name="profile.username"
+                :paused="paused"
+                @tick-with-action="tickWithAction"
+              ></Rondel>
+            </div>
+          </div>
+        </div>
+        <div v-if="game.baseGame === 'imperial2030'" class="flex flex-wrap items-start">
+          <div class="border border-gray-500 rounded overflow-hidden" :class="mapWidth()">
             <Board2030
               :game="game"
               :profile="profile"
@@ -36,7 +144,6 @@
               :province_with_fight="provinceWithFight"
               :paused="paused"
               v-on:fightResolved="resolveFight"
-              v-if="game.baseGame === 'imperial2030'"
             ></Board2030>
             <div class="flex justify-center my-2">
               <div
@@ -109,6 +216,7 @@
               <span class="mx-2"><b>4x:</b> 20-24 power points</span>
               <span class="mx-2"><b>5x:</b> 25 power points</span>
             </div>
+            <TaxChart :showBonus="game.baseGame === 'imperial2030'" :taxes="taxes()" />
             <GameDetails
               :game="game"
               :gameData="gameData"
@@ -262,6 +370,8 @@ import GameDetails from "../components/GameDetails.vue";
 import GameLog from "../components/GameLog.vue";
 import NationComponent from "../components/NationComponent.vue";
 import NationControlChart from "../components/NationControlChart.vue";
+import Rondel from "../components/Rondel.vue";
+import TaxChart from "../components/TaxChart.vue";
 import TurnStatus from "../components/TurnStatus.vue";
 
 import getGameLog from "../getGameLog.js";
@@ -284,6 +394,8 @@ export default {
     GameLog,
     NationComponent,
     NationControlChart,
+    Rondel,
+    TaxChart,
     TurnStatus
   },
   props: ["profile", "users", "gameData", "games", "observers"],
@@ -625,7 +737,7 @@ export default {
     },
     gameDetailsWidth() {
       if (this.game.baseGame === "imperial") {
-        return "w-full sm:w-5/12"
+        return "w-full sm:w-1/3"
       } else if (this.game.baseGame === "imperial2030") {
         return "w-full"
       }
@@ -698,7 +810,80 @@ export default {
           this.tradedInValue = 0;
         }
       }
-    }
+    },
+    taxes() {
+      if (this.game.baseGame === "imperial") {
+        return [15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5].map(slot => {
+          let nations = [];
+          for (const [nation, data] of this.game.nations) {
+            if (data.taxChartPosition === slot) {
+              nations.push(nation.value);
+            }
+          }
+          const powerPointIncrease = slot - 5;
+          return { slot, nations, powerPointIncrease };
+        });
+      } else if (this.game.baseGame === "imperial2030") {
+        const taxes = [18, 16, 15, 14, 13, 12, 11, 10, 8, 6, 5]
+        return taxes.map((slot, index) => {
+          let nations = [];
+          for (const [nation, data] of this.game.nations) {
+            if (data.taxChartPosition >= slot) {
+              nations.push(nation.value);
+            }
+          } 
+          const powerPointIncrease = taxes.length - index - 1;
+          let bonus;
+          switch (slot) {
+            case 5: {
+              bonus = 0;
+              break;
+            }
+            case 6: {
+              bonus = 1;
+              break;
+            }
+            case 8: {
+              bonus = 1;
+              break;
+            }
+            case 10: {
+              bonus = 2;
+              break;
+            }
+            case 11: {
+              bonus = 2;
+              break;
+            }
+            case 12: {
+              bonus = 3;
+              break;
+            }
+            case 13: {
+              bonus = 3;
+              break;
+            }
+            case 14: {
+              bonus = 4;
+              break;
+            }
+            case 15: {
+              bonus = 4;
+              break;
+            }
+            case 16: {
+              bonus = 5;
+              break;
+            }
+            case 18: {
+              bonus = 5;
+              break;
+            }
+          }
+          return { slot, nations, powerPointIncrease, bonus };
+        });
+      }
+    },
   }
 };
 </script>

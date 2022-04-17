@@ -1,5 +1,5 @@
 <template>
-  <div class="p-0.5 border border-gray-500" :class="currentNation() + width()">
+  <div class="p-0.5" :class="currentNation() + width()">
     <p><b>{{ stringify(nation) }}</b></p>
     <svg xmlns="http://www.w3.org/2000/svg" height="30" width="45">
       <Flag
@@ -8,7 +8,7 @@
       ></Flag>
     </svg>
     <div class="flex flex-col justify-center">
-      <div :class="canPayOut ? '' : 'text-red-500 font-bold'">{{ treasury }}m</div>
+      <div :class="canPayOut ? '' : 'text-red-500 font-bold'">${{ treasury }}mil</div>
       <div>{{ power_points }} power</div>
       <div
         v-if="winner"
@@ -54,7 +54,7 @@ export default {
     },
     width() {
       if (this.baseGame === "imperial") {
-        return "w-1/3 lg:w-1/3 xl:w-1/3 2xl:w-1/6"
+        return "w-1/3 md:w-full lg:w-full xl:w-full 2xl:w-full"
       } else if (this.baseGame === "imperial2030") {
         return "w-1/3 lg:w-1/3 xl:w-1/3 2xl:w-1/6"
       }

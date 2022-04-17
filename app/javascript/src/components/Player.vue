@@ -4,7 +4,7 @@
       {{ index }}
     </div>
     <div class="p-2 m-1 border border-gray-500" :class="player.name === current_player ? 'bg-green-300' : ''">
-      <div class="flex justify-between">
+      <div class="flex">
         <div v-if="!index" class="text-xs -mt-2 -ml-2 h-5 mr-0.5 p-0.5 bg-gray-600 text-white">
           {{ turnIndex }}
         </div>
@@ -17,13 +17,23 @@
           <router-link v-if="player.id" :to="{ path: '/users/' + player.id }" class="underline">
             <b>{{ player.name }}</b>
           </router-link>
-          <div v-else>
+          <span v-else>
             <b>{{ player.name }}</b>
-          </div>
+          </span>
+          <svg
+            v-for="controlledNation in controlledNations(player.name)"
+            xmlns="http://www.w3.org/2000/svg"
+            width="30"
+            height="20"
+            :key="controlledNation"
+            class="inline-block mx-0.5"
+          >
+            <Flag :nation="controlledNation" />
+          </svg>
         </span>
-        <span>{{ player.cash }}m</span>
-        <span>{{ player.rawScore + player.cash }} points</span>
-      </div>
+        </div>
+      <div>${{ player.cash }}mil</div>
+      <div>{{ player.rawScore + player.cash }} VP</div>
       <div class="flex flex-wrap justify-center">
         <Bond
           v-for="bond in sortedBonds(player.bonds)"
@@ -43,13 +53,15 @@
 
 <script>
 import Bond from "./Bond.vue";
+import Flag from './flags/Flag.vue';
 
 import { Nation, Nation2030 } from "../../lib/constants.js";
 
 export default {
   name: "Player",
   components: {
-    Bond
+    Bond,
+    Flag
   },
   props: {
     current_player: String,
@@ -125,7 +137,16 @@ export default {
       if (this.purchasingBond) {
         return "cursor-pointer"
       }
-    }
+    },
+    controlledNations(playerName) {
+      let out = []
+      for (const [nation,] of this.game.nations) {
+        if (this.game.nations.get(nation).controller === playerName) {
+          out = out.concat(nation.value)
+        }
+      }
+      return out
+    },
   }
 };
 </script>
