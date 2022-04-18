@@ -40,15 +40,6 @@
               :paused="paused"
               v-on:fightResolved="resolveFight"
             ></Board>
-            <!-- <b class="underline">Points Multipliers</b>
-            <div class="flex flex-wrap justify-around">
-              <span class="mx-2"><b>0x:</b> 0-4 power points</span>
-              <span class="mx-2"><b>1x:</b> 5-9 power points</span>
-              <span class="mx-2"><b>2x:</b> 10-14 power points</span>
-              <span class="mx-2"><b>3x:</b> 15-19 power points</span>
-              <span class="mx-2"><b>4x:</b> 20-24 power points</span>
-              <span class="mx-2"><b>5x:</b> 25 power points</span>
-            </div> -->
             <TaxChart :showBonus="game.baseGame === 'imperial2030'" :taxes="taxes()" />
             <div class="flex justify-center my-2">
               <div
@@ -206,15 +197,6 @@
                 :winner="game.winner"
                 :key="nation.value"
               ></NationComponent>
-            </div>
-            <b class="underline">Points Multipliers</b>
-            <div class="flex flex-wrap justify-around">
-              <span class="mx-2"><b>0x:</b> 0-4 power points</span>
-              <span class="mx-2"><b>1x:</b> 5-9 power points</span>
-              <span class="mx-2"><b>2x:</b> 10-14 power points</span>
-              <span class="mx-2"><b>3x:</b> 15-19 power points</span>
-              <span class="mx-2"><b>4x:</b> 20-24 power points</span>
-              <span class="mx-2"><b>5x:</b> 25 power points</span>
             </div>
             <TaxChart :showBonus="game.baseGame === 'imperial2030'" :taxes="taxes()" />
             <GameDetails
