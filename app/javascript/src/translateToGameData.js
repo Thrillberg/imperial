@@ -14,6 +14,7 @@ export default (game) => {
     observers: game.observers,
     variant: game.variant,
     lastMoveAt: game.last_move_at,
-    clonedFromGame: game.cloned_from_game
+    clonedFromGame: game.cloned_from_game,
+    isPublic: game.is_public
   };
 };

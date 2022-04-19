@@ -15,7 +15,8 @@ class GamesController < ApplicationController
       name: game_name,
       host: host,
       base_game: params[:base_game],
-      variant: params[:variant]
+      variant: params[:variant],
+      is_public: params[:is_game_public]
     )
     host.games << game
 

@@ -23,7 +23,8 @@ RSpec.describe Game, "#to_json" do
       observers: [],
       variant: "standard",
       last_move_at: game.last_move_at,
-      cloned_from_game: nil
+      cloned_from_game: nil,
+      is_public: true
     })
   end
 end

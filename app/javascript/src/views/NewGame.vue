@@ -31,6 +31,20 @@
         </div>
       </div>
       <div class="my-2">
+        <b>Is your game public or private?</b>
+        <div class="text-sm">
+          Public games are listed on the Open Games list. Private games can only be joined with the game link.
+        </div>
+        <div>
+          <input type="radio" id="public" :value="true" v-model="isGamePublic" />
+          <label for="public">Public</label>
+        </div>
+        <div>
+          <input type="radio" id="public" :value="false" v-model="isGamePublic" />
+          <label for="private">Private</label>
+        </div>
+      </div>
+      <div class="my-2">
         <b>Do You Want a Discord Channel to Automatically be Created?</b>
         (Optional)
         <div>
@@ -62,6 +76,7 @@ export default {
     return {
       baseGame: "imperial",
       createDiscordChannel: false,
+      isGamePublic: true,
       variant: "standard"
     }
   },
@@ -76,6 +91,7 @@ export default {
         this.baseGame,
         this.variant,
         this.createDiscordChannel,
+        this.isGamePublic,
       )
         .then(game => {
           this.$emit("openGame", game);
