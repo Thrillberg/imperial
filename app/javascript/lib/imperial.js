@@ -339,6 +339,7 @@ export default class Imperial {
         action.payload.player;
     }
 
+    const oldNationController = this.nations.get(action.payload.nation).controller
     if (
       this.totalInvestmentInNation(
         action.payload.player,
@@ -352,6 +353,10 @@ export default class Imperial {
       this.nations.get(action.payload.nation).controller =
         action.payload.player;
     }
+    const newNationController = this.nations.get(action.payload.nation).controller
+    this.annotatedLog.push(
+      Action.nationControllerChanged({ oldNationController, newNationController, nation: action.payload.nation })
+    )
     this.investorCardActive = false;
 
     this.updateRawScores();
@@ -1932,12 +1937,16 @@ export default class Imperial {
 
   advanceInvestorCard() {
     if (this.investorCardHolder) {
+      const oldInvestorCardHolder = this.investorCardHolder
       const index = this.order.indexOf(this.investorCardHolder);
       if (index === this.order.length - 1) {
         this.investorCardHolder = this.order[0];
       } else {
         this.investorCardHolder = this.order[index + 1];
       }
+      this.annotatedLog.push(
+        Action.investorCardHolderChanged({oldInvestorCardHolder, newInvestorCardHolder: this.investorCardHolder})
+      )
     }
   }
 
