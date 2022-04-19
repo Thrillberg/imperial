@@ -209,6 +209,14 @@
               @tick="tickWithAction"
               @toggleTradeIn="toggleTradeIn"
             ></GameDetails>
+            <div v-if="!game.winner">
+              <Rondel
+                :game="game"
+                :name="profile.username"
+                :paused="paused"
+                @tick-with-action="tickWithAction"
+              ></Rondel>
+            </div>
           </div>
         </div>
         <div v-if="game.winner">
