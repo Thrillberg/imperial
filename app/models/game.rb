@@ -35,7 +35,8 @@ class Game < ActiveRecord::Base
       observers: observers,
       variant: variant,
       last_move_at: last_move_at,
-      cloned_from_game: cloned_from_game&.id
+      cloned_from_game: cloned_from_game&.id,
+      is_public: is_public
     }
   end
 

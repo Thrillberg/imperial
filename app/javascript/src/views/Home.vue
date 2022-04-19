@@ -78,7 +78,7 @@ export default {
             inGame = true;
           }
         });
-        return !game.startedAt && !inGame && !game.forceEndedAt && !game.clonedFromGame;
+        return !game.startedAt && !inGame && !game.forceEndedAt && !game.clonedFromGame && game.isPublic;
       });
       return games.sort((a, b) => {
         return new Date(b.createdAt) - new Date(a.createdAt);
