@@ -26,7 +26,9 @@ export default {
         "playerInvests",
         "nationGainsTreasury",
         "nationGainsPowerPoints",
-        "nationPaysPlayer"
+        "nationPaysPlayer",
+        "investorCardHolderChanged",
+        "nationControllerChanged",
       ];
       let rawlog = this.log || [];
       let timestamps = this.logTimestamps || [];
