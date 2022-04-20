@@ -316,6 +316,12 @@
               </p>
             </div>
             <div class="text-2xl m-2">Game not yet started!</div>
+            <button
+              @click="leaveGame(profile.username)"
+              class="rounded bg-red-500 text-white cursor-pointer block text-2xl hover:bg-red-600 p-5 m-5 mx-auto"
+            >
+              Leave game
+            </button>
           </div>
           <div v-else-if="!joinedGame">
             <div class="mx-auto p-2 text-center">
@@ -491,6 +497,10 @@ export default {
     },
     boot(playerName) {
       apiClient.boot(playerName, this.$route.params.id);
+    },
+    leaveGame(playerName) {
+      this.boot(playerName);
+      this.$router.push("/");
     },
     gameCancelled() {
       return this.gameData.cancelledAt;
