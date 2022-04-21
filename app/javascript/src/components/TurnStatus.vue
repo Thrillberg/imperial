@@ -1,6 +1,6 @@
 <template>
   <div
-    v-if="game.winner"
+    v-if="game.winner && !paused"
     class="border border-gray-500 rounded p-2 m-1 text-center bg-green-200"
   >
     <b>Game over!</b> {{ game.winner }} won the game.
@@ -8,7 +8,7 @@
   <div
     v-else
     class="border border-gray-500 rounded p-2 m-1 text-center"
-    :class="alertCurrentPlayer"
+    :class="extraClasses"
   >
     <span v-html="playerIs"></span>
     {{ stringify(Array.from(game.availableActions)) }}.
@@ -18,9 +18,12 @@
 <script>
 export default {
   name: "TurnStatus",
-  props: ["game", "profile", "controllingPlayerName"],
+  props: ["game", "profile", "controllingPlayerName", "paused"],
   computed: {
-    alertCurrentPlayer() {
+    extraClasses() {
+      if (this.paused) {
+        return "bg-yellow-100";
+      }
       if (this.game.currentPlayerName === this.profile.username) {
         return `bg-${this.game.currentNation.value}`;
       }

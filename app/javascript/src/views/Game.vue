@@ -11,7 +11,7 @@
         </span>
       </div>
       <div v-if="gameStarted" class="flex flex-col">
-        <TurnStatus :game="game" :profile="profile" :controllingPlayerName="controllingPlayerName"></TurnStatus>
+        <TurnStatus :game="game" :profile="profile" :controllingPlayerName="controllingPlayerName" :paused="paused"></TurnStatus>
         <div v-if="game.baseGame === 'imperial'" class="flex flex-wrap items-start">
           <div class="flex flex-wrap w-1/12 divide-y divide-gray-500 hidden md:inline-block lg:inline-block xl:inline-block 2xl:inline-block">
             <NationComponent
@@ -44,7 +44,7 @@
             <div class="flex justify-center my-2">
               <div
                 v-if="this.game.log.length > 1"
-                class="rounded p-2 mx-2 bg-green-200 cursor-pointer"
+                class="rounded p-2 mx-2 bg-yellow-100 cursor-pointer"
                 @click="back"
               >
                 ◀
@@ -57,7 +57,7 @@
               </div>
               <div
                 v-if="poppedTurns.length > 0"
-                class="rounded p-2 mx-2 bg-green-200 cursor-pointer"
+                class="rounded p-2 mx-2 bg-yellow-100 cursor-pointer"
                 @click="forward"
               >
                 ▶
@@ -139,7 +139,7 @@
             <div class="flex justify-center my-2">
               <div
                 v-if="this.game.log.length > 1"
-                class="rounded p-2 mx-2 bg-green-200 cursor-pointer"
+                class="rounded p-2 mx-2 bg-yellow-100 cursor-pointer"
                 @click="back"
               >
                 ◀
@@ -152,7 +152,7 @@
               </div>
               <div
                 v-if="poppedTurns.length > 0"
-                class="rounded p-2 mx-2 bg-green-200 cursor-pointer"
+                class="rounded p-2 mx-2 bg-yellow-100 cursor-pointer"
                 @click="forward"
               >
                 ▶
@@ -692,7 +692,11 @@ export default {
       this.maneuverOrigin = "";
     },
     back: function() {
-      this.poppedTurns.push(this.game.log.pop());
+      const lastTurn = this.game.log.pop();
+      this.poppedTurns.push(lastTurn);
+      if (lastTurn.type === "endGame") {
+        this.poppedTurns.push(this.game.log.pop());
+      }
       while (this.game.log[this.game.log.length - 1].type !== "rondel") {
         this.poppedTurns.push(this.game.log.pop());
       }
