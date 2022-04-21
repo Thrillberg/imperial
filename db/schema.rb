@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_04_19_012847) do
+ActiveRecord::Schema.define(version: 2022_04_21_220118) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -51,6 +51,7 @@ ActiveRecord::Schema.define(version: 2022_04_19_012847) do
     t.integer "variant", default: 0
     t.uuid "cloned_from_game_id"
     t.boolean "is_public", default: true
+    t.string "discord_channel_id"
     t.index ["cloned_from_game_id"], name: "index_games_on_cloned_from_game_id"
     t.index ["current_player_id"], name: "index_games_on_current_player_id"
     t.index ["host_id"], name: "index_games_on_host_id"

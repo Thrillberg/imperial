@@ -28,12 +28,16 @@ class GamesController < ApplicationController
         parent_id: ENV["DISCORD_GAME_CHANNEL_CATEGORY"]
       }.to_json
 
-      Net::HTTP.post(
+      response = Net::HTTP.post(
         uri,
         payload,
         "Content-Type" => "application/json",
         "authorization" => "Bot #{ENV["DISCORD_TOKEN"]}"
       )
+      discord_channel_id = JSON.parse(response.body)["id"]
+      if discord_channel_id
+        game.update(discord_channel_id: discord_channel_id)
+      end
     end
 
     render json: game.to_json
