@@ -37,6 +37,19 @@ class GamesController < ApplicationController
       discord_channel_id = JSON.parse(response.body)["id"]
       if discord_channel_id
         game.update(discord_channel_id: discord_channel_id)
+        uri = URI("https://discord.com/api/channels/#{game.discord_channel_id}/messages")
+        Net::HTTP.post(
+          uri,
+          {
+            content: "#{game.name} has begun!",
+            embeds: [
+              title: game.name,
+              url: "https://www.playimperial.club/game/#{game.id}"
+            ]
+          }.to_json,
+          "Content-Type" => "application/json",
+          "authorization" => "Bot #{ENV["DISCORD_TOKEN"]}"
+        )
       end
     end
 
