@@ -3,7 +3,7 @@ class CloneGamesController < ApplicationController
 
   def create
     host = User.find(params[:host_id])
-    cloned_game = Game.find(params[:id]).clone(host)
+    cloned_game = Game.find(params[:id]).clone(host, params[:log])
 
     render json: cloned_game.to_json
   end

@@ -771,7 +771,8 @@ export default {
           method: "POST",
           body: JSON.stringify({
             id: this.$route.params.id,
-            host_id: this.profile.id
+            host_id: this.profile.id,
+            log: this.game.log,
           }),
           headers: { "Content-Type": "application/json" }
         }
