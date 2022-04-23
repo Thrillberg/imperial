@@ -87,6 +87,7 @@ export default {
     game: Object,
     name: String,
     paused: Boolean,
+    hostingThisGame: Boolean,
   },
   computed: {
     bondBearers() {
@@ -129,7 +130,7 @@ export default {
       if (
         this.validSlots().includes(slot) &&
         (this.game.currentPlayerName === this.name ||
-        (this.game.soloMode && this.name in this.game.players))
+        (this.game.soloMode && this.hostingThisGame))
       ) {
         return true;
       }
@@ -209,14 +210,14 @@ export default {
         }
       }
       return allActionsAreRondel && (
-        this.game.currentPlayerName === this.name || (this.game.soloMode && this.name in this.game.players)
+        this.game.currentPlayerName === this.name || (this.game.soloMode && this.hostingThisGame)
       )
     },
     slotSilent() {
       this.helperText = "";
     },
     slotClicked: function(slot) {
-      if (this.game.currentPlayerName === this.name || (this.game.soloMode && this.name in this.game.players)) {
+      if (this.game.currentPlayerName === this.name || (this.game.soloMode && this.hostingThisGame)) {
         for (const action of this.game.availableActions) {
           if (action.payload.slot === slot) {
             this.$emit("tick-with-action", action);

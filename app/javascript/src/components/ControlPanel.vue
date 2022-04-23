@@ -13,7 +13,7 @@
     </div>
     <div v-if="!paused">
       <div
-        v-if="game.importing && !chooseImportType && (profile.username === controllingPlayerName || (game.soloMode && profile.username in game.players))"
+        v-if="game.importing && !chooseImportType && (profile.username === controllingPlayerName || (game.soloMode && hostingThisGame))"
         class="text-center inline-flex flex-col"
       >
         <button
@@ -28,7 +28,7 @@
         </div>
       </div>
       <div
-        v-if="game.importing && !!chooseImportType && (profile.username === controllingPlayerName || (game.soloMode && profile.username in game.players))"
+        v-if="game.importing && !!chooseImportType && (profile.username === controllingPlayerName || (game.soloMode && hostingThisGame))"
         class="text-center text-lg"
       >
         <button
@@ -52,7 +52,7 @@
       >
         End maneuver
       </button>
-      <ConflictHandler :game="game" :profile="profile" :controllingPlayerName="controllingPlayerName" v-on:tick-with-action="tickWithAction"></ConflictHandler>
+      <ConflictHandler :game="game" :profile="profile" :controllingPlayerName="controllingPlayerName" :hostingThisGame="hostingThisGame" v-on:tick-with-action="tickWithAction"></ConflictHandler>
       <div class="text-center" v-if="canForceInvestor">
         <button @click="forceInvestor" class="rounded p-2 m-1 sm:m-4 bg-green-800 text-white cursor-pointer">
           Force investor
@@ -70,7 +70,7 @@
         </button>
       </div>
       <button
-        v-if="game.buildingFactory && (profile.username === controllingPlayerName || (game.soloMode && profile.username in game.players))"
+        v-if="game.buildingFactory && (profile.username === controllingPlayerName || (game.soloMode && hostingThisGame))"
         class="rounded py-2 px-6 m-1 sm:m-4 bg-green-800 text-white cursor-pointer"
         @click="$emit('skipBuildFactory')"
       >
@@ -121,6 +121,7 @@ export default {
     "gameData",
     "tradedInBondNation",
     "tradedInValue",
+    "hostingThisGame",
   ],
   computed: {
     purchasingBond() {
@@ -128,12 +129,12 @@ export default {
         Array.from(this.game.availableActions).every(
           (action) => action.type === "bondPurchase" || action.type === "skipBondPurchase" || action.type === "undo"
         );
-      return purchasingBond && (this.profile.username === this.controllingPlayerName || (this.game.soloMode && this.profile.username in this.game.players));
+      return purchasingBond && (this.profile.username === this.controllingPlayerName || (this.game.soloMode && this.hostingThisGame));
     },
     canForceInvestor: function () {
       if (this.game.availableActions.size > 0 &&
         Array.from(this.game.availableActions).every((action) => action.type === "forceInvestor" || action.type === "skipForceInvestor" || action.type === "undo")) {
-          if (this.game.swissBanks.includes(this.profile.username) || (this.game.soloMode && this.profile.username in this.game.players)) {
+          if (this.game.swissBanks.includes(this.profile.username) || (this.game.soloMode && this.hostingThisGame)) {
             return true;
           }
       }
@@ -149,7 +150,7 @@ export default {
       ) {
         if (
           this.profile.username === this.currentPlayerName ||
-          this.game.soloMode && this.profile.username in this.game.players
+          this.game.soloMode && this.hostingThisGame
         ) {
           return true;
         }
@@ -162,7 +163,7 @@ export default {
       !this.game.handlingConflict &&
       (
         this.profile.username === this.controllingPlayerName ||
-          (this.game.soloMode && this.profile.username in this.game.players)
+          (this.game.soloMode && this.hostingThisGame)
       )
     }
   },
@@ -189,7 +190,7 @@ export default {
     destroyingFactory: function () {
       if (
         this.profile.username !== this.controllingPlayerName &&
-        !(this.game.soloMode && this.profile.username in this.game.players)
+        !(this.game.soloMode && this.hostingThisGame)
       ) {
         return false
       }
@@ -230,7 +231,7 @@ export default {
         if (
           this.game.log.length > 1 && action.type === "undo" && (
             action.payload.player === this.profile.username ||
-            (this.game.soloMode && Object.keys(this.game.players).includes(this.profile.username))
+            (this.game.soloMode && this.hostingThisGame)
           )
         ) {
           canUndo = true;
@@ -242,7 +243,7 @@ export default {
       for (const action of this.game.availableActionsWithUndo()) {
         if (
           action.type === "undo" && (
-            action.payload.player === this.profile.username || this.game.soloMode
+            action.payload.player === this.profile.username || (this.game.soloMode && this.hostingThisGame)
           )
         ) {
           this.tickWithAction(action);
