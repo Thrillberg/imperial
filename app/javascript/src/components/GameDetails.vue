@@ -35,6 +35,7 @@ export default {
     "profile",
     "online_users",
     "gameData",
+    "hostingThisGame",
   ],
   computed: {
     purchasingBond() {
@@ -44,7 +45,7 @@ export default {
         Array.from(this.game.availableActions).every(
           (action) => action.type === "bondPurchase" || action.type === "skipBondPurchase" || action.type === "undo"
         );
-      return purchasingBond && (this.profile.username === this.controllingPlayerName || (this.game.soloMode && this.profile.username in this.game.players));
+      return purchasingBond && (this.profile.username === this.controllingPlayerName || (this.game.soloMode && this.hostingThisGame));
     }
   },
   data() {

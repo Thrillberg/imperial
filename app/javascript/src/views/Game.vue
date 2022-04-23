@@ -93,6 +93,7 @@
               :profile="profile"
               :online_users="users"
               :paused="paused"
+              :hostingThisGame="hostingThisGame"
               @tick="tickWithAction"
               @toggleTradeIn="toggleTradeIn"
             ></GameDetails>
@@ -106,6 +107,7 @@
               :tradedInBondNation="tradedInBondNation"
               :tradedInValue="tradedInValue"
               :paused="paused"
+              :hostingThisGame="hostingThisGame"
               @tick="tickWithAction"
               @endManeuver="endManeuver"
               @chooseImportType="makeImportTypeChoice"
@@ -118,6 +120,7 @@
                 :game="game"
                 :name="profile.username"
                 :paused="paused"
+                :hostingThisGame="hostingThisGame"
                 @tick-with-action="tickWithAction"
               ></Rondel>
             </div>
@@ -174,6 +177,7 @@
               :tradedInBondNation="tradedInBondNation"
               :tradedInValue="tradedInValue"
               :paused="paused"
+              :hostingThisGame="hostingThisGame"
               @tick="tickWithAction"
               @endManeuver="endManeuver"
               @chooseImportType="makeImportTypeChoice"
@@ -206,6 +210,7 @@
               :profile="profile"
               :online_users="users"
               :paused="paused"
+              :hostingThisGame="hostingThisGame"
               @tick="tickWithAction"
               @toggleTradeIn="toggleTradeIn"
             ></GameDetails>
@@ -214,6 +219,7 @@
                 :game="game"
                 :name="profile.username"
                 :paused="paused"
+                :hostingThisGame="hostingThisGame"
                 @tick-with-action="tickWithAction"
               ></Rondel>
             </div>
@@ -583,7 +589,7 @@ export default {
       // This function returns all provinces that a unit can move
       // or be imported to.
       let provinces = new Set();
-      if (this.game.currentPlayerName === this.profile.username || this.game.soloMode) {
+      if (this.game.currentPlayerName === this.profile.username || (this.game.soloMode && this.hostingThisGame)) {
         for (const action of this.game.availableActions) {
           if (action.type === "maneuver" && this.game.maneuvering) {
             if (this.maneuverOrigin === action.payload.origin) {
@@ -617,7 +623,7 @@ export default {
         this.maneuverOrigin = "";
         return;
       }
-      if (this.game.currentPlayerName === this.profile.username || this.game.soloMode) {
+      if (this.game.currentPlayerName === this.profile.username || (this.game.soloMode && this.hostingThisGame)) {
         // If the game is in a maneuver and an origin is specified,
         // then the next specified province is the destination
         if (this.game.maneuvering && this.maneuverOrigin) {

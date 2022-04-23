@@ -1,6 +1,6 @@
 <template>
   <div
-    v-if="game.handlingConflict && (profile.username === controllingPlayerName || (game.soloMode && profile.username in game.players))"
+    v-if="game.handlingConflict && (profile.username === controllingPlayerName || (game.soloMode && hostingThisGame))"
   >
     <div
       v-if="fighting()"
@@ -39,7 +39,7 @@
       </button>
     </div>
   </div>
-  <div v-else-if="fighting() && (profile.username === controllingPlayerName || (game.soloMode && profile.username in game.players))" class="text-center">
+  <div v-else-if="fighting() && (profile.username === controllingPlayerName || (game.soloMode && hostingThisGame))" class="text-center">
     <button
       v-for="fightAction in fightActions()"
       v-on:click="$emit('tick-with-action', fightAction)"
@@ -56,7 +56,7 @@ import stringify from "../stringify.js";
 
 export default {
   name: "ConflictHandler",
-  props: { game: Object, profile: Object, controllingPlayerName: String },
+  props: { game: Object, profile: Object, controllingPlayerName: String, hostingThisGame: Boolean },
   methods: {
     fighting: function() {
       let fighting = false;
