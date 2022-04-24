@@ -24,12 +24,18 @@ module ApplicationCable
     end
 
     def broadcast_update_game_log(channel, kind, game)
+      log_timestamps = if game.cloned_from_game
+        game.actions.order(:originally_created_at).map(&:originally_created_at)
+      else
+        game.actions.order(:created_at).map(&:created_at)
+      end
+
       payload = {
         kind: kind,
         data: {
           gameId: game.id,
           log: game.actions.order(:originally_created_at).order(:created_at).map(&:data),
-          logTimestamps: game.actions.order(:created_at).map(&:created_at),
+          logTimestamps: log_timestamps,
           game: game.to_json
         }
       }

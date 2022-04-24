@@ -24,7 +24,12 @@ class GameChannel < ApplicationCable::Channel
       game.update(started_at: Time.zone.now) unless game.started_at
       game.update(force_ended_at: nil) if game.force_ended_at
       data = data["data"]["action"]
-      game.actions << Action.create(data: data)
+      action = Action.create(data: data)
+      if game.cloned_from_game
+        action.originally_created_at = Time.zone.now
+        action.save
+      end
+      game.actions << action
       broadcast_update_game_log "game_channel", "updateGameLog", game
       broadcast_games "game_channel", "updateGames"
 
