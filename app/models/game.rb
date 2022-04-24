@@ -61,7 +61,7 @@ class Game < ActiveRecord::Base
     cloned_game.users << host
     puts "Cloning game #{cloned_game.name}"
     puts "Full game has #{actions.length} actions; cloning #{log.length} actions"
-    actions.zip(log).each do |action, log_action|
+    actions.order(created_at: :asc).zip(log).each do |action, log_action|
       if log_action && JSON.parse(action.data).dig("type") == log_action.dig("type")
         cloned_game.actions << action.dup.tap do |cloned_action|
           parsed_data = JSON.parse(action.data)
