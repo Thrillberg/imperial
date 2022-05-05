@@ -173,7 +173,7 @@ export default {
       this.factoryToDestroy === "" &&
       !this.game.handlingConflict &&
       (
-        this.profile.username === this.currentPlayerName ||
+        this.profile.username === this.game.currentPlayerName ||
           (this.game.soloMode && this.hostingThisGame)
       )
     }
