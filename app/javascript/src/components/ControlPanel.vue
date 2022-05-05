@@ -149,7 +149,7 @@ export default {
         )
       ) {
         if (
-          this.profile.username === this.currentPlayerName ||
+          this.profile.username === this.controllingPlayerName ||
           this.game.soloMode && this.hostingThisGame
         ) {
           return true;
@@ -158,11 +158,22 @@ export default {
       return false;
     },
     canEndManeuver() {
+      // We don't handle the case where control has passed because someone can block a canal so there is the following exception.
+      if (
+        Array.from(this.game.availableActions).every(
+          (action) => action.type === "blockCanal" ||
+            action.type === "unblockCanal" ||
+            action.type === "undo"
+        )
+      ) {
+        return false
+      }
+
       return this.game.maneuvering &&
       this.factoryToDestroy === "" &&
       !this.game.handlingConflict &&
       (
-        this.profile.username === this.controllingPlayerName ||
+        this.profile.username === this.currentPlayerName ||
           (this.game.soloMode && this.hostingThisGame)
       )
     }
