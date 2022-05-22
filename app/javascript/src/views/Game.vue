@@ -29,7 +29,8 @@
             ></NationComponent>
           </div>
           <div class="overflow-hidden" :class="mapWidth()">
-            <Board
+            <component
+              :is="displayBoard"
               :game="game"
               :profile="profile"
               :gameStarted="gameStarted"
@@ -39,7 +40,8 @@
               :province_with_fight="provinceWithFight"
               :paused="paused"
               v-on:fightResolved="resolveFight"
-            ></Board>
+              v-if="gameData.baseGame === 'imperial'"
+            ></component>
             <TaxChart :showBonus="game.baseGame === 'imperial2030'" :taxes="taxes()" />
             <div class="flex justify-center my-2">
               <div
@@ -128,7 +130,8 @@
         </div>
         <div v-if="game.baseGame === 'imperial2030'" class="flex flex-wrap items-start">
           <div class="border border-gray-500 rounded overflow-hidden" :class="mapWidth()">
-            <Board2030
+            <component
+              :is="displayBoard"
               :game="game"
               :profile="profile"
               :gameStarted="gameStarted"
@@ -138,7 +141,8 @@
               :province_with_fight="provinceWithFight"
               :paused="paused"
               v-on:fightResolved="resolveFight"
-            ></Board2030>
+              v-if="gameData.baseGame === 'imperial2030'"
+            ></component>
             <div class="flex justify-center my-2">
               <div
                 v-if="this.game.log.length > 1"
@@ -247,18 +251,18 @@
       </div>
       <div v-else class="flex flex-wrap justify-between">
         <div class="w-full sm:w-2/3 border border-gray-500 rounded overflow-hidden">
-          <Board
-            v-bind:game="game"
-            v-bind:select_province="() => {}"
-            v-bind:valid_provinces="[]"
-            v-if="gameData.baseGame === 'imperial'"
-          ></Board>
-          <Board2030
-            v-bind:game="game"
-            v-bind:select_province="() => {}"
-            v-bind:valid_provinces="[]"
-            v-if="gameData.baseGame === 'imperial2030'"
-          ></Board2030>
+          <component
+            :is="displayBoard"
+            :game="game"
+            :profile="profile"
+            :gameStarted="gameStarted"
+            :select_province="selectProvince"
+            :valid_provinces="validProvinces()"
+            :importing_units="importPlacements"
+            :province_with_fight="provinceWithFight"
+            :paused="paused"
+            v-on:fightResolved="resolveFight"
+          ></component>
         </div>
         <div class="w-full sm:w-1/3 border border-gray-500 rounded">
           <div v-if="hostingThisGame">
@@ -365,8 +369,6 @@ import Action from "../../lib/action.js";
 import Imperial from "../../lib/imperial.js";
 import { apiClient } from "../router/index.js";
 
-import Board from "../components/board/Board.vue";
-import Board2030 from "../components/board2030/Board2030.vue";
 import ControlPanel from "../components/ControlPanel.vue";
 import GameDetails from "../components/GameDetails.vue";
 import GameLog from "../components/GameLog.vue";
@@ -389,8 +391,6 @@ import favicon2 from "../assets/favicon2.ico";
 export default {
   name: "Game",
   components: {
-    Board,
-    Board2030,
     ControlPanel,
     GameDetails,
     GameLog,
@@ -437,6 +437,16 @@ export default {
     next();
   },
   computed: {
+    displayBoard() {
+      if (this.game.baseGame === "imperial") {
+        return () => import("../components/board/Board.vue")
+      } else if (this.game.baseGame === "imperial2030") {
+        return () => import("../components/board2030/Board2030.vue")
+      }
+
+      // Let's never get here.
+      return () => import("../components/board/Board.vue")
+    },
     reversedGameLog() {
       if (this.game.log) {
         return this.game.log.slice().reverse();
