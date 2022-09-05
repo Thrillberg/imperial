@@ -29,6 +29,7 @@
           >
           <Flag :nation="action.payload.nation.value" width="30"></Flag>
         </svg>
+        <b>{{ action.playerName }}</b>
         <div class="flex justify-between">
           <p>{{ processAction(action) }}</p>
           <p>{{ toString(timestamp) }}</p>

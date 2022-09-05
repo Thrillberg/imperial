@@ -78,7 +78,8 @@ export default class Imperial {
     }
 
     this.log.push(action);
-    this.annotatedLog.push(action);
+    const annotatedAction = { playerName: this.currentPlayerName, ...action }
+    this.annotatedLog.push(annotatedAction);
 
     switch (action.type) {
       case "noop":
