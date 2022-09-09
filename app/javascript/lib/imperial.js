@@ -8,6 +8,7 @@ import standardSetup from "./standardSetup.js";
 import standard2030Setup from "./standard2030Setup.js";
 import availableBondPurchases from "./availableBondPurchases.js";
 import setOldState from "./setOldState.js";
+import setOldAuctionState from "./setOldAuctionState.js";
 
 export default class Imperial {
   static fromLog(log, board) {
@@ -86,6 +87,9 @@ export default class Imperial {
         return;
       case "undo": {
         Object.assign(this, this.oldState);
+        if (this.auction?.inAuction) {
+          Object.assign(this.auction, this.oldAuctionState);
+        }
         return;
       }
       case "bondPurchase": {
@@ -234,6 +238,10 @@ export default class Imperial {
     ) {
       const oldState = setOldState(this);
       this.oldState = Object.assign({}, this, oldState);
+      if (this.auction?.inAuction) {
+        const oldAuctionState = setOldAuctionState(this.auction);
+        this.oldAuctionState = Object.assign({}, this.auction, oldAuctionState);
+      }
     }
   }
 
