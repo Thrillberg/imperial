@@ -2998,7 +2998,7 @@ describe("imperial", () => {
             { name: "a", nation: null, isOcean: true },
             { name: "b", nation: null, isOcean: true },
             { name: "c", nation: Nation.AH },
-            { name: "d", nation: Nation.AH },
+            { name: "d", nation: Nation.AH, egress: "a" },
             { name: "e", nation: null },
             { name: "f", nation: Nation.IT },
             { name: "g", nation: null },
@@ -3422,6 +3422,61 @@ describe("imperial", () => {
               Action.maneuver({ origin: "c", destination: "d" }),
               Action.maneuver({ origin: "c", destination: "e" }),
               Action.maneuver({ origin: "c", destination: "f" }),
+            ])
+          );
+        });
+
+        test("fleet can convoy army even after a naval fight", () => {
+          const game = newGame();
+          game.units.get(Nation.AH).get("d").fleets++;
+          game.units.get(Nation.AH).get("d").fleets++;
+          game.units.get(Nation.AH).get("d").armies++;
+          game.units.get(Nation.IT).get("a").fleets++;
+
+          game.tick(
+            Action.rondel({ slot: "maneuver1", nation: Nation.AH, cost: 0 })
+          );
+
+          expect(game.availableActions).toEqual(
+            new Set([
+              Action.endManeuver(),
+              Action.maneuver({ origin: "d", destination: "c" }),
+              Action.maneuver({ origin: "d", destination: "f" }),
+              Action.maneuver({ origin: "d", destination: "e" }),
+              Action.maneuver({ origin: "d", destination: "a" }),
+            ])
+          );
+
+          game.tick(Action.maneuver({ origin: "d", destination: "a" }));
+
+          expect(game.availableActions).toEqual(
+            new Set([
+              Action.fight({ province: "a", challenger: Nation.AH, incumbent: Nation.IT, targetType: "fleet" }),
+              Action.coexist({ province: "a", challenger: Nation.AH, incumbent: Nation.IT }),
+            ])
+          );
+
+          game.tick(Action.fight({ province: "a", challenger: Nation.AH, incumbent: Nation.IT, targetType: "fleet" }));
+
+          expect(game.availableActions).toEqual(
+            new Set([
+              Action.endManeuver(),
+              Action.maneuver({ origin: "d", destination: "c" }),
+              Action.maneuver({ origin: "d", destination: "f" }),
+              Action.maneuver({ origin: "d", destination: "e" }),
+              Action.maneuver({ origin: "d", destination: "a" }),
+            ])
+          );
+
+          game.tick(Action.maneuver({ origin: "d", destination: "a" }));
+
+          expect(game.availableActions).toEqual(
+            new Set([
+              Action.endManeuver(),
+              Action.maneuver({ origin: "d", destination: "c" }),
+              Action.maneuver({ origin: "d", destination: "f" }),
+              Action.maneuver({ origin: "d", destination: "e" }),
+              Action.maneuver({ origin: "d", destination: "g" }),
             ])
           );
         });

@@ -692,6 +692,7 @@ export default {
     },
     runImport: function() {
       const placements = this.importPlacements;
+      placements.forEach((placement) => delete placement.nation)
       this.tickWithAction(Action.import({ placements }));
       this.importPlacements = [];
       return;

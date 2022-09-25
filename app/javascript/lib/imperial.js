@@ -1646,10 +1646,12 @@ export default class Imperial {
             !this.overUnitLimit(action.payload.nation, "fleet", 2)
           ) {
             availableActions.add(
-              Action.import(
-                { placements: [{ province, type: "fleet" }] },
-                { province: province2, type: "fleet" }
-              )
+              Action.import({
+                placements: [
+                  { province, type: "fleet" },
+                  { province: province2, type: "fleet" }
+                ],
+              })
             );
           }
         }
