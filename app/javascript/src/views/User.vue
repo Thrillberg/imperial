@@ -135,12 +135,6 @@ export default {
   },
   methods: {
     save() {
-      if (this.discordId.length > 0 && this.discordId.length !== 18) {
-        this.errors.push("Your Discord Id must be exactly 18 characters long.");
-        this.discordId = "";
-      } else {
-        this.errors = []
-      }
       fetch("/api/users/update", {
         method: "PUT",
         body: JSON.stringify({
