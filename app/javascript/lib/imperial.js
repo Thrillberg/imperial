@@ -192,11 +192,7 @@ export default class Imperial {
       }
       case "blockCanal": {
         this.availableActions = new Set();
-        const reversedLog = this.log.slice().reverse();
-        const lastManeuverRondelAction = reversedLog.find(
-          this.actionIsRondelAndManeuver
-        );
-        this.beginManeuver(lastManeuverRondelAction);
+        this.setManeuverAvailableActions()
         const attemptedManeuverActionPayload = this.log[this.log.length - 2]
           .payload;
         this.availableActions.delete(
@@ -714,11 +710,7 @@ export default class Imperial {
         this.availableActions = new Set(this.rondelActions(this.currentNation));
       }
     } else {
-      const reversedLog = this.log.slice().reverse();
-      const lastManeuverRondelAction = reversedLog.find(
-        this.actionIsRondelAndManeuver
-      );
-      this.beginManeuver(lastManeuverRondelAction);
+      this.setManeuverAvailableActions()
     }
   }
 
@@ -905,11 +897,7 @@ export default class Imperial {
       this.maneuvering = false;
       this.handlePassingThroughInvestor();
     } else {
-      const reversedLog = this.log.slice().reverse();
-      const lastManeuverRondelAction = reversedLog.find(
-        this.actionIsRondelAndManeuver
-      );
-      this.beginManeuver(lastManeuverRondelAction);
+      this.setManeuverAvailableActions()
     }
   }
 
@@ -923,11 +911,7 @@ export default class Imperial {
       this.maneuvering = false;
       this.handlePassingThroughInvestor();
     } else {
-      const reversedLog = this.log.slice().reverse();
-      const lastManeuverRondelAction = reversedLog.find(
-        this.actionIsRondelAndManeuver
-      );
-      this.beginManeuver(lastManeuverRondelAction);
+      this.setManeuverAvailableActions()
     }
   }
 
@@ -1448,7 +1432,7 @@ export default class Imperial {
         this.maneuvering = true;
         this.collectUnitsToMove(action);
         this.checkForNewFights();
-        this.beginManeuver(action);
+        this.setManeuverAvailableActions()
         return;
       }
       case "factory": {
@@ -1804,50 +1788,6 @@ export default class Imperial {
               incumbent: this.currentNation,
               challenger: nation,
               targetType: unitType,
-            })
-          );
-        }
-      }
-    });
-  }
-
-  beginManeuver(action) {
-    this.availableActions.add(Action.endManeuver());
-
-    this.unitsToMove.forEach(([origin, type]) => {
-      if (type === "fleet") {
-        for (const destination of this.board.neighborsFor({
-          origin,
-          nation: action.payload.nation,
-          isFleet: true,
-          friendlyFleets: new Set(),
-          occupiedHomeProvinces: this.occupiedHomeProvinces(this.currentNation),
-        })) {
-          this.availableActions.add(
-            Action.maneuver({
-              origin,
-              destination,
-            })
-          );
-        }
-      } else if (type === "army") {
-        const friendlyFleets = new Set();
-        for (const [province, units] of this.units.get(this.currentNation)) {
-          if (units.fleets - (this.fleetConvoyCount[province] || 0) > 0) {
-            friendlyFleets.add(province);
-          }
-        }
-        for (const destination of this.board.neighborsFor({
-          origin,
-          nation: action.payload.nation,
-          isFleet: false,
-          friendlyFleets,
-          occupiedHomeProvinces: this.occupiedHomeProvinces(this.currentNation),
-        })) {
-          this.availableActions.add(
-            Action.maneuver({
-              origin,
-              destination,
             })
           );
         }
