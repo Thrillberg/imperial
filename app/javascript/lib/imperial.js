@@ -903,12 +903,7 @@ export default class Imperial {
     if (this.unitsToMove.length === 0) {
       this.unitsToMove = [];
       this.maneuvering = false;
-      if (this.variant === "withoutInvestorCard") {
-        this.roundOfInvestment();
-      } else {
-        this.handleAdvancePlayer();
-        this.availableActions = new Set(this.rondelActions(this.currentNation));
-      }
+      this.handlePassingThroughInvestor();
     } else {
       const reversedLog = this.log.slice().reverse();
       const lastManeuverRondelAction = reversedLog.find(
@@ -926,12 +921,7 @@ export default class Imperial {
     if (this.unitsToMove.length === 0) {
       this.unitsToMove = [];
       this.maneuvering = false;
-      if (this.variant === "withoutInvestorCard") {
-        this.roundOfInvestment();
-      } else {
-        this.handleAdvancePlayer();
-        this.availableActions = new Set(this.rondelActions(this.currentNation));
-      }
+      this.handlePassingThroughInvestor();
     } else {
       const reversedLog = this.log.slice().reverse();
       const lastManeuverRondelAction = reversedLog.find(
