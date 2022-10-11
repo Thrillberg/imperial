@@ -2681,6 +2681,10 @@ describe("imperial", () => {
             })
           );
 
+          game.tick(
+            Action.endManeuver()
+          );
+
           expect(game.availableActions).toEqual(
             new Set([
               Action.skipBondPurchase({

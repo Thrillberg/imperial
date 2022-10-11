@@ -538,12 +538,7 @@ export default class Imperial {
     this.fleetConvoyCount = {};
     this.maneuvering = false;
     this.adjudicateFlags();
-    if (this.variant === "withoutInvestorCard") {
-      this.roundOfInvestment();
-    } else {
-      this.handleAdvancePlayer();
-      this.availableActions = new Set(this.rondelActions(this.currentNation));
-    }
+    this.handlePassingThroughInvestor();
   }
 
   endGame() {
@@ -1464,7 +1459,6 @@ export default class Imperial {
         this.collectUnitsToMove(action);
         this.checkForNewFights();
         this.beginManeuver(action);
-        this.handlePassingThroughInvestor(action.payload.slot);
         return;
       }
       case "factory": {
@@ -2338,7 +2332,7 @@ export default class Imperial {
     }
   }
 
-  handlePassingThroughInvestor(slot) {
+  handlePassingThroughInvestor() {
     if (this.passingThroughInvestor) {
       if (this.variant !== "withoutInvestorCard") {
         this.middleOfInvestorTurn();
@@ -2348,7 +2342,7 @@ export default class Imperial {
       this.passingThroughInvestor = false;
     } else if (this.variant === "withoutInvestorCard") {
       this.roundOfInvestment();
-    } else if (slot !== "maneuver1" && slot !== "maneuver2") {
+    } else {
       this.handleAdvancePlayer();
       this.availableActions = new Set(this.rondelActions(this.currentNation));
     }
