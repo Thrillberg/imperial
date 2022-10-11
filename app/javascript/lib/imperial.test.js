@@ -1532,9 +1532,12 @@ describe("imperial", () => {
               Action.rondel({ slot: maneuver, nation: Nation.AH, cost: 0 })
             );
 
-            expect(game.availableActions).toEqual(
-              new Set([Action.endManeuver()])
-            );
+            const expected = new Set();
+            ["factory", "production1", "maneuver1", "investor", "import", "production2", "maneuver2", "taxation"].forEach((slot) => {
+              expected.add(Action.rondel({ nation: Nation.IT, cost: 0, slot }));
+            });
+
+            expect(game.availableActions).toEqual(expected);
           });
 
           test("nation has one fleet that can go to one destination", () => {
