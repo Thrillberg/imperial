@@ -1282,6 +1282,7 @@ export default class Imperial {
         }
       }
     }
+
     currentNation.previousRondelPosition = currentNation.rondelPosition;
     currentNation.rondelPosition = action.payload.slot;
     this.players[this.currentPlayerName].cash -= action.payload.cost;
@@ -1463,6 +1464,7 @@ export default class Imperial {
         this.collectUnitsToMove(action);
         this.checkForNewFights();
         this.beginManeuver(action);
+        this.handlePassingThroughInvestor(action.payload.slot);
         return;
       }
       case "factory": {
@@ -2336,7 +2338,7 @@ export default class Imperial {
     }
   }
 
-  handlePassingThroughInvestor() {
+  handlePassingThroughInvestor(slot) {
     if (this.passingThroughInvestor) {
       if (this.variant !== "withoutInvestorCard") {
         this.middleOfInvestorTurn();
@@ -2346,7 +2348,7 @@ export default class Imperial {
       this.passingThroughInvestor = false;
     } else if (this.variant === "withoutInvestorCard") {
       this.roundOfInvestment();
-    } else {
+    } else if (slot !== "maneuver1" && slot !== "maneuver2") {
       this.handleAdvancePlayer();
       this.availableActions = new Set(this.rondelActions(this.currentNation));
     }

@@ -2662,6 +2662,70 @@ describe("imperial", () => {
             });
           }
         );
+
+        test("works on maneuver2, too", () => {
+          const game = newGame();
+          // Make player1 the investor card holder
+          game.investorCardHolder = "player1";
+          game.nations.get(Nation.AH).rondelPosition = "factory";
+          // Clear out player1's bonds so they can't trade any in
+          game.players["player1"].bonds = new Set();
+
+          expect(game.players["player1"].cash).toEqual(2);
+
+          game.tick(
+            Action.rondel({
+              slot: "maneuver2",
+              nation: Nation.AH,
+              cost: 0,
+            })
+          );
+
+          expect(game.availableActions).toEqual(
+            new Set([
+              Action.skipBondPurchase({
+                player: "player1",
+                nation: null,
+              }),
+              Action.bondPurchase({
+                nation: Nation.AH,
+                player: "player1",
+                tradeInValue: 0,
+                cost: 4,
+              }),
+              Action.bondPurchase({
+                nation: Nation.IT,
+                player: "player1",
+                tradeInValue: 0,
+                cost: 4,
+              }),
+              Action.bondPurchase({
+                nation: Nation.FR,
+                player: "player1",
+                tradeInValue: 0,
+                cost: 4,
+              }),
+              Action.bondPurchase({
+                nation: Nation.GB,
+                player: "player1",
+                tradeInValue: 0,
+                cost: 4,
+              }),
+              Action.bondPurchase({
+                nation: Nation.GE,
+                player: "player1",
+                tradeInValue: 0,
+                cost: 4,
+              }),
+              Action.bondPurchase({
+                nation: Nation.RU,
+                player: "player1",
+                tradeInValue: 0,
+                cost: 4,
+              }),
+            ])
+          );
+        });
       });
 
       describe("taxation", () => {
