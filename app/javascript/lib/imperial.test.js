@@ -2666,14 +2666,36 @@ describe("imperial", () => {
           }
         );
 
-        test("works on maneuver2, too", () => {
+        test("more realistic game example", () => {
+          const newGame = () => {
+            const board = new GameBoard({
+              nodes: [{ name: "a", nation: Nation.AH }, { name: "b" }],
+              edges: [["a", "b"]],
+            });
+  
+            const game = new Imperial(board);
+            game.tick(
+              Action.initialize({
+                players: [
+                  { id: "player1", nation: Nation.AH },
+                  { id: "player2", nation: Nation.IT },
+                  { id: "player3", nation: Nation.FR },
+                ],
+                soloMode: false,
+                variant: "standard",
+                baseGame: "imperial",
+              })
+            );
+            return game;
+          };
           const game = newGame();
           // Make player1 the investor card holder
           game.investorCardHolder = "player1";
-          game.nations.get(Nation.AH).rondelPosition = "factory";
+          game.nations.get(Nation.AH).rondelPosition = "production1";
           // Clear out player1's bonds so they can't trade any in
           game.players["player1"].bonds = new Set();
-
+          game.units.get(Nation.AH).get("a").armies = 1
+          game.units.get(Nation.IT).get("b").armies = 1
           expect(game.players["player1"].cash).toEqual(2);
 
           game.tick(
@@ -2684,9 +2706,8 @@ describe("imperial", () => {
             })
           );
 
-          game.tick(
-            Action.endManeuver()
-          );
+          game.tick(Action.maneuver({destination: "b", origin: "a"}))
+          game.tick(Action.fight({challenger: Nation.AH, incumbent: Nation.IT, province: "b", targetType: "army"}))
 
           expect(game.availableActions).toEqual(
             new Set([

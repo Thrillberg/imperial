@@ -700,18 +700,7 @@ export default class Imperial {
         action.payload.challenger
       ).controller;
     }
-    if (this.unitsToMove.length === 0) {
-      this.unitsToMove = [];
-      this.maneuvering = false;
-      if (this.variant === "withoutInvestorCard") {
-        this.roundOfInvestment();
-      } else {
-        this.handleAdvancePlayer();
-        this.availableActions = new Set(this.rondelActions(this.currentNation));
-      }
-    } else {
-      this.setManeuverAvailableActions()
-    }
+    this.setManeuverAvailableActions()
   }
 
   actionIsRondelAndManeuver(action) {
