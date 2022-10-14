@@ -29,7 +29,11 @@ Rails.application.routes.draw do
   get "*path", to: "pages#index", format: false
 
   if Rails.env.test?
-    require "test_routes"
-    define_test_routes
+    scope :cypress do
+      delete "cleanup", to: "cleanup#destroy"
+
+      resource :factories, only: %i[create]
+      resource :sessions, only: %i[create]
+    end
   end
 end
