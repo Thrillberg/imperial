@@ -4,13 +4,12 @@ name: Ruby
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   test:
-
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -27,33 +26,33 @@ jobs:
           - 5432:5432
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Ruby
-      uses: ruby/setup-ruby@v1
-      with:
-        ruby-version: 2.7.2
-        bundler-cache: true
-    - name: Install PostgreSQL client
-      run: |
-        sudo apt-get -yqq install libpq-dev
-    - name: Start Redis
-      uses: supercharge/redis-github-action@1.2.0
-      with:
-        redis-version: 4
-    - name: Build App
-      env:
-        PGHOST: localhost
-        PGUSER: postgres
-        PGPASSWORD: postgres
-        RAILS_ENV: test
-      run: |
-        bin/rails db:setup
-    - name: Run tests
-      env:
-        PGHOST: localhost
-        PGUSER: postgres
-        PGPASSWORD: postgres
-        RAILS_ENV: test
-      run: |
-        bundle exec standardrb
-        bundle exec rake
+      - uses: actions/checkout@v2
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.1.2
+          bundler-cache: true
+      - name: Install PostgreSQL client
+        run: |
+          sudo apt-get -yqq install libpq-dev
+      - name: Start Redis
+        uses: supercharge/redis-github-action@1.2.0
+        with:
+          redis-version: 4
+      - name: Build App
+        env:
+          PGHOST: localhost
+          PGUSER: postgres
+          PGPASSWORD: postgres
+          RAILS_ENV: test
+        run: |
+          bin/rails db:setup
+      - name: Run tests
+        env:
+          PGHOST: localhost
+          PGUSER: postgres
+          PGPASSWORD: postgres
+          RAILS_ENV: test
+        run: |
+          bundle exec standardrb
+          bundle exec rake
