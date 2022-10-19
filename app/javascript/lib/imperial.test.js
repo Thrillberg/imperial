@@ -3679,28 +3679,6 @@ describe("imperial", () => {
           expect(game.provinces.get("f").flag).toEqual(Nation.IT);
         });
 
-        test("flag doesn't change immediately after maneuver if more moves are possible", () => {
-          const game = newGame();
-          game.units.get(Nation.AH).get("d").armies++;
-          // This army on g is only there so that AH's turn doesn't
-          // automatically end after its one maneuver
-          game.units.get(Nation.AH).get("g").armies++;
-          game.provinces.get("e").flag = Nation.IT;
-
-          game.tick(
-            Action.rondel({ slot: "maneuver1", nation: Nation.AH, cost: 0 })
-          );
-          game.tick(Action.maneuver({ origin: "d", destination: "e" }));
-
-          // The turn isn't over yet so the flag should still be Italian
-          expect(game.provinces.get("e").flag).toEqual(Nation.IT);
-
-          game.tick(Action.endManeuver());
-
-          // The turn is over now and the flag should switch to Austria
-          expect(game.provinces.get("e").flag).toEqual(Nation.AH);
-        });
-
         test("without endManeuver(), maneuver away from coexisting province switches flag to other nation at the end of the turn", () => {
           const game = newGame();
           game.units.get(Nation.AH).get("f").armies++;

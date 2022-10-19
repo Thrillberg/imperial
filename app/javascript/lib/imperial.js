@@ -1027,8 +1027,7 @@ export default class Imperial {
     );
     this.unitsToMove.splice(i, 1);
 
-    this.updateFlagForEvacuatedProvince(origin);
-    this.updateFlagForNewlyEnteredProvince(destination);
+    this.updateFlag(origin);
 
     // Interrupt manuevers in case of potential conflict!
     this.availableActions = new Set();
@@ -1148,6 +1147,18 @@ export default class Imperial {
         Action.skipDestroyFactory({ province: destination }),
       ]);
       return;
+    }
+
+    // Don't update the province flag if the province is a home province of a nation.
+    let plantFlag = true;
+    for (const [nation, provinces] of this.board.byNation) {
+      if (provinces.has(destination) && !!nation) {
+        plantFlag = false;
+      }
+    }
+    if (plantFlag === true) {
+      // Update province flag
+      this.provinces.get(destination).flag = this.currentNation;
     }
 
     this.setManeuverAvailableActions();
@@ -2261,79 +2272,45 @@ export default class Imperial {
     let index = 0;
     let action = reversedLog[index];
     let originsFromPreviousManeuver = [];
-    let destinationsFromPreviousManeuver = [];
     while (action.type !== "rondel") {
-      if (action.payload) {
-        const { origin = "", destination = "" } = action.payload;
-        if (origin) {
-          originsFromPreviousManeuver.push(origin);
-        }
-        if (destination) {
-          destinationsFromPreviousManeuver.push(destination)
-        }
+      const origin = action.payload?.origin;
+      if (origin) {
+        originsFromPreviousManeuver.push(origin);
       }
       index += 1;
       action = reversedLog[index];
     }
-    originsFromPreviousManeuver.forEach((province) => {
-      this.updateFlagForEvacuatedProvince(province);
+    originsFromPreviousManeuver.forEach((origin) => {
+      this.updateFlag(origin);
     });
-    destinationsFromPreviousManeuver.forEach((province) => {
-      this.updateFlagForNewlyEnteredProvince(province);
-    })
   }
 
-  updateFlagForEvacuatedProvince(province) {
+  updateFlag(origin) {
+    // Update origin flag if a different nation remains in the origin
     if (this.unitsToMove.length === 0) {
-      const nationHadAFlagAtProvince =
-        this.provinces.get(province).flag === this.currentNation;
-      const armiesAtProvince = this.units.get(this.currentNation).get(province)
+      const nationHadAFlagAtOrigin =
+        this.provinces.get(origin).flag === this.currentNation;
+      const armiesAtOrigin = this.units.get(this.currentNation).get(origin)
         .armies;
-      const fleetsAtProvince = this.units.get(this.currentNation).get(province)
+      const fleetsAtOrigin = this.units.get(this.currentNation).get(origin)
         .fleets;
       if (
-        nationHadAFlagAtProvince &&
-        armiesAtProvince === 0 &&
-        fleetsAtProvince === 0
+        nationHadAFlagAtOrigin &&
+        armiesAtOrigin === 0 &&
+        fleetsAtOrigin === 0
       ) {
         const otherNationsOccupying = [];
         for (const [nation] of this.nations) {
-          const nationsArmies = this.units.get(nation).get(province).armies;
-          const nationsFleets = this.units.get(nation).get(province).fleets;
+          const nationsArmies = this.units.get(nation).get(origin).armies;
+          const nationsFleets = this.units.get(nation).get(origin).fleets;
           if (nationsArmies > 0 || nationsFleets > 0) {
             otherNationsOccupying.push(nation);
           }
         }
         // If multiple other nations occupy, then flag remains with the original flag-holder
         if (otherNationsOccupying.length === 1) {
-          this.provinces.get(province).flag = otherNationsOccupying[0];
+          this.provinces.get(origin).flag = otherNationsOccupying[0];
         }
-      }
-    }
-  }
-
-  updateFlagForNewlyEnteredProvince(province) {
-    if (this.unitsToMove.length === 0) {
-      // Don't update the province flag if the province is a home province of a nation.
-      for (const [nation, provinces] of this.board.byNation) {
-        if (provinces.has(province) && !!nation) {
-          return;
-        }
-      }
-
-      const otherNationsOccupying = [];
-      for (const [nation] of this.nations) {
-        const nationsArmies = this.units.get(nation).get(province).armies;
-        const nationsFleets = this.units.get(nation).get(province).fleets;
-        if (nationsArmies > 0 || nationsFleets > 0) {
-          otherNationsOccupying.push(nation);
-        }
-      }
-      // If multiple other nations occupy, then flag remains with the original flag-holder
-      if (otherNationsOccupying.length === 1) {
-        this.provinces.get(province).flag = otherNationsOccupying[0];
-      } else if (otherNationsOccupying.length === 0) {
-        this.provinces.get(province).flag = this.currentNation;
       }
     }
   }
