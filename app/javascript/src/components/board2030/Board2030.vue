@@ -19,6 +19,9 @@
     <clipPath id="fleetClip">
       <circle cx="750" cy="500" r="500" />
     </clipPath>
+    <clipPath id="fleetClipBR">
+      <circle cx="320" cy="240" r="214" />
+    </clipPath>
     <g stroke="#000000" stroke-width="0.5">
       <Province
         v-for="(province, name) in sea_provinces"

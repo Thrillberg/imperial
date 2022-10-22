@@ -6,7 +6,7 @@
     :height="height"
   >
     <g
-    v-bind:clip-path="this.fleet ? 'url(#fleetClip)' : ''" :filter="activeFilter"
+    v-bind:clip-path="this.fleet ? 'url(#fleetClipBR)' : ''" :filter="activeFilter"
     >
     <path fill="#229e45" fill-rule="evenodd" d="M0 0h640v480H0z"/>
     <path fill="#f8e509" fill-rule="evenodd" d="m321.4 436 301.5-195.7L319.6 44 17.1 240.7 321.4 436z"/>
