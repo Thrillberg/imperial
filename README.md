@@ -12,7 +12,7 @@ By participating in this project you agree to abide by its terms._
 
 ## Local development setup
 
-Imperial uses Ruby version 2.7.1, Redis (> 4.0) and PostgreSQL.
+Imperial uses Ruby version 3.1.2, Redis (> 4.0) and PostgreSQL.
 
 To run Imperial on your local machine, please follow these instructions:
 
@@ -38,7 +38,7 @@ npm install
 ```
 5. In one terminal window, run webpack:
 ```
-bin/webpack-dev-server
+bin/webpack --watch
 ```
 6. Keep webpack running and in a separate terminal window, run the Rails server:
 ```
@@ -60,7 +60,7 @@ To run Ruby RSpec tests, run the following command from the project root:
 rspec
 ```
 
-This project also uses [Cypress](https://www.cypress.io/) for feature tests. To
+This project also uses [Cypress](https://www.cypress.io/) for feature tests. **These tests have not been maintained, however.** To
 run these tests, run the following command from the project root:
 
 ```
