@@ -54,8 +54,8 @@
     ]
   },
   "scripts": {
-    "lint": "eslint 'app/javascript/**/*.{js,vue}'",
-    "lint/fix": "eslint 'app/javascript/**/*.{js,vue}' --fix",
+    "lint": "eslint $(git diff --name-only HEAD | xargs)",
+    "lint/fix": "eslint $(git diff --name-only HEAD | xargs) --fix",
     "test": "jest",
     "cypress": "cypress open"
   },
