@@ -12,7 +12,7 @@ By participating in this project you agree to abide by its terms._
 
 ## Local development setup
 
-Imperial uses Ruby version 3.1.2, Redis (> 4.0) and PostgreSQL.
+Imperial uses Ruby version 3.1.2, Redis (> 4.0), PostgreSQL, and NodeJS.
 
 To run Imperial on your local machine, please follow these instructions:
 
