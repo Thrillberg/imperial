@@ -113,6 +113,8 @@ import westernmediterraneansea from "./western_mediterranean_sea.svg";
 
 import Province from "./Province.vue";
 
+import { markRaw } from "vue";
+
 export default {
   name: "Board",
   props: {
@@ -267,7 +269,7 @@ export default {
       if (this.paused) return false;
 
       if (this.game.availableActions) {
-        return [...this.game.availableActions].every(action => action.type === "buildFactory");
+        return [...this.game.availableActions].every(action => action.type === "buildFactory" || action.type === "skipBuildFactory");
       }
 
       return false;
@@ -276,65 +278,65 @@ export default {
   data() {
     return {
       sea_provinces: {
-        "Baltic Sea": balticsea,
-        "Bay of Biscay": bayofbiscay,
-        "Black Sea": blacksea,
-        "Eastern Mediterranean Sea": easternmediterraneansea,
-        "English Channel": englishchannel,
-        "Ionian Sea": ioniansea,
-        "North Atlantic": northatlantic,
-        "North Sea": northsea,
-        "Western Mediterranean Sea": westernmediterraneansea
+        "Baltic Sea": markRaw(balticsea),
+        "Bay of Biscay": markRaw(bayofbiscay),
+        "Black Sea": markRaw(blacksea),
+        "Eastern Mediterranean Sea": markRaw(easternmediterraneansea),
+        "English Channel": markRaw(englishchannel),
+        "Ionian Sea": markRaw(ioniansea),
+        "North Atlantic": markRaw(northatlantic),
+        "North Sea": markRaw(northsea),
+        "Western Mediterranean Sea": markRaw(westernmediterraneansea)
       },
       land_provinces: {
-        "West Balkan": westbalkan,
-        "Berlin": berlin,
-        "Danzig": danzig,
-        "Prague": prague,
-        "Warsaw": warsaw,
-        "Venice": venice,
-        "Algeria": algeria,
-        "Belgium": belgium,
-        "Brest": brest,
-        "Budapest": budapest,
-        "Bulgaria": bulgaria,
-        "Cologne": cologne,
-        "Corsica": corsica,
-        "Denmark": denmark,
-        "Switzerland": switzerland,
-        "Dijon": dijon,
-        "Dublin": dublin,
-        "Edinburgh": edinburgh,
-        "Florence": florence,
-        "Marseille": marseille,
-        "Genoa": genoa,
-        "Greece": greece,
-        "Hamburg": hamburg,
-        "Holland": holland,
-        "Kiev": kiev,
-        "Lemberg": lemberg,
-        "Liverpool": liverpool,
-        "London": london,
-        "Morocco": morocco,
-        "Moscow": moscow,
-        "Munich": munich,
-        "Naples": naples,
-        "Norway": norway,
-        "Odessa": odessa,
-        "Paris": paris,
-        "Portugal": portugal,
-        "Romania": romania,
-        "Rome": rome,
-        "Sardinia": sardinia,
-        "Sheffield": sheffield,
-        "Spain": spain,
-        "St. Petersburg": stpetersburg,
-        "Sweden": sweden,
-        "Trieste": trieste,
-        "Tunis": tunis,
-        "Turkey": turkey,
-        "Vienna": vienna,
-        "Bordeaux": bordeaux
+        "West Balkan": markRaw(westbalkan),
+        "Berlin": markRaw(berlin),
+        "Danzig": markRaw(danzig),
+        "Prague": markRaw(prague),
+        "Warsaw": markRaw(warsaw),
+        "Venice": markRaw(venice),
+        "Algeria": markRaw(algeria),
+        "Belgium": markRaw(belgium),
+        "Brest": markRaw(brest),
+        "Budapest": markRaw(budapest),
+        "Bulgaria": markRaw(bulgaria),
+        "Cologne": markRaw(cologne),
+        "Corsica": markRaw(corsica),
+        "Denmark": markRaw(denmark),
+        "Switzerland": markRaw(switzerland),
+        "Dijon": markRaw(dijon),
+        "Dublin": markRaw(dublin),
+        "Edinburgh": markRaw(edinburgh),
+        "Florence": markRaw(florence),
+        "Marseille": markRaw(marseille),
+        "Genoa": markRaw(genoa),
+        "Greece": markRaw(greece),
+        "Hamburg": markRaw(hamburg),
+        "Holland": markRaw(holland),
+        "Kiev": markRaw(kiev),
+        "Lemberg": markRaw(lemberg),
+        "Liverpool": markRaw(liverpool),
+        "London": markRaw(london),
+        "Morocco": markRaw(morocco),
+        "Moscow": markRaw(moscow),
+        "Munich": markRaw(munich),
+        "Naples": markRaw(naples),
+        "Norway": markRaw(norway),
+        "Odessa": markRaw(odessa),
+        "Paris": markRaw(paris),
+        "Portugal": markRaw(portugal),
+        "Romania": markRaw(romania),
+        "Rome": markRaw(rome),
+        "Sardinia": markRaw(sardinia),
+        "Sheffield": markRaw(sheffield),
+        "Spain": markRaw(spain),
+        "St. Petersburg": markRaw(stpetersburg),
+        "Sweden": markRaw(sweden),
+        "Trieste": markRaw(trieste),
+        "Tunis": markRaw(tunis),
+        "Turkey": markRaw(turkey),
+        "Vienna": markRaw(vienna),
+        "Bordeaux": markRaw(bordeaux)
       }
     };
   },

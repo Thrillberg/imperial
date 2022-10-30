@@ -10,7 +10,7 @@ Webpacker.rules.map((rule, index) => {
   }
 })
 
-exportConfig = Webpacker.merge(Webpacker.webpackConfig, vueConfig)
+let exportConfig = Webpacker.merge(Webpacker.webpackConfig, vueConfig)
 delete exportConfig.optimization
 
 module.exports = exportConfig

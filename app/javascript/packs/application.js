@@ -16,19 +16,17 @@
 
 import 'regenerator-runtime/runtime'
 
-import Vue from "vue";
+import { createApp } from "vue";
 import App from "../src/App.vue";
 import router from "../src/router";
-import VueCookies from "vue-cookies";
+import VueCookies from "vue3-cookies";
 
-Vue.config.productionTip = false;
-Vue.use(VueCookies);
+const app = createApp(App);
+app.use(router)
+app.use(VueCookies)
 
-const app = document.createElement("div");
-app.setAttribute("id", "app");
-document.body.appendChild(app);
+const appElement = document.createElement("div");
+appElement.setAttribute("id", "app");
+document.body.appendChild(appElement);
 
-new Vue({
-  router,
-  render: h => h(App)
-}).$mount("#app");
+app.mount("#app");

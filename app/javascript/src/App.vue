@@ -8,19 +8,22 @@
         v-on:identified="identify"
         v-on:anonymity_confirmed="anonymityConfirmed"
       />
-      <router-view
-        :profile="profile"
-        :users="onlineUsers"
-        :games="games"
-        :gamesFetched="gamesFetched"
-        :observers="observers"
-        :gameData="gameData"
-        v-on:registered="register"
-        v-on:signedIn="signIn"
-        v-on:openGame="openGame"
-        v-on:receiveGameData="receiveGameData"
-        ref="game"
-      />
+      <router-view v-slot="{ Component }">
+        <component
+          :profile="profile"
+          :users="onlineUsers"
+          :games="games"
+          :gamesFetched="gamesFetched"
+          :observers="observers"
+          :gameData="gameData"
+          v-on:registered="register"
+          v-on:signedIn="signIn"
+          v-on:openGame="openGame"
+          v-on:receiveGameData="receiveGameData"
+          ref="game"
+          :is="Component"
+        />
+      </router-view>
     </div>
     <div v-else class="text-center text-2xl mt-8">
       Loading
@@ -51,7 +54,7 @@ export default {
       gamesFetched: false
     };
   },
-  beforeDestroy() {
+  beforeUnmount() {
     apiClient.clearHandlers();
     apiClient.ws.close();
   },

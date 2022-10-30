@@ -39,10 +39,10 @@
           v-for="bond in sortedBonds(player.bonds)"
           :bond="bond"
           :toggleTradeIn="toggleTradeIn"
-          :canBeAppliedToTradeIn="canTradeIn(bond)"
           :isBeingAppliedToTradeIn="isBeingAppliedToTradeIn(bond)"
           :class="{ 'cursor-pointer': canTradeIn(bond) }"
           :key="bond.nation.value + bond.cost"
+          @click="applyToTradeIn(bond)"
         />
       </div>
       <div v-if="player.name === game.investorCardHolder">Investor Card</div>
@@ -77,6 +77,11 @@ export default {
     turnIndex: Number
   },
   methods: {
+    applyToTradeIn(bond) {
+      if (this.canTradeIn(bond)) {
+        this.toggleTradeIn(bond)
+      }
+    },
     canTradeIn(bond) {
       let availableBondsMatchNation = false;
       for (const availableBond of this.game.availableActions) {

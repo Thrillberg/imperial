@@ -7,7 +7,7 @@
           v-if="canBePurchased(bond)"
           :bond="bond"
           :canBePurchased="true"
-          @click.native="purchase(bond)"
+          @click="purchase(bond)"
           class="cursor-pointer"
           :isBeingAppliedToTradeIn="tradedInValue > 0"
           :tradedInValue="tradedInValue"

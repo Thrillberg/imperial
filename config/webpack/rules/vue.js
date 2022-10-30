@@ -1,4 +1,4 @@
-const VueLoaderPlugin = require('vue-loader/lib/plugin')
+const { VueLoaderPlugin } = require('vue-loader')
 const HtmlWebpackHarddiskPlugin = require('html-webpack-harddisk-plugin')
 const path = require('path')
 
@@ -7,7 +7,7 @@ module.exports = {
     rules: [
       {
         test: /\.vue$/,
-        use: { loader: 'vue-loader' }
+        loader: 'vue-loader',
       },
       {
         test: /\.js$/,
@@ -16,7 +16,7 @@ module.exports = {
       {
         test: /\.svg$/,
         use: [
-          'babel-loader',
+          'vue-loader',
           'vue-svg-loader',
         ],
       },
