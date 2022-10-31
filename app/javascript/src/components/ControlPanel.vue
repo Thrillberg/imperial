@@ -8,7 +8,10 @@
       Undo
     </button>
     <div class="flex flex-wrap">
-      <AvailableBonds :game="game"></AvailableBonds>
+      <AvailableBonds 
+        v-if="!purchasingBond"
+        :game="game">
+      </AvailableBonds>
       <TaxStatus :game="game"></TaxStatus>
     </div>
     <div v-if="!paused">
