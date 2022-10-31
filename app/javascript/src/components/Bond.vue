@@ -2,7 +2,7 @@
   <div
     :class="'m-1 border-2 border-' + border() +'-500 p-1 tooltip bg-' + bond.nation.value"
     :style="filter === 'grayscale' ? {filter: 'grayscale(1)'} : {}"
-    @click="click"
+    @click="$emit('click', bond)"
   >
     <svg xmlns="http://www.w3.org/2000/svg" width="30" height="20">
       <Flag :nation="bond.nation.value" width="30" />
@@ -26,18 +26,13 @@ export default {
     toggleTradeIn: Function,
     tradedInValue: Number,
     bond: Object,
-    canBeAppliedToTradeIn: Boolean,
     isBeingAppliedToTradeIn: Boolean,
     filter: String,
     canBePurchased: Boolean
   },
   components: { Flag },
+  emits: ['click'],
   methods: {
-    click() {
-      if (this.canBeAppliedToTradeIn) {
-        this.toggleTradeIn(this.bond)
-      }
-    },
     border() {
       if (this.isBeingAppliedToTradeIn) {
         return "yellow";

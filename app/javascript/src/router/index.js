@@ -1,5 +1,4 @@
-import Vue from "vue";
-import VueRouter from "vue-router";
+import { createRouter, createWebHistory } from "vue-router";
 import Home from "../views/Home.vue";
 
 import ActionCable from "actioncable";
@@ -230,8 +229,6 @@ class APIClient {
 
 const apiClient = new APIClient();
 
-Vue.use(VueRouter);
-
 const routes = [
   {
     path: "/",
@@ -305,8 +302,8 @@ const routes = [
   },
 ];
 
-const router = new VueRouter({
-  mode: "history",
+const router = createRouter({
+  history: createWebHistory(),
   routes,
   scrollBehavior() {
     return { x: 0, y: 0 };

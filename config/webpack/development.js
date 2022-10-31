@@ -15,7 +15,6 @@ webpackConfig.plugins.push(
       keywords: "imperial, board game, game, online, play",
       viewport: "width=device-width, initial-scale=1"
     },
-    template: require('html-webpack-template'),
     title: "Imperial",
   })
 );

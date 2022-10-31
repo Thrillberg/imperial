@@ -23,6 +23,8 @@
 </template>
 
 <script>
+import { defineAsyncComponent, markRaw } from 'vue';
+
 export default {
   name: "Flag",
   props: {
@@ -39,17 +41,17 @@ export default {
   data: () => {
     return {
       flags: {
-        "AH": () => import("./AHFlag.vue"),
-        "BR": () => import("./BRFlag.vue"),
-        "CN": () => import("./CNFlag.vue"),
-        "EU": () => import("./EUFlag.vue"),
-        "IN": () => import("./INFlag.vue"),
-        "IT": () => import("./ITFlag.vue"),
-        "FR": () => import("./FRFlag.vue"),
-        "GB": () => import("./GBFlag.vue"),
-        "GE": () => import("./GEFlag.vue"),
-        "RU": () => import("./RUFlag.vue"),
-        "US": () => import("./USFlag.vue"),
+        "AH": markRaw(defineAsyncComponent(() => import("./AHFlag.vue"))),
+        "BR": markRaw(defineAsyncComponent(() => import("./BRFlag.vue"))),
+        "CN": markRaw(defineAsyncComponent(() => import("./CNFlag.vue"))),
+        "EU": markRaw(defineAsyncComponent(() => import("./EUFlag.vue"))),
+        "IN": markRaw(defineAsyncComponent(() => import("./INFlag.vue"))),
+        "IT": markRaw(defineAsyncComponent(() => import("./ITFlag.vue"))),
+        "FR": markRaw(defineAsyncComponent(() => import("./FRFlag.vue"))),
+        "GB": markRaw(defineAsyncComponent(() => import("./GBFlag.vue"))),
+        "GE": markRaw(defineAsyncComponent(() => import("./GEFlag.vue"))),
+        "RU": markRaw(defineAsyncComponent(() => import("./RUFlag.vue"))),
+        "US": markRaw(defineAsyncComponent(() => import("./USFlag.vue"))),
       }
     }
   },

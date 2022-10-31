@@ -41,7 +41,7 @@
               :paused="paused"
               v-on:fightResolved="resolveFight"
               v-if="gameData.baseGame === 'imperial'"
-            ></component>
+            />
             <TaxChart :showBonus="game.baseGame === 'imperial2030'" :taxes="taxes()" />
             <div class="flex justify-center my-2">
               <div
@@ -142,7 +142,7 @@
               :paused="paused"
               v-on:fightResolved="resolveFight"
               v-if="gameData.baseGame === 'imperial2030'"
-            ></component>
+           />
             <div class="flex justify-center my-2">
               <div
                 v-if="this.game.log.length > 1"
@@ -262,7 +262,7 @@
             :province_with_fight="provinceWithFight"
             :paused="paused"
             v-on:fightResolved="resolveFight"
-          ></component>
+          />
         </div>
         <div class="w-full sm:w-1/3 border border-gray-500 rounded">
           <div v-if="hostingThisGame">
@@ -384,6 +384,8 @@ import imperialBoard from "../../lib/board.js";
 import imperial2030Board from "../../lib/board2030.js";
 
 import favicon2 from "../assets/favicon2.ico";
+
+import { defineAsyncComponent } from "vue";
 // import notification from "../assets/notification.mp3";
 
 // import { Howl } from "howler";
@@ -429,7 +431,7 @@ export default {
   updated() {
     document.title = this.gameData.name + " - Imperial";
   },
-  beforeDestroy() {
+  beforeUnmount() {
     window.removeEventListener("beforeunload", this.beforeWindowUnload)
   },
   beforeRouteLeave(to, from, next) {
@@ -439,13 +441,13 @@ export default {
   computed: {
     displayBoard() {
       if (this.game.baseGame === "imperial") {
-        return () => import("../components/board/Board.vue")
+        return defineAsyncComponent(() => import("../components/board/Board.vue"))
       } else if (this.game.baseGame === "imperial2030") {
-        return () => import("../components/board2030/Board2030.vue")
+        return defineAsyncComponent(() => import("../components/board2030/Board2030.vue"))
       }
 
       // Let's never get here.
-      return () => import("../components/board/Board.vue")
+      return defineAsyncComponent(() => import("../components/board/Board.vue"))
     },
     reversedGameLog() {
       if (this.game.log) {

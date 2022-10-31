@@ -1,11 +1,11 @@
 <template>
-  <component
+  <g
     ref="province"
-    :is="province"
     @click="select_province(name)"
     @mouseover="showFactory()"
     @mouseleave="hideFactory()"
   >
+    <component :is="province" />
     <text
       v-if="this.mounted && !['Sardinia', 'Corsica', 'Switzerland'].includes(this.name)"
       font-size="8"
@@ -97,7 +97,7 @@
       width="21"
       height="11"
     ></Flag>
-  </component>
+  </g>
 </template>
 
 <script>
