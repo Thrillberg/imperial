@@ -16,10 +16,25 @@
 
 import { createApp } from 'vue';
 import VueCookies from 'vue3-cookies';
+import * as Sentry from '@sentry/vue';
+import { BrowserTracing } from '@sentry/tracing';
 import App from '../src/App.vue';
 import router from '../src/router';
 
 const app = createApp(App);
+
+Sentry.init({
+  app,
+  dsn: 'https://122745012dbe4c0f83ea8309d3aec30f@o987046.ingest.sentry.io/4504086288465920',
+  integrations: [
+    new BrowserTracing({
+      routingInstrumentation: Sentry.vueRouterInstrumentation(router),
+      tracingOrigins: ['playimperial.club', /^\//],
+    }),
+  ],
+  tracesSampleRate: 0.5,
+});
+
 app.use(router);
 app.use(VueCookies);
 
