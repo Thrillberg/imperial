@@ -573,6 +573,9 @@ export default {
         this.board = imperial2030Board
       }
       this.game = Imperial.fromLog(gameLog, this.board);
+      if (baseGame) {
+        this.game.baseGame = baseGame;
+      }
       if (Object.keys(this.game.players).length > 0) {
         this.gameStarted = true;
         this.currentPlayer = this.game.players[this.profile.username] || {};
