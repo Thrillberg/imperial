@@ -447,7 +447,6 @@ export default {
       }
 
       // Let's never get here.
-      console.log(this.game);
       return defineAsyncComponent(() => import("../components/board/Board.vue"))
     },
     reversedGameLog() {
