@@ -47,6 +47,32 @@
               <div
                 v-if="this.game.log.length > 1"
                 class="rounded p-2 mx-2 bg-yellow-100 cursor-pointer"
+                @click="backToGameStart"
+              >
+                |◀
+              </div>
+              <div
+                v-else
+                class="rounded p-2 mx-2 bg-gray-600 text-white cursor-not-allowed"
+              >
+              |◀
+              </div>
+              <div
+                v-if="this.game.log.length > 1"
+                class="rounded p-2 mx-2 bg-yellow-100 cursor-pointer"
+                @click="backToRoundStart"
+              >
+                ◀◀
+              </div>
+              <div
+                v-else
+                class="rounded p-2 mx-2 bg-gray-600 text-white cursor-not-allowed"
+              >
+                ◀◀
+              </div>
+              <div
+                v-if="this.game.log.length > 1"
+                class="rounded p-2 mx-2 bg-yellow-100 cursor-pointer"
                 @click="back"
               >
                 ◀
@@ -69,6 +95,19 @@
                 class="rounded p-2 mx-2 bg-gray-600 text-white cursor-not-allowed"
               >
                 ▶
+              </div>
+              <div
+                v-if="poppedTurns.length > 0"
+                class="rounded p-2 mx-2 bg-yellow-100 cursor-pointer"
+                @click="forwardToCurrentAction"
+              >
+              ▶|
+              </div>
+              <div
+                v-else
+                class="rounded p-2 mx-2 bg-gray-600 text-white cursor-not-allowed"
+              >
+              ▶|
               </div>
             </div>
           </div>
@@ -147,6 +186,32 @@
               <div
                 v-if="this.game.log.length > 1"
                 class="rounded p-2 mx-2 bg-yellow-100 cursor-pointer"
+                @click="backToGameStart"
+              >
+                |◀
+              </div>
+              <div
+                v-else
+                class="rounded p-2 mx-2 bg-gray-600 text-white cursor-not-allowed"
+              >
+              |◀
+              </div>
+              <div
+                v-if="this.game.log.length > 1"
+                class="rounded p-2 mx-2 bg-yellow-100 cursor-pointer"
+                @click="backToRoundStart"
+              >
+                ◀◀
+              </div>
+              <div
+                v-else
+                class="rounded p-2 mx-2 bg-gray-600 text-white cursor-not-allowed"
+              >
+                ◀◀
+              </div>
+              <div
+                v-if="this.game.log.length > 1"
+                class="rounded p-2 mx-2 bg-yellow-100 cursor-pointer"
                 @click="back"
               >
                 ◀
@@ -169,6 +234,19 @@
                 class="rounded p-2 mx-2 bg-gray-600 text-white cursor-not-allowed"
               >
                 ▶
+              </div>
+              <div
+                v-if="poppedTurns.length > 0"
+                class="rounded p-2 mx-2 bg-yellow-100 cursor-pointer"
+                @click="forwardToCurrentAction"
+              >
+              ▶|
+              </div>
+              <div
+                v-else
+                class="rounded p-2 mx-2 bg-gray-600 text-white cursor-not-allowed"
+              >
+              ▶|
               </div>
             </div>
             <ControlPanel
@@ -386,6 +464,7 @@ import imperial2030Board from "../../lib/board2030.js";
 import favicon2 from "../assets/favicon2.ico";
 
 import { defineAsyncComponent } from "vue";
+import { Nation, Nation2030 } from "../../lib/constants";
 // import notification from "../assets/notification.mp3";
 
 // import { Howl } from "howler";
@@ -714,6 +793,7 @@ export default {
       this.maneuverOrigin = "";
     },
     back: function() {
+
       const lastTurn = this.game.log.pop();
       this.poppedTurns.push(lastTurn);
       if (lastTurn.type === "endGame") {
@@ -726,6 +806,27 @@ export default {
       const board = this.game.board;
       this.game = Imperial.fromLog(log, board);
     },
+    backToRoundStart: function() {
+      const startingNation = this.game.baseGame === "imperial" ? Nation.AH : Nation2030.RU;
+      while ((this.game.log[this.game.log.length - 1].payload.nation !== startingNation) || (this.game.log[this.game.log.length - 1].type !== "rondel")) {
+        this.back();
+      }
+
+      // Go back to beginning of startingNation's turn, one more
+      const lastTurn = this.game.log.pop();
+
+      this.poppedTurns.push(lastTurn);
+
+      const log = this.game.log;
+      const board = this.game.board;
+      this.game = Imperial.fromLog(log, board);
+    },
+    backToGameStart: function() {
+      while (this.game.log.length > 1) {
+        this.back();
+      }
+    },
+ 
     forward: function() {
       let newLog = this.game.log;
       newLog.push(this.poppedTurns.pop());
@@ -734,6 +835,11 @@ export default {
       }
       const board = this.game.board;
       this.game = Imperial.fromLog(newLog, board);
+    },
+    forwardToCurrentAction: function () {
+      while (this.poppedTurns.length > 0) {
+        this.forward();
+      }    
     },
     updateFavicon() {
       if (this.currentPlayer.name === this.game.currentPlayerName) {
