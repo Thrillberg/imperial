@@ -14,19 +14,17 @@
 // const images = require.context('../images', true)
 // const imagePath = (name) => images(name, true)
 
-import 'regenerator-runtime/runtime'
-
-import { createApp } from "vue";
-import App from "../src/App.vue";
-import router from "../src/router";
-import VueCookies from "vue3-cookies";
+import { createApp } from 'vue';
+import VueCookies from 'vue3-cookies';
+import App from '../src/App.vue';
+import router from '../src/router';
 
 const app = createApp(App);
-app.use(router)
-app.use(VueCookies)
+app.use(router);
+app.use(VueCookies);
 
-const appElement = document.createElement("div");
-appElement.setAttribute("id", "app");
+const appElement = document.createElement('div');
+appElement.setAttribute('id', 'app');
 document.body.appendChild(appElement);
 
-app.mount("#app");
+app.mount('#app');
