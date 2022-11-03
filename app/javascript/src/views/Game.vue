@@ -55,73 +55,7 @@
               v-if="gameData.baseGame === 'imperial'"
             />
             <TaxChart :showBonus="game.baseGame === 'imperial2030'" :taxes="taxes()" />
-            <div class="flex justify-center my-2">
-              <div
-                v-if="this.game.log.length > 1"
-                class="rounded p-2 mx-2 bg-yellow-100 cursor-pointer"
-                @click="backToGameStart"
-              >
-                |◀
-              </div>
-              <div
-                v-else
-                class="rounded p-2 mx-2 bg-gray-600 text-white cursor-not-allowed"
-              >
-              |◀
-              </div>
-              <div
-                v-if="this.game.log.length > 1"
-                class="rounded p-2 mx-2 bg-yellow-100 cursor-pointer"
-                @click="backToRoundStart"
-              >
-                ◀◀
-              </div>
-              <div
-                v-else
-                class="rounded p-2 mx-2 bg-gray-600 text-white cursor-not-allowed"
-              >
-                ◀◀
-              </div>
-              <div
-                v-if="this.game.log.length > 1"
-                class="rounded p-2 mx-2 bg-yellow-100 cursor-pointer"
-                @click="back"
-              >
-                ◀
-              </div>
-              <div
-                v-else
-                class="rounded p-2 mx-2 bg-gray-600 text-white cursor-not-allowed"
-              >
-                ◀
-              </div>
-              <div
-                v-if="poppedTurns.length > 0"
-                class="rounded p-2 mx-2 bg-yellow-100 cursor-pointer"
-                @click="forward"
-              >
-                ▶
-              </div>
-              <div
-                v-else
-                class="rounded p-2 mx-2 bg-gray-600 text-white cursor-not-allowed"
-              >
-                ▶
-              </div>
-              <div
-                v-if="poppedTurns.length > 0"
-                class="rounded p-2 mx-2 bg-yellow-100 cursor-pointer"
-                @click="forwardToCurrentAction"
-              >
-              ▶|
-              </div>
-              <div
-                v-else
-                class="rounded p-2 mx-2 bg-gray-600 text-white cursor-not-allowed"
-              >
-              ▶|
-              </div>
-            </div>
+            <TimeTravelButtons @backEvent='back'/>
           </div>
           <div class="text-sm" :class="gameDetailsWidth()">
             <div
@@ -476,6 +410,7 @@ import NationComponent from '../components/NationComponent.vue';
 import NationControlChart from '../components/NationControlChart.vue';
 import Rondel from '../components/Rondel.vue';
 import TaxChart from '../components/TaxChart.vue';
+import TimeTravelButtons from '../components/TimeTravelButtons.vue';
 import TurnStatus from '../components/TurnStatus.vue';
 
 import getGameLog from '../getGameLog';
@@ -500,6 +435,7 @@ export default {
     NationControlChart,
     Rondel,
     TaxChart,
+    TimeTravelButtons,
     TurnStatus,
   },
   props: ['profile', 'users', 'gameData', 'games', 'observers'],
