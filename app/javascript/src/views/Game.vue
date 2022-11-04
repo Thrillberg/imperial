@@ -55,73 +55,15 @@
               v-if="gameData.baseGame === 'imperial'"
             />
             <TaxChart :showBonus="game.baseGame === 'imperial2030'" :taxes="taxes()" />
-            <div class="flex justify-center my-2">
-              <div
-                v-if="this.game.log.length > 1"
-                class="rounded p-2 mx-2 bg-yellow-100 cursor-pointer"
-                @click="backToGameStart"
-              >
-                |◀
-              </div>
-              <div
-                v-else
-                class="rounded p-2 mx-2 bg-gray-600 text-white cursor-not-allowed"
-              >
-              |◀
-              </div>
-              <div
-                v-if="this.game.log.length > 1"
-                class="rounded p-2 mx-2 bg-yellow-100 cursor-pointer"
-                @click="backToRoundStart"
-              >
-                ◀◀
-              </div>
-              <div
-                v-else
-                class="rounded p-2 mx-2 bg-gray-600 text-white cursor-not-allowed"
-              >
-                ◀◀
-              </div>
-              <div
-                v-if="this.game.log.length > 1"
-                class="rounded p-2 mx-2 bg-yellow-100 cursor-pointer"
-                @click="back"
-              >
-                ◀
-              </div>
-              <div
-                v-else
-                class="rounded p-2 mx-2 bg-gray-600 text-white cursor-not-allowed"
-              >
-                ◀
-              </div>
-              <div
-                v-if="poppedTurns.length > 0"
-                class="rounded p-2 mx-2 bg-yellow-100 cursor-pointer"
-                @click="forward"
-              >
-                ▶
-              </div>
-              <div
-                v-else
-                class="rounded p-2 mx-2 bg-gray-600 text-white cursor-not-allowed"
-              >
-                ▶
-              </div>
-              <div
-                v-if="poppedTurns.length > 0"
-                class="rounded p-2 mx-2 bg-yellow-100 cursor-pointer"
-                @click="forwardToCurrentAction"
-              >
-              ▶|
-              </div>
-              <div
-                v-else
-                class="rounded p-2 mx-2 bg-gray-600 text-white cursor-not-allowed"
-              >
-              ▶|
-              </div>
-            </div>
+            <TimeTravelButtons 
+              :game="game"
+              :poppedTurns="poppedTurns"
+              @backToGameStartEvent='backToGameStart'
+              @backToRoundStartEvent='backToRoundStart'
+              @backEvent='back'
+              @forwardEvent='forward'
+              @forwardToCurrentActionEvent='forwardToCurrentAction'
+            />
           </div>
           <div class="text-sm" :class="gameDetailsWidth()">
             <div
@@ -197,73 +139,15 @@
               v-on:fightResolved="resolveFight"
               v-if="gameData.baseGame === 'imperial2030'"
            />
-            <div class="flex justify-center my-2">
-              <div
-                v-if="this.game.log.length > 1"
-                class="rounded p-2 mx-2 bg-yellow-100 cursor-pointer"
-                @click="backToGameStart"
-              >
-                |◀
-              </div>
-              <div
-                v-else
-                class="rounded p-2 mx-2 bg-gray-600 text-white cursor-not-allowed"
-              >
-              |◀
-              </div>
-              <div
-                v-if="this.game.log.length > 1"
-                class="rounded p-2 mx-2 bg-yellow-100 cursor-pointer"
-                @click="backToRoundStart"
-              >
-                ◀◀
-              </div>
-              <div
-                v-else
-                class="rounded p-2 mx-2 bg-gray-600 text-white cursor-not-allowed"
-              >
-                ◀◀
-              </div>
-              <div
-                v-if="this.game.log.length > 1"
-                class="rounded p-2 mx-2 bg-yellow-100 cursor-pointer"
-                @click="back"
-              >
-                ◀
-              </div>
-              <div
-                v-else
-                class="rounded p-2 mx-2 bg-gray-600 text-white cursor-not-allowed"
-              >
-                ◀
-              </div>
-              <div
-                v-if="poppedTurns.length > 0"
-                class="rounded p-2 mx-2 bg-yellow-100 cursor-pointer"
-                @click="forward"
-              >
-                ▶
-              </div>
-              <div
-                v-else
-                class="rounded p-2 mx-2 bg-gray-600 text-white cursor-not-allowed"
-              >
-                ▶
-              </div>
-              <div
-                v-if="poppedTurns.length > 0"
-                class="rounded p-2 mx-2 bg-yellow-100 cursor-pointer"
-                @click="forwardToCurrentAction"
-              >
-              ▶|
-              </div>
-              <div
-                v-else
-                class="rounded p-2 mx-2 bg-gray-600 text-white cursor-not-allowed"
-              >
-              ▶|
-              </div>
-            </div>
+           <TimeTravelButtons 
+              :game="game"
+              :poppedTurns="poppedTurns"
+              @backToGameStartEvent='backToGameStart'
+              @backToRoundStartEvent='backToRoundStart'
+              @backEvent='back'
+              @forwardEvent='forward'
+              @forwardToCurrentActionEvent='forwardToCurrentAction'
+            />
             <ControlPanel
               :game="game"
               :chooseImportType="importProvince"
@@ -476,6 +360,7 @@ import NationComponent from '../components/NationComponent.vue';
 import NationControlChart from '../components/NationControlChart.vue';
 import Rondel from '../components/Rondel.vue';
 import TaxChart from '../components/TaxChart.vue';
+import TimeTravelButtons from '../components/TimeTravelButtons.vue';
 import TurnStatus from '../components/TurnStatus.vue';
 
 import getGameLog from '../getGameLog';
@@ -500,6 +385,7 @@ export default {
     NationControlChart,
     Rondel,
     TaxChart,
+    TimeTravelButtons,
     TurnStatus,
   },
   props: ['profile', 'users', 'gameData', 'games', 'observers'],
@@ -819,14 +705,16 @@ export default {
     back() {
       const lastTurn = this.game.log.pop();
       this.poppedTurns.push(lastTurn);
-      if (lastTurn.type === 'endGame') {
+      let lastMoveType = this.game.log[this.game.log.length - 1].type;
+
+      while ((lastMoveType !== 'rondel' && lastMoveType !== 'initialize') || lastMoveType === 'endGame' ) {
         this.poppedTurns.push(this.game.log.pop());
+        lastMoveType = this.game.log[this.game.log.length - 1].type
       }
-      while (this.game.log[this.game.log.length - 1].type !== 'rondel') {
-        this.poppedTurns.push(this.game.log.pop());
-      }
+
       const { log } = this.game;
       const { board } = this.game;
+
       this.game = Imperial.fromLog(log, board);
     },
     backToRoundStart() {
@@ -837,7 +725,6 @@ export default {
 
       // Go back to beginning of startingNation's turn, one more
       const lastTurn = this.game.log.pop();
-
       this.poppedTurns.push(lastTurn);
 
       const { log } = this.game;
@@ -845,7 +732,7 @@ export default {
       this.game = Imperial.fromLog(log, board);
     },
     backToGameStart() {
-      while (this.game.log.length > 1) {
+      while (this.game.log[this.game.log.length - 1].type !== 'initialize') {
         this.back();
       }
     },
