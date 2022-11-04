@@ -55,7 +55,15 @@
               v-if="gameData.baseGame === 'imperial'"
             />
             <TaxChart :showBonus="game.baseGame === 'imperial2030'" :taxes="taxes()" />
-            <TimeTravelButtons @backEvent='back'/>
+            <TimeTravelButtons 
+              :game="game"
+              :poppedTurns="poppedTurns"
+              @backToGameStartEvent='backToGameStart'
+              @backToRoundStartEvent='backToRoundStart'
+              @backEvent='back'
+              @forwardEvent='forward'
+              @forwardToCurrentActionEvent='forwardToCurrentAction'
+            />
           </div>
           <div class="text-sm" :class="gameDetailsWidth()">
             <div
@@ -755,14 +763,16 @@ export default {
     back() {
       const lastTurn = this.game.log.pop();
       this.poppedTurns.push(lastTurn);
-      if (lastTurn.type === 'endGame') {
+      let lastMoveType = this.game.log[this.game.log.length - 1].type;
+
+      while ((lastMoveType !== 'rondel' && lastMoveType !== 'initialize') || lastMoveType === 'endGame' ) {
         this.poppedTurns.push(this.game.log.pop());
+        lastMoveType = this.game.log[this.game.log.length - 1].type
       }
-      while (this.game.log[this.game.log.length - 1].type !== 'rondel') {
-        this.poppedTurns.push(this.game.log.pop());
-      }
+
       const { log } = this.game;
       const { board } = this.game;
+
       this.game = Imperial.fromLog(log, board);
     },
     backToRoundStart() {
@@ -773,7 +783,6 @@ export default {
 
       // Go back to beginning of startingNation's turn, one more
       const lastTurn = this.game.log.pop();
-
       this.poppedTurns.push(lastTurn);
 
       const { log } = this.game;
@@ -781,7 +790,7 @@ export default {
       this.game = Imperial.fromLog(log, board);
     },
     backToGameStart() {
-      while (this.game.log.length > 1) {
+      while (this.game.log[this.game.log.length - 1].type !== 'initialize') {
         this.back();
       }
     },
