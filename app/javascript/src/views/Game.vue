@@ -139,73 +139,15 @@
               v-on:fightResolved="resolveFight"
               v-if="gameData.baseGame === 'imperial2030'"
            />
-            <div class="flex justify-center my-2">
-              <div
-                v-if="this.game.log.length > 1"
-                class="rounded p-2 mx-2 bg-yellow-100 cursor-pointer"
-                @click="backToGameStart"
-              >
-                |◀
-              </div>
-              <div
-                v-else
-                class="rounded p-2 mx-2 bg-gray-600 text-white cursor-not-allowed"
-              >
-              |◀
-              </div>
-              <div
-                v-if="this.game.log.length > 1"
-                class="rounded p-2 mx-2 bg-yellow-100 cursor-pointer"
-                @click="backToRoundStart"
-              >
-                ◀◀
-              </div>
-              <div
-                v-else
-                class="rounded p-2 mx-2 bg-gray-600 text-white cursor-not-allowed"
-              >
-                ◀◀
-              </div>
-              <div
-                v-if="this.game.log.length > 1"
-                class="rounded p-2 mx-2 bg-yellow-100 cursor-pointer"
-                @click="back"
-              >
-                ◀
-              </div>
-              <div
-                v-else
-                class="rounded p-2 mx-2 bg-gray-600 text-white cursor-not-allowed"
-              >
-                ◀
-              </div>
-              <div
-                v-if="poppedTurns.length > 0"
-                class="rounded p-2 mx-2 bg-yellow-100 cursor-pointer"
-                @click="forward"
-              >
-                ▶
-              </div>
-              <div
-                v-else
-                class="rounded p-2 mx-2 bg-gray-600 text-white cursor-not-allowed"
-              >
-                ▶
-              </div>
-              <div
-                v-if="poppedTurns.length > 0"
-                class="rounded p-2 mx-2 bg-yellow-100 cursor-pointer"
-                @click="forwardToCurrentAction"
-              >
-              ▶|
-              </div>
-              <div
-                v-else
-                class="rounded p-2 mx-2 bg-gray-600 text-white cursor-not-allowed"
-              >
-              ▶|
-              </div>
-            </div>
+           <TimeTravelButtons 
+              :game="game"
+              :poppedTurns="poppedTurns"
+              @backToGameStartEvent='backToGameStart'
+              @backToRoundStartEvent='backToRoundStart'
+              @backEvent='back'
+              @forwardEvent='forward'
+              @forwardToCurrentActionEvent='forwardToCurrentAction'
+            />
             <ControlPanel
               :game="game"
               :chooseImportType="importProvince"
