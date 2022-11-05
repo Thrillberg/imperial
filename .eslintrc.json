@@ -20,6 +20,10 @@
         "guard-for-in": ["off"],
         "no-param-reassign": ["off"],
         "no-restricted-syntax": ["error", "WithStatement"],
+        "prefer-destructuring": ["error", {
+            "array": false,
+            "object": true
+        }],
         "vue/multi-word-component-names": ["error", {
             "ignores": ["Board", "Game", "Province"]
         }]
