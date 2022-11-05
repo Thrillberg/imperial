@@ -4,7 +4,7 @@
         "es2021": true
     },
     "extends": [
-        "plugin:vue/vue3-essential",
+        "plugin:vue/vue3-recommended",
         "airbnb-base"
     ],
     "overrides": [
@@ -21,7 +21,7 @@
         "no-param-reassign": ["off"],
         "no-restricted-syntax": ["error", "WithStatement"],
         "vue/multi-word-component-names": ["error", {
-            "ignores": ["Board", "Game"]
+            "ignores": ["Board", "Game", "Province"]
         }]
     }
 }
