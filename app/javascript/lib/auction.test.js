@@ -89,6 +89,33 @@ describe('auction', () => {
       expect(game.availableActions).toEqual(expectedActions);
     });
 
+    test('player skips purchasing a bond', () => {
+      const game = newGame();
+      const { auction } = game;
+      const expectedActions = new Set([
+        Action.skipBondPurchase({ player: 'player2', nation: Nation.AH }),
+        Action.undo({ player: 'player1' }),
+      ]);
+      [2, 4, 6, 9, 12, 16, 20, 25, 30].forEach((cost) => {
+        expectedActions.add(
+          Action.bondPurchase({
+            nation: Nation.AH,
+            cost,
+            tradeInValue: 0,
+            player: 'player2',
+          }),
+        );
+      });
+
+      auction.tick(
+        Action.skipBondPurchase({ player: 'player1', nation: Nation.AH }),
+        game,
+      );
+
+      expect(game.players.player1.bonds).toEqual(new Set());
+      expect(game.availableActions).toEqual(expectedActions);
+    });
+
     test('all players have had an opportunity to buy an AH bond', () => {
       const game = newGame();
       const { auction } = game;

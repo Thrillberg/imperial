@@ -117,14 +117,14 @@ export default class Auction {
     ) {
       game.nations.get(action.payload.nation).controller = action.payload.player;
     }
-    this.setAvailableActions(game);
+    this.setAvailableActions(action, game);
   }
 
   skipBondPurchase(action, game) {
     this.setAvailableActions(action, game);
   }
 
-  setAvailableActions(game) {
+  setAvailableActions(_, game) {
     game.availableActions = new Set();
     // If there are two available actions, they are the pass action and undo and don't
     // count as real actions.
