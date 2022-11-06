@@ -1,28 +1,31 @@
-import { Nation, Nation2030, Bond } from "./constants.js";
-import Action from "./action.js";
-import board from "./board.js";
+import { Nation, Nation2030, Bond } from './constants';
+import Action from './action';
+import board from './board';
 
 export default class Auction {
   static fromLog(log, game, auctionSetup) {
-    let auction = new Auction();
+    const auction = new Auction();
     log.forEach((entry) => auction.tick(entry, game, auctionSetup));
     return auction;
   }
 
   tick(action, game, auctionSetup) {
-    if (action.type === "initialize") {
+    if (action.type === 'initialize') {
       this.initialize(action, game, auctionSetup);
       return;
     }
 
     switch (action.type) {
-      case "bondPurchase": {
+      case 'bondPurchase': {
         this.bondPurchase(action, game);
         return;
       }
-      case "skipBondPurchase": {
+      case 'skipBondPurchase': {
         this.skipBondPurchase(action, game);
-        return;
+        break;
+      }
+      default: {
+        break;
       }
     }
   }
@@ -35,9 +38,9 @@ export default class Auction {
     this.inAuction = true;
     this.order = s.order;
     this.firstPlayerIndex = 0;
-    if (action.payload.baseGame === "imperial" || !action.payload.baseGame) {
+    if (action.payload.baseGame === 'imperial' || !action.payload.baseGame) {
       game.currentNation = Nation.AH;
-    } else if (action.payload.baseGame === "imperial2030") {
+    } else if (action.payload.baseGame === 'imperial2030') {
       game.currentNation = Nation2030.RU;
     }
     game.availableActions = this.availableBondPurchases({
@@ -49,27 +52,25 @@ export default class Auction {
     });
   }
 
-  availableBondPurchases(game) {
-    let out = new Set([
+  static availableBondPurchases(game) {
+    const out = new Set([
       Action.skipBondPurchase({
         player: game.currentPlayerName,
         nation: game.currentNation,
       }),
     ]);
-    const bonds = [...game.availableBonds].filter((bond) => {
-      return (
-        bond.cost <= game.players[game.currentPlayerName].cash &&
-        bond.nation === game.currentNation
-      );
-    });
-    bonds.map((bond) => {
+    const bonds = [...game.availableBonds].filter((bond) => (
+      bond.cost <= game.players[game.currentPlayerName].cash
+        && bond.nation === game.currentNation
+    ));
+    bonds.forEach((bond) => {
       out.add(
         Action.bondPurchase({
           nation: game.currentNation,
           player: game.currentPlayerName,
           cost: bond.cost,
           tradeInValue: 0,
-        })
+        }),
       );
     });
     return out;
@@ -99,24 +100,22 @@ export default class Auction {
     game.availableBonds.delete(newBond);
 
     if (game.nations.get(action.payload.nation).controller === null) {
-      game.nations.get(action.payload.nation).controller =
-        action.payload.player;
+      game.nations.get(action.payload.nation).controller = action.payload.player;
     }
 
     if (
       this.totalInvestmentInNation(
         action.payload.player,
         action.payload.nation,
-        game
-      ) >
-      this.totalInvestmentInNation(
+        game,
+      )
+      > this.totalInvestmentInNation(
         game.nations.get(action.payload.nation).controller,
         action.payload.nation,
-        game
+        game,
       )
     ) {
-      game.nations.get(action.payload.nation).controller =
-        action.payload.player;
+      game.nations.get(action.payload.nation).controller = action.payload.player;
     }
     this.setAvailableActions(action, game);
   }
@@ -135,8 +134,7 @@ export default class Auction {
       if (canPurchaseBonds) {
         game.previousPlayerName = game.currentPlayerName;
       }
-      game.currentPlayerName =
-        this.order[currentPlayerIndex + 1] || this.order[0];
+      game.currentPlayerName = this.order[currentPlayerIndex + 1] || this.order[0];
 
       // Nation's bonds have been offered to all players
       if (this.shouldAdvanceNation(game)) {
@@ -155,7 +153,7 @@ export default class Auction {
           Action.playerAutoSkipsBondPurchase({
             player: game.currentPlayerName,
             bondNation: game.currentNation,
-          })
+          }),
         );
       }
       game.availableActions = this.availableBondPurchases(game);
@@ -166,9 +164,9 @@ export default class Auction {
     return game.currentPlayerName === this.order[this.firstPlayerIndex];
   }
 
-  advanceNation(game) {
+  static advanceNation(game) {
     let nations;
-    if (game.baseGame === "imperial" || !game.baseGame) {
+    if (game.baseGame === 'imperial' || !game.baseGame) {
       nations = [
         Nation.AH,
         Nation.IT,
@@ -177,7 +175,7 @@ export default class Auction {
         Nation.GE,
         Nation.RU,
       ];
-    } else if (game.baseGame === "imperial2030") {
+    } else if (game.baseGame === 'imperial2030') {
       nations = [
         Nation2030.RU,
         Nation2030.CN,
@@ -192,7 +190,7 @@ export default class Auction {
   }
 
   resetCurrentPlayer(game) {
-    this.firstPlayerIndex++;
+    this.firstPlayerIndex += 1;
     if (!this.order[this.firstPlayerIndex]) {
       this.firstPlayerIndex = 0;
     }
@@ -205,29 +203,28 @@ export default class Auction {
     }
 
     const [startingPlayer, startingNation] = this.getStartingPlayerAndNation(
-      game
+      game,
     );
     game.currentPlayerName = startingPlayer;
     game.currentNation = startingNation;
     game.availableActions = new Set(game.rondelActions(startingNation));
     this.inAuction = false;
     let startingControllerIndex;
-    if (game.baseGame === "imperial" || !game.baseGame) {
+    if (game.baseGame === 'imperial' || !game.baseGame) {
       startingControllerIndex = this.order.indexOf(
-        game.nations.get(Nation.AH).controller
+        game.nations.get(Nation.AH).controller,
       );
-    } else if (game.baseGame === "imperial2030") {
+    } else if (game.baseGame === 'imperial2030') {
       startingControllerIndex = this.order.indexOf(
-        game.nations.get(Nation2030.RU).controller
+        game.nations.get(Nation2030.RU).controller,
       );
     }
-    if (game.variant !== "withoutInvestorCard") {
-      game.investorCardHolder =
-        this.order[startingControllerIndex + 1] || this.order[0];
+    if (game.variant !== 'withoutInvestorCard') {
+      game.investorCardHolder = this.order[startingControllerIndex + 1] || this.order[0];
     }
   }
 
-  totalInvestmentInNation(player, nation, game) {
+  static totalInvestmentInNation(player, nation, game) {
     if (!game.players[player]) {
       return 0;
     }
@@ -237,9 +234,10 @@ export default class Auction {
       .reduce((x, y) => x + y.cost, 0);
   }
 
-  getStartingPlayerAndNation(game) {
-    let nation, player;
-    if (game.baseGame === "imperial" || !game.baseGame) {
+  static getStartingPlayerAndNation(game) {
+    let nation; let
+      player;
+    if (game.baseGame === 'imperial' || !game.baseGame) {
       nation = Nation.AH;
       player = game.nations.get(nation).controller;
       if (!player) {
@@ -262,7 +260,7 @@ export default class Auction {
         nation = Nation.RU;
         player = game.nations.get(nation).controller;
       }
-    } else if (game.baseGame === "imperial2030") {
+    } else if (game.baseGame === 'imperial2030') {
       nation = Nation2030.RU;
       player = game.nations.get(nation).controller;
       if (!player) {
