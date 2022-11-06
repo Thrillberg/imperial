@@ -54,6 +54,7 @@ describe('round of investment', () => {
   test('each player can invest in one country', () => {
     const firstExpectedActions = new Set([
       Action.skipBondPurchase({ player: 'player1', nation: Nation.AH }),
+      Action.undo({ player: 'player1' }),
     ]);
     [6, 9, 12, 16, 20].forEach((cost) => {
       firstExpectedActions.add(
@@ -83,6 +84,7 @@ describe('round of investment', () => {
     );
     const secondExpectedActions = new Set([
       Action.skipBondPurchase({ player: 'player2', nation: Nation.AH }),
+      Action.undo({ player: 'player1' }),
     ]);
     [9, 12, 16, 20].forEach((cost) => {
       secondExpectedActions.add(
@@ -125,6 +127,19 @@ describe('round of investment', () => {
 
   test('it auto-skips a player who cannot afford to invest', () => {
     const game = Imperial.fromLog(log);
+    const expected = new Set(
+      [
+        'factory',
+        'production1',
+        'maneuver1',
+        'investor',
+        'import',
+        'production2',
+        'maneuver2',
+        'taxation',
+      ].map((slot) => Action.rondel({ nation: Nation.GB, cost: 0, slot })),
+    );
+    expected.add(Action.undo({ player: 'player1' }));
 
     game.tick(Action.rondel({ nation: Nation.AH, cost: 0, slot: 'investor' }));
     game.tick(Action.bondPurchase({
@@ -146,20 +161,7 @@ describe('round of investment', () => {
     }));
 
     expect(game.currentPlayerName).toEqual('player2');
-    expect(game.availableActions).toEqual(
-      new Set(
-        [
-          'factory',
-          'production1',
-          'maneuver1',
-          'investor',
-          'import',
-          'production2',
-          'maneuver2',
-          'taxation',
-        ].map((slot) => Action.rondel({ nation: Nation.GB, cost: 0, slot })),
-      ),
-    );
+    expect(game.availableActions).toEqual(expected);
   });
 
   test('a more elaborate auto-skipping example', () => {

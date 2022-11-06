@@ -279,6 +279,7 @@ describe('imperial2030', () => {
         expected.add(
           Action.rondel({ nation: Nation2030.CN, cost: 3, slot: 'factory' }),
         );
+        expected.add(Action.undo({ player: 'player1' }));
         game.nations.get(Nation2030.CN).rondelPosition = 'maneuver1';
         game.tick(
           Action.rondel({ slot: 'maneuver1', cost: 0, nation: Nation2030.RU }),
@@ -307,6 +308,7 @@ describe('imperial2030', () => {
         expected.add(
           Action.rondel({ nation: Nation2030.CN, cost: 15, slot: 'factory' }),
         );
+        expected.add(Action.undo({ player: 'player1' }));
         game.nations.get(Nation2030.CN).rondelPosition = 'maneuver1';
         game.tick(
           Action.rondel({ slot: 'maneuver1', cost: 0, nation: Nation2030.RU }),
@@ -361,6 +363,7 @@ describe('imperial2030', () => {
       const expected = new Set();
       expected.add(Action.blockCanal());
       expected.add(Action.unblockCanal());
+      expected.add(Action.undo({ player: 'player1' }));
 
       expect(game.availableActions).toEqual(expected);
     });
@@ -380,6 +383,7 @@ describe('imperial2030', () => {
       ['factory', 'investor', 'import', 'production2', 'production1', 'maneuver1', 'maneuver2', 'taxation'].forEach((slot) => {
         expected.add(Action.rondel({ nation: Nation2030.CN, cost: 0, slot }));
       });
+      expected.add(Action.undo({ player: 'player1' }));
 
       expect(game.availableActions).toEqual(expected);
     });
@@ -399,6 +403,7 @@ describe('imperial2030', () => {
       const expected = new Set();
       expected.add(Action.blockCanal());
       expected.add(Action.unblockCanal());
+      expected.add(Action.undo({ player: 'player1' }));
 
       expect(game.availableActions).toEqual(expected);
     });
@@ -430,6 +435,7 @@ describe('imperial2030', () => {
           destination: 'northatlantic',
         }),
       );
+      expected.add(Action.undo({ player: 'player2' }));
 
       expect(game.availableActions).toEqual(expected);
       expect(game.currentPlayerName).toEqual('player1');
@@ -456,6 +462,7 @@ describe('imperial2030', () => {
       ['factory', 'investor', 'import', 'production2', 'production1', 'maneuver1', 'maneuver2', 'taxation'].forEach((slot) => {
         expected.add(Action.rondel({ nation: Nation2030.CN, cost: 0, slot }));
       });
+      expected.add(Action.undo({ player: 'player2' }));
 
       expect(game.availableActions).toEqual(expected);
       expect(game.currentPlayerName).toEqual('player2');
