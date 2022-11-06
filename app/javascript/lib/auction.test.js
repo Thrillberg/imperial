@@ -63,6 +63,7 @@ describe('auction', () => {
       const { auction } = game;
       const expectedActions = new Set([
         Action.skipBondPurchase({ player: 'player2', nation: Nation.AH }),
+        Action.undo({ player: 'player1' }),
       ]);
       [2, 6, 9, 12, 16, 20, 25, 30].forEach((cost) => {
         expectedActions.add(
@@ -93,6 +94,7 @@ describe('auction', () => {
       const { auction } = game;
       const expectedActions = new Set([
         Action.skipBondPurchase({ player: 'player2', nation: Nation.IT }),
+        Action.undo({ player: 'player2' }),
       ]);
       [2, 4, 6, 9, 12, 16, 20, 25, 30].forEach((cost) => {
         expectedActions.add(
@@ -175,29 +177,30 @@ describe('auction', () => {
           player: 'player1', cost: 4, nation: Nation.RU, tradeInValue: 0,
         }),
       ];
+      const expected = new Set(
+        [
+          'factory',
+          'production1',
+          'maneuver1',
+          'investor',
+          'import',
+          'production2',
+          'maneuver2',
+          'taxation',
+        ].map((slot) => Action.rondel({ nation: Nation.AH, cost: 0, slot })),
+      );
+      expected.add(Action.undo({ player: 'player1' }));
 
       const game = Imperial.fromLog(log);
 
-      expect(game.availableActions).toEqual(
-        new Set(
-          [
-            'factory',
-            'production1',
-            'maneuver1',
-            'investor',
-            'import',
-            'production2',
-            'maneuver2',
-            'taxation',
-          ].map((slot) => Action.rondel({ nation: Nation.AH, cost: 0, slot })),
-        ),
-      );
+      expect(game.availableActions).toEqual(expected);
       expect(game.swissBanks).toEqual(['player2']);
     });
 
     test('it auto-skips players who cannot afford any bond', () => {
       const expectedActions = new Set([
         Action.skipBondPurchase({ player: 'player2', nation: Nation.FR }),
+        Action.undo({ player: 'player1' }),
       ]);
       [2, 4, 6, 9, 12, 16, 20, 25, 30].forEach((cost) => {
         expectedActions.add(
@@ -241,6 +244,7 @@ describe('auction', () => {
     test('auto-skip can handle more than 2 players with insufficient funds', () => {
       const expectedActions = new Set([
         Action.skipBondPurchase({ player: 'player3', nation: Nation.GB }),
+        Action.undo({ player: 'player3' }),
       ]);
       [2, 4, 6, 9, 12, 16].forEach((cost) => {
         expectedActions.add(

@@ -288,12 +288,10 @@ export default {
       this.tickWithAction(skipAction);
     },
     canUndo() {
-      if (this.paused) return false;
-
       let canUndo = false;
-      for (const action of this.game.availableActionsWithUndo()) {
+      for (const action of this.game.availableActions) {
         if (
-          this.game.log.length > 1 && action.type === 'undo' && (
+          action.type === 'undo' && (
             action.payload.player === this.profile.username
             || (this.game.soloMode && this.hostingThisGame)
           )
@@ -301,10 +299,11 @@ export default {
           canUndo = true;
         }
       }
+
       return canUndo;
     },
     undo() {
-      for (const action of this.game.availableActionsWithUndo()) {
+      for (const action of this.game.availableActions) {
         if (
           action.type === 'undo' && (
             action.payload.player === this.profile.username

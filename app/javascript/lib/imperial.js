@@ -68,7 +68,7 @@ export default class Imperial {
 
     // Check if the requested action is invalid.
     let validAction = false;
-    for (const availableAction of this.availableActionsWithUndo()) {
+    for (const availableAction of this.availableActions) {
       if (Imperial.isEqual(availableAction, action)) {
         validAction = true;
       }
@@ -78,6 +78,12 @@ export default class Imperial {
       return;
     }
 
+    this.availableActions = new Set();
+    if (this.log.length > 0 && !this.winner) {
+      if (this.log.slice(-1)[0].type !== 'undo') {
+        this.availableActions.add(Action.undo({ player: this.currentPlayerName }));
+      }
+    }
     this.log.push(action);
     const annotatedAction = { playerName: this.currentPlayerName, ...action };
     this.annotatedLog.push(annotatedAction);
@@ -154,7 +160,7 @@ export default class Imperial {
           this.currentPlayerName = this.nations.get(
             lastRondelAction.payload.nation,
           ).controller;
-          this.availableActions = new Set([lastRondelAction]);
+          this.availableActions.add(lastRondelAction);
           this.tick(lastRondelAction);
           return;
           // More Swiss Banks need to be given the option to force Investor
@@ -189,7 +195,6 @@ export default class Imperial {
         return;
       }
       case 'blockCanal': {
-        this.availableActions = new Set();
         this.setManeuverAvailableActions();
         const attemptedManeuverActionPayload = this.log[this.log.length - 2]
           .payload;
@@ -278,7 +283,9 @@ export default class Imperial {
     this.currentPlayerName = this.getStartingPlayer();
     this.previousPlayerName = this.currentPlayerName;
     if (this.variant === 'standard') {
-      this.availableActions = new Set(this.rondelActions(this.currentNation));
+      for (const availableAction of this.rondelActions(this.currentNation)) {
+        this.availableActions.add(availableAction);
+      }
     }
     this.soloMode = action.payload.soloMode;
   }
@@ -402,16 +409,20 @@ export default class Imperial {
       }
       if (this.currentPlayerName !== this.firstInvestor) {
         if (this.swissBanks.includes(this.currentPlayerName)) {
-          this.availableActions = this.bondPurchasesFromAllNations();
+          for (const bondPurchase of this.bondPurchasesFromAllNations()) {
+            this.availableActions.add(bondPurchase);
+          }
         } else {
-          this.availableActions = availableBondPurchases(
+          for (const availableBondPurchase of availableBondPurchases(
             this.currentNation,
             this,
-          );
+          )) {
+            this.availableActions.add(availableBondPurchase);
+          }
         }
-        // If there is one available action, it is the skip action and doesn't
-        // count as a real action.
-        while (this.availableActions.size <= 1 && this.investing) {
+        // If there are two available actions, they are the skip and undo actions and don't
+        // count as real actions.
+        while (this.availableActions.size <= 2 && this.investing) {
           this.annotatedLog.push(
             Action.playerAutoSkipsBondPurchase({
               player: this.currentPlayerName,
@@ -430,19 +441,28 @@ export default class Imperial {
               this.currentNation,
             ).controller;
             this.advanceInvestorCard();
-            this.availableActions = new Set(
-              this.rondelActions(this.currentNation),
-            );
+            this.availableActions.forEach((availableAction) => {
+              if (availableAction.type === 'skipBondPurchase') {
+                this.availableActions.delete(availableAction);
+              }
+            });
+            for (const rondelAction of this.rondelActions(this.currentNation)) {
+              this.availableActions.add(rondelAction);
+            }
 
             return;
           }
           if (this.swissBanks.includes(this.currentPlayerName)) {
-            this.availableActions = this.bondPurchasesFromAllNations();
+            for (const bondPurchase of this.bondPurchasesFromAllNations()) {
+              this.availableActions.add(bondPurchase);
+            }
           } else {
-            this.availableActions = availableBondPurchases(
+            for (const availableBondPurchase of availableBondPurchases(
               this.currentNation,
               this,
-            );
+            )) {
+              this.availableActions.add(availableBondPurchase);
+            }
           }
         }
         return;
@@ -498,9 +518,10 @@ export default class Imperial {
             this.currentNation,
           ).controller;
           this.advanceInvestorCard();
-          this.availableActions = new Set(
-            this.rondelActions(this.currentNation),
-          );
+
+          for (const rondelAction of this.rondelActions(this.currentNation)) {
+            this.availableActions.add(rondelAction);
+          }
         }
       }
     } else {
@@ -510,7 +531,9 @@ export default class Imperial {
       this.currentNation = this.nextNation(this.currentNation);
       this.currentPlayerName = this.nations.get(this.currentNation).controller;
       this.advanceInvestorCard();
-      this.availableActions = new Set(this.rondelActions(this.currentNation));
+      for (const rondelAction of this.rondelActions(this.currentNation)) {
+        this.availableActions.add(rondelAction);
+      }
     }
   }
 
@@ -566,7 +589,7 @@ export default class Imperial {
         }
       });
     }
-    this.availableActions = new Set();
+    this.availableActions.clear();
   }
 
   fight(action) {
@@ -733,7 +756,7 @@ export default class Imperial {
         nationsAtProvince[0],
       ).controller;
       const destination = action.payload.province;
-      this.availableActions = new Set();
+      this.availableActions.clear();
 
       if (
         this.units.get(nationsAtProvince[0]).get(action.payload.province)
@@ -760,7 +783,13 @@ export default class Imperial {
           }),
         );
       }
-      if (this.availableActions.size > 0) {
+      let canCoexist = false;
+      for (const availableAction of this.availableActions) {
+        if (availableAction.type !== 'undo') {
+          canCoexist = true;
+        }
+      }
+      if (canCoexist) {
         this.availableActions.add(
           Action.coexist({
             province: destination,
@@ -791,7 +820,9 @@ export default class Imperial {
         this.roundOfInvestment();
       } else {
         this.handleAdvancePlayer();
-        this.availableActions = new Set(this.rondelActions(this.currentNation));
+        for (const rondelAction of this.rondelActions(this.currentNation)) {
+          this.availableActions.add(rondelAction);
+        }
       }
     } else {
       // Find and maneuver other units
@@ -851,7 +882,9 @@ export default class Imperial {
         }
       }
 
-      this.availableActions = destinations;
+      for (const destination of destinations) {
+        this.availableActions.add(destination);
+      }
     }
   }
 
@@ -863,10 +896,12 @@ export default class Imperial {
       && this.units.get(this.currentNation).get(province).armies >= 3
       && this.log[this.log.length - 1].type !== 'skipDestroyFactory';
     if (isOccupyingForeignFactoryWithThreeUnits) {
-      this.availableActions = new Set([
+      for (const factoryAction of [
         Action.destroyFactory({ province }),
         Action.skipDestroyFactory({ province }),
-      ]);
+      ]) {
+        this.availableActions.add(factoryAction);
+      }
       return;
     }
 
@@ -955,7 +990,6 @@ export default class Imperial {
             && northAfricaCanalOwner !== this.currentNation);
         if (canalCanBeBlocked) {
           const canalOwner = colombiaCanalOwner || northAfricaCanalOwner;
-          this.availableActions = new Set();
           this.availableActions.add(Action.blockCanal());
           this.availableActions.add(Action.unblockCanal());
           this.currentPlayerName = this.nations.get(canalOwner).controller;
@@ -1013,7 +1047,6 @@ export default class Imperial {
     this.updateFlag(origin);
 
     // Interrupt manuevers in case of potential conflict!
-    this.availableActions = new Set();
     let incumbent = null;
     for (const [nation] of this.nations) {
       if (nation !== this.currentNation) {
@@ -1048,7 +1081,13 @@ export default class Imperial {
         }
       }
     }
-    if (this.availableActions.size > 0) {
+    let canCoexist = false;
+    for (const availableAction of this.availableActions) {
+      if (availableAction.type !== 'undo') {
+        canCoexist = true;
+      }
+    }
+    if (canCoexist) {
       this.availableActions.add(
         Action.coexist({
           province: destination,
@@ -1076,7 +1115,6 @@ export default class Imperial {
         && !!this.provinces.get(destination).factory
         && factoryCount <= 1
       ) {
-        this.availableActions = new Set();
         this.availableActions.add(
           Action.friendlyEntrance({
             incumbent: nation,
@@ -1098,7 +1136,6 @@ export default class Imperial {
         nation !== this.currentNation
         && this.board.byNation.get(nation)?.has(destination)
       ) {
-        this.availableActions = new Set();
         this.availableActions.add(
           Action.unfriendlyEntrance({
             incumbent: nation,
@@ -1124,10 +1161,8 @@ export default class Imperial {
       && this.units.get(this.currentNation).get(destination).armies >= 3
       && this.log[this.log.length - 1].type !== 'skipDestroyFactory';
     if (isOccupyingForeignFactoryWithThreeUnits) {
-      this.availableActions = new Set([
-        Action.destroyFactory({ province: destination }),
-        Action.skipDestroyFactory({ province: destination }),
-      ]);
+      this.availableActions.add(Action.destroyFactory({ province: destination }));
+      this.availableActions.add(Action.skipDestroyFactory({ province: destination }));
       return;
     }
 
@@ -1148,7 +1183,6 @@ export default class Imperial {
 
   setManeuverAvailableActions() {
     if (this.unitsToMove.length > 0) {
-      this.availableActions = new Set();
       this.checkForNewFights();
       const provincesWithFleets = new Map();
       const provincesWithArmies = new Map();
@@ -1196,6 +1230,11 @@ export default class Imperial {
     } else {
       // No more units may be maneuvered on this turn.
       this.maneuvering = false;
+      for (const availableAction of this.availableActions) {
+        if (availableAction.type === 'endManeuver') {
+          this.availableActions.delete(availableAction);
+        }
+      }
       this.fleetConvoyCount = {};
       this.adjudicateFlags();
       this.handlePassingThroughInvestor();
@@ -1217,7 +1256,13 @@ export default class Imperial {
       this.swissBanksWhoDoNotInterrupt = [];
       if (this.canAffordToPayInvestors(this.currentNation)) {
         this.allowSwissBanksToForceInvestor();
-        if (this.availableActions.size > 0) {
+        let shouldReturn = false;
+        for (const availableAction of this.availableActions) {
+          if (availableAction.type !== 'undo') {
+            shouldReturn = true;
+          }
+        }
+        if (shouldReturn) {
           return;
         }
       }
@@ -1398,7 +1443,7 @@ export default class Imperial {
       }
       case 'maneuver1':
       case 'maneuver2': {
-        this.availableActions = new Set([Action.endManeuver()]);
+        this.availableActions.add(Action.endManeuver());
         this.maneuvering = true;
         this.collectUnitsToMove(action);
         this.checkForNewFights();
@@ -1416,7 +1461,6 @@ export default class Imperial {
           }
         }
 
-        this.availableActions = new Set();
         for (const province of this.board.byNation.get(action.payload.nation)) {
           if (
             !this.provinces.get(province).factory
@@ -1725,7 +1769,9 @@ export default class Imperial {
       }
     }
 
-    this.availableActions = availableActions;
+    for (const availableAction of availableActions) {
+      this.availableActions.add(availableAction);
+    }
     this.importing = true;
   }
 
@@ -1791,11 +1837,20 @@ export default class Imperial {
     this.previousPlayerName = this.currentPlayerName;
     this.currentPlayerName = investor;
     if (this.variant === 'withoutInvestorCard') {
-      this.availableActions = availableBondPurchases(this.currentNation, this);
+      for (const bondPurchase of availableBondPurchases(this.currentNation, this)) {
+        this.availableActions.add(bondPurchase);
+      }
       this.investing = true;
       this.firstInvestor = this.currentPlayerName;
     } else {
-      this.availableActions = this.bondPurchasesFromAllNations();
+      for (const availableAction of this.availableActions) {
+        if (availableAction.type === 'bondPurchase' || availableAction.type === 'skipBondPurchase') {
+          this.availableActions.delete(availableAction);
+        }
+      }
+      for (const bondPurchase of this.bondPurchasesFromAllNations()) {
+        this.availableActions.add(bondPurchase);
+      }
     }
   }
 
@@ -2073,7 +2128,6 @@ export default class Imperial {
   }
 
   allowSwissBanksToForceInvestor() {
-    this.availableActions = new Set();
     const index = this.order.indexOf(this.investorCardHolder);
     const swissBanksToChoose = this.swissBanks.sort((playerA, playerB) => {
       const playerAIndex = this.order.indexOf(playerA);
@@ -2159,20 +2213,12 @@ export default class Imperial {
     return out;
   }
 
-  availableActionsWithUndo() {
-    const availableActions = new Set([...this.availableActions]);
-    if (this.log.length > 1 && !this.winner) {
-      if (this.log.slice(-1)[0].type !== 'undo') {
-        availableActions.add(Action.undo({ player: this.previousPlayerName }));
-      }
-    }
-    return availableActions;
-  }
-
   roundOfInvestment() {
     this.investing = true;
     this.firstInvestor = this.currentPlayerName;
-    this.availableActions = availableBondPurchases(this.currentNation, this);
+    for (const bondPurchase of availableBondPurchases(this.currentNation, this)) {
+      this.availableActions.add(bondPurchase);
+    }
     while (this.availableActions.size <= 1 && this.investing) {
       this.annotatedLog.push(
         Action.playerAutoSkipsBondPurchase({
@@ -2189,17 +2235,23 @@ export default class Imperial {
         }
         this.handleAdvancePlayer();
         this.advanceInvestorCard();
-        this.availableActions = new Set(this.rondelActions(this.currentNation));
+        for (const rondelAction of this.rondelActions(this.currentNation)) {
+          this.availableActions.add(rondelAction);
+        }
 
         return;
       }
       if (this.swissBanks.includes(this.currentPlayerName)) {
-        this.availableActions = this.bondPurchasesFromAllNations();
+        for (const bondPurchase of this.bondPurchasesFromAllNations()) {
+          this.availableActions.add(bondPurchase);
+        }
       } else {
-        this.availableActions = availableBondPurchases(
+        for (const bondPurchase of availableBondPurchases(
           this.currentNation,
           this,
-        );
+        )) {
+          this.availableActions.add(bondPurchase);
+        }
       }
     }
   }
@@ -2216,7 +2268,9 @@ export default class Imperial {
       this.roundOfInvestment();
     } else {
       this.handleAdvancePlayer();
-      this.availableActions = new Set(this.rondelActions(this.currentNation));
+      for (const rondelAction of this.rondelActions(this.currentNation)) {
+        this.availableActions.add(rondelAction);
+      }
     }
   }
 

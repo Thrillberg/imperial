@@ -14,6 +14,7 @@ export default class Auction {
       this.initialize(action, game, auctionSetup);
       return;
     }
+    game.previousPlayerName = game.currentPlayerName;
 
     switch (action.type) {
       case 'bondPurchase': {
@@ -43,22 +44,21 @@ export default class Auction {
     } else if (action.payload.baseGame === 'imperial2030') {
       game.currentNation = Nation2030.RU;
     }
-    game.availableActions = this.availableBondPurchases({
+    game.availableActions = Auction.availableBondPurchases({
       availableBonds: s.availableBonds,
       players: s.players,
       currentNation: game.currentNation,
       currentPlayerName: this.order[0],
       previousPlayerName: this.order[0],
     });
+    game.availableActions.add(Action.skipBondPurchase({
+      player: this.order[0],
+      nation: game.currentNation,
+    }));
   }
 
   static availableBondPurchases(game) {
-    const out = new Set([
-      Action.skipBondPurchase({
-        player: game.currentPlayerName,
-        nation: game.currentNation,
-      }),
-    ]);
+    const out = new Set();
     const bonds = [...game.availableBonds].filter((bond) => (
       bond.cost <= game.players[game.currentPlayerName].cash
         && bond.nation === game.currentNation
@@ -104,12 +104,12 @@ export default class Auction {
     }
 
     if (
-      this.totalInvestmentInNation(
+      Auction.totalInvestmentInNation(
         action.payload.player,
         action.payload.nation,
         game,
       )
-      > this.totalInvestmentInNation(
+      > Auction.totalInvestmentInNation(
         game.nations.get(action.payload.nation).controller,
         action.payload.nation,
         game,
@@ -117,28 +117,25 @@ export default class Auction {
     ) {
       game.nations.get(action.payload.nation).controller = action.payload.player;
     }
-    this.setAvailableActions(action, game);
+    this.setAvailableActions(game);
   }
 
   skipBondPurchase(action, game) {
     this.setAvailableActions(action, game);
   }
 
-  setAvailableActions(action, game) {
+  setAvailableActions(game) {
     game.availableActions = new Set();
-    // If there is one available action, it is the pass action and doesn't
-    // count as a real action.
-    while (game.availableActions.size <= 1) {
+    // If there are two available actions, they are the pass action and undo and don't
+    // count as real actions.
+    while (game.availableActions.size <= 2) {
       const currentPlayerIndex = this.order.indexOf(game.currentPlayerName);
-      const canPurchaseBonds = this.availableBondPurchases(game).size > 1;
-      if (canPurchaseBonds) {
-        game.previousPlayerName = game.currentPlayerName;
-      }
       game.currentPlayerName = this.order[currentPlayerIndex + 1] || this.order[0];
+      game.availableActions.add(Action.undo({ player: game.previousPlayerName }));
 
       // Nation's bonds have been offered to all players
       if (this.shouldAdvanceNation(game)) {
-        this.advanceNation(game);
+        Auction.advanceNation(game);
         this.resetCurrentPlayer(game);
 
         // Auction is over and the game should start
@@ -148,15 +145,23 @@ export default class Auction {
         }
       }
 
-      if (this.availableBondPurchases(game).size <= 1) {
+      const availableBondPurchases = Auction.availableBondPurchases(game);
+      if (availableBondPurchases.size === 0) {
         game.annotatedLog.push(
           Action.playerAutoSkipsBondPurchase({
             player: game.currentPlayerName,
             bondNation: game.currentNation,
           }),
         );
+      } else {
+        for (const bondPurchase of Auction.availableBondPurchases(game)) {
+          game.availableActions.add(bondPurchase);
+        }
+        game.availableActions.add(Action.skipBondPurchase({
+          player: game.currentPlayerName,
+          nation: game.currentNation,
+        }));
       }
-      game.availableActions = this.availableBondPurchases(game);
     }
   }
 
@@ -202,12 +207,14 @@ export default class Auction {
       game.checkForSwissBank(player);
     }
 
-    const [startingPlayer, startingNation] = this.getStartingPlayerAndNation(
+    const [startingPlayer, startingNation] = Auction.getStartingPlayerAndNation(
       game,
     );
     game.currentPlayerName = startingPlayer;
     game.currentNation = startingNation;
-    game.availableActions = new Set(game.rondelActions(startingNation));
+    for (const rondelAction of game.rondelActions(startingNation)) {
+      game.availableActions.add(rondelAction);
+    }
     this.inAuction = false;
     let startingControllerIndex;
     if (game.baseGame === 'imperial' || !game.baseGame) {
