@@ -97,14 +97,14 @@ export default (players, baseGame) => {
           { id: players[0].id, nation: NationAsia.CN },
           { id: players[1].id, nation: NationAsia.JP },
           { id: players[2].id, nation: NationAsia.FR },
-          { id: players[3].id, nation: NationAsia.UK },
+          { id: players[3].id, nation: NationAsia.GB },
         ];
       case 5:
         return [
           { id: players[0].id, nation: NationAsia.CN },
           { id: players[1].id, nation: NationAsia.JP },
           { id: players[2].id, nation: NationAsia.FR },
-          { id: players[3].id, nation: NationAsia.UK },
+          { id: players[3].id, nation: NationAsia.GB },
           { id: players[4].id, nation: NationAsia.TR },
         ];
       case 6:
@@ -112,7 +112,7 @@ export default (players, baseGame) => {
           { id: players[0].id, nation: NationAsia.CN },
           { id: players[1].id, nation: NationAsia.JP },
           { id: players[2].id, nation: NationAsia.FR },
-          { id: players[3].id, nation: NationAsia.UK },
+          { id: players[3].id, nation: NationAsia.GB },
           { id: players[4].id, nation: NationAsia.TR },
           { id: players[5].id, nation: NationAsia.RU },
         ];

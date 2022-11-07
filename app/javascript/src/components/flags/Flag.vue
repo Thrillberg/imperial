@@ -7,9 +7,9 @@
       :transform="transform"
       :x="x"
       :y="y"
-      :fleet="this.fleet"
+      :fleet="fleet"
       :filter="activeFilter"
-    ></component>
+    />
     <rect
       v-if="friendly"
       :x="x + 3"
@@ -18,7 +18,7 @@
       :height="4"
       fill="white"
       stroke="none"
-    ></rect>
+    />
   </g>
 </template>
 
@@ -26,43 +26,44 @@
 import { defineAsyncComponent, markRaw } from 'vue';
 
 export default {
-  name: "Flag",
+  name: 'Flag',
   props: {
-    filter: String,
+    filter: { type: String, default: '' },
     fleet: Boolean,
-    height: String,
-    nation: String,
+    height: { type: String, default: '' },
+    nation: { type: String, default: '' },
     friendly: Boolean,
-    transform: String,
-    width: String,
-    x: Number,
-    y: Number
+    transform: { type: String, default: '' },
+    width: { type: String, default: '' },
+    x: { type: Number, default: 0 },
+    y: { type: Number, default: 0 },
   },
-  data: () => {
-    return {
-      flags: {
-        "AH": markRaw(defineAsyncComponent(() => import("./AHFlag.vue"))),
-        "BR": markRaw(defineAsyncComponent(() => import("./BRFlag.vue"))),
-        "CN": markRaw(defineAsyncComponent(() => import("./CNFlag.vue"))),
-        "EU": markRaw(defineAsyncComponent(() => import("./EUFlag.vue"))),
-        "IN": markRaw(defineAsyncComponent(() => import("./INFlag.vue"))),
-        "IT": markRaw(defineAsyncComponent(() => import("./ITFlag.vue"))),
-        "FR": markRaw(defineAsyncComponent(() => import("./FRFlag.vue"))),
-        "GB": markRaw(defineAsyncComponent(() => import("./GBFlag.vue"))),
-        "GE": markRaw(defineAsyncComponent(() => import("./GEFlag.vue"))),
-        "RU": markRaw(defineAsyncComponent(() => import("./RUFlag.vue"))),
-        "US": markRaw(defineAsyncComponent(() => import("./USFlag.vue"))),
-      }
-    }
-  },
+  data: () => ({
+    flags: {
+      AH: markRaw(defineAsyncComponent(() => import('./AHFlag.vue'))),
+      BR: markRaw(defineAsyncComponent(() => import('./BRFlag.vue'))),
+      CN: markRaw(defineAsyncComponent(() => import('./CNFlag.vue'))),
+      CNAsia: markRaw(defineAsyncComponent(() => import('./CNAsiaFlag.vue'))),
+      EU: markRaw(defineAsyncComponent(() => import('./EUFlag.vue'))),
+      IN: markRaw(defineAsyncComponent(() => import('./INFlag.vue'))),
+      IT: markRaw(defineAsyncComponent(() => import('./ITFlag.vue'))),
+      JP: markRaw(defineAsyncComponent(() => import('./JPFlag.vue'))),
+      FR: markRaw(defineAsyncComponent(() => import('./FRFlag.vue'))),
+      GB: markRaw(defineAsyncComponent(() => import('./GBFlag.vue'))),
+      GE: markRaw(defineAsyncComponent(() => import('./GEFlag.vue'))),
+      RU: markRaw(defineAsyncComponent(() => import('./RUFlag.vue'))),
+      TR: markRaw(defineAsyncComponent(() => import('./TRFlag.vue'))),
+      US: markRaw(defineAsyncComponent(() => import('./USFlag.vue'))),
+    },
+  }),
   computed: {
-    activeFilter: function () {
-      if (this.filter === "grayscale") {
-        return "url(#grayscale)"
+    activeFilter() {
+      if (this.filter === 'grayscale') {
+        return 'url(#grayscale)';
       }
 
-      return "";
-    }
-  }
+      return '';
+    },
+  },
 };
 </script>

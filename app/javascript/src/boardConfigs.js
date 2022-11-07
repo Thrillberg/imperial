@@ -705,7 +705,7 @@ export default {
       CN: '#ebe084',
       JP: '#6E8D4E',
       FR: '#54bff9',
-      UK: '#ef7f72',
+      GB: '#ef7f72',
       TR: 'silver',
       RU: '#9c6bae',
     },

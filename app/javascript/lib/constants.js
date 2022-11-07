@@ -3,7 +3,7 @@ import { memoize } from './memo';
 
 const Nation = Enum.fromArray(['AH', 'IT', 'FR', 'GB', 'GE', 'RU'], 'Nation');
 const Nation2030 = Enum.fromArray(['RU', 'CN', 'IN', 'BR', 'US', 'EU'], 'Nation2030');
-const NationAsia = Enum.fromArray(['CN', 'JP', 'FR', 'UK', 'TR', 'RU', 'GE'], 'NationAsia');
+const NationAsia = Enum.fromArray(['CN', 'JP', 'FR', 'GB', 'TR', 'RU', 'GE'], 'NationAsia');
 
 const cost = {
   1: 2,
@@ -34,7 +34,7 @@ export const AllBonds2030 = () => new Set(
     .flat(),
 );
 export const AllBondsAsia = () => new Set(
-  ['CN', 'JP', 'FR', 'UK', 'TR', 'RU', 'GE']
+  ['CN', 'JP', 'FR', 'GB', 'TR', 'RU', 'GE']
     .map((nation) => Object.keys(cost).map(
       (number) => Bond(NationAsia[nation], parseInt(number, 10)),
     ))

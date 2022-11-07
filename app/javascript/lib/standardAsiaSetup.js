@@ -66,13 +66,13 @@ export default ({ players, provinceNames }) => {
       }
 
       const smallerBondNation = nation.when({
-        UK: () => NationAsia.RU,
+        GB: () => NationAsia.RU,
         TR: () => NationAsia.JP,
         JP: () => NationAsia.CN,
         CN: () => NationAsia.GE,
         RU: () => NationAsia.FR,
         FR: () => NationAsia.TR,
-        GE: () => NationAsia.UK,
+        GE: () => NationAsia.GB,
       });
 
       out.availableBonds.delete(Bond(nation, 4));
@@ -153,7 +153,7 @@ export default ({ players, provinceNames }) => {
 
   const units = new Map();
   [
-    NationAsia.CN, NationAsia.JP, NationAsia.FR, NationAsia.UK, NationAsia.TR, NationAsia.RU,
+    NationAsia.CN, NationAsia.JP, NationAsia.FR, NationAsia.GB, NationAsia.TR, NationAsia.RU,
   ].forEach(
     (nation) => {
       units.set(nation, emptyProvinces());

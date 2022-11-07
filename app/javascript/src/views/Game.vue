@@ -199,7 +199,8 @@
                 v-for="[nation] of game.nations"
                 :key="nation.value"
                 :current_nation="game.currentNation.value"
-                :nation="nation.value"
+                :nation="game.baseGame === 'imperialAsia'
+                  && nation.value === 'CN' ? 'CNAsia' : nation.value"
                 :treasury="game.nations.get(nation).treasury"
                 :can-pay-out="canPayOut(nation)"
                 :power_points="game.nations.get(nation).powerPoints"

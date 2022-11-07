@@ -9,7 +9,7 @@ describe('Imperial Asia', () => {
           { id: 'a', nation: NationAsia.CN },
           { id: 'b', nation: NationAsia.JP },
           { id: 'c', nation: NationAsia.FR },
-          { id: 'd', nation: NationAsia.UK },
+          { id: 'd', nation: NationAsia.GB },
           { id: 'e', nation: NationAsia.TR },
           { id: 'f', nation: NationAsia.RU },
         ],
@@ -44,7 +44,7 @@ describe('Imperial Asia', () => {
           d: {
             name: 'd',
             cash: 2,
-            bonds: new Set([Bond(NationAsia.UK, 4), Bond(NationAsia.RU, 1)]),
+            bonds: new Set([Bond(NationAsia.GB, 4), Bond(NationAsia.RU, 1)]),
             rawScore: 0,
           },
           e: {
@@ -68,7 +68,7 @@ describe('Imperial Asia', () => {
             [NationAsia.CN, 'a'],
             [NationAsia.JP, 'b'],
             [NationAsia.FR, 'c'],
-            [NationAsia.UK, 'd'],
+            [NationAsia.GB, 'd'],
             [NationAsia.TR, 'e'],
             [NationAsia.RU, 'f'],
             [NationAsia.GE, 'a'],
@@ -86,7 +86,7 @@ describe('Imperial Asia', () => {
         );
         // We make the following modifications because GE is a 7th Nation
         // but we still only have 6 players
-        expected.get(NationAsia.UK).treasury = 9;
+        expected.get(NationAsia.GB).treasury = 9;
         expected.get(NationAsia.GE).treasury = 2;
 
         expect(actual.nations).toEqual(expected);
@@ -112,7 +112,7 @@ describe('Imperial Asia', () => {
               expected.delete(Bond(n, 1));
               expected.delete(Bond(n, 4));
             },
-            UK: () => {
+            GB: () => {
               expected.delete(Bond(n, 4));
             },
             TR: () => {

@@ -26,7 +26,7 @@
             "object": true
         }],
         "vue/multi-word-component-names": ["error", {
-            "ignores": ["Board", "Game", "Province"]
+            "ignores": ["Board", "Game", "Province", "Flag", "Bond"]
         }]
     }
 }
