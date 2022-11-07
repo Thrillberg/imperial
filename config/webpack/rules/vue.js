@@ -1,6 +1,7 @@
-const { VueLoaderPlugin } = require('vue-loader')
-const HtmlWebpackHarddiskPlugin = require('html-webpack-harddisk-plugin')
-const path = require('path')
+const { VueLoaderPlugin } = require('vue-loader');
+const HtmlWebpackHarddiskPlugin = require('html-webpack-harddisk-plugin');
+const path = require('path');
+const webpack = require('webpack');
 
 module.exports = {
   module: {
@@ -11,7 +12,7 @@ module.exports = {
       },
       {
         test: /\.js$/,
-        loader: 'babel-loader'
+        loader: 'babel-loader',
       },
       {
         test: /\.svg$/,
@@ -25,14 +26,15 @@ module.exports = {
         loader: 'file-loader',
         options: {
           limit: 10000,
-        }
-      }
-    ]
+        },
+      },
+    ],
   },
   plugins: [
+    new webpack.EnvironmentPlugin(['NODE_ENV']),
     new HtmlWebpackHarddiskPlugin({
-      outputPath: path.resolve(__dirname, '../../../public/packs')
+      outputPath: path.resolve(__dirname, '../../../public/packs'),
     }),
     new VueLoaderPlugin(),
-  ]
-}
+  ],
+};

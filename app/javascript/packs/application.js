@@ -24,6 +24,25 @@ const app = createApp(App);
 app.use(router);
 app.use(VueCookies);
 
+if (process.env.NODE_ENV === 'production') {
+  const googleTagManagerHead = document.createElement('script');
+  googleTagManagerHead.innerHTML = `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-TPLXHT2');`;
+  document.head.appendChild(googleTagManagerHead);
+
+  const googleTagManagerBody = document.createElement('noscript');
+  const iFrame = document.createElement('iframe');
+  iFrame.setAttribute('src', 'https://www.googletagmanager.com/ns.html?id=GTM-TPLXHT2');
+  iFrame.setAttribute('height', 0);
+  iFrame.setAttribute('width', 0);
+  iFrame.setAttribute('style', 'display:none;visibility:hidden');
+  googleTagManagerBody.appendChild(iFrame);
+  document.body.appendChild(googleTagManagerBody);
+}
+
 const appElement = document.createElement('div');
 appElement.setAttribute('id', 'app');
 document.body.appendChild(appElement);
