@@ -143,7 +143,7 @@
           </div>
         </div>
         <div
-          v-if="game.baseGame === 'imperial2030'"
+          v-if="game.baseGame === 'imperial2030' || game.baseGame === 'imperialAsia'"
           class="flex flex-wrap items-start"
         >
           <div
@@ -413,6 +413,7 @@ import getGameLog from '../getGameLog';
 import assignNations from '../assignNations';
 import imperialBoard from '../../lib/board';
 import imperial2030Board from '../../lib/board2030';
+import imperialAsiaBoard from '../../lib/boardAsia';
 
 import favicon2 from '../assets/favicon2.ico';
 
@@ -579,14 +580,15 @@ export default {
 
       return players.map((player) => ({ id: player }));
     },
-    updateGameLog(log, logTimestamps, baseGame, oldPlayerName) {
+    updateGameLog(log, logTimestamps, baseGameInput, oldPlayerName) {
       this.logTimestamps = logTimestamps;
       this.poppedTurns = [];
+      let baseGame = baseGameInput;
       if (!baseGame) {
         if (log[0]) {
           baseGame = JSON.parse(log[0]).payload.baseGame || 'imperial';
         } else {
-          baseGame = this.gameData.baseGame;
+          ({ baseGame } = this.gameData.baseGame);
         }
       }
       const gameLog = getGameLog(log, baseGame);
@@ -594,6 +596,8 @@ export default {
         this.board = imperialBoard;
       } else if (baseGame === 'imperial2030') {
         this.board = imperial2030Board;
+      } else if (baseGame === 'imperialAsia') {
+        this.board = imperialAsiaBoard;
       }
       this.game = Imperial.fromLog(gameLog, this.board);
       if (baseGame) {
@@ -814,7 +818,7 @@ export default {
     mapWidth() {
       if (this.game.baseGame === 'imperial') {
         return 'w-full sm:w-7/12';
-      } if (this.game.baseGame === 'imperial2030') {
+      } if (this.game.baseGame === 'imperial2030' || this.game.baseGame === 'imperialAsia') {
         return 'w-full';
       }
 
@@ -823,7 +827,7 @@ export default {
     gameDetailsWidth() {
       if (this.game.baseGame === 'imperial') {
         return 'w-full sm:w-1/3';
-      } if (this.game.baseGame === 'imperial2030') {
+      } if (this.game.baseGame === 'imperial2030' || this.game.baseGame === 'imperialAsia') {
         return 'w-full';
       }
 

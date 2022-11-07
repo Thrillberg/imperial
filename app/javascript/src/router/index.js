@@ -1,7 +1,6 @@
-import { createRouter, createWebHistory } from "vue-router";
-import Home from "../views/Home.vue";
-
-import ActionCable from "actioncable";
+import { createRouter, createWebHistory } from 'vue-router';
+import ActionCable from 'actioncable';
+import Home from '../views/Home.vue';
 
 class APIClient {
   constructor() {
@@ -11,10 +10,10 @@ class APIClient {
   }
 
   initws() {
-    const ws = ActionCable.createConsumer("/ws");
-    ws.subscriptions.create("GameChannel", {
+    const ws = ActionCable.createConsumer('/ws');
+    ws.subscriptions.create('GameChannel', {
       connected: () => {
-        this.messageQueue.forEach((data) => this.send(data, "GameChannel"));
+        this.messageQueue.forEach((data) => this.send(data, 'GameChannel'));
         this.messageQueue = [];
       },
       received: (envelope) => {
@@ -26,7 +25,7 @@ class APIClient {
         }
       },
     });
-    ws.subscriptions.create("AppearanceChannel", {
+    ws.subscriptions.create('AppearanceChannel', {
       received: (envelope) => {
         if (this.handlers[envelope.kind]) {
           this.handlers[envelope.kind](envelope.data);
@@ -40,18 +39,18 @@ class APIClient {
   }
 
   onclose() {
-    console.info("replacing closed websocket");
+    console.info('replacing closed websocket');
     this.ws = this.initws();
   }
 
   onerror(err) {
-    console.error("websocket error", err);
+    console.error('websocket error', err);
   }
 
   send(data, channel) {
     if (this.ws.connection.webSocket?.readyState === WebSocket.OPEN) {
       const sendableData = {
-        command: "message",
+        command: 'message',
         identifier: JSON.stringify({ channel }),
         data: JSON.stringify(data),
       };
@@ -66,52 +65,54 @@ class APIClient {
   }
 
   onUpdateUsers(cb) {
-    if (this.handlers["updateUsers"] !== undefined) {
-      throw new Error("there is already a handler defined");
+    if (this.handlers.updateUsers !== undefined) {
+      throw new Error('there is already a handler defined');
     }
-    this.handlers["updateUsers"] = cb;
+    this.handlers.updateUsers = cb;
   }
 
   onUpdateGames(cb) {
-    if (this.handlers["updateGames"] !== undefined) {
-      throw new Error("there is already a handler defined");
+    if (this.handlers.updateGames !== undefined) {
+      throw new Error('there is already a handler defined');
     }
-    this.handlers["updateGames"] = cb;
+    this.handlers.updateGames = cb;
   }
 
   onUpdateGameLog(cb) {
-    if (this.handlers["updateGameLog"] !== undefined) {
-      throw new Error("there is already a handler defined");
+    if (this.handlers.updateGameLog !== undefined) {
+      throw new Error('there is already a handler defined');
     }
-    this.handlers["updateGameLog"] = cb;
+    this.handlers.updateGameLog = cb;
   }
 
   onUpdateCurrentPlayerName(cb) {
-    if (this.handlers["updateCurrentPlayerName"] !== undefined) {
-      throw new Error("there is already a handler defined");
+    if (this.handlers.updateCurrentPlayerName !== undefined) {
+      throw new Error('there is already a handler defined');
     }
-    this.handlers["updateCurrentPlayerName"] = cb;
+    this.handlers.updateCurrentPlayerName = cb;
   }
 
   joinGame(userId, gameId, userName) {
     return this.send(
       {
-        kind: "joinGame",
+        kind: 'joinGame',
         data: { userName, userId, gameId },
       },
-      "GameChannel"
+      'GameChannel',
     );
   }
 
   openGame(id, base_game, variant, create_discord_channel, is_game_public) {
-    return fetch("/games", {
-      method: "POST",
-      body: JSON.stringify({ id, base_game, variant, create_discord_channel, is_game_public }),
-      headers: { "Content-Type": "application/json" },
+    return fetch('/games', {
+      method: 'POST',
+      body: JSON.stringify({
+        id, base_game, variant, create_discord_channel, is_game_public,
+      }),
+      headers: { 'Content-Type': 'application/json' },
     })
       .then((response) => response.json())
       .then((game) => {
-        this.send({ kind: "openGame" }, "GameChannel");
+        this.send({ kind: 'openGame' }, 'GameChannel');
         return game;
       });
   }
@@ -119,110 +120,110 @@ class APIClient {
   getGameLog(gameId) {
     return this.send(
       {
-        kind: "getGameLog",
+        kind: 'getGameLog',
         data: { gameId },
       },
-      "GameChannel"
+      'GameChannel',
     );
   }
 
   updateUser(username, oldUsername) {
     return this.send(
       {
-        kind: "updateUser",
+        kind: 'updateUser',
         data: { username, oldUsername },
       },
-      "AppearanceChannel"
+      'AppearanceChannel',
     );
   }
 
   updateGames() {
     return this.send(
       {
-        kind: "updateGames",
+        kind: 'updateGames',
         data: {},
       },
-      "GameChannel"
+      'GameChannel',
     );
   }
 
   tick(gameId, action) {
     return this.send(
       {
-        kind: "tick",
+        kind: 'tick',
         data: { gameId, action: JSON.stringify(action) },
       },
-      "GameChannel"
+      'GameChannel',
     );
   }
 
   updateCurrentPlayerName(gameId, currentPlayerName) {
     return this.send(
       {
-        kind: "updateCurrentPlayerName",
+        kind: 'updateCurrentPlayerName',
         data: { gameId, currentPlayerName },
       },
-      "GameChannel"
+      'GameChannel',
     );
   }
 
   notifyNextPlayer(gameId, nextPlayerName) {
     return this.send(
       {
-        kind: "notifyNextPlayer",
+        kind: 'notifyNextPlayer',
         data: { gameId, nextPlayerName },
       },
-      "GameChannel"
+      'GameChannel',
     );
   }
 
   updateWinner(gameId, winnerName, scores) {
     return this.send(
       {
-        kind: "updateWinnerName",
+        kind: 'updateWinnerName',
         data: { gameId, winnerName, scores },
       },
-      "GameChannel"
+      'GameChannel',
     );
   }
 
   cancel(gameId) {
     return this.send(
       {
-        kind: "cancelGame",
+        kind: 'cancelGame',
         data: { gameId },
       },
-      "GameChannel"
+      'GameChannel',
     );
   }
 
   boot(playerName, gameId) {
     return this.send(
       {
-        kind: "bootPlayer",
+        kind: 'bootPlayer',
         data: { playerName, gameId },
       },
-      "GameChannel"
+      'GameChannel',
     );
   }
 
   userObservingGame(playerName, gameId) {
     return this.send(
       {
-        kind: "userObservingGame",
+        kind: 'userObservingGame',
         data: { playerName, gameId },
       },
-      "GameChannel"
+      'GameChannel',
     );
   }
 
   userStoppedObservingGame(playerName, gameId) {
     return this.send(
       {
-        kind: "userStoppedObservingGame",
+        kind: 'userStoppedObservingGame',
         data: { playerName, gameId },
       },
-      "GameChannel"
+      'GameChannel',
     );
   }
 }
@@ -231,74 +232,74 @@ const apiClient = new APIClient();
 
 const routes = [
   {
-    path: "/",
-    name: "Home",
+    path: '/',
+    name: 'Home',
     component: Home,
   },
   {
-    path: "/register",
-    name: "Register",
-    component: () => import("../views/Register.vue"),
+    path: '/register',
+    name: 'Register',
+    component: () => import('../views/Register.vue'),
   },
   {
-    path: "/sign_in",
-    name: "Sign In",
-    component: () => import("../views/SignIn.vue"),
+    path: '/sign_in',
+    name: 'Sign In',
+    component: () => import('../views/SignIn.vue'),
   },
   {
-    path: "/about",
-    name: "About",
-    component: () => import("../views/About.vue"),
+    path: '/about',
+    name: 'About',
+    component: () => import('../views/About.vue'),
   },
   {
-    path: "/rules",
-    name: "How to play",
-    component: () => import("../views/Rules.vue"),
+    path: '/rules',
+    name: 'How to play',
+    component: () => import('../views/Rules.vue'),
   },
   {
-    path: "/game/:id",
-    name: "Game",
-    component: () => import("../views/Game.vue"),
+    path: '/game/:id',
+    name: 'Game',
+    component: () => import('../views/Game.vue'),
   },
   {
-    path: "/games",
-    name: "Games",
-    component: () => import("../views/Games.vue"),
+    path: '/games',
+    name: 'Games',
+    component: () => import('../views/Games.vue'),
   },
   {
-    path: "/finished_games",
-    name: "Finished Games",
-    component: () => import("../views/FinishedGames.vue"),
+    path: '/finished_games',
+    name: 'Finished Games',
+    component: () => import('../views/FinishedGames.vue'),
   },
   {
-    path: "/users/:id",
-    name: "User",
-    component: () => import("../views/User.vue"),
+    path: '/users/:id',
+    name: 'User',
+    component: () => import('../views/User.vue'),
   },
   {
-    path: "/games/new",
-    name: "NewGame",
-    component: () => import("../views/NewGame.vue"),
+    path: '/games/new',
+    name: 'NewGame',
+    component: () => import('../views/NewGame.vue'),
   },
   {
-    path: "/cloned_games",
-    name: "ClonedGames",
-    component: () => import("../views/ClonedGames.vue"),
+    path: '/cloned_games',
+    name: 'ClonedGames',
+    component: () => import('../views/ClonedGames.vue'),
   },
   {
-    path: "/forgot_password",
-    name: "ForgotPassword",
-    component: () => import("../views/ForgotPassword.vue"),
+    path: '/forgot_password',
+    name: 'ForgotPassword',
+    component: () => import('../views/ForgotPassword.vue'),
   },
   {
-    path: "/reset_password",
-    name: "ResetPassword",
-    component: () => import("../views/ResetPassword.vue"),
+    path: '/reset_password',
+    name: 'ResetPassword',
+    component: () => import('../views/ResetPassword.vue'),
   },
   {
-    path: "/rankings",
-    name: "Rankings",
-    component: () => import("../views/Rankings.vue"),
+    path: '/rankings',
+    name: 'Rankings',
+    component: () => import('../views/Rankings.vue'),
   },
 ];
 

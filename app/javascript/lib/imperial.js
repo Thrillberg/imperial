@@ -6,6 +6,7 @@ import auctionStandardSetup from './auctionSetup';
 import auction2030Setup from './auction2030Setup';
 import standardSetup from './standardSetup';
 import standard2030Setup from './standard2030Setup';
+import standardAsiaSetup from './standardAsiaSetup';
 import availableBondPurchases from './availableBondPurchases';
 import setOldState from './setOldState';
 import setOldAuctionState from './setOldAuctionState';
@@ -257,6 +258,8 @@ export default class Imperial {
         setup = standardSetup;
       } else if (action.payload.baseGame === 'imperial2030') {
         setup = standard2030Setup;
+      } else if (action.payload.baseGame === 'imperialAsia') {
+        setup = standardAsiaSetup;
       }
     } else {
       if (action.payload.baseGame === 'imperial' || !action.payload.baseGame) {

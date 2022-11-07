@@ -3,9 +3,9 @@ const cleanroom = Object.freeze(Object.create(null));
 class Enum {
   constructor(value, members, label) {
     Object.defineProperties(this, {
-      value: { value: value, enumerable: true },
+      value: { value, enumerable: true },
       members: { value: members, enumerable: false },
-      label: { value: label, enumerable: true }
+      label: { value: label, enumerable: true },
     });
 
     Object.freeze(this);
@@ -22,7 +22,7 @@ class Enum {
         return cases[c](this);
       }
     }
-    throw new Error("unreachable");
+    throw new Error('unreachable');
   }
 
   get [Symbol.toStringTag]() {
@@ -34,10 +34,10 @@ class Enum {
     const members = new Set(ary);
 
     if (label === undefined) {
-      label = "<anonymous>";
+      label = '<anonymous>';
     }
 
-    ary.forEach(element => {
+    ary.forEach((element) => {
       store.set(element, new Enum(element, members, label));
     });
 
@@ -51,12 +51,12 @@ class Enum {
           return store.values.bind(store);
         }
 
-        if (property === "toString") {
-          return () => `${label}(${Array.from(members).join("|")})`;
+        if (property === 'toString') {
+          return () => `${label}(${Array.from(members).join('|')})`;
         }
 
         /* escape hatch for properties like Symbol(nodejs.util.inspect.custom) */
-        if (typeof property === "symbol") {
+        if (typeof property === 'symbol') {
           return Reflect.get(Object, property, _receiver);
         }
 
@@ -64,7 +64,7 @@ class Enum {
       },
       set() {
         throw new Error(`Enum ${label} cannot be mutated`);
-      }
+      },
     });
   }
 }

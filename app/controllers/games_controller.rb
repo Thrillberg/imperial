@@ -53,6 +53,8 @@ class GamesController < ApplicationController
       end
     end
 
+    puts "heyo"
+    puts game.to_json
     render json: game.to_json
   end
 
