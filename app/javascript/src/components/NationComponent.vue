@@ -1,29 +1,25 @@
 <template>
   <div
     class="p-0.5"
-    :class="currentNation() + width()"
+    :class="currentNationClass() + width()"
   >
     <p><b>{{ stringify(nation) }}</b></p>
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
+    <Flag
+      :nation="nation"
+      :filter="controller === currentPlayer ? '' : 'grayscale'"
       height="30"
       width="45"
-    >
-      <Flag
-        :nation="nation"
-        :filter="controller === current_player ? '' : 'grayscale'"
-      />
-    </svg>
+    />
     <div class="flex flex-col justify-center">
       <div :class="canPayOut ? '' : 'text-red-500 font-bold'">
         ${{ treasury }}mil
       </div>
-      <div>{{ power_points }} power</div>
+      <div>{{ powerPoints }} power</div>
       <div
         v-if="winner"
         class="text-center font-bold text-xl"
       >
-        x{{ Math.floor(power_points / 5) }}
+        x{{ Math.floor(powerPoints / 5) }}
       </div>
     </div>
     <p class="pt-2 text-base">
@@ -35,29 +31,29 @@
 <script>
 import Flag from './flags/Flag.vue';
 
-import stringify from '../stringify.js';
+import stringify from '../stringify';
 
 export default {
   name: 'NationComponent',
   components: { Flag },
   props: {
-    baseGame: String,
+    baseGame: { type: String, default: '' },
     canPayOut: Boolean,
-    current_nation: String,
-    current_player: String,
-    controller: String,
-    nation: String,
-    power_points: Number,
-    treasury: Number,
-    winner: String,
+    currentNation: { type: String, default: '' },
+    currentPlayer: { type: String, default: '' },
+    controller: { type: String, default: '' },
+    nation: { type: String, default: '' },
+    powerPoints: { type: Number, default: 0 },
+    treasury: { type: Number, default: 0 },
+    winner: { type: String, default: '' },
   },
   methods: {
-    currentNation() {
-      if (this.current_nation === this.nation && this.controller === this.current_player) {
+    currentNationClass() {
+      if (this.currentNation === this.nation && this.controller === this.currentPlayer) {
         return `bg-${this.nation} border-4 border-black `;
       }
 
-      if (this.current_nation === this.nation) {
+      if (this.currentNation === this.nation) {
         return `bg-${this.nation} `;
       }
 
@@ -66,9 +62,13 @@ export default {
     width() {
       if (this.baseGame === 'imperial') {
         return 'w-1/3 md:w-full lg:w-full xl:w-full 2xl:w-full';
-      } if (this.baseGame === 'imperial2030') {
+      }
+
+      if (this.baseGame === 'imperial2030' || this.baseGame === 'imperialAsia') {
         return 'w-1/3 lg:w-1/3 xl:w-1/3 2xl:w-1/6';
       }
+
+      return '';
     },
     stringify(nation) {
       return stringify(nation);

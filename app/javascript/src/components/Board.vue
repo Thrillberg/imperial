@@ -31,6 +31,13 @@
         r="500"
       />
     </clipPath>
+    <clipPath id="fleetClipTR">
+      <circle
+        cx="500"
+        cy="400"
+        r="400"
+      />
+    </clipPath>
     <g
       stroke="#000000"
       stroke-width="0.5"

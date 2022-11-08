@@ -153,7 +153,13 @@ export default ({ players, provinceNames }) => {
 
   const units = new Map();
   [
-    NationAsia.CN, NationAsia.JP, NationAsia.FR, NationAsia.GB, NationAsia.TR, NationAsia.RU,
+    NationAsia.CN,
+    NationAsia.JP,
+    NationAsia.FR,
+    NationAsia.GB,
+    NationAsia.TR,
+    NationAsia.RU,
+    NationAsia.GE,
   ].forEach(
     (nation) => {
       units.set(nation, emptyProvinces());

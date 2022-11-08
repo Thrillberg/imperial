@@ -1,20 +1,23 @@
 <template>
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width="1000"
-    height="700"
+    :width="width"
+    :height="height"
+    viewBox="0 0 1500 1000"
   >
-    <rect
-      fill="#fff"
-      height="700"
-      width="1000"
-    />
-    <circle
-      fill="#b0313f"
-      cx="490"
-      cy="350"
-      r="210"
-    />
+    <g :clip-path="fleet ? 'url(#fleetClip)' : ''">
+      <rect
+        fill="#fff"
+        height="1000"
+        width="1500"
+      />
+      <circle
+        fill="#b0313f"
+        cx="750"
+        cy="500"
+        r="300"
+      />
+    </g>
   </svg>
 </template>
 

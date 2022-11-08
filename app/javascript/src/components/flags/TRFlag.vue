@@ -2,9 +2,11 @@
   <!-- eslint-disable -->
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width="1200"
-    height="800"
+    :width="width"
+    :height="height"
+    viewBox="0 0 1200 800"
   >
+  <g :clip-path="fleet ? 'url(#fleetClipTR)' : ''">
     <rect
       width="1200"
       height="800"
@@ -26,6 +28,7 @@
       fill="#FFFFFF"
       d="m 589.05959,400.5279 72.2995,-27.03457 3.36962,-77.11504 48.05317,60.40677 74.38203,-20.62517 -42.601,64.368 42.60101,64.368 -74.38204,-20.62516 -48.05316,60.40677 -3.36963,-77.11505 z"
     />
+  </g>
   </svg>
 </template>
 

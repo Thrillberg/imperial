@@ -1,4 +1,6 @@
-import { Nation, Nation2030, Bond } from './constants';
+import {
+  Nation, Nation2030, Bond, NationAsia,
+} from './constants';
 import Action from './action';
 import Auction from './auction';
 import standardGameBoard from './board';
@@ -2059,6 +2061,16 @@ export default class Imperial {
         BR: () => Nation2030.US,
         US: () => Nation2030.EU,
         EU: () => Nation2030.RU,
+      });
+    } else if (this.baseGame === 'imperialAsia') {
+      nextNation = lastTurnNation.when({
+        CN: () => NationAsia.JP,
+        JP: () => NationAsia.FR,
+        FR: () => NationAsia.GB,
+        GB: () => NationAsia.TR,
+        TR: () => NationAsia.RU,
+        RU: () => NationAsia.GE,
+        GE: () => NationAsia.CN,
       });
     }
     if (this.nations.get(nextNation).controller) {

@@ -5,8 +5,8 @@
     fill-rule="evenodd"
     version="1.1"
     viewBox="0 0 750 500"
-    xml:space="preserve"
-    xmlns="http://www.w3.org/2000/svg"
+    :width="width"
+    :height="height"
   >
     <rect
       width="750"

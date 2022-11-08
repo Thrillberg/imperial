@@ -14,18 +14,13 @@
           v-for="(player, innerIndex) in action.payload.players"
           :key="innerIndex"
         >
-          <svg
+          <Flag
             v-if="!!player.nation"
+            :nation="getNation(player.nation)"
             class="inline-block mr-1"
-            xmlns="http://www.w3.org/2000/svg"
             width="30"
             height="20"
-          >
-            <Flag
-              :nation="player.nation.value"
-              width="30"
-            />
-          </svg>
+          />
           <span
             v-if="!action.payload.variant || action.payload.variant === 'standard'"
             v-html="initializeAction(player)"
@@ -33,17 +28,12 @@
         </p>
       </div>
       <div v-else-if="action.type === 'rondel'">
-        <svg
+        <Flag
+          :nation="getNation(action.payload.nation)"
           class="inline-block mr-1"
-          xmlns="http://www.w3.org/2000/svg"
           width="30"
           height="20"
-        >
-          <Flag
-            :nation="action.payload.nation.value"
-            width="30"
-          />
-        </svg>
+        />
         <b>{{ action.playerName }}</b>
         <div class="flex justify-between">
           <p>{{ processAction(action) }}</p>
@@ -200,6 +190,12 @@ export default {
       const name = player.id;
       const nation = stringify(player.nation.value);
       return `<strong>${nation}</strong> is controlled by <strong>${name}</strong>`;
+    },
+    getNation(nation) {
+      if (nation.value === 'CN' && nation.label === 'NationAsia') {
+        return 'CNAsia';
+      }
+      return nation.value;
     },
     rondelAction(payload) {
       const nation = stringify(payload.nation.value);

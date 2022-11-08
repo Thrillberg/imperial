@@ -3,68 +3,68 @@
     <div class="flex flex-wrap justify-evenly">
       <Player
         v-for="(player, index) of players()"
-        @toggleTradeIn="toggleTradeIn"
+        :key="player.name"
         :player="player"
-        :current_player="controllingPlayerName"
+        :current-player="controllingPlayerName"
         :game="game"
         :profile="profile"
-        :online_users="online_users"
-        :purchasingBond="purchasingBond"
-        :tradedInBondNation="tradedInBondNation"
-        :tradedInValue="tradedInValue"
+        :online-users="online_users"
+        :purchasing-bond="purchasingBond"
+        :traded-in-bond-nation="tradedInBondNation"
+        :traded-in-value="tradedInValue"
         :index="game.winner ? index + 1 : null"
-        :turnIndex="index + 1"
-        :key="player.name"
-      ></Player>
+        :turn-index="index + 1"
+        @toggleTradeIn="toggleTradeIn"
+      />
     </div>
   </div>
 </template>
 
 <script>
-import Player from "../components/Player.vue";
+import Player from './Player.vue';
 
 export default {
-  name: "GameDetails",
+  name: 'GameDetails',
   components: {
     Player,
   },
   props: [
-    "game",
-    "controllingPlayerName",
-    "paused",
-    "profile",
-    "online_users",
-    "gameData",
-    "hostingThisGame",
+    'game',
+    'controllingPlayerName',
+    'paused',
+    'profile',
+    'online_users',
+    'gameData',
+    'hostingThisGame',
   ],
+  data() {
+    return {
+      tradedInBondNation: '',
+      tradedInValue: 0,
+    };
+  },
   computed: {
     purchasingBond() {
       if (this.paused) return false;
 
-      const purchasingBond = this.game.availableActions.size > 0 &&
-        Array.from(this.game.availableActions).every(
-          (action) => action.type === "bondPurchase" || action.type === "skipBondPurchase" || action.type === "undo"
+      const purchasingBond = this.game.availableActions.size > 0
+        && Array.from(this.game.availableActions).every(
+          (action) => action.type === 'bondPurchase' || action.type === 'skipBondPurchase' || action.type === 'undo',
         );
       return purchasingBond && (this.profile.username === this.controllingPlayerName || (this.game.soloMode && this.hostingThisGame));
-    }
-  },
-  data() {
-    return {
-      tradedInBondNation: "",
-      tradedInValue: 0
-    }
+    },
   },
   methods: {
     players() {
-      let players = {};
+      const players = {};
       for (const name in this.game.players) {
-        this.gameData.players.forEach(dataPlayer => {
+        this.gameData.players.forEach((dataPlayer) => {
           if (name === dataPlayer.name) {
-            players[name] = Object.assign(
-              {},
-              this.game.players[name],
-              {id: dataPlayer.id}
-            );
+            players[name] = {
+
+              ...this.game.players[name],
+              id: dataPlayer.id,
+            };
           }
         });
         if (!players[name]) {
@@ -73,16 +73,13 @@ export default {
         }
       }
       if (this.game.winner) {
-        return Object.values(players).sort((a, b) => {
-          return a.cash + a.rawScore < b.cash + b.rawScore;
-        });
-      } else {
-        return Object.values(players);
+        return Object.values(players).sort((a, b) => a.cash + a.rawScore < b.cash + b.rawScore);
       }
+      return Object.values(players);
     },
     powerPoints() {
-      return [...Array(26).keys()].map(slot => {
-        let nations = [];
+      return [...Array(26).keys()].map((slot) => {
+        const nations = [];
         for (const [nation, data] of this.game.nations) {
           if (data.powerPoints === slot) {
             nations.push(nation.value);
@@ -91,12 +88,12 @@ export default {
         return { slot, nations };
       });
     },
-    tickWithAction: function(action) {
-      this.$emit("tick", action);
+    tickWithAction(action) {
+      this.$emit('tick', action);
     },
     toggleTradeIn(bond) {
-      this.$emit("toggleTradeIn", bond);
-    }
-  }
+      this.$emit('toggleTradeIn', bond);
+    },
+  },
 };
 </script>

@@ -1,19 +1,14 @@
 <template>
   <div
-    :class="'m-1 border-2 border-' + border() +'-500 p-1 tooltip bg-' + bond.nation.value"
+    :class="'m-1 border-2 border-' + border() +'-500 p-1 tooltip bg-' + backgroundColor()"
     :style="filter === 'grayscale' ? {filter: 'grayscale(1)'} : {}"
     @click="$emit('click', bond)"
   >
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
+    <Flag
+      :nation="nation"
       width="30"
       height="20"
-    >
-      <Flag
-        :nation="nation"
-        width="30"
-      />
-    </svg>
+    />
     {{ bond.number }}:{{ bond.cost }}
     <div
       v-if="canBePurchased && !isBeingAppliedToTradeIn"
@@ -54,6 +49,12 @@ export default {
     },
   },
   methods: {
+    backgroundColor() {
+      if (this.bond.nation.value === 'GE' && this.bond.nation.label === 'NationAsia') {
+        return 'GEAsia';
+      }
+      return this.bond.nation.value;
+    },
     border() {
       if (this.isBeingAppliedToTradeIn) {
         return 'yellow';

@@ -39,13 +39,13 @@
             <NationComponent
               v-for="[nation] of game.nations"
               :key="nation.value"
-              :current_nation="game.currentNation.value"
+              :current-nation="game.currentNation.value"
               :nation="nation.value"
               :treasury="game.nations.get(nation).treasury"
               :can-pay-out="canPayOut(nation)"
-              :power_points="game.nations.get(nation).powerPoints"
+              :power-points="game.nations.get(nation).powerPoints"
               :controller="game.nations.get(nation).controller"
-              :current_player="profile.username"
+              :current-player="profile.username"
               :base-game="game.baseGame"
               :winner="game.winner"
             />
@@ -91,13 +91,13 @@
               <NationComponent
                 v-for="[nation] of game.nations"
                 :key="nation.value"
-                :current_nation="game.currentNation.value"
+                :current-nation="game.currentNation.value"
                 :nation="nation.value"
                 :treasury="game.nations.get(nation).treasury"
                 :can-pay-out="canPayOut(nation)"
-                :power_points="game.nations.get(nation).powerPoints"
+                :power-points="game.nations.get(nation).powerPoints"
                 :controller="game.nations.get(nation).controller"
-                :current_player="profile.username"
+                :current-player="profile.username"
                 :base-game="game.baseGame"
                 :winner="game.winner"
               />
@@ -198,14 +198,15 @@
               <NationComponent
                 v-for="[nation] of game.nations"
                 :key="nation.value"
-                :current_nation="game.currentNation.value"
+                :current-nation="game.baseGame === 'imperialAsia'
+                  && game.currentNation.value === 'CN' ? 'CNAsia' : game.currentNation.value"
                 :nation="game.baseGame === 'imperialAsia'
                   && nation.value === 'CN' ? 'CNAsia' : nation.value"
                 :treasury="game.nations.get(nation).treasury"
                 :can-pay-out="canPayOut(nation)"
-                :power_points="game.nations.get(nation).powerPoints"
+                :power-points="game.nations.get(nation).powerPoints"
                 :controller="game.nations.get(nation).controller"
-                :current_player="profile.username"
+                :current-player="profile.username"
                 :base-game="game.baseGame"
                 :winner="game.winner"
               />
@@ -918,7 +919,7 @@ export default {
           const powerPointIncrease = slot - 5;
           return { slot, nations, powerPointIncrease };
         });
-      } if (this.game.baseGame === 'imperial2030') {
+      } if (this.game.baseGame === 'imperial2030' || this.game.baseGame === 'imperialAsia') {
         const taxes = [18, 16, 15, 14, 13, 12, 11, 10, 8, 6, 5];
         return taxes.map((slot, index) => {
           const nations = [];

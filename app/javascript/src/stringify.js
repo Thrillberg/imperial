@@ -1,4 +1,4 @@
-export default function (nation) {
+export default (nation) => {
   switch (nation) {
     case 'AH':
       return 'Austria-Hungary';
@@ -30,4 +30,4 @@ export default function (nation) {
       return 'United States of America';
     default: return '';
   }
-}
+};

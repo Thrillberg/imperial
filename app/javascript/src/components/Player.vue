@@ -8,7 +8,7 @@
     </div>
     <div
       class="p-2 m-1 border border-gray-500"
-      :class="player.name === current_player ? 'bg-green-300' : ''"
+      :class="player.name === currentPlayer ? 'bg-green-300' : ''"
     >
       <div class="flex">
         <div
@@ -19,7 +19,7 @@
         </div>
         <span class="mx-0.5">
           <span
-            v-if="online_users.includes(player.name)"
+            v-if="onlineUsers.includes(player.name)"
             class="h-2 w-2 bg-blue-700 border-blue-700 border-2 rounded-full inline-block"
           />
           <router-link
@@ -32,16 +32,14 @@
           <span v-else>
             <b>{{ player.name }}</b>
           </span>
-          <svg
+          <Flag
             v-for="controlledNation in controlledNations(player.name)"
             :key="controlledNation"
-            xmlns="http://www.w3.org/2000/svg"
+            :nation="controlledNation"
             width="30"
             height="20"
             class="inline-block mx-0.5"
-          >
-            <Flag :nation="controlledNation" />
-          </svg>
+          />
         </span>
       </div>
       <div>${{ player.cash }}mil</div>
@@ -71,7 +69,7 @@
 import Bond from './Bond.vue';
 import Flag from './flags/Flag.vue';
 
-import { Nation, Nation2030 } from '../../lib/constants.js';
+import { Nation, Nation2030, NationAsia } from '../../lib/constants';
 
 export default {
   name: 'Player',
@@ -80,18 +78,19 @@ export default {
     Flag,
   },
   props: {
-    current_player: String,
-    online_users: Array,
-    player: Object,
-    profile: Object,
-    game: Object,
-    index: Number,
-    name: String,
+    currentPlayer: { type: String, default: '' },
+    onlineUsers: { type: Array, default: () => [] },
+    player: { type: Object, default: () => {} },
+    profile: { type: Object, default: () => {} },
+    game: { type: Object, default: () => {} },
+    index: { type: Number, default: 0 },
+    name: { type: String, default: '' },
     purchasingBond: Boolean,
-    tradedInBondNation: String,
-    tradedInValue: Number,
-    turnIndex: Number,
+    tradedInBondNation: { type: String, default: '' },
+    tradedInValue: { type: Number, default: 0 },
+    turnIndex: { type: Number, default: 0 },
   },
+  emits: ['toggleTradeIn', 'cancelApplyToTradeIn'],
   methods: {
     applyToTradeIn(bond) {
       if (this.canTradeIn(bond)) {
@@ -107,11 +106,13 @@ export default {
       }
       if (
         this.purchasingBond
-        && this.game.players[this.current_player].bonds.has(bond)
+        && this.game.players[this.currentPlayer].bonds.has(bond)
         && availableBondsMatchNation
       ) {
         return true;
       }
+
+      return false;
     },
     sortedBonds(bonds) {
       const nations = [
@@ -127,6 +128,13 @@ export default {
         Nation2030.BR,
         Nation2030.US,
         Nation2030.EU,
+        NationAsia.CN,
+        NationAsia.JP,
+        NationAsia.FR,
+        NationAsia.GB,
+        NationAsia.TR,
+        NationAsia.RU,
+        NationAsia.GE,
       ];
       const sortedByNation = [...bonds].sort((bond1, bond2) => {
         if (nations.indexOf(bond1.nation) > nations.indexOf(bond2.nation)) {
@@ -152,11 +160,15 @@ export default {
       if (bond.cost === this.tradedInValue && bond.nation.value === this.tradedInBondNation) {
         return true;
       }
+
+      return false;
     },
     cursorClass() {
       if (this.purchasingBond) {
         return 'cursor-pointer';
       }
+
+      return '';
     },
     controlledNations(playerName) {
       let out = [];
