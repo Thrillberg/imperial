@@ -27,6 +27,7 @@
         }],
         "vue/multi-word-component-names": ["error", {
             "ignores": ["Board", "Game", "Province", "Flag", "Bond"]
-        }]
+        }],
+        "vue/no-v-html": ["off"]
     }
 }
