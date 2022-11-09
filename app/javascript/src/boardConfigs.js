@@ -66,7 +66,7 @@ import argentina from './components/board2030/argentina.svg';
 import australia from './components/board2030/australia.svg';
 import beijing from './components/board2030/beijing.svg';
 import berlin2030 from './components/board2030/berlin.svg';
-import blackSea from './components/board2030/black_sea.svg';
+import blackSea2030 from './components/board2030/black_sea.svg';
 import brasilia from './components/board2030/brasilia.svg';
 import canada from './components/board2030/canada.svg';
 import caribbeanSea from './components/board2030/caribbean_sea.svg';
@@ -635,7 +635,7 @@ export default {
       'Gulf of Guinea': markRaw(gulfOfGuinea),
       'Indian Ocean': markRaw(indianOcean),
       'Mediterranean Sea': markRaw(mediterraneanSea),
-      'Black Sea': markRaw(blackSea),
+      'Black Sea': markRaw(blackSea2030),
       'North Atlantic': markRaw(northAtlantic),
       'North Pacific': markRaw(northPacific),
       'Sea of Japan': markRaw(seaOfJapan),
