@@ -700,7 +700,99 @@ export default {
     viewBox: '0 0 1016.371 514.609',
   },
   imperialAsia: {
-    adjustments: {},
+    adjustments: {
+      Akita: {
+        factoryX: 5,
+        labelY: -3,
+      },
+      Angora: {
+        labelY: -5,
+      },
+      'Arabian Sea': {
+        labelX: 100,
+        labelY: 30,
+      },
+      Armenia: {
+        labelY: -5,
+      },
+      Bengal: {
+        factoryY: 15,
+      },
+      Bombay: {
+        factoryX: -5,
+        labelX: -5,
+        labelY: -7,
+      },
+      Borneo: {
+        factoryY: 20,
+      },
+      Cochin: {
+        factoryY: 3,
+        labelX: -2,
+        labelY: -3,
+      },
+      Canton: {
+        labelY: -10,
+      },
+      Celebes: {
+        factoryX: -30,
+      },
+      Constantinople: {
+        factoryY: 7,
+        labelX: 30,
+        labelY: -7,
+      },
+      Davao: {
+        labelX: 10,
+      },
+      Delhi: {
+        factoryY: 20,
+        labelY: 10,
+      },
+      Hyderabad: {
+        labelY: -20,
+      },
+      Iraq: {
+        factoryX: 40,
+        factoryY: 25,
+      },
+      Java: {
+        factoryX: -75,
+        factoryY: -15,
+      },
+      'Java Sea': {
+        labelX: -40,
+        labelY: -20,
+      },
+      'Mediterranean Sea': {
+        labelX: -5,
+        labelY: 40,
+      },
+      'Okhotsk Sea': {
+        labelX: 40,
+      },
+      'Sea of Japan': {
+        labelX: 20,
+        labelY: 10,
+      },
+      'South China Sea': {
+        labelX: -70,
+        labelY: 30,
+      },
+      'Timor Sea': {
+        labelX: 60,
+        labelY: -20,
+      },
+      Vladivostok: {
+        factoryX: 95,
+        labelX: 20,
+        labelY: -20,
+      },
+      'Yellow Sea': {
+        labelY: 20,
+        labelX: 20,
+      },
+    },
     nationColors: {
       CN: '#ebe084',
       JP: '#6E8D4E',
@@ -732,9 +824,7 @@ export default {
       Bombay: markRaw(bombay),
       Borneo: markRaw(borneo),
       Burma: markRaw(burma),
-      Cambodia: markRaw(cambodia),
       Cochin: markRaw(cochin),
-      Annam: markRaw(annam),
       Canton: markRaw(canton),
       Celebes: markRaw(celebes),
       Constantinople: markRaw(constantinople),
@@ -751,6 +841,8 @@ export default {
       Kyushu: markRaw(kyushu),
       Madras: markRaw(madras),
       Malaysia: markRaw(malaysia),
+      Cambodia: markRaw(cambodia),
+      Annam: markRaw(annam),
       Manila: markRaw(manila),
       Mongolia: markRaw(mongoliaAsia),
       Nepal: markRaw(nepal),
