@@ -31,6 +31,20 @@
         r="500"
       />
     </clipPath>
+    <clipPath id="fleetClipTR">
+      <circle
+        cx="500"
+        cy="400"
+        r="400"
+      />
+    </clipPath>
+    <clipPath id="fleetClipCNAsia">
+      <circle
+        cx="300"
+        cy="250"
+        r="250"
+      />
+    </clipPath>
     <g
       stroke="#000000"
       stroke-width="0.5"
@@ -48,6 +62,7 @@
         :adjustments="config.adjustments[name]"
         :nation-color="config.nationColors[dot(name)]"
         :is-impassable="isImpassable(name)"
+        :font-size="game.baseGame === 'imperialAsia' ? '10': '8'"
         @fight-resolved="$emit('fightResolved')"
       />
       <Province
@@ -68,6 +83,7 @@
         :adjustments="config.adjustments[name]"
         :nation-color="config.nationColors[dot(name)]"
         :is-impassable="isImpassable(name)"
+        :font-size="game.baseGame === 'imperialAsia' ? '11': '8'"
         @fight-resolved="$emit('fightResolved')"
       />
     </g>
@@ -110,7 +126,11 @@ export default {
                 }
               }
               const friendly = provinceUnits.friendly && onForeignLand;
-              armies.push({ nation, friendly });
+              let armyNation = nation;
+              if (armyNation === 'CN' && this.game.baseGame === 'imperialAsia') {
+                armyNation = 'CNAsia';
+              }
+              armies.push({ nation: armyNation, friendly });
             }
           }
         }
@@ -193,7 +213,11 @@ export default {
           const normalizedProvince = province.replace(/\.*\s/gm, '').toLowerCase();
           if (normalizedProvince === provinceWithUnits) {
             for (let i = 0; i < provinceUnits.fleets; i += 1) {
-              fleets.push(nation);
+              let fleetNation = nation;
+              if (fleetNation === 'CN' && this.game.baseGame === 'imperialAsia') {
+                fleetNation = 'CNAsia';
+              }
+              fleets.push(fleetNation);
             }
           }
         }

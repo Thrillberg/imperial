@@ -23,31 +23,46 @@
     </mask>
     <g
       clip-path="url(#s)"
-      v-bind:mask="this.fleet ? 'url(#gbFleetMask)' : ''"
+      :mask="fleet ? 'url(#gbFleetMask)' : ''"
       transform="matrix(20,0,0,20,-91.044684,-45.522345)"
     >
-      <path d="M 0,0 V 30 H 60 V 0 Z" fill="#012169" />
-      <path d="M 0,0 60,30 M 60,0 0,30" stroke="#ffffff" stroke-width="6" />
+      <path
+        d="M 0,0 V 30 H 60 V 0 Z"
+        fill="#012169"
+      />
+      <path
+        d="M 0,0 60,30 M 60,0 0,30"
+        stroke="#ffffff"
+        stroke-width="6"
+      />
       <path
         d="M 0,0 60,30 M 60,0 0,30"
         clip-path="url(#t)"
         stroke="#c8102e"
         stroke-width="4"
       />
-      <path d="M 30,0 V 30 M 0,15 h 60" stroke="#ffffff" stroke-width="10" />
-      <path d="M 30,0 V 30 M 0,15 h 60" stroke="#c8102e" stroke-width="6" />
+      <path
+        d="M 30,0 V 30 M 0,15 h 60"
+        stroke="#ffffff"
+        stroke-width="10"
+      />
+      <path
+        d="M 30,0 V 30 M 0,15 h 60"
+        stroke="#c8102e"
+        stroke-width="6"
+      />
     </g>
   </svg>
 </template>
 
 <script>
 export default {
-  name: "GBFlag",
+  name: 'GBFlag',
   props: {
     fleet: Boolean,
     width: String,
     height: String,
-    transform: String
-  }
+    transform: String,
+  },
 };
 </script>

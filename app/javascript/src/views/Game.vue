@@ -29,7 +29,7 @@
           :paused="paused"
         />
         <div
-          v-if="game.baseGame === 'imperial'"
+          v-if="game.baseGame === 'imperial' || game.baseGame === 'imperialAsia'"
           class="flex flex-wrap items-start"
         >
           <div
@@ -39,13 +39,13 @@
             <NationComponent
               v-for="[nation] of game.nations"
               :key="nation.value"
-              :current_nation="game.currentNation.value"
+              :current-nation="game.currentNation.value"
               :nation="nation.value"
               :treasury="game.nations.get(nation).treasury"
               :can-pay-out="canPayOut(nation)"
-              :power_points="game.nations.get(nation).powerPoints"
+              :power-points="game.nations.get(nation).powerPoints"
               :controller="game.nations.get(nation).controller"
-              :current_player="profile.username"
+              :current-player="profile.username"
               :base-game="game.baseGame"
               :winner="game.winner"
             />
@@ -73,11 +73,11 @@
             <TimeTravelButtons
               :game="game"
               :popped-turns="poppedTurns"
-              @backToGameStartEvent="backToGameStart"
-              @backToRoundStartEvent="backToRoundStart"
-              @backEvent="back"
-              @forwardEvent="forward"
-              @forwardToCurrentActionEvent="forwardToCurrentAction"
+              @back-to-game-start-event="backToGameStart"
+              @back-to-round-start-event="backToRoundStart"
+              @back-event="back"
+              @forward-event="forward"
+              @forward-to-current-action-event="forwardToCurrentAction"
             />
           </div>
           <div
@@ -91,13 +91,13 @@
               <NationComponent
                 v-for="[nation] of game.nations"
                 :key="nation.value"
-                :current_nation="game.currentNation.value"
+                :current-nation="game.currentNation.value"
                 :nation="nation.value"
                 :treasury="game.nations.get(nation).treasury"
                 :can-pay-out="canPayOut(nation)"
-                :power_points="game.nations.get(nation).powerPoints"
+                :power-points="game.nations.get(nation).powerPoints"
                 :controller="game.nations.get(nation).controller"
-                :current_player="profile.username"
+                :current-player="profile.username"
                 :base-game="game.baseGame"
                 :winner="game.winner"
               />
@@ -198,13 +198,15 @@
               <NationComponent
                 v-for="[nation] of game.nations"
                 :key="nation.value"
-                :current_nation="game.currentNation.value"
-                :nation="nation.value"
+                :current-nation="game.baseGame === 'imperialAsia'
+                  && game.currentNation.value === 'CN' ? 'CNAsia' : game.currentNation.value"
+                :nation="game.baseGame === 'imperialAsia'
+                  && nation.value === 'CN' ? 'CNAsia' : nation.value"
                 :treasury="game.nations.get(nation).treasury"
                 :can-pay-out="canPayOut(nation)"
-                :power_points="game.nations.get(nation).powerPoints"
+                :power-points="game.nations.get(nation).powerPoints"
                 :controller="game.nations.get(nation).controller"
-                :current_player="profile.username"
+                :current-player="profile.username"
                 :base-game="game.baseGame"
                 :winner="game.winner"
               />
@@ -413,6 +415,7 @@ import getGameLog from '../getGameLog';
 import assignNations from '../assignNations';
 import imperialBoard from '../../lib/board';
 import imperial2030Board from '../../lib/board2030';
+import imperialAsiaBoard from '../../lib/boardAsia';
 
 import favicon2 from '../assets/favicon2.ico';
 
@@ -579,14 +582,15 @@ export default {
 
       return players.map((player) => ({ id: player }));
     },
-    updateGameLog(log, logTimestamps, baseGame, oldPlayerName) {
+    updateGameLog(log, logTimestamps, baseGameInput, oldPlayerName) {
       this.logTimestamps = logTimestamps;
       this.poppedTurns = [];
+      let baseGame = baseGameInput;
       if (!baseGame) {
         if (log[0]) {
           baseGame = JSON.parse(log[0]).payload.baseGame || 'imperial';
         } else {
-          baseGame = this.gameData.baseGame;
+          ({ baseGame } = this.gameData.baseGame);
         }
       }
       const gameLog = getGameLog(log, baseGame);
@@ -594,6 +598,8 @@ export default {
         this.board = imperialBoard;
       } else if (baseGame === 'imperial2030') {
         this.board = imperial2030Board;
+      } else if (baseGame === 'imperialAsia') {
+        this.board = imperialAsiaBoard;
       }
       this.game = Imperial.fromLog(gameLog, this.board);
       if (baseGame) {
@@ -812,7 +818,7 @@ export default {
       }
     },
     mapWidth() {
-      if (this.game.baseGame === 'imperial') {
+      if (this.game.baseGame === 'imperial' || this.game.baseGame === 'imperialAsia') {
         return 'w-full sm:w-7/12';
       } if (this.game.baseGame === 'imperial2030') {
         return 'w-full';
@@ -821,7 +827,7 @@ export default {
       return '';
     },
     gameDetailsWidth() {
-      if (this.game.baseGame === 'imperial') {
+      if (this.game.baseGame === 'imperial' || this.game.baseGame === 'imperialAsia') {
         return 'w-full sm:w-1/3';
       } if (this.game.baseGame === 'imperial2030') {
         return 'w-full';
@@ -830,7 +836,12 @@ export default {
       return '';
     },
     baseGameString(baseGame) {
-      return baseGame === 'imperial' ? 'Original Imperial' : 'Imperial 2030';
+      switch (baseGame) {
+        case 'imperial': return 'Original Imperial';
+        case 'imperial2030': return 'Imperial 2030';
+        case 'imperialAsia': return 'Imperial Asia';
+        default: return 'Imperial';
+      }
     },
     variant(variant) {
       if (variant === 'standard') {
@@ -913,7 +924,7 @@ export default {
           const powerPointIncrease = slot - 5;
           return { slot, nations, powerPointIncrease };
         });
-      } if (this.game.baseGame === 'imperial2030') {
+      } if (this.game.baseGame === 'imperial2030' || this.game.baseGame === 'imperialAsia') {
         const taxes = [18, 16, 15, 14, 13, 12, 11, 10, 8, 6, 5];
         return taxes.map((slot, index) => {
           const nations = [];

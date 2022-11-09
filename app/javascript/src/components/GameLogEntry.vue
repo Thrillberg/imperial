@@ -1,41 +1,49 @@
 <template>
   <div class="border border-black bg-gray-100 rounded p-2 m-2 rondel">
-    <div v-for="({action, timestamp}, index) in event" :key="index">
+    <div
+      v-for="({action, timestamp}, i) in event"
+      :key="i"
+    >
       <div v-if="action.type === 'initialize'">
         <div class="flex justify-between">
           <p>{{ action.payload.soloMode ? "Solo game started!" : "Game started!" }}</p>
           <p>{{ toString(timestamp) }}</p>
         </div>
         <p>Variant: {{ action.payload.variant || "standard" }}</p>
-        <p v-for="(player, index) in action.payload.players" :key="index">
-          <svg 
+        <p
+          v-for="(player, innerIndex) in action.payload.players"
+          :key="innerIndex"
+        >
+          <Flag
             v-if="!!player.nation"
-            class="inline-block mr-1" 
-            xmlns="http://www.w3.org/2000/svg" 
-            width="30" 
+            :nation="getNation(player.nation)"
+            class="inline-block mr-1"
+            width="30"
             height="20"
-            >
-            <Flag :nation="player.nation.value" width="30"></Flag>
-          </svg>
-          <span v-if="!action.payload.variant || action.payload.variant === 'standard'" v-html=initializeAction(player)></span>
+          />
+          <span
+            v-if="!action.payload.variant || action.payload.variant === 'standard'"
+            v-html="initializeAction(player)"
+          />
         </p>
       </div>
       <div v-else-if="action.type === 'rondel'">
-        <svg 
-          class="inline-block mr-1" 
-          xmlns="http://www.w3.org/2000/svg" 
-          width="30" 
+        <Flag
+          :nation="getNation(action.payload.nation)"
+          class="inline-block mr-1"
+          width="30"
           height="20"
-          >
-          <Flag :nation="action.payload.nation.value" width="30"></Flag>
-        </svg>
+        />
         <b>{{ action.playerName }}</b>
         <div class="flex justify-between">
           <p>{{ processAction(action) }}</p>
           <p>{{ toString(timestamp) }}</p>
         </div>
-      </div>  
-      <div v-else class="flex justify-between">
+      </div>
+      <div
+        v-else
+        class="flex justify-between"
+      >
         <p>- {{ processAction(action) }}</p>
         <p>{{ toString(timestamp) }}</p>
       </div>
@@ -44,205 +52,214 @@
 </template>
 
 <script>
-import { DateTime } from "luxon";
+import { DateTime } from 'luxon';
 
-import Flag from "./flags/Flag.vue";
-import stringify from "../stringify.js";
+import Flag from './flags/Flag.vue';
+import stringify from '../stringify';
 
 export default {
-  name: "GameLogEntry",
-  props: { events: Object, index: Number, board: Object },
-  computed: {
-    event: function() {
-      return this.events.event
-    }
-  },
+  name: 'GameLogEntry',
   components: { Flag },
+  props: {
+    events: { type: Object, default: () => {} },
+    index: { type: Number, default: 0 },
+    board: { type: Object, default: () => {} },
+  },
+  computed: {
+    event() {
+      return this.events.event;
+    },
+  },
   methods: {
     capitalize(word) {
       if (word) {
         switch (word) {
-          case "bayofbiscay": return "Bay of Biscay"
-          case "blacksea": return "Black Sea"
-          case "westernmediterraneansea": return "Western Mediterranean Sea"
-          case "easternmediterraneansea": return "Eastern Mediterranean Sea"
-          case "northsea": return "North Sea"
-          case "northatlantic": return "North Atlantic"
-          case "balticsea": return "Baltic Sea"
-          case "englishchannel": return "English Channel"
-          case "westbalkan": return "West Balkan"
-          case "stpetersburg": return "St. Petersburg"
-          case "northpacific": return "North Pacific"
-          case "southpacific": return "South Pacific"
-          case "caribbeansea": return "Caribbean Sea"
-          case "southatlantic": return "South Atlantic"
-          case "gulfofguinea": return "Gulf of Guinea"
-          case "mediterraneansea": return "Mediterranean Sea"
-          case "indianocean": return "Indian Ocean"
-          case "seaofjapan": return "Sea of Japan"
-          case "chinasea": return "China Sea"
-          case "tasmansea": return "Tasman Sea"
-          case "northafrica": return "North Africa"
-          case "southafrica": return "South Africa"
-          case "eastafrica": return "East Africa"
-          case "neareast": return "Near East"
-          case "newzealand": return "New Zealand"
-          case "newdelhi": return "New Delhi"
-          case "riodejaneiro": return "Rio de Janeiro"
-          case "newyork": return "New York"
-          case "neworleans": return "New Orleans"
-          case "sanfrancisco": return "San Francisco"
+          case 'bayofbiscay': return 'Bay of Biscay';
+          case 'blacksea': return 'Black Sea';
+          case 'westernmediterraneansea': return 'Western Mediterranean Sea';
+          case 'easternmediterraneansea': return 'Eastern Mediterranean Sea';
+          case 'northsea': return 'North Sea';
+          case 'northatlantic': return 'North Atlantic';
+          case 'balticsea': return 'Baltic Sea';
+          case 'englishchannel': return 'English Channel';
+          case 'westbalkan': return 'West Balkan';
+          case 'stpetersburg': return 'St. Petersburg';
+          case 'northpacific': return 'North Pacific';
+          case 'southpacific': return 'South Pacific';
+          case 'caribbeansea': return 'Caribbean Sea';
+          case 'southatlantic': return 'South Atlantic';
+          case 'gulfofguinea': return 'Gulf of Guinea';
+          case 'mediterraneansea': return 'Mediterranean Sea';
+          case 'indianocean': return 'Indian Ocean';
+          case 'seaofjapan': return 'Sea of Japan';
+          case 'chinasea': return 'China Sea';
+          case 'tasmansea': return 'Tasman Sea';
+          case 'northafrica': return 'North Africa';
+          case 'southafrica': return 'South Africa';
+          case 'eastafrica': return 'East Africa';
+          case 'neareast': return 'Near East';
+          case 'newzealand': return 'New Zealand';
+          case 'newdelhi': return 'New Delhi';
+          case 'riodejaneiro': return 'Rio de Janeiro';
+          case 'newyork': return 'New York';
+          case 'neworleans': return 'New Orleans';
+          case 'sanfrancisco': return 'San Francisco';
+          default: return (word[0].toUpperCase() + word.substring(1));
         }
-        return (word[0].toUpperCase() + word.substring(1));
-      } else {
-        return "";
       }
+      return '';
     },
     processAction(action) {
-      let notImplemented = "NOT IMPLEMENTED";
+      const notImplemented = 'NOT IMPLEMENTED';
       switch (action.type) {
-        case "initialize":
+        case 'initialize':
           return notImplemented;
-        case "undo":
+        case 'undo':
           return `${action.payload.player} performed an undo on their last action.`;
-        case "rondel":
+        case 'rondel':
           return this.rondelAction(action.payload);
-        case "buildFactory":
+        case 'buildFactory':
           return this.buildFactoryAction(action.payload);
-        case "skipBuildFactory":
+        case 'skipBuildFactory':
           return `${action.payload.player} chose not to build a factory for ${stringify(action.payload.nation.value)}.`;
-        case "bondPurchase":
+        case 'bondPurchase':
           return this.bondPurchaseAction(action.payload);
-        case "skipBondPurchase":
+        case 'skipBondPurchase':
           return `${action.payload.player} chose not to buy a bond.`;
-        case "import":
+        case 'import':
           return this.importAction(action.payload);
-        case "production":
+        case 'production':
           return notImplemented;
-        case "maneuver":
+        case 'maneuver':
           return this.maneuverAction(action.payload);
-        case "coexist":
+        case 'coexist':
           return this.coexistAction(action.payload);
-        case "fight":
+        case 'fight':
           return this.fightAction(action.payload);
-        case "destroyFactory":
+        case 'destroyFactory':
           return this.destroyFactoryAction(action.payload);
-        case "skipDestroyFactory":
-          return `A factory was not destroyed in ${action.payload.province}.`
-        case "endManeuver":
+        case 'skipDestroyFactory':
+          return `A factory was not destroyed in ${action.payload.province}.`;
+        case 'endManeuver':
           return this.endManeuverAction();
-        case "forceInvestor":
-          return `${action.payload.player} forced a move on the Investor slot.`
-        case "skipForceInvestor":
-          return `${action.payload.player} did not force a move on the Investor slot.`
-        case "endGame":
-          return "Game Over!";
-        case "playerGainsCash":
+        case 'forceInvestor':
+          return `${action.payload.player} forced a move on the Investor slot.`;
+        case 'skipForceInvestor':
+          return `${action.payload.player} did not force a move on the Investor slot.`;
+        case 'endGame':
+          return 'Game Over!';
+        case 'playerGainsCash':
           return `${action.payload.player} gained ${action.payload.amount}m in taxes.`;
-        case "nationGainsTreasury":
+        case 'nationGainsTreasury':
           return `${stringify(action.payload.nation.value)} gained ${action.payload.amount}m in taxes.`;
-        case "nationGainsPowerPoints":
+        case 'nationGainsPowerPoints':
           return `${stringify(action.payload.nation.value)} gained ${action.payload.powerPoints} power points.`;
-        case "nationPaysPlayer":
+        case 'nationPaysPlayer':
           return `${stringify(action.payload.nation.value)} paid ${action.payload.player} ${action.payload.amount}m.`;
-        case "investorCardHolderChanged":
+        case 'investorCardHolderChanged':
           return `${action.payload.oldInvestorCardHolder} has passed the investor card to ${action.payload.newInvestorCardHolder}.`;
-        case "nationControllerChanged":
+        case 'nationControllerChanged':
           return `Control of ${stringify(action.payload.nation.value)} has passed from ${action.payload.oldNationController} to ${action.payload.newNationController}.`;
-        case "playerTradedInForABond":
+        case 'playerTradedInForABond':
           return `${action.payload.player} traded in their ${stringify(action.payload.bondNation.value)} bond for ${action.payload.bondCost}m.`;
-        case "playerAutoSkipsBondPurchase":
+        case 'playerAutoSkipsBondPurchase':
           return `${action.payload.player} could not buy a bond from ${stringify(action.payload.bondNation.value)} because of insufficient funds.`;
-        case "playerPaysForRondel": {
-          let slot = this.capitalize(action.payload.slot).replace(/\d/g,"");
+        case 'playerPaysForRondel': {
+          const slot = this.capitalize(action.payload.slot).replace(/\d/g, '');
           return `${action.payload.player} paid ${action.payload.cost}m to move to the ${slot} slot on the rondel.`;
         }
-        case "playerInvests": {
+        case 'playerInvests': {
           return `${action.payload.player} received 2m for holding the investor card.`;
         }
-        case "unfriendlyEntrance": {
-          return `${stringify(action.payload.challenger.value)} has violently entered ${this.capitalize(action.payload.province)} (${stringify(action.payload.incumbent.value)}).`
+        case 'unfriendlyEntrance': {
+          return `${stringify(action.payload.challenger.value)} has violently entered ${this.capitalize(action.payload.province)} (${stringify(action.payload.incumbent.value)}).`;
         }
-        case "friendlyEntrance": {
-          return `${stringify(action.payload.challenger.value)} has peacefully entered ${this.capitalize(action.payload.province)} (${stringify(action.payload.incumbent.value)}).`
+        case 'friendlyEntrance': {
+          return `${stringify(action.payload.challenger.value)} has peacefully entered ${this.capitalize(action.payload.province)} (${stringify(action.payload.incumbent.value)}).`;
         }
-        case "blockCanal": {
-          return "A canal has been blocked."
+        case 'blockCanal': {
+          return 'A canal has been blocked.';
         }
-        case "unblockCanal": {
-          return "A canal has not been blocked."
+        case 'unblockCanal': {
+          return 'A canal has not been blocked.';
         }
+        default: { return notImplemented; }
       }
-      return notImplemented;
     },
     initializeAction(player) {
-      let name = player.id;
-      let nation = stringify(player.nation.value);
+      const name = player.id;
+      const nation = stringify(player.nation.value);
       return `<strong>${nation}</strong> is controlled by <strong>${name}</strong>`;
     },
+    getNation(nation) {
+      if (nation.value === 'CN' && nation.label === 'NationAsia') {
+        return 'CNAsia';
+      }
+      return nation.value;
+    },
     rondelAction(payload) {
-      let nation = stringify(payload.nation.value);
-      let slot = this.capitalize(payload.slot).replace(/\d/g,"");
+      const nation = stringify(payload.nation.value);
+      const slot = this.capitalize(payload.slot).replace(/\d/g, '');
       return `${nation} advanced to the ${slot} rondel slot.`;
     },
     buildFactoryAction(payload) {
-      let province = this.capitalize(payload.province);
+      const province = this.capitalize(payload.province);
       return `Built a factory in ${province} for 5m.`;
     },
     bondPurchaseAction(payload) {
-      let player = payload.player;
-      let cost = payload.cost;
-      let nation = stringify(payload.nation.value);
+      const { player } = payload;
+      const { cost } = payload;
+      const nation = stringify(payload.nation.value);
       return `${player} bought the ${cost}m bond from ${nation}.`;
     },
     importAction(payload) {
-      let provincesList = payload.placements.map((item) => { return this.capitalize(item.province) });
-      let province = provincesList[0];
-      let provinces = provincesList.slice(0,-1).join(", ") + " and " + provincesList.slice(-1);
-      let provincesText = provincesList.length > 1 ? provinces : province;
-      let unit = provincesList.length > 1 ? "units" : "unit";
+      const provincesList = payload.placements.map((item) => this.capitalize(item.province));
+      const province = provincesList[0];
+      const provinces = `${provincesList.slice(0, -1).join(', ')} and ${provincesList.slice(-1)}`;
+      const provincesText = provincesList.length > 1 ? provinces : province;
+      const unit = provincesList.length > 1 ? 'units' : 'unit';
       return `Imported a total of ${provincesList.length} ${unit} into ${provincesText}.`;
     },
     maneuverAction(payload) {
       let unit;
       if (this.board.graph.get(payload.destination).isOcean) {
-        unit = "a fleet";
+        unit = 'a fleet';
       } else {
-        unit = "an army";
+        unit = 'an army';
       }
-      let origin = this.capitalize(payload.origin);
-      let destination = this.capitalize(payload.destination);
+      const origin = this.capitalize(payload.origin);
+      const destination = this.capitalize(payload.destination);
       return `Moved ${unit} from ${origin} to ${destination}.`;
     },
     coexistAction(payload) {
-      let province = this.capitalize(payload.province);
-      let nations = stringify(payload.incumbent.value) + " and " + stringify(payload.challenger.value);
+      const province = this.capitalize(payload.province);
+      const nations = `${stringify(payload.incumbent.value)} and ${stringify(payload.challenger.value)}`;
       return `Armies from ${nations} are peacefully coexisting in ${province}.`;
     },
     fightAction(payload) {
-      let province = this.capitalize(payload.province);
-      let incumbent = stringify(payload.incumbent.value);
-      let challenger = stringify(payload.challenger.value);
+      const province = this.capitalize(payload.province);
+      const incumbent = stringify(payload.incumbent.value);
+      const challenger = stringify(payload.challenger.value);
       return `${challenger} has picked a fight with ${incumbent} in ${province}.`;
     },
     destroyFactoryAction(payload) {
-      let province = this.capitalize(payload.province);
+      const province = this.capitalize(payload.province);
       return `Factory destroyed in ${province}.`;
     },
     endManeuverAction() {
-      return `Military maneuvers have ended for now.`
+      return 'Military maneuvers have ended for now.';
     },
     toString(timestamp) {
-      if (timestamp !== "" && timestamp) {
+      if (timestamp !== '' && timestamp) {
         let out = DateTime.fromISO(timestamp).toLocaleString(DateTime.DATETIME_FULL);
-        if (out === "Invalid DateTime") {
-          out = "Automated";
+        if (out === 'Invalid DateTime') {
+          out = 'Automated';
         }
         return out;
       }
 
-      return "Automated";
-    }
-  }
-}
+      return 'Automated';
+    },
+  },
+};
 </script>

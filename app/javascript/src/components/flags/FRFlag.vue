@@ -5,22 +5,34 @@
     :width="width"
     :height="height"
   >
-    <g v-bind:clip-path="this.fleet ? 'url(#fleetClip)' : ''">
-      <rect width="1500" height="1000" fill="#CE1126" />
-      <rect width="1000" height="1000" fill="#FFFFFF" />
-      <rect width="500" height="1000" fill="#002654" />
+    <g :clip-path="fleet ? 'url(#fleetClip)' : ''">
+      <rect
+        width="1500"
+        height="1000"
+        fill="#CE1126"
+      />
+      <rect
+        width="1000"
+        height="1000"
+        fill="#FFFFFF"
+      />
+      <rect
+        width="500"
+        height="1000"
+        fill="#002654"
+      />
     </g>
   </svg>
 </template>
 
 <script>
 export default {
-  name: "FRFlag",
+  name: 'FRFlag',
   props: {
     fleet: Boolean,
     width: String,
     height: String,
-    transform: String
-  }
+    transform: String,
+  },
 };
 </script>
