@@ -60,11 +60,11 @@ export default {
       return '';
     },
     width() {
-      if (this.baseGame === 'imperial') {
+      if (this.baseGame === 'imperial' || this.baseGame === 'imperialAsia') {
         return 'w-1/3 md:w-full lg:w-full xl:w-full 2xl:w-full';
       }
 
-      if (this.baseGame === 'imperial2030' || this.baseGame === 'imperialAsia') {
+      if (this.baseGame === 'imperial2030') {
         return 'w-1/3 lg:w-1/3 xl:w-1/3 2xl:w-1/6';
       }
 

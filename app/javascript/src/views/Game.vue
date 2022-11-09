@@ -29,7 +29,7 @@
           :paused="paused"
         />
         <div
-          v-if="game.baseGame === 'imperial'"
+          v-if="game.baseGame === 'imperial' || game.baseGame === 'imperialAsia'"
           class="flex flex-wrap items-start"
         >
           <div
@@ -73,11 +73,11 @@
             <TimeTravelButtons
               :game="game"
               :popped-turns="poppedTurns"
-              @backToGameStartEvent="backToGameStart"
-              @backToRoundStartEvent="backToRoundStart"
-              @backEvent="back"
-              @forwardEvent="forward"
-              @forwardToCurrentActionEvent="forwardToCurrentAction"
+              @back-to-game-start-event="backToGameStart"
+              @back-to-round-start-event="backToRoundStart"
+              @back-event="back"
+              @forward-event="forward"
+              @forward-to-current-action-event="forwardToCurrentAction"
             />
           </div>
           <div
@@ -143,7 +143,7 @@
           </div>
         </div>
         <div
-          v-if="game.baseGame === 'imperial2030' || game.baseGame === 'imperialAsia'"
+          v-if="game.baseGame === 'imperial2030'"
           class="flex flex-wrap items-start"
         >
           <div
@@ -818,25 +818,30 @@ export default {
       }
     },
     mapWidth() {
-      if (this.game.baseGame === 'imperial') {
+      if (this.game.baseGame === 'imperial' || this.game.baseGame === 'imperialAsia') {
         return 'w-full sm:w-7/12';
-      } if (this.game.baseGame === 'imperial2030' || this.game.baseGame === 'imperialAsia') {
+      } if (this.game.baseGame === 'imperial2030') {
         return 'w-full';
       }
 
       return '';
     },
     gameDetailsWidth() {
-      if (this.game.baseGame === 'imperial') {
+      if (this.game.baseGame === 'imperial' || this.game.baseGame === 'imperialAsia') {
         return 'w-full sm:w-1/3';
-      } if (this.game.baseGame === 'imperial2030' || this.game.baseGame === 'imperialAsia') {
+      } if (this.game.baseGame === 'imperial2030') {
         return 'w-full';
       }
 
       return '';
     },
     baseGameString(baseGame) {
-      return baseGame === 'imperial' ? 'Original Imperial' : 'Imperial 2030';
+      switch (baseGame) {
+        case 'imperial': return 'Original Imperial';
+        case 'imperial2030': return 'Imperial 2030';
+        case 'imperialAsia': return 'Imperial Asia';
+        default: return 'Imperial';
+      }
     },
     variant(variant) {
       if (variant === 'standard') {

@@ -708,6 +708,7 @@ export default {
       GB: '#ef7f72',
       TR: 'silver',
       RU: '#9c6bae',
+      GE: 'white',
     },
     seaProvinces: {
       'Arabian Sea': markRaw(arabianSea),

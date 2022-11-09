@@ -8,7 +8,7 @@
     <component :is="province" />
     <text
       v-if="mounted && !isImpassable"
-      font-size="8"
+      :font-size="fontSize"
       stroke="#303030"
       text-align="center"
       :x="flagX(0) + (adjustments?.labelX || 0)"
@@ -112,6 +112,7 @@ export default {
     dot: { type: String, default: '' },
     factory: { type: String, default: '' },
     factoryType: { type: String, default: '' },
+    fontSize: { type: String, default: '8' },
     importingUnits: { type: Array, default: () => [] },
     isImpassable: Boolean,
     isValid: Boolean,

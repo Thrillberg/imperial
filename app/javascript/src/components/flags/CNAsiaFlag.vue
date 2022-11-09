@@ -8,6 +8,7 @@
     :width="width"
     :height="height"
   >
+  <g :clip-path="fleet ? 'url(#fleetClipCNAsia)' : ''">
     <rect
       width="750"
       height="500"
@@ -404,6 +405,7 @@
         fill="#fff"
       />
     </g>
+  </g>
   </svg>
 </template>
 

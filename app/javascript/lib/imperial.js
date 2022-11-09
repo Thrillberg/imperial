@@ -6,6 +6,7 @@ import Auction from './auction';
 import standardGameBoard from './board';
 import auctionStandardSetup from './auctionSetup';
 import auction2030Setup from './auction2030Setup';
+import auctionAsiaSetup from './auctionAsiaSetup';
 import standardSetup from './standardSetup';
 import standard2030Setup from './standard2030Setup';
 import standardAsiaSetup from './standardAsiaSetup';
@@ -268,6 +269,8 @@ export default class Imperial {
         auctionSetup = auctionStandardSetup;
       } else if (action.payload.baseGame === 'imperial2030') {
         auctionSetup = auction2030Setup;
+      } else if (action.payload.baseGame === 'imperialAsia') {
+        auctionSetup = auctionAsiaSetup;
       }
       this.auction = Auction.fromLog(this.log, this, auctionSetup);
       setup = auctionSetup;
@@ -404,6 +407,16 @@ export default class Imperial {
           BR: () => Nation2030.US,
           US: () => Nation2030.EU,
           EU: () => Nation2030.RU,
+        });
+      } else if (this.baseGame === 'imperialAsia') {
+        nextNation = this.currentNation.when({
+          CN: () => NationAsia.JP,
+          JP: () => NationAsia.FR,
+          FR: () => NationAsia.GB,
+          GB: () => NationAsia.TR,
+          TR: () => NationAsia.RU,
+          RU: () => NationAsia.GE,
+          GE: () => NationAsia.CN,
         });
       }
       const index = this.order.indexOf(this.currentPlayerName);
@@ -1342,7 +1355,7 @@ export default class Imperial {
           }),
         );
         let bonus = 0;
-        if (this.baseGame === 'imperial2030') {
+        if (this.baseGame === 'imperial2030' || this.baseGame === 'imperialAsia') {
           // Nation pays bonus to current player
           const bonusByTaxes = {
             0: 0,
@@ -1396,7 +1409,7 @@ export default class Imperial {
           powerPoints = nation.taxChartPosition - 5;
           if (powerPoints < 0) powerPoints = 0;
           nation.powerPoints += powerPoints;
-        } else if (this.baseGame === 'imperial2030') {
+        } else if (this.baseGame === 'imperial2030' || this.baseGame === 'imperialAsia') {
           const powerPointsByTax = {
             0: 0,
             1: 0,
@@ -2032,7 +2045,7 @@ export default class Imperial {
       return index * 2;
     }
 
-    if (this.baseGame === 'imperial2030') {
+    if (this.baseGame === 'imperial2030' || this.baseGame === 'imperialAsia') {
       return (
         index
         + parseInt(this.nations.get(this.currentNation).powerPoints / 5, 10) * index
@@ -2341,7 +2354,7 @@ export default class Imperial {
     if (this.baseGame === 'imperial') {
       // Taxes cannot exceed 20m
       if (taxes > 20) return 20;
-    } else if (this.baseGame === 'imperial2030') {
+    } else if (this.baseGame === 'imperial2030' || this.baseGame === 'imperialAsia') {
       // Taxes cannot exceed 23m
       if (taxes > 23) return 23;
     }
