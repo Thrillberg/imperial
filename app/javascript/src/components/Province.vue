@@ -7,7 +7,7 @@
   >
     <component :is="province" />
     <text
-      v-if="mounted && !impassableProvinces.includes(name)"
+      v-if="mounted && !isImpassable"
       font-size="8"
       stroke="#303030"
       text-align="center"
@@ -113,6 +113,7 @@ export default {
     factory: { type: String, default: '' },
     factoryType: { type: String, default: '' },
     importingUnits: { type: Array, default: () => [] },
+    isImpassable: Boolean,
     isValid: Boolean,
     name: { type: String, default: '' },
     nationColor: { type: String, default: '' },
@@ -124,7 +125,6 @@ export default {
   },
   emits: ['fightResolved'],
   data: () => ({
-    impassableProvinces: ['Sardinia', 'Corsica', 'Switzerland', 'Black Sea', 'Caspian Sea'],
     mounted: false,
     originalFill: '',
     tempFactory: false,

@@ -47,6 +47,7 @@
         :province-with-fight="provinceWithFight === (name.replace(/\.*\s/gm, '').toLowerCase())"
         :adjustments="config.adjustments[name]"
         :nation-color="config.nationColors[dot(name)]"
+        :is-impassable="isImpassable(name)"
         @fight-resolved="$emit('fightResolved')"
       />
       <Province
@@ -66,6 +67,7 @@
         :province-with-fight="provinceWithFight === (name.replace(/\.*\s/gm, '').toLowerCase())"
         :adjustments="config.adjustments[name]"
         :nation-color="config.nationColors[dot(name)]"
+        :is-impassable="isImpassable(name)"
         @fight-resolved="$emit('fightResolved')"
       />
     </g>
@@ -207,6 +209,13 @@ export default {
       }
 
       return [];
+    },
+    isImpassable(name) {
+      const impassableProvinces = ['Sardinia', 'Corsica', 'Switzerland', 'Caspian Sea'];
+      if (this.game.baseGame === 'imperial2030') {
+        impassableProvinces.push('Black Sea');
+      }
+      return impassableProvinces.includes(name);
     },
     isValid(province) {
       if (this.paused) return false;
