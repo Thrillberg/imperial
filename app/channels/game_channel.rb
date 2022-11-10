@@ -69,7 +69,7 @@ class GameChannel < ApplicationCable::Channel
         # Send Discord notification
         current_player_discord_id = next_player&.discord_id
         if current_player_discord_id.present? && ENV["RAILS_ENV"] == "production"
-          puts "Preparing to send Discord notification"
+          puts "Preparing to send notifyNextPlayer Discord notification"
           DiscordTurnNotificationJob.set(wait: 5.minutes)
             .perform_later(current_player_discord_id, next_player.id, game.id, game.name)
         end
@@ -84,6 +84,22 @@ class GameChannel < ApplicationCable::Channel
       winner_name = data["data"]["winnerName"]
       winner = game.users.find_by(name: winner_name)
       game.update(winner: winner) unless game.winner
+      # Send email notifications to all players
+      game.players.each do |player|
+        should_send_turn_notification = player.user&.turn_notifications_enabled
+        should_send_turn_notification = true
+        if player.user.name === winner_name && should_send_turn_notification
+          YouWonNotificationJob.perform_later(player.id, game.id)
+        elsif should_send_turn_notification
+          GameOverNotificationJob.perform_later(player.id, game.id)
+        end
+      end
+      # Send Discord notification to channel
+      winner_discord_id = winner&.discord_id
+      if ENV["RAILS_ENV"] == "production"
+        puts "Preparing to send updateWinnerName Discord notification"
+        DiscordGameOverNotificationJob.perform_later(winner_discord_id, game.id, game.name)
+      end
       broadcast_games "game_channel", "updateGames"
 
     when "userObservingGame"
