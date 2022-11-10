@@ -191,6 +191,7 @@ const edges = [
   ['constantinople', 'budapest'],
   ['constantinople', 'mediterraneansea'],
   ['constantinople', 'angora'],
+  ['mediterraneansea', 'arabiansea'],
   ['mediterraneansea', 'constantinople'],
   ['mediterraneansea', 'budapest'],
   ['mediterraneansea', 'odessa'],

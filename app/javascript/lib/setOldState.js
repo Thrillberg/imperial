@@ -1,59 +1,63 @@
-import { Nation, Nation2030 } from "./constants.js";
+import { Nation, Nation2030, NationAsia } from './constants';
 
 export default (game) => {
-  let units = new Map;
+  const units = new Map();
   for (const [key, value] of game.units) {
-    const newValue = new Map;
+    const newValue = new Map();
     for (const [key2, value2] of value) {
-      newValue.set(key2, Object.assign({}, value2));
+      newValue.set(key2, { ...value2 });
     }
-    if (game.baseGame === "imperial") {
+    if (game.baseGame === 'imperial') {
       units.set(Nation[key.value], newValue);
-    } else if (game.baseGame === "imperial2030") {
+    } else if (game.baseGame === 'imperial2030') {
       units.set(Nation2030[key.value], newValue);
+    } else if (game.baseGame === 'imperialAsia') {
+      units.set(NationAsia[key.value], newValue);
     }
   }
-  let nations = new Map();
+  const nations = new Map();
   for (const [key, value] of game.nations) {
-    if (game.baseGame === "imperial") {
-      nations.set(Nation[key.value], Object.assign({}, value));
-    } else if (game.baseGame === "imperial2030") {
-      nations.set(Nation2030[key.value], Object.assign({}, value));
+    if (game.baseGame === 'imperial') {
+      nations.set(Nation[key.value], { ...value });
+    } else if (game.baseGame === 'imperial2030') {
+      nations.set(Nation2030[key.value], { ...value });
+    } else if (game.baseGame === 'imperialAsia') {
+      nations.set(NationAsia[key.value], { ...value });
     }
   }
-  let provinces = new Map();
+  const provinces = new Map();
   for (const [key, value] of game.provinces) {
-    provinces.set(key, Object.assign({}, value));
+    provinces.set(key, { ...value });
   }
-  let availableBonds = new Set();
+  const availableBonds = new Set();
   for (const bond of game.availableBonds) {
     availableBonds.add(bond);
   }
-  let availableActions = new Set();
+  const availableActions = new Set();
   for (const action of game.availableActions) {
     availableActions.add(action);
   }
-  let players = {};
+  const players = {};
   for (const player of Object.keys(game.players)) {
     players[player] = {};
     players[player].cash = game.players[player].cash;
     players[player].name = game.players[player].name;
     players[player].rawScore = game.players[player].rawScore;
-    let bonds = new Set();
+    const bonds = new Set();
     for (const bond of game.players[player].bonds) {
-      bonds.add(bond)
+      bonds.add(bond);
     }
     players[player].bonds = bonds;
   }
-  let fleetConvoyCount = {};
+  const fleetConvoyCount = {};
   for (const province of Object.keys(game.fleetConvoyCount)) {
-    fleetConvoyCount[province] = game.fleetConvoyCount[province]
+    fleetConvoyCount[province] = game.fleetConvoyCount[province];
   }
-  let coexistingNations = [];
+  const coexistingNations = [];
   for (const nation of game.coexistingNations) {
     coexistingNations.push(nation);
   }
-  let swissBanksWhoDoNotInterrupt = [];
+  const swissBanksWhoDoNotInterrupt = [];
   for (const bank of game.swissBanksWhoDoNotInterrupt) {
     swissBanksWhoDoNotInterrupt.push(bank);
   }
@@ -70,6 +74,6 @@ export default (game) => {
     currentNationInConflict: game.currentNationInConflict,
     swissBanksWhoDoNotInterrupt,
     importing: false,
-    buildingFactory: game.buildingFactory
-  }
-}
+    buildingFactory: game.buildingFactory,
+  };
+};
