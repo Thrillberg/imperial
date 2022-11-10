@@ -1,0 +1,10 @@
+<p>Congratulations <%= @user.name %>! Your investments have paid off!</p>
+
+<p>You won <b><%= link_to @game.name, "https://www.playimperial.club/game/#{@game.id}" %></b>!</p>
+
+<p>The scores are as follows:</p>
+<ul>
+<% @game.players.each do |player| %>
+  <li><b><%= player.user.name %>:</b> <%= player.score %></li>
+<% end %>
+</ul>
