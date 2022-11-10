@@ -62,7 +62,7 @@
         :adjustments="config.adjustments[name]"
         :nation-color="config.nationColors[dot(name)]"
         :is-impassable="isImpassable(name)"
-        :font-size="game.baseGame === 'imperialAsia' ? '10': '8'"
+        :font-size="game.baseGame === 'imperialAsia' ? '13': '8'"
         @fight-resolved="$emit('fightResolved')"
       />
       <Province
@@ -83,7 +83,7 @@
         :adjustments="config.adjustments[name]"
         :nation-color="config.nationColors[dot(name)]"
         :is-impassable="isImpassable(name)"
-        :font-size="game.baseGame === 'imperialAsia' ? '11': '8'"
+        :font-size="game.baseGame === 'imperialAsia' ? '13': '8'"
         @fight-resolved="$emit('fightResolved')"
       />
     </g>

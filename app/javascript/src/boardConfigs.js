@@ -708,7 +708,15 @@ export default {
       Angora: {
         labelY: -5,
       },
+      Annam: {
+        factoryX: 35,
+        factoryY: 5,
+        flagFleetX: 15,
+        flagFleetY: 7,
+        labelX: 10,
+      },
       'Arabian Sea': {
+        flagFleetX: 90,
         labelX: 100,
         labelY: 30,
       },
@@ -717,6 +725,7 @@ export default {
       },
       Bengal: {
         factoryY: 15,
+        flagArmyY: -15,
       },
       Bombay: {
         factoryX: -5,
@@ -725,6 +734,11 @@ export default {
       },
       Borneo: {
         factoryY: 20,
+      },
+      Cambodia: {
+        factoryX: 5,
+        factoryY: -15,
+        flagArmyY: 7,
       },
       Cochin: {
         factoryY: 3,
@@ -747,6 +761,7 @@ export default {
       },
       Delhi: {
         factoryY: 20,
+        flagArmyY: -5,
         labelY: 10,
       },
       Hyderabad: {
@@ -756,32 +771,94 @@ export default {
         factoryX: 40,
         factoryY: 25,
       },
+      Irkutsk: {
+        factoryX: 50,
+      },
       Java: {
         factoryX: -75,
         factoryY: -15,
+        labelX: -40,
+        labelY: -5,
+      },
+      Kyoto: {
+        factoryX: 7,
+        factoryY: 5,
       },
       'Java Sea': {
+        dotX: -20,
+        dotY: -40,
+        flagFleetX: -20,
+        flagFleetY: -50,
         labelX: -40,
         labelY: -20,
       },
       'Mediterranean Sea': {
-        labelX: -5,
+        flagFleetY: 40,
+        labelX: 5,
         labelY: 40,
+      },
+      Mongolia: {
+        factoryY: 10,
+        flagArmyY: 20,
+      },
+      Moscow: {
+        factoryX: -35,
+        flagArmyY: 10,
       },
       'Okhotsk Sea': {
         labelX: 40,
+      },
+      Omsk: {
+        factoryY: 10,
+        flagArmyY: 40,
+      },
+      Otaru: {
+        flagFleetY: -10,
+        labelY: -10,
+      },
+      Peking: {
+        factoryY: 10,
+        flagArmyY: 20,
       },
       'Sea of Japan': {
         labelX: 20,
         labelY: 10,
       },
+      Siam: {
+        factoryY: 2,
+        flagArmyY: 2,
+        labelY: -2,
+      },
+      Sinkiang: {
+        factoryY: 10,
+        flagArmyY: 20,
+      },
       'South China Sea': {
+        dotX: -50,
+        flagFleetX: -50,
         labelX: -70,
         labelY: 30,
       },
+      Syria: {
+        flagArmyX: -30,
+        flagArmyY: -40,
+        labelX: -18,
+        labelY: -20,
+      },
       'Timor Sea': {
+        flagFleetX: 30,
+        flagFleetY: -70,
         labelX: 60,
         labelY: -20,
+      },
+      Tokyo: {
+        factoryY: 7,
+      },
+      Tongking: {
+        factoryX: 5,
+        factoryY: -15,
+        flagArmyX: 5,
+        flagArmyY: -15,
       },
       Vladivostok: {
         factoryX: 95,
