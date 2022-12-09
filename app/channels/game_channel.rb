@@ -97,10 +97,9 @@ class GameChannel < ApplicationCable::Channel
           end
         end
         # Send Discord notification to channel
-        winner_discord_id = winner&.discord_id
         if ENV["RAILS_ENV"] == "production"
           puts "Preparing to send updateWinnerName Discord notification"
-          DiscordGameOverNotificationJob.perform_later(winner_discord_id, game.id, game.name)
+          DiscordGameOverNotificationJob.perform_later(winner_name, game.id, game.name)
         end
       end
       broadcast_games "game_channel", "updateGames"

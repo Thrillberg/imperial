@@ -1,14 +1,14 @@
 class DiscordGameOverNotificationJob < ApplicationJob
   queue_as :default
 
-  def perform(winner_discord_id, game_id, game_name)
+  def perform(winner_name, game_id, game_name)
     game = Game.find(game_id)
     if game.discord_channel_id
       uri = URI("https://discord.com/api/channels/#{game.discord_channel_id}/messages")
       Net::HTTP.post(
         uri,
         {
-          content: "#{game_name} has ended and <@#{winner_discord_id}> is the winner!",
+          content: "#{game_name} has ended and #{winner_name} is the winner!",
           allowed_mentions: {parse: ["users"]},
           embeds: [
             title: game_name,
@@ -23,7 +23,7 @@ class DiscordGameOverNotificationJob < ApplicationJob
       Net::HTTP.post(
         uri,
         {
-          content: "#{game_name} has ended and <@#{winner_discord_id}> is the winner!",
+          content: "#{game_name} has ended and #{winner_name} is the winner!",
           allowed_mentions: {parse: ["users"]},
           embeds: [
             title: game_name,
