@@ -111,7 +111,7 @@
               :paused="paused"
               :hosting-this-game="hostingThisGame"
               @tick="tickWithAction"
-              @toggleTradeIn="toggleTradeIn"
+              @toggle-trade-in="toggleTradeIn"
             />
             <ControlPanel
               :game="game"
@@ -125,11 +125,11 @@
               :paused="paused"
               :hosting-this-game="hostingThisGame"
               @tick="tickWithAction"
-              @endManeuver="endManeuver"
-              @chooseImportType="makeImportTypeChoice"
-              @runImport="runImport"
-              @skipBuildFactory="skipBuildFactory"
-              @purchaseBond="purchaseBond"
+              @end-maneuver="endManeuver"
+              @choose-import-type="makeImportTypeChoice"
+              @run-import="runImport"
+              @skip-build-factory="skipBuildFactory"
+              @purchase-bond="purchaseBond"
             />
             <div v-if="!game.winner">
               <Rondel
@@ -165,11 +165,11 @@
             <TimeTravelButtons
               :game="game"
               :popped-turns="poppedTurns"
-              @backToGameStartEvent="backToGameStart"
-              @backToRoundStartEvent="backToRoundStart"
-              @backEvent="back"
-              @forwardEvent="forward"
-              @forwardToCurrentActionEvent="forwardToCurrentAction"
+              @back-to-game-start-event="backToGameStart"
+              @back-to-round-start-event="backToRoundStart"
+              @back-event="back"
+              @forward-event="forward"
+              @forward-to-current-action-event="forwardToCurrentAction"
             />
             <ControlPanel
               :game="game"
@@ -183,11 +183,11 @@
               :paused="paused"
               :hosting-this-game="hostingThisGame"
               @tick="tickWithAction"
-              @endManeuver="endManeuver"
-              @chooseImportType="makeImportTypeChoice"
-              @runImport="runImport"
-              @skipBuildFactory="skipBuildFactory"
-              @purchaseBond="purchaseBond"
+              @end-maneuver="endManeuver"
+              @choose-import-type="makeImportTypeChoice"
+              @run-import="runImport"
+              @skip-build-factory="skipBuildFactory"
+              @purchase-bond="purchaseBond"
             />
           </div>
           <div
@@ -224,7 +224,7 @@
               :paused="paused"
               :hosting-this-game="hostingThisGame"
               @tick="tickWithAction"
-              @toggleTradeIn="toggleTradeIn"
+              @toggle-trade-in="toggleTradeIn"
             />
             <div v-if="!game.winner">
               <Rondel
@@ -395,6 +395,7 @@
 </template>
 
 <script>
+import { Howl } from 'howler';
 import Action from '../../lib/action';
 import Imperial from '../../lib/imperial';
 import { apiClient } from '../router/index';
@@ -420,9 +421,7 @@ import imperialAsiaBoard from '../../lib/boardAsia';
 import favicon2 from '../assets/favicon2.ico';
 
 import { Nation, Nation2030 } from '../../lib/constants';
-// import notification from "../assets/notification.mp3";
-
-// import { Howl } from "howler";
+import notification from '../assets/notification.mp3';
 
 export default {
   name: 'Game',
@@ -813,8 +812,7 @@ export default {
     },
     audioNotification() {
       if (this.currentPlayer.name === this.game.currentPlayerName && !this.silenceAudio) {
-        // Disabled because this is annoying. Figure out a better way to implement.
-        // new Howl({ src: [notification], volume: 0.1 }).play();
+        new Howl({ src: [notification] }).play();
       }
     },
     mapWidth() {
