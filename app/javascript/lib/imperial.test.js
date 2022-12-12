@@ -3658,6 +3658,40 @@ describe('imperial', () => {
           expect(game.availableActions).toEqual(availableActions);
         });
 
+        test('3 armies may choose not to destroy a foreign factory', () => {
+          const game = newGame();
+          game.provinces.get('f').factory = 'armaments';
+          game.provinces.get('h').factory = 'armaments';
+          game.units.get(Nation.AH).get('f').armies += 1;
+          game.units.get(Nation.AH).get('f').armies += 1;
+          game.units.get(Nation.AH).get('c').armies += 1;
+          game.units.get(Nation.AH).get('c').armies += 1;
+          const availableActions = new Set([
+            Action.maneuver({ origin: 'c', destination: 'd' }),
+            Action.maneuver({ origin: 'c', destination: 'e' }),
+            Action.maneuver({ origin: 'c', destination: 'f' }),
+            Action.maneuver({ origin: 'f', destination: 'c' }),
+            Action.maneuver({ origin: 'f', destination: 'd' }),
+            Action.endManeuver(),
+            Action.undo({ player: 'player1' }),
+          ]);
+
+          game.tick(
+            Action.rondel({ slot: 'maneuver1', nation: Nation.AH, cost: 0 }),
+          );
+          game.tick(Action.maneuver({ origin: 'c', destination: 'f' }));
+          game.tick(
+            Action.unfriendlyEntrance({
+              challenger: Nation.AH,
+              incumbent: Nation.IT,
+              province: 'f',
+            }),
+          );
+          game.tick(Action.skipDestroyFactory({ province: 'f' }));
+
+          expect(game.availableActions).toEqual(availableActions);
+        });
+
         test('an army cannot unfriendly enter a province with the last factory', () => {
           const game = newGame();
           game.provinces.get('f').factory = 'armaments';

@@ -286,6 +286,7 @@ export default {
         }
       }
       this.tickWithAction(skipAction);
+      this.factoryToDestroy = '';
     },
     canUndo() {
       let canUndo = false;
