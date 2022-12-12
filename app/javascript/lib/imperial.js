@@ -1121,17 +1121,12 @@ export default class Imperial {
     for (const [nation] of this.nations) {
       // Automatically enter friendly if destination has the
       // nation's last factory
-      let factoryCount = 0;
-      for (const province of this.board.byNation.get(nation)) {
-        if (this.provinces.get(province).factory) {
-          factoryCount += 1;
-        }
-      }
       if (
         nation !== this.currentNation
         && this.board.byNation.get(nation)?.has(destination)
         && !!this.provinces.get(destination).factory
-        && factoryCount <= 1
+        && this.unoccupiedFactoryCount() === 0
+        && this.units.get(this.currentNation).get(destination).armies < 2
       ) {
         this.availableActions.add(
           Action.friendlyEntrance({
@@ -2104,13 +2099,17 @@ export default class Imperial {
   }
 
   unoccupiedFactoryCount(nation) {
-    let count = 0;
+    return this.unoccupiedFactories(nation).length;
+  }
+
+  unoccupiedFactories(nation) {
+    const unoccupiedFactories = [];
     for (const province of this.board.byNation.get(nation)) {
       const hasAnUnoccupiedFactory = this.provinces.get(province).factory
         && this.nobodyIsOccupying(province, nation);
-      if (hasAnUnoccupiedFactory) count += 1;
+      if (hasAnUnoccupiedFactory) unoccupiedFactories.push(province);
     }
-    return count;
+    return unoccupiedFactories;
   }
 
   nobodyIsOccupying(province, owningNation) {
