@@ -238,7 +238,7 @@
           </div>
         </div>
         <div v-if="game.winner">
-          <NationControlChart :game="game" />
+          <!-- <NationControlChart :game="game" /> -->
         </div>
         <div class="m-2">
           Observers:
@@ -405,7 +405,7 @@ import ControlPanel from '../components/ControlPanel.vue';
 import GameDetails from '../components/GameDetails.vue';
 import GameLog from '../components/GameLog.vue';
 import NationComponent from '../components/NationComponent.vue';
-import NationControlChart from '../components/NationControlChart.vue';
+// import NationControlChart from '../components/NationControlChart.vue';
 import Rondel from '../components/Rondel.vue';
 import TaxChart from '../components/TaxChart.vue';
 import TimeTravelButtons from '../components/TimeTravelButtons.vue';
@@ -431,7 +431,7 @@ export default {
     GameDetails,
     GameLog,
     NationComponent,
-    NationControlChart,
+    // NationControlChart,
     Rondel,
     TaxChart,
     TimeTravelButtons,
