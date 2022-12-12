@@ -3719,6 +3719,37 @@ describe('imperial', () => {
             );
           }
         });
+
+        test('an army cannot unfriendly enter a provice with only one unoccupied factory', () => {
+          const game = newGame();
+          game.provinces.get('f').factory = 'armaments';
+          game.provinces.get('h').factory = 'armaments';
+          game.units.get(Nation.AH).get('h').armies += 1;
+          game.units.get(Nation.AH).get('h').friendly = false;
+          game.units.get(Nation.AH).get('c').armies += 1;
+
+          game.tick(
+            Action.rondel({ slot: 'maneuver1', nation: Nation.AH, cost: 0 }),
+          );
+          game.tick(Action.maneuver({ origin: 'c', destination: 'f' }));
+
+          expect(game.log[game.log.length - 1]).toEqual(
+            Action.friendlyEntrance({
+              challenger: Nation.AH,
+              incumbent: Nation.IT,
+              province: 'f',
+            }),
+          );
+          for (const action of game.availableActions) {
+            expect(action).not.toEqual(
+              Action.unfriendlyEntrance({
+                challenger: Nation.AH,
+                incumbent: Nation.IT,
+                province: 'f',
+              }),
+            );
+          }
+        });
       });
 
       describe('updating the province flag', () => {
