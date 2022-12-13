@@ -1125,7 +1125,7 @@ export default class Imperial {
         nation !== this.currentNation
         && this.board.byNation.get(nation)?.has(destination)
         && !!this.provinces.get(destination).factory
-        && this.unoccupiedFactoryCount() === 0
+        && this.unoccupiedFactoryCount(nation) === 0
         && this.units.get(this.currentNation).get(destination).armies < 2
       ) {
         this.availableActions.add(
