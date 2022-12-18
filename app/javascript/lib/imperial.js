@@ -843,66 +843,7 @@ export default class Imperial {
         }
       }
     } else {
-      // Find and maneuver other units
-      const reversedLog = this.log.slice().reverse();
-      const lastManeuverRondelAction = reversedLog.find(
-        (foundAction) => foundAction.type === 'rondel',
-      );
-      const destinations = new Set([Action.endManeuver()]);
-      const provincesWithFleets = new Map();
-      const provincesWithArmies = new Map();
-
-      for (const [province, type] of this.unitsToMove) {
-        if (type === 'fleet') {
-          provincesWithFleets.set(province, 1);
-        } else {
-          provincesWithArmies.set(province, 1);
-        }
-      }
-
-      for (const [origin] of provincesWithFleets) {
-        for (const destination of this.board.neighborsFor({
-          origin,
-          nation: lastManeuverRondelAction.payload.nation,
-          isFleet: true,
-          friendlyFleets: new Set(),
-          occupiedHomeProvinces: this.occupiedHomeProvinces(this.currentNation),
-        })) {
-          destinations.add(
-            Action.maneuver({
-              origin,
-              destination,
-            }),
-          );
-        }
-      }
-
-      const friendlyFleets = new Set();
-      for (const [province, units] of this.units.get(this.currentNation)) {
-        if (units.fleets - (this.fleetConvoyCount[province] || 0) > 0) {
-          friendlyFleets.add(province);
-        }
-      }
-      for (const [origin] of provincesWithArmies) {
-        for (const destination of this.board.neighborsFor({
-          origin,
-          nation: action.payload.nation,
-          isFleet: false,
-          friendlyFleets,
-          occupiedHomeProvinces: this.occupiedHomeProvinces(this.currentNation),
-        })) {
-          destinations.add(
-            Action.maneuver({
-              origin,
-              destination,
-            }),
-          );
-        }
-      }
-
-      for (const destination of destinations) {
-        this.availableActions.add(destination);
-      }
+      this.setManeuverAvailableActions();
     }
   }
 
