@@ -411,7 +411,6 @@ import TaxChart from '../components/TaxChart.vue';
 import TimeTravelButtons from '../components/TimeTravelButtons.vue';
 import TurnStatus from '../components/TurnStatus.vue';
 
-import boardConfigs from '../boardConfigs';
 import getGameLog from '../getGameLog';
 import assignNations from '../assignNations';
 import imperialBoard from '../../lib/board';
@@ -445,6 +444,7 @@ export default {
   data: () => ({
     importProvince: '',
     board: {},
+    boardConfig: {},
     controllingPlayerName: '',
     currentPlayer: {},
     game: {},
@@ -461,9 +461,6 @@ export default {
     tradedInValue: 0,
   }),
   computed: {
-    boardConfig() {
-      return boardConfigs[this.game.baseGame];
-    },
     reversedGameLog() {
       if (this.game.log) {
         return this.game.log.slice().reverse();
@@ -504,6 +501,7 @@ export default {
     apiClient.userObservingGame(this.profile.username, this.$route.params.id);
   },
   updated() {
+    this.getBoardConfig();
     document.title = `${this.gameData.name} - Imperial`;
   },
   beforeUnmount() {
@@ -511,6 +509,15 @@ export default {
   },
 
   methods: {
+    getBoardConfig() {
+      if (this.gameData.baseGame === 'imperial') {
+        import('../boardConfigs').then((resp) => { this.boardConfig = resp.default.imperial; });
+      } else if (this.gameData.baseGame === 'imperial2030') {
+        import('../board2030Configs').then((resp) => { this.boardConfig = resp.default.imperial2030; });
+      } else if (this.gameData.baseGame === 'imperialAsia') {
+        import('../boardAsiaConfigs').then((resp) => { this.boardConfig = resp.default.imperialAsia; });
+      }
+    },
     beforeWindowUnload() {
       apiClient.userStoppedObservingGame(this.profile.username, this.$route.params.id);
     },
