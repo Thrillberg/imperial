@@ -1,3 +1,5 @@
+import "stringify"
+
 <template>
   <g>
     <g
@@ -53,9 +55,7 @@
         {{ rondelSlot.label }}
       </text>
     </g>
-    <g
-      :transform="'translate(100, 100) rotate(' + rotation +')'"
-    >
+    <g :transform="'translate(100, 100) rotate(' + rotation + ')'">
       <circle
         v-for="(nation, i) in nations"
         :key="i"
@@ -65,6 +65,7 @@
         stroke-width="0.5"
         stroke="black"
         :fill="fill(nation)"
+        @mouseover="$emit('circle-hovered', nation)"
       />
     </g>
   </g>
@@ -76,10 +77,10 @@ export default {
   props: {
     index: { type: Number, default: 0 },
     isValid: Boolean,
-    rondelSlot: { type: Object, default: () => {} },
+    rondelSlot: { type: Object, default: () => { } },
     nations: { type: Array, default: () => [] },
   },
-  emits: ['slot-clicked', 'slot-hovered', 'slot-silent'],
+  emits: ['slot-clicked', 'slot-hovered', 'slot-silent', 'circle-hovered'],
   data() {
     const slotCount = 8;
     return {
