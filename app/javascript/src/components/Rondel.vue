@@ -16,6 +16,7 @@
           :is-valid="isValid(rondel_slot.type)"
           :nations="nationsOnSlot(rondel_slot.type)"
           :rondel-slot="rondel_slot"
+          @circle-hovered="handleCircleHovered"
           @slot-clicked="slotClicked(rondel_slot.type)"
           @slot-hovered="slotHovered(rondel_slot.type)"
           @slot-silent="slotSilent()"
@@ -89,17 +90,25 @@
       <div v-if="!!cost">
         <b>Cost: {{ cost }}m</b>
       </div>
-      <div>{{ helperText }}</div>
+      <div>
+        <span v-if="displayHelperFlag">
+          <Flag
+            :nation="helperNation"
+            height="20"
+            width="30"
+            class="inline-block pr-1"
+          />
+        </span>
+        <span>{{ helperText }}</span>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import stringify from '../stringify';
-import {
-  nextTaxChartPosition,
-  nextTaxationPowerPoints,
-} from '../taxChartHelpers';
+import { nextTaxationPowerPoints, nextTaxChartPosition } from '../taxChartHelpers';
+import Flag from './flags/Flag.vue';
 
 import RondelSlot from './RondelSlot.vue';
 
@@ -107,6 +116,7 @@ export default {
   name: 'Rondel',
   components: {
     RondelSlot,
+    Flag,
   },
   props: {
     game: { type: Object, default: () => {} },
@@ -118,6 +128,8 @@ export default {
   data() {
     return {
       cost: '',
+      displayHelperFlag: false,
+      helperNation: '',
       helperText: '',
       onInvestorSlot: false,
       onTaxationSlot: false,
@@ -254,6 +266,7 @@ export default {
     showRondelHelperText() {
       if (this.paused) return false;
 
+      this.displayHelperFlag = false;
       let allActionsAreRondel = true;
       for (const action of this.game.availableActions) {
         if (action.type !== 'rondel' && action.type !== 'undo') {
@@ -265,6 +278,7 @@ export default {
       );
     },
     slotSilent() {
+      this.displayHelperFlag = false;
       this.helperText = '';
     },
     slotClicked(slot) {
@@ -277,6 +291,11 @@ export default {
           }
         }
       }
+    },
+    handleCircleHovered(nation) {
+      this.displayHelperFlag = true;
+      this.helperNation = nation;
+      this.helperText = stringify(nation);
     },
     validSlots() {
       const slots = [];
