@@ -1,18 +1,21 @@
-import {
-  Nation, Nation2030, Bond, NationAsia,
-} from './constants';
 import Action from './action';
 import Auction from './auction';
-import standardGameBoard from './board';
-import auctionStandardSetup from './auctionSetup';
 import auction2030Setup from './auction2030Setup';
 import auctionAsiaSetup from './auctionAsiaSetup';
-import standardSetup from './standardSetup';
+import auctionStandardSetup from './auctionSetup';
+import availableBondPurchases from './availableBondPurchases';
+import standardGameBoard from './board';
+import {
+  Bond,
+  Nation,
+  Nation2030,
+  NationAsia,
+} from './constants';
+import setOldAuctionState from './setOldAuctionState';
+import setOldState from './setOldState';
 import standard2030Setup from './standard2030Setup';
 import standardAsiaSetup from './standardAsiaSetup';
-import availableBondPurchases from './availableBondPurchases';
-import setOldState from './setOldState';
-import setOldAuctionState from './setOldAuctionState';
+import standardSetup from './standardSetup';
 
 export default class Imperial {
   static fromLog(log, board) {
@@ -30,7 +33,7 @@ export default class Imperial {
     // calculations.
     this.annotatedLog = [];
     this.unitsToMove = [];
-    this.units = new Set();
+    this.units = new Map();
     this.provinces = new Map();
     this.nations = new Map();
     this.availableActions = new Set();
@@ -252,8 +255,8 @@ export default class Imperial {
   }
 
   initialize(action) {
-    let setup; let
-      auctionSetup;
+    let setup;
+    let auctionSetup;
     this.variant = action.payload.variant;
     this.baseGame = action.payload.baseGame || 'imperial';
     if (action.payload.variant === 'standard') {
@@ -275,27 +278,29 @@ export default class Imperial {
       this.auction = Auction.fromLog(this.log, this, auctionSetup);
       setup = auctionSetup;
     }
-    const s = setup({
-      players: action.payload.players,
-      provinceNames: Array.from(this.board.graph.keys()),
-    });
-    this.availableBonds = s.availableBonds;
-    this.currentNation = s.currentNation;
-    this.investorCardHolder = s.investorCardHolder;
-    this.nations = s.nations;
-    this.order = s.order;
-    this.players = s.players;
-    this.provinces = s.provinces;
-    this.unitLimits = s.unitLimits;
-    this.units = this.initializeUnits(s.units);
-    this.currentPlayerName = this.getStartingPlayer();
-    this.previousPlayerName = this.currentPlayerName;
-    if (this.variant === 'standard') {
-      for (const availableAction of this.rondelActions(this.currentNation)) {
-        this.availableActions.add(availableAction);
+    if (setup) {
+      const s = setup({
+        players: action.payload.players,
+        provinceNames: Array.from(this.board.graph.keys()),
+      });
+      this.availableBonds = s.availableBonds;
+      this.currentNation = s.currentNation;
+      this.investorCardHolder = s.investorCardHolder;
+      this.nations = s.nations;
+      this.order = s.order;
+      this.players = s.players;
+      this.provinces = s.provinces;
+      this.unitLimits = s.unitLimits;
+      this.units = this.initializeUnits(s.units);
+      this.currentPlayerName = this.getStartingPlayer();
+      this.previousPlayerName = this.currentPlayerName;
+      if (this.variant === 'standard') {
+        for (const availableAction of this.rondelActions(this.currentNation)) {
+          this.availableActions.add(availableAction);
+        }
       }
+      this.soloMode = action.payload.soloMode;
     }
-    this.soloMode = action.payload.soloMode;
   }
 
   getStartingPlayer() {
@@ -688,9 +693,9 @@ export default class Imperial {
     }
 
     const totalIncumbentUnitsAtProvince = incumbentUnitsAtProvince.armies
-    + incumbentUnitsAtProvince.fleets;
+      + incumbentUnitsAtProvince.fleets;
     const totalChallengerUnitsAtProvince = challengerUnitsAtProvince.armies
-    + challengerUnitsAtProvince.fleets;
+      + challengerUnitsAtProvince.fleets;
 
     let isNeutralProvince = true;
     for (const [nation, provinces] of this.board.byNation) {
@@ -942,8 +947,8 @@ export default class Imperial {
         const movingBetweenMediterraneanAndIndianOcean = (origin === 'mediterraneansea' && destination === 'indianocean')
           || (origin === 'indianocean' && destination === 'mediterraneansea');
         const canalCanBeBlocked = (movingBetweenNorthPacificAndCaribbean
-            && colombiaCanalOwner
-            && colombiaCanalOwner !== this.currentNation)
+          && colombiaCanalOwner
+          && colombiaCanalOwner !== this.currentNation)
           || (movingBetweenMediterraneanAndIndianOcean
             && northAfricaCanalOwner
             && northAfricaCanalOwner !== this.currentNation);
@@ -980,8 +985,8 @@ export default class Imperial {
       const ourPath = validPaths.sort((pathA, pathB) => (
         pathA.filter((province) => this.board.graph.get(province).isOcean)
           .length
-          - pathB.filter((province) => this.board.graph.get(province).isOcean)
-            .length
+        - pathB.filter((province) => this.board.graph.get(province).isOcean)
+          .length
       ))[0];
       const usedFleets = ourPath.filter(
         (province) => this.board.graph.get(province).isOcean,
@@ -1899,7 +1904,7 @@ export default class Imperial {
     }
     return (
       this.fleetCount(nation) + numberOfPlacements
-        > this.unitLimits.get(nation).fleets
+      > this.unitLimits.get(nation).fleets
     );
   }
 
@@ -1983,8 +1988,7 @@ export default class Imperial {
 
     if (this.baseGame === 'imperial2030' || this.baseGame === 'imperialAsia') {
       return (
-        index
-        + parseInt(this.nations.get(this.currentNation).powerPoints / 5, 10) * index
+        index + (Math.floor(this.nations.get(this.currentNation).powerPoints / 5)) * index
       );
     }
 
@@ -2162,7 +2166,7 @@ export default class Imperial {
       let score = 0;
       for (const bond of this.players[player].bonds) {
         const { powerPoints } = this.nations.get(bond.nation);
-        score += bond.number * parseInt(powerPoints / 5, 10);
+        score += bond.number * (powerPoints / 5);
       }
       this.players[player].rawScore = score;
     });
