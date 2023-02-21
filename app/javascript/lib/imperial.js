@@ -2166,7 +2166,7 @@ export default class Imperial {
       let score = 0;
       for (const bond of this.players[player].bonds) {
         const { powerPoints } = this.nations.get(bond.nation);
-        score += bond.number * (powerPoints / 5);
+        score += bond.number * Math.floor(powerPoints / 5);
       }
       this.players[player].rawScore = score;
     });
