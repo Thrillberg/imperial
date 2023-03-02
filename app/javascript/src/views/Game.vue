@@ -411,11 +411,11 @@ import TaxChart from '../components/TaxChart.vue';
 import TimeTravelButtons from '../components/TimeTravelButtons.vue';
 import TurnStatus from '../components/TurnStatus.vue';
 
-import getGameLog from '../getGameLog';
-import assignNations from '../assignNations';
 import imperialBoard from '../../lib/board';
 import imperial2030Board from '../../lib/board2030';
 import imperialAsiaBoard from '../../lib/boardAsia';
+import assignNations from '../assignNations';
+import getGameLog from '../getGameLog';
 
 import favicon2 from '../assets/favicon2.ico';
 
@@ -620,7 +620,9 @@ export default {
       }
       if (
         oldPlayerName !== this.game.currentPlayerName
-        && oldPlayerName === this.profile.username
+        && (oldPlayerName === this.profile.username || (
+          !oldPlayerName && this.game.currentPlayerName
+        ))
       ) {
         apiClient.notifyNextPlayer(this.$route.params.id, this.game.currentPlayerName);
       }
