@@ -50,8 +50,12 @@ class Game < ActiveRecord::Base
     false
   end
 
+  def last_move
+    actions.order(:created_at).last
+  end
+
   def last_move_at
-    actions.order(:created_at).last&.created_at
+    last_move&.created_at
   end
 
   def clone(host, log)
