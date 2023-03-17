@@ -109,6 +109,20 @@ export default {
       }
       return '';
     },
+    unitTypeByDestination_Singular(destination) {
+      if (this.board.graph.get(destination).isOcean) {
+        return 'a fleet';
+      } else {
+        return 'an army';
+      }
+    },
+    unitTypeByDestination_Plural(destination) {
+      if (this.board.graph.get(destination).isOcean) {
+        return 'fleets';
+      } else {
+        return 'armies';
+      }
+    },
     processAction(action) {
       const notImplemented = 'NOT IMPLEMENTED';
       switch (action.type) {
@@ -221,20 +235,20 @@ export default {
       return `Imported a total of ${provincesList.length} ${unit} into ${provincesText}.`;
     },
     maneuverAction(payload) {
-      let unit;
-      if (this.board.graph.get(payload.destination).isOcean) {
-        unit = 'a fleet';
-      } else {
-        unit = 'an army';
-      }
+      const unit = this.unitTypeByDestination_Singular(payload.destination);
       const origin = this.capitalize(payload.origin);
       const destination = this.capitalize(payload.destination);
+
       return `Moved ${unit} from ${origin} to ${destination}.`;
     },
     coexistAction(payload) {
+      const units = this.capitalize(this.unitTypeByDestination_Plural(payload.province));
+      // technically it could be a fleet in port sharing the province with an army
+
       const province = this.capitalize(payload.province);
       const nations = `${stringify(payload.incumbent.value)} and ${stringify(payload.challenger.value)}`;
-      return `Armies from ${nations} are peacefully coexisting in ${province}.`;
+
+      return `${units} from ${nations} are peacefully coexisting in ${province}.`;
     },
     fightAction(payload) {
       const province = this.capitalize(payload.province);
