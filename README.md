@@ -24,7 +24,15 @@ git clone https://github.com/Thrillberg/imperial.git
 ```
 cd imperial
 ```
-3. Run the Rails setup command:
+3. Begin the PostgreSQL service:
+```
+sudo service postgresql start
+```
+4. In a separate terminal, start a Redis server:
+```
+redis-server
+```
+5. Run the Rails setup command:
 ```
 bin/setup
 ```
@@ -32,17 +40,22 @@ bin/setup
 ```
 sudo su postgres -c "psql rails_server_development -c 'CREATE EXTENSION pgcrypto;'"
 ```
-4. Run the npm install command:
+- If you get the error `‘ruby\r’: No such file or directory`, make sure your editor's line-endings are set to `LF` instead of `CRLF`.
+6. Run the npm install command:
 ```
 npm install
 ```
-5. In one terminal window, run webpack:
+7. In one terminal window, run webpack:
 ```
 bin/webpack --watch
 ```
-6. Keep webpack running and in a separate terminal window, run the Rails server:
+8. Keep webpack running and in a separate terminal window, run the Rails server:
 ```
 rails s
+```
+9. You can now view the app at
+```
+localhost:3000/
 ```
 If any of the above instructions did not work for you, please do not hesitate to [open an issue](https://github.com/Thrillberg/imperial/issues/new).
 
