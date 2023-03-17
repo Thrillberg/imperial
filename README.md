@@ -27,7 +27,7 @@ cd imperial
 3. Begin the PostgreSQL service:
 - If installed through `brew`
 ```
-brew services postgresql start
+brew services start postgresql
 ```
 - If installed through `apt`
 ```
