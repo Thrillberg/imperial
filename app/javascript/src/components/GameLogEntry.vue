@@ -111,9 +111,9 @@ export default {
     },
     unitTypeByDestination_Singular(destination) {
       if (this.board.graph.get(destination).isOcean) {
-        return 'fleet';
+        return 'a fleet';
       } else {
-        return 'army';
+        return 'an army';
       }
     },
     unitTypeByDestination_Plural(destination) {
