@@ -25,7 +25,7 @@ git clone https://github.com/Thrillberg/imperial.git
 cd imperial
 ```
 3. Begin the PostgreSQL service:
-- If instaleld through `brew`
+- If installed through `brew`
 ```
 brew services postgresql start
 ```
