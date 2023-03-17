@@ -25,10 +25,20 @@ git clone https://github.com/Thrillberg/imperial.git
 cd imperial
 ```
 3. Begin the PostgreSQL service:
+- If instaleld through `brew`
+```
+brew services postgresql start
+```
+- If installed through `apt`
 ```
 sudo service postgresql start
 ```
-4. In a separate terminal, start a Redis server:
+4. Start a Redis server:
+- If installed through `brew`,
+```
+brew services start redis
+```
+- If installed through `apt`, in a separate terminal
 ```
 redis-server
 ```
