@@ -1286,7 +1286,7 @@ export default class Imperial {
         this.annotatedLog.push(
           Action.playerGainsCash({
             player: this.currentPlayerName,
-            amount: excessTaxes,
+            amount: bonus,
           }),
         );
 
