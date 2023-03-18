@@ -1300,7 +1300,7 @@ export default class Imperial {
         this.annotatedLog.push(
           Action.nationGainsTreasury({
             nation: nationName,
-            amount: payment,
+            amount: nationProfit,
           }),
         );
 
