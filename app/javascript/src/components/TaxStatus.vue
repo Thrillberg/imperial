@@ -50,10 +50,16 @@ export default {
       return this.game.flagCount(nation || this.game.currentNation);
     },
     nextTaxAmount(nation) {
-      return this.game.getTaxes(nation || this.game.currentNation);
+      return `$${this.game.getTaxes(nation || this.game.currentNation)}m`;
     },
     nextTaxationPowerPoints(nation) {
-      return nextTaxationPowerPoints(this.game, nation);
+      const uncappedPowerPoints = nextTaxationPowerPoints(this.game, nation);
+
+      if (uncappedPowerPoints > 25) {
+        return `25 (${uncappedPowerPoints})`;
+      } else {
+        return uncappedPowerPoints.toString();
+      }
     },
   }
 }
