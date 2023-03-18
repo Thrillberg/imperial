@@ -47,23 +47,11 @@
       >
         <div v-if="game.baseGame === 'imperial'">
           <div>
-            <b>
-              Current Tax Chart Position:
-            </b> {{ game.nations.get(game.currentNation).taxChartPosition }}
-          </div>
-          <div>
-            <b>Next Tax Chart Position:</b> {{ nextTaxChartPosition }}
-          </div>
-          <div>
-            <b>
-              {{ game.currentPlayerName }}
-            </b> would receive
+            <b> {{ game.currentPlayerName }} </b> would receive
             {{ nextTaxChartPosition - game.nations.get(game.currentNation).taxChartPosition }}m
           </div>
           <div>
-            <b>
-              {{ stringify(game.currentNation.value) }}
-            </b> would receive {{ nextTaxChartPosition - game.unitCount(game.currentNation) }}m
+            <b> {{ stringify(game.currentNation.value) }} </b> would receive {{ nextTaxChartPosition - game.unitCount(game.currentNation) }}m
           </div>
           <div>
             <b>

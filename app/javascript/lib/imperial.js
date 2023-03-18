@@ -1344,43 +1344,9 @@ export default class Imperial {
             amount: payment,
           }),
         );
-        // 3. Adding power points
-        let powerPoints;
-        if (this.baseGame === 'imperial') {
-          powerPoints = nation.taxChartPosition - 5;
-          if (powerPoints < 0) powerPoints = 0;
-          nation.powerPoints += powerPoints;
-        } else if (this.baseGame === 'imperial2030' || this.baseGame === 'imperialAsia') {
-          const powerPointsByTax = {
-            0: 0,
-            1: 0,
-            2: 0,
-            3: 0,
-            4: 0,
-            5: 0,
-            6: 1,
-            7: 1,
-            8: 2,
-            9: 2,
-            10: 3,
-            11: 4,
-            12: 5,
-            13: 6,
-            14: 7,
-            15: 8,
-            16: 9,
-            17: 9,
-            18: 10,
-            19: 10,
-            20: 10,
-            21: 10,
-            22: 10,
-            23: 10,
-          };
-          powerPoints = powerPointsByTax[taxes];
-          nation.powerPoints += powerPoints;
-        }
 
+        // 3. Adding power points
+        nation.powerPoints += this.powerPointsGainedFrom(taxes);
         if (nation.powerPoints >= 25) {
           nation.powerPoints = 25;
           this.updateRawScores();
@@ -2319,6 +2285,43 @@ export default class Imperial {
     }
 
     return 0;
+  }
+
+  powerPointsGainedFrom(taxes) {
+    let powerPoints = 0;
+    if (this.baseGame === 'imperial') {
+      powerPoints = Math.min(Math.max(0, taxes - 5), 10);
+    } else if (this.baseGame === 'imperial2030' || this.baseGame === 'imperialAsia') {
+      const powerPointsByTax = {
+        0: 0,
+        1: 0,
+        2: 0,
+        3: 0,
+        4: 0,
+        5: 0,
+        6: 1,
+        7: 1,
+        8: 2,
+        9: 2,
+        10: 3,
+        11: 4,
+        12: 5,
+        13: 6,
+        14: 7,
+        15: 8,
+        16: 9,
+        17: 9,
+        18: 10,
+        19: 10,
+        20: 10,
+        21: 10,
+        22: 10,
+        23: 10,
+      };
+      powerPoints = powerPointsByTax[taxes];
+    }
+
+    return powerPoints;
   }
 
   static actionIsRondelAndManeuver(action) {
