@@ -2346,9 +2346,9 @@ export default class Imperial {
     if (this.baseGame === 'imperial2030' || this.baseGame === 'imperialAsia') {
       bonusPaidByNation = this.playerBonusAfterUnitMaintenanceCosts(nationName, taxes);
       nationMinProfit = -this.nations.get(nationName).treasury;
+      // nations cannot go in debt, but can lose all their money
     }
 
-    // nation cannot go in debt, but can lose all their money
     return Math.max(nationMinProfit, taxes - this.unitMaintenanceCosts(nationName) - bonusPaidByNation);
   }
 
