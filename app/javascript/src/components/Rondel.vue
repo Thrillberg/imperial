@@ -59,7 +59,7 @@
             </b>'s power points would be {{ nextTaxationPowerPoints }}
           </div>
         </div>
-        <div v-else-if="game.baseGame === 'imperial2030'">
+        <div v-else-if="game.baseGame === 'imperial2030' || game.baseGame === 'imperialAsia'">
           <div>
             <b>{{ game.currentPlayerName }}</b> would receive {{ playerRevenue2030() }}m
           </div>
