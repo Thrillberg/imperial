@@ -2332,7 +2332,8 @@ export default class Imperial {
     let bonus = this.playerBonusBeforeUnitMaintenanceCosts(nationName, taxes);
 
     if (this.baseGame === 'imperial2030' || this.baseGame === 'imperialAsia') {
-      bonus = Math.max(0, Math.min(bonus, this.nations.get(nationName).treasury + taxes - this.unitMaintenanceCosts(nationName)));
+      const treasuryAmountAfterMaintenanceCosts = this.nations.get(nationName).treasury + taxes - this.unitMaintenanceCosts(nationName);
+      bonus = Math.max(0, Math.min(bonus, treasuryAmountAfterMaintenanceCosts));
     }
 
     return bonus;

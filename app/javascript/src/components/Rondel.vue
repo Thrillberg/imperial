@@ -53,7 +53,7 @@
             <b> {{ game.currentPlayerName }} </b> would receive {{ playerBonus }}m
           </div>
           <div>
-            <b> {{ stringify(game.currentNation.value) }} </b> would receive {{ nationProfit }}m
+            <b> {{ stringify(game.currentNation.value) }} </b>'s treasury would change by {{ nationProfit }}m
           </div>
           <div>
             <b> {{ stringify(game.currentNation.value) }} </b>'s power points would be {{ nextTaxationPowerPoints }}
