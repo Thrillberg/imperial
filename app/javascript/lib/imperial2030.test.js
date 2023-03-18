@@ -143,7 +143,7 @@ describe('imperial2030', () => {
         expect(game.nations.get(Nation2030.RU).treasury).toEqual(9);
       });
 
-      test('nations cannot be paid less than 0 if they control many units', () => {
+      test('nations lose money if they control many units', () => {
         const game = newGame();
         // Arbitrarily give RU 5 treasury; we want this to increase by 1
         game.nations.get(Nation2030.RU).treasury = 5;
@@ -154,7 +154,7 @@ describe('imperial2030', () => {
           Action.rondel({ cost: 0, nation: Nation2030.RU, slot: 'taxation' }),
         );
 
-        expect(game.nations.get(Nation2030.RU).treasury).toEqual(5);
+        expect(game.nations.get(Nation2030.RU).treasury).toEqual(4);
       });
 
       test("player is paid from nation's treasury", () => {
