@@ -47,16 +47,16 @@
       >
         <div v-if="game.baseGame === 'imperial'">
           <div>
-            <b> {{ game.currentPlayerName }} </b> would receive
-            {{ nextTaxChartPosition - game.nations.get(game.currentNation).taxChartPosition }}m
+            <b> Tax Chart Position </b> will go from <b>{{ game.nations.get(game.currentNation).taxChartPosition }}</b> to <b>{{ nextTaxChartPosition }}</b>
+          </div>
+          <div>
+            <b> {{ game.currentPlayerName }} </b> would receive {{ nextTaxChartPosition - game.nations.get(game.currentNation).taxChartPosition }}m
           </div>
           <div>
             <b> {{ stringify(game.currentNation.value) }} </b> would receive {{ nextTaxChartPosition - game.unitCount(game.currentNation) }}m
           </div>
           <div>
-            <b>
-              {{ stringify(game.currentNation.value) }}
-            </b>'s power points would be {{ nextTaxationPowerPoints }}
+            <b> {{ stringify(game.currentNation.value) }} </b>'s power points would be {{ nextTaxationPowerPoints }}
           </div>
         </div>
         <div v-else-if="game.baseGame === 'imperial2030' || game.baseGame === 'imperialAsia'">
