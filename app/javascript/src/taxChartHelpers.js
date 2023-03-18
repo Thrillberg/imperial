@@ -1,11 +1,11 @@
-export const nextTaxChartPosition = (game, nation) => {
-  nation = nation || game.currentNation;
+export const nextTaxChartPosition = (game, nationName) => {
+  nationName = nationName || game.currentNation;
 
-  return game.getTaxChartPosition(game.getTaxes(nation));
+  return game.getTaxChartPosition(game.getTaxes(nationName));
 };
 
-export const nextTaxationPowerPoints = (game, nation) => {
-  nation = nation || game.currentNation;
+export const nextTaxationPowerPoints = (game, nationName) => {
+  nationName = nationName || game.currentNation;
   
-  return game.powerPointsGainedFrom(game.getTaxes(nation));
+  return game.powerPointsGainedFrom(game.getTaxes(nationName));
 };

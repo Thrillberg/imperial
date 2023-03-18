@@ -45,33 +45,18 @@
         v-if="onTaxationSlot"
         class="mb-2"
       >
-        <div v-if="game.baseGame === 'imperial'">
-          <div>
-            <b> Tax Chart Position </b> will go from <b>{{ game.nations.get(game.currentNation).taxChartPosition }}</b> to <b>{{ nextTaxChartPosition }}</b>
+        <div>
+          <div v-if="game.baseGame === 'imperial'">
+            <b> Tax Chart Position </b> will go from {{ game.nations.get(game.currentNation).taxChartPosition }}m to {{ nextTaxChartPosition }}m
           </div>
           <div>
-            <b> {{ game.currentPlayerName }} </b> would receive {{ nextTaxChartPosition - game.nations.get(game.currentNation).taxChartPosition }}m
+            <b> {{ game.currentPlayerName }} </b> would receive {{ playerBonus }}m
           </div>
           <div>
-            <b> {{ stringify(game.currentNation.value) }} </b> would receive {{ nextTaxChartPosition - game.unitCount(game.currentNation) }}m
+            <b> {{ stringify(game.currentNation.value) }} </b> would receive {{ nationProfit }}m
           </div>
           <div>
             <b> {{ stringify(game.currentNation.value) }} </b>'s power points would be {{ nextTaxationPowerPoints }}
-          </div>
-        </div>
-        <div v-else-if="game.baseGame === 'imperial2030' || game.baseGame === 'imperialAsia'">
-          <div>
-            <b>{{ game.currentPlayerName }}</b> would receive {{ playerRevenue2030() }}m
-          </div>
-          <div>
-            <b>
-              {{ stringify(game.currentNation.value) }}
-            </b> would receive {{ nationRevenue2030() }}m
-          </div>
-          <div>
-            <b>
-              {{ stringify(game.currentNation.value) }}
-            </b>'s power points would be {{ nextTaxationPowerPoints }}
           </div>
         </div>
       </div>
@@ -162,11 +147,17 @@ export default {
         return [bearer[0], lastPayment];
       }).filter(Boolean);
     },
-    nextTaxationPowerPoints() {
-      return nextTaxationPowerPoints(this.game);
-    },
     nextTaxChartPosition() {
       return nextTaxChartPosition(this.game);
+    },
+    playerBonus() {
+      return this.game.playerBonusAfterUnitMaintenanceCosts(this.game.currentNation, this.game.getTaxes(this.game.currentNation));
+    },
+    nationProfit() {
+      return this.game.nationTaxationProfit(this.game.currentNation, this.game.getTaxes(this.game.currentNation));
+    },
+    nextTaxationPowerPoints() {
+      return nextTaxationPowerPoints(this.game);
     },
   },
   methods: {
@@ -293,44 +284,6 @@ export default {
         }
       }
       return slots;
-    },
-    playerRevenue2030() {
-      const taxes = this.game.unoccupiedFactoryCount(
-        this.game.currentNation,
-      ) * 2 + this.game.flagCount(this.game.currentNation);
-      const bonusByTaxes = {
-        0: 0,
-        1: 0,
-        2: 0,
-        3: 0,
-        4: 0,
-        5: 0,
-        6: 1,
-        7: 1,
-        8: 1,
-        9: 1,
-        10: 2,
-        11: 2,
-        12: 3,
-        13: 3,
-        14: 4,
-        15: 4,
-        16: 5,
-        17: 5,
-        18: 5,
-        19: 5,
-        20: 5,
-        21: 5,
-        22: 5,
-        23: 5,
-      };
-      return bonusByTaxes[taxes];
-    },
-    nationRevenue2030() {
-      const taxes = this.game.unoccupiedFactoryCount(
-        this.game.currentNation,
-      ) * 2 + this.game.flagCount(this.game.currentNation);
-      return taxes - this.game.unitCount(this.game.currentNation) - this.playerRevenue2030();
     },
     stringify(string) {
       return stringify(string);

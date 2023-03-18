@@ -1277,67 +1277,26 @@ export default class Imperial {
       }
       case 'taxation': {
         const nationName = action.payload.nation;
-        const nation = this.nations.get(nationName);
-        const previousTaxChartPosition = nation.taxChartPosition;
+
         // 1. Tax revenue / success bonus
         const taxes = this.getTaxes(nationName);
-        nation.taxChartPosition = this.getTaxChartPosition(taxes);
-        let excessTaxes = nation.taxChartPosition - previousTaxChartPosition;
-        // Players can never lose money here
-        if (excessTaxes < 0) {
-          excessTaxes = 0;
-        }
-        // Player receives full excess taxes
-        this.players[this.currentPlayerName].cash += excessTaxes;
+        const bonus = this.playerBonusAfterUnitMaintenanceCosts(nationName, taxes);
+
+        this.players[this.currentPlayerName].cash += bonus;
         this.annotatedLog.push(
           Action.playerGainsCash({
             player: this.currentPlayerName,
             amount: excessTaxes,
           }),
         );
-        let bonus = 0;
-        if (this.baseGame === 'imperial2030' || this.baseGame === 'imperialAsia') {
-          // Nation pays bonus to current player
-          const bonusByTaxes = {
-            0: 0,
-            1: 0,
-            2: 0,
-            3: 0,
-            4: 0,
-            5: 0,
-            6: 1,
-            7: 1,
-            8: 1,
-            9: 1,
-            10: 2,
-            11: 2,
-            12: 3,
-            13: 3,
-            14: 4,
-            15: 4,
-            16: 5,
-            17: 5,
-            18: 5,
-            19: 5,
-            20: 5,
-            21: 5,
-            22: 5,
-            23: 5,
-          };
-          bonus = bonusByTaxes[taxes];
-          this.players[this.currentPlayerName].cash += bonus;
-          this.annotatedLog.push(
-            Action.playerGainsCash({
-              player: this.currentPlayerName,
-              amount: bonus,
-            }),
-          );
-        }
+
+        const nation = this.nations.get(nationName);
+        nation.taxChartPosition = this.getTaxChartPosition(taxes);
+        
         // 2. Collecting money
-        let payment = taxes - this.unitCount(nationName) - bonus;
-        // Nations cannot be paid less than 0m
-        if (payment < 0) payment = 0;
-        nation.treasury += payment;
+        const nationProfit = this.nationTaxationProfit(nationName, taxes);
+        // can be less than 0m
+        nation.treasury += nationProfit;
         this.annotatedLog.push(
           Action.nationGainsTreasury({
             nation: nationName,
@@ -2290,6 +2249,7 @@ export default class Imperial {
 
   powerPointsGainedFrom(taxes) {
     let powerPoints = 0;
+
     if (this.baseGame === 'imperial') {
       powerPoints = Math.min(Math.max(0, taxes - 5), 10);
     } else if (this.baseGame === 'imperial2030' || this.baseGame === 'imperialAsia') {
@@ -2323,6 +2283,69 @@ export default class Imperial {
     }
 
     return powerPoints;
+  }
+
+  playerBonusBeforeUnitMaintenanceCosts(nationName, taxes) {
+    let bonus = 0;
+
+    if (this.baseGame === 'imperial') {
+      bonus = Math.max(0, this.getTaxChartPosition(taxes) - this.nations.get(nationName).taxChartPosition);
+    } else if (this.baseGame === 'imperial2030' || this.baseGame === 'imperialAsia') {
+      const bonusByTaxes = {
+        0: 0,
+        1: 0,
+        2: 0,
+        3: 0,
+        4: 0,
+        5: 0,
+        6: 1,
+        7: 1,
+        8: 1,
+        9: 1,
+        10: 2,
+        11: 2,
+        12: 3,
+        13: 3,
+        14: 4,
+        15: 4,
+        16: 5,
+        17: 5,
+        18: 5,
+        19: 5,
+        20: 5,
+        21: 5,
+        22: 5,
+        23: 5,
+      };
+
+      bonus = bonusByTaxes[taxes];
+    }
+
+    return bonus;
+  }
+
+  unitMaintenanceCosts(nationName) {
+    return this.unitCount(nationName);
+  }
+
+  playerBonusAfterUnitMaintenanceCosts(nationName, taxes) {
+    let bonus = this.playerBonusBeforeUnitMaintenanceCosts(nationName, taxes);
+
+    if (this.baseGame === 'imperial2030' || this.baseGame === 'imperialAsia') {
+      bonus = Math.max(0, Math.min(bonus, this.nations.get(nationName).treasury + taxes - this.unitMaintenanceCosts(nationName)));
+    }
+
+    return bonus;
+  }
+
+  nationTaxationProfit(nationName, taxes) {
+    let bonusPaidByNation = 0;
+    if (this.baseGame === 'imperial2030' || this.baseGame === 'imperialAsia') {
+      bonusPaidByNation = this.playerBonusAfterUnitMaintenanceCosts(nationName, taxes);
+    }
+
+    // nation cannot go in debt, but can lose all their money
+    return Math.max(-this.nations.get(nationName).treasury, taxes - this.unitMaintenanceCosts(nationName) - bonusPaidByNation);
   }
 
   static actionIsRondelAndManeuver(action) {
