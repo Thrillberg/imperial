@@ -4,7 +4,7 @@
       v-for="(entry, index) in processedLog"
         :events="entry"
         :board="board"
-        :key="index"
+        :index="processedLog.length - index - 1"
     ></GameLogEntry>
   </div>
 </template>
