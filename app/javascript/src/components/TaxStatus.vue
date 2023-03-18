@@ -50,7 +50,7 @@ export default {
       return this.game.flagCount(nation || this.game.currentNation);
     },
     nextTaxAmount(nation) {
-      return this.game.getTaxes(nation || this.game.currentNation);
+      return `$${this.game.getTaxes(nation || this.game.currentNation)}m`;
     },
     nextTaxationPowerPoints(nation) {
       const uncappedPowerPoints = nextTaxationPowerPoints(this.game, nation);
