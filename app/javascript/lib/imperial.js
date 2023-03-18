@@ -2340,12 +2340,15 @@ export default class Imperial {
 
   nationTaxationProfit(nationName, taxes) {
     let bonusPaidByNation = 0;
+    let nationMinProfit = 0;
+
     if (this.baseGame === 'imperial2030' || this.baseGame === 'imperialAsia') {
       bonusPaidByNation = this.playerBonusAfterUnitMaintenanceCosts(nationName, taxes);
+      nationMinProfit = -this.nations.get(nationName).treasury;
     }
 
     // nation cannot go in debt, but can lose all their money
-    return Math.max(-this.nations.get(nationName).treasury, taxes - this.unitMaintenanceCosts(nationName) - bonusPaidByNation);
+    return Math.max(nationMinProfit, taxes - this.unitMaintenanceCosts(nationName) - bonusPaidByNation);
   }
 
   static actionIsRondelAndManeuver(action) {
