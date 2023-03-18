@@ -1346,7 +1346,8 @@ export default class Imperial {
         );
 
         // 3. Adding power points
-        nation.powerPoints += this.powerPointsGainedFrom(taxes);
+        const powerPoints = this.powerPointsGainedFrom(taxes);
+        nation.powerPoints += powerPoints;
         if (nation.powerPoints >= 25) {
           nation.powerPoints = 25;
           this.updateRawScores();
