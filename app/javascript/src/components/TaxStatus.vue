@@ -27,8 +27,8 @@
           <strong>{{ displayNationName(nation.value) }}</strong>
         </span>
         <span class="w-1/6"> {{ flagsPlaced(nation) }} </span>
-        <span class="w-1/6"> {{ nextTaxRevenue(nation) }} </span>
-        <span class="w-1/6"> {{ nextNationProfit(nation) }} </span>
+        <span class="w-1/6"> {{ this.displayMonetaryValue_InMillions(nextTaxRevenue(nation)) }} </span>
+        <span class="w-1/6"> {{ this.displayMonetaryValue_InMillions(nextNationProfit(nation)) }} </span>
         <span class="w-1/6"> {{ nextTaxationPowerPoints(nation) }} </span>
       </div>
       <p class="text-sm">This shows the power points and tax chart positions of each nation if they were to tax <i>right now</i>.</p>
@@ -48,19 +48,18 @@ export default {
     displayNationName(nation) {
       return displayNationName(nation);
     },
+    displayMonetaryValue_InMillions(value) {
+      return displayMonetaryValue_InMillions(value);
+    },
     flagsPlaced(nationName) {
       return this.game.flagCount(nationName);
     },
     nextTaxRevenue(nationName) {
-      const taxRevenue = this.game.taxRevenueOf(nationName);
-
-      return displayMonetaryValue_InMillions(taxRevenue);
+      return this.game.taxRevenueOf(nationName);
     },
     nextNationProfit(nationName) {
       const taxRevenue = this.game.taxRevenueOf(nationName);
-      const nationProfit = this.game.nationTaxationProfit(nationName, taxRevenue);
-
-      return displayMonetaryValue_InMillions(nationProfit);
+      return this.game.nationTaxationProfit(nationName, taxRevenue);
     },
     nextTaxationPowerPoints(nationName) {
       const uncappedPowerPoints = nextTaxationPowerPoints(this.game, nationName);
