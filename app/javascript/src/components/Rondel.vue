@@ -80,7 +80,7 @@
 
 <script>
 import stringify from '../stringify';
-import { nextTaxationPowerPoints, nextTaxChartPosition } from '../taxChartHelpers';
+import { nextTaxationPowerPoints } from '../taxChartHelpers';
 import Flag from './flags/Flag.vue';
 
 import RondelSlot from './RondelSlot.vue';
@@ -148,13 +148,13 @@ export default {
       }).filter(Boolean);
     },
     nextTaxChartPosition() {
-      return nextTaxChartPosition(this.game);
+      return this.game.getTaxChartPosition(this.game.taxRevenueOf(this.game.currentNation));
     },
     playerBonus() {
-      return this.game.playerBonusAfterUnitMaintenanceCosts(this.game.currentNation, this.game.getTaxes(this.game.currentNation));
+      return this.game.playerBonusAfterUnitMaintenanceCosts(this.game.currentNation, this.game.taxRevenueOf(this.game.currentNation));
     },
     nationProfit() {
-      return this.game.nationTaxationProfit(this.game.currentNation, this.game.getTaxes(this.game.currentNation));
+      return this.game.nationTaxationProfit(this.game.currentNation, this.game.taxRevenueOf(this.game.currentNation));
     },
     nextTaxationPowerPoints() {
       return nextTaxationPowerPoints(this.game);

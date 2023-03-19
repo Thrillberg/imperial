@@ -18,7 +18,7 @@
       <div class="flex justify-between">
         <span class="w-1/3"></span>
         <span class="w-1/6">Flags</span>
-        <span class="w-1/6">Tax Amount</span>
+        <span class="w-1/6">Tax Revenue</span>
         <span class="w-1/6">Nation Profit</span>
         <span class="w-1/6">Power Points</span>
       </div>
@@ -27,7 +27,7 @@
           <strong>{{ stringify(nation.value) }}</strong>
         </span>
         <span class="w-1/6"> {{ flagsPlaced(nation) }} </span>
-        <span class="w-1/6"> {{ nextTaxAmount(nation) }} </span>
+        <span class="w-1/6"> {{ nextTaxRevenue(nation) }} </span>
         <span class="w-1/6"> {{ nextNationProfit(nation) }} </span>
         <span class="w-1/6"> {{ nextTaxationPowerPoints(nation) }} </span>
       </div>
@@ -49,14 +49,13 @@ export default {
       return stringify(nationName)
     },
     flagsPlaced(nationName) {
-      return this.game.flagCount(nationName || this.game.currentNation);
+      return this.game.flagCount(nationName);
     },
-    nextTaxAmount(nationName) {
-      return `$${this.game.getTaxes(nationName || this.game.currentNation)}m`;
+    nextTaxRevenue(nationName) {
+      return `$${this.game.taxRevenueOf(nationName)}m`;
     },
     nextNationProfit(nationName) {
-      nationName = nationName || this.game.currentNation;
-      const taxes = this.game.getTaxes(nationName);
+      const taxes = this.game.taxRevenueOf(nationName);
       const nationProfit = this.game.nationTaxationProfit(nationName, taxes);
 
       if (nationProfit < 0) {

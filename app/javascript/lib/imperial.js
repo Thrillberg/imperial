@@ -1279,7 +1279,7 @@ export default class Imperial {
         const nationName = action.payload.nation;
 
         // 1. Tax revenue / success bonus
-        const taxes = this.getTaxes(nationName);
+        const taxes = this.taxRevenueOf(nationName);
         const bonus = this.playerBonusAfterUnitMaintenanceCosts(nationName, taxes);
 
         this.players[this.currentPlayerName].cash += bonus;
@@ -2219,7 +2219,7 @@ export default class Imperial {
     }
   }
 
-  getTaxes(nationName) {
+  taxRevenueOf(nationName) {
     const taxes = this.unoccupiedFactoryCount(nationName) * 2 + this.flagCount(nationName);
     if (this.baseGame === 'imperial') {
       // Taxes cannot exceed 20m
