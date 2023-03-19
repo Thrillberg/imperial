@@ -160,7 +160,7 @@ export default {
       return this.game.nationTaxationProfit(this.game.currentNation, taxRevenue);
     },
     nextTaxationPowerPoints() {
-      return nextTaxationPowerPoints(this.game);
+      return nextTaxationPowerPoints(this.game, this.game.currentNation);
     },
   },
   methods: {
