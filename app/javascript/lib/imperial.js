@@ -1278,10 +1278,25 @@ export default class Imperial {
       case 'taxation': {
         const nationName = action.payload.nation;
 
-        // 1. Tax revenue / success bonus
         const taxes = this.getTaxes(nationName);
+        const nationProfit = this.nationTaxationProfit(nationName, taxes);
         const bonus = this.playerBonusAfterUnitMaintenanceCosts(nationName, taxes);
+        const powerPoints = this.powerPointsGainedFrom(taxes);
 
+        // 1. Tax revenue
+        const nation = this.nations.get(nationName);
+        nation.taxChartPosition = this.getTaxChartPosition(taxes);
+        nation.treasury += nationProfit;
+        // can be less than 0m
+        
+        this.annotatedLog.push(
+          Action.nationGainsTreasury({
+            nation: nationName,
+            amount: nationProfit,
+          }),
+        );
+
+        // 2. Collecting money
         this.players[this.currentPlayerName].cash += bonus;
         this.annotatedLog.push(
           Action.playerGainsCash({
@@ -1290,22 +1305,7 @@ export default class Imperial {
           }),
         );
 
-        const nation = this.nations.get(nationName);
-        nation.taxChartPosition = this.getTaxChartPosition(taxes);
-        
-        // 2. Collecting money
-        const nationProfit = this.nationTaxationProfit(nationName, taxes);
-        // can be less than 0m
-        nation.treasury += nationProfit;
-        this.annotatedLog.push(
-          Action.nationGainsTreasury({
-            nation: nationName,
-            amount: nationProfit,
-          }),
-        );
-
         // 3. Adding power points
-        const powerPoints = this.powerPointsGainedFrom(taxes);
         nation.powerPoints += powerPoints;
         if (nation.powerPoints >= 25) {
           nation.powerPoints = 25;
