@@ -1,4 +1,8 @@
 export const capitalize = (word) => {
+  return (word[0].toUpperCase() + word.substring(1));
+}
+
+export const displayLocationName = (word) => {
   if (word) {
     switch (word) {
       case 'bayofbiscay': return 'Bay of Biscay';
@@ -31,7 +35,7 @@ export const capitalize = (word) => {
       case 'newyork': return 'New York';
       case 'neworleans': return 'New Orleans';
       case 'sanfrancisco': return 'San Francisco';
-      default: return (word[0].toUpperCase() + word.substring(1));
+      default: return capitalize(word);
     }
   }
   return '';

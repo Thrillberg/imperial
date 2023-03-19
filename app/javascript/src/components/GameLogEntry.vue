@@ -55,7 +55,7 @@
 import { DateTime } from 'luxon';
 
 import Flag from './flags/Flag.vue';
-import { capitalize, displayNationName, unitTypeByDestination_Singular, unitTypeByDestination_Plural } from '../stringify';
+import { capitalize, displayLocationName, displayNationName, unitTypeByDestination_Singular, unitTypeByDestination_Plural } from '../stringify';
 
 export default {
   name: 'GameLogEntry',
@@ -73,6 +73,9 @@ export default {
   methods: {
     capitalize(word) {
       return capitalize(word);
+    },
+    displayLocationName(word) {
+      return displayLocationName(word);
     },
     unitTypeByDestination_Singular(destination) {
       return unitTypeByDestination_Singular(this.board.graph.get(destination).isOcean);
@@ -146,10 +149,10 @@ export default {
           return `${action.payload.player} received 2m for holding the investor card.`;
         }
         case 'unfriendlyEntrance': {
-          return `${this.displayNationName(action.payload.challenger.value)} has violently entered ${this.capitalize(action.payload.province)} (${this.displayNationName(action.payload.incumbent.value)}).`;
+          return `${this.displayNationName(action.payload.challenger.value)} has violently entered ${this.displayLocationName(action.payload.province)} (${this.displayNationName(action.payload.incumbent.value)}).`;
         }
         case 'friendlyEntrance': {
-          return `${this.displayNationName(action.payload.challenger.value)} has peacefully entered ${this.capitalize(action.payload.province)} (${this.displayNationName(action.payload.incumbent.value)}).`;
+          return `${this.displayNationName(action.payload.challenger.value)} has peacefully entered ${this.displayLocationName(action.payload.province)} (${this.displayNationName(action.payload.incumbent.value)}).`;
         }
         case 'blockCanal': {
           return 'A canal has been blocked.';
@@ -177,7 +180,7 @@ export default {
       return `${nation} advanced to the ${slot} rondel slot.`;
     },
     buildFactoryAction(payload) {
-      const province = this.capitalize(payload.province);
+      const province = this.displayLocationName(payload.province);
       return `Built a factory in ${province} for 5m.`;
     },
     bondPurchaseAction(payload) {
@@ -187,7 +190,7 @@ export default {
       return `${player} bought the ${cost}m bond from ${nation}.`;
     },
     importAction(payload) {
-      const provincesList = payload.placements.map((item) => this.capitalize(item.province));
+      const provincesList = payload.placements.map((item) => this.displayLocationName(item.province));
       const province = provincesList[0];
       const provinces = `${provincesList.slice(0, -1).join(', ')} and ${provincesList.slice(-1)}`;
       const provincesText = provincesList.length > 1 ? provinces : province;
@@ -196,8 +199,8 @@ export default {
     },
     maneuverAction(payload) {
       const unit = this.unitTypeByDestination_Singular(payload.destination);
-      const origin = this.capitalize(payload.origin);
-      const destination = this.capitalize(payload.destination);
+      const origin = this.displayLocationName(payload.origin);
+      const destination = this.displayLocationName(payload.destination);
 
       return `Moved ${unit} from ${origin} to ${destination}.`;
     },
@@ -205,19 +208,19 @@ export default {
       const units = this.capitalize(this.unitTypeByDestination_Plural(payload.province));
       // technically it could be a fleet in port sharing the province with an army
 
-      const province = this.capitalize(payload.province);
+      const province = this.displayLocationName(payload.province);
       const nations = `${this.displayNationName(payload.incumbent.value)} and ${this.displayNationName(payload.challenger.value)}`;
 
       return `${units} from ${nations} are peacefully coexisting in ${province}.`;
     },
     fightAction(payload) {
-      const province = this.capitalize(payload.province);
+      const province = this.displayLocationName(payload.province);
       const incumbent = this.displayNationName(payload.incumbent.value);
       const challenger = this.displayNationName(payload.challenger.value);
       return `${challenger} has picked a fight with ${incumbent} in ${province}.`;
     },
     destroyFactoryAction(payload) {
-      const province = this.capitalize(payload.province);
+      const province = this.displayLocationName(payload.province);
       return `Factory destroyed in ${province}.`;
     },
     endManeuverAction() {
