@@ -24,7 +24,7 @@
       </div>
       <div v-for="[nation,] of game.nations" :key="nation.value" class="flex justify-between">
         <span class="w-1/3">
-          <strong>{{ stringify(nation.value) }}</strong>
+          <strong>{{ displayNationName(nation.value) }}</strong>
         </span>
         <span class="w-1/6"> {{ flagsPlaced(nation) }} </span>
         <span class="w-1/6"> {{ nextTaxRevenue(nation) }} </span>
@@ -38,31 +38,29 @@
 
 <script>
 import { nextTaxationPowerPoints } from "../taxChartHelpers.js";
-import stringify from "../stringify.js";
+import { displayNationName, displayMonetaryValue_InMillions } from "../stringify.js";
 
 export default {
   name: "TaxStatus",
   props: { game: Object },
   data: () => ({ showTaxStatus: false }),
   methods: {
-    stringify(nationName) {
-      return stringify(nationName)
+    displayNationName(nation) {
+      return displayNationName(nation);
     },
     flagsPlaced(nationName) {
       return this.game.flagCount(nationName);
     },
     nextTaxRevenue(nationName) {
-      return `$${this.game.taxRevenueOf(nationName)}m`;
+      const taxRevenue = this.game.taxRevenueOf(nationName);
+
+      return displayMonetaryValue_InMillions(taxRevenue);
     },
     nextNationProfit(nationName) {
-      const taxes = this.game.taxRevenueOf(nationName);
-      const nationProfit = this.game.nationTaxationProfit(nationName, taxes);
+      const taxRevenue = this.game.taxRevenueOf(nationName);
+      const nationProfit = this.game.nationTaxationProfit(nationName, taxRevenue);
 
-      if (nationProfit < 0) {
-        return `-$${Math.abs(nationProfit)}m`;
-      } else {
-        return `$${nationProfit}m`;
-      }
+      return displayMonetaryValue_InMillions(nationProfit);
     },
     nextTaxationPowerPoints(nationName) {
       const uncappedPowerPoints = nextTaxationPowerPoints(this.game, nationName);

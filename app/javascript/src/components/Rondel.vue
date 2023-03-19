@@ -47,16 +47,16 @@
       >
         <div>
           <div v-if="game.baseGame === 'imperial'">
-            <b> Tax Chart Position </b> will go from {{ game.nations.get(game.currentNation).taxChartPosition }}m to {{ nextTaxChartPosition }}m
+            <b> Tax Chart Position </b> will go from {{ game.nations.get(game.currentNation).taxChartPosition }}m to {{ nextTaxChartPosition }}
           </div>
           <div>
-            <b> {{ game.currentPlayerName }} </b> would receive {{ playerBonus }}m
+            <b> {{ game.currentPlayerName }} </b> would receive {{ playerBonus }}
           </div>
           <div>
-            <b> {{ stringify(game.currentNation.value) }} </b>'s treasury would change by {{ nationProfit }}m
+            <b> {{ displayNationName(game.currentNation.value) }} </b>'s treasury would change by {{ nationProfit }}
           </div>
           <div>
-            <b> {{ stringify(game.currentNation.value) }} </b>'s power points would be {{ nextTaxationPowerPoints }}
+            <b> {{ displayNationName(game.currentNation.value) }} </b>'s power points would be {{ nextTaxationPowerPoints }}
           </div>
         </div>
       </div>
@@ -79,7 +79,7 @@
 </template>
 
 <script>
-import stringify from '../stringify';
+import { displayNationName, displayMonetaryValue_InMillions } from '../stringify';
 import { nextTaxationPowerPoints } from '../taxChartHelpers';
 import Flag from './flags/Flag.vue';
 
@@ -148,19 +148,29 @@ export default {
       }).filter(Boolean);
     },
     nextTaxChartPosition() {
-      return this.game.getTaxChartPosition(this.game.taxRevenueOf(this.game.currentNation));
+      const taxRevenue = this.game.taxRevenueOf(this.game.currentNation);
+      return this.game.getTaxChartPosition(taxRevenue);
     },
     playerBonus() {
-      return this.game.playerBonusAfterUnitMaintenanceCosts(this.game.currentNation, this.game.taxRevenueOf(this.game.currentNation));
+      const taxRevenue = this.game.taxRevenueOf(this.game.currentNation);
+      const bonus = this.game.playerBonusAfterUnitMaintenanceCosts(this.game.currentNation, taxRevenue);
+
+      return displayMonetaryValue_InMillions(bonus);
     },
     nationProfit() {
-      return this.game.nationTaxationProfit(this.game.currentNation, this.game.taxRevenueOf(this.game.currentNation));
+      const taxRevenue = this.game.taxRevenueOf(this.game.currentNation);
+      const profit = this.game.nationTaxationProfit(this.game.currentNation, taxRevenue);
+
+      return displayMonetaryValue_InMillions(profit);
     },
     nextTaxationPowerPoints() {
       return nextTaxationPowerPoints(this.game);
     },
   },
   methods: {
+    displayNationName(nation) {
+      return displayNationName(nation);
+    },
     isValid(slot) {
       if (this.paused) return false;
 
@@ -274,7 +284,7 @@ export default {
     handleCircleHovered(nation) {
       this.displayHelperFlag = true;
       this.helperNation = nation;
-      this.helperText = stringify(nation);
+      this.helperText = displayNationName(nation);
     },
     validSlots() {
       const slots = [];
@@ -284,9 +294,6 @@ export default {
         }
       }
       return slots;
-    },
-    stringify(string) {
-      return stringify(string);
     },
   },
 };

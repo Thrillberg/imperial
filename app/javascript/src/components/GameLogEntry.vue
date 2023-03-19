@@ -55,7 +55,7 @@
 import { DateTime } from 'luxon';
 
 import Flag from './flags/Flag.vue';
-import stringify from '../stringify';
+import { displayNationName } from '../stringify';
 
 export default {
   name: 'GameLogEntry',
@@ -123,6 +123,9 @@ export default {
         return 'armies';
       }
     },
+    displayNationName(nation) {
+      return displayNationName(nation);
+    },
     processAction(action) {
       const notImplemented = 'NOT IMPLEMENTED';
       switch (action.type) {
@@ -135,7 +138,7 @@ export default {
         case 'buildFactory':
           return this.buildFactoryAction(action.payload);
         case 'skipBuildFactory':
-          return `${action.payload.player} chose not to build a factory for ${stringify(action.payload.nation.value)}.`;
+          return `${action.payload.player} chose not to build a factory for ${displayNationName(action.payload.nation.value)}.`;
         case 'bondPurchase':
           return this.bondPurchaseAction(action.payload);
         case 'skipBondPurchase':
@@ -165,19 +168,19 @@ export default {
         case 'playerGainsCash':
           return `${action.payload.player} gained ${action.payload.amount}m in taxes.`;
         case 'nationGainsTreasury':
-          return `${stringify(action.payload.nation.value)} has changed by ${action.payload.amount}m in taxes.`;
+          return `${displayNationName(action.payload.nation.value)} has changed by ${action.payload.amount}m in taxes.`;
         case 'nationGainsPowerPoints':
-          return `${stringify(action.payload.nation.value)} gained ${action.payload.powerPoints} power points.`;
+          return `${displayNationName(action.payload.nation.value)} gained ${action.payload.powerPoints} power points.`;
         case 'nationPaysPlayer':
-          return `${stringify(action.payload.nation.value)} paid ${action.payload.player} ${action.payload.amount}m.`;
+          return `${displayNationName(action.payload.nation.value)} paid ${action.payload.player} ${action.payload.amount}m.`;
         case 'investorCardHolderChanged':
           return `${action.payload.oldInvestorCardHolder} has passed the investor card to ${action.payload.newInvestorCardHolder}.`;
         case 'nationControllerChanged':
-          return `Control of ${stringify(action.payload.nation.value)} has passed from ${action.payload.oldNationController} to ${action.payload.newNationController}.`;
+          return `Control of ${displayNationName(action.payload.nation.value)} has passed from ${action.payload.oldNationController} to ${action.payload.newNationController}.`;
         case 'playerTradedInForABond':
-          return `${action.payload.player} traded in their ${stringify(action.payload.bondNation.value)} bond for ${action.payload.bondCost}m.`;
+          return `${action.payload.player} traded in their ${displayNationName(action.payload.bondNation.value)} bond for ${action.payload.bondCost}m.`;
         case 'playerAutoSkipsBondPurchase':
-          return `${action.payload.player} could not buy a bond from ${stringify(action.payload.bondNation.value)} because of insufficient funds.`;
+          return `${action.payload.player} could not buy a bond from ${displayNationName(action.payload.bondNation.value)} because of insufficient funds.`;
         case 'playerPaysForRondel': {
           const slot = this.capitalize(action.payload.slot).replace(/\d/g, '');
           return `${action.payload.player} paid ${action.payload.cost}m to move to the ${slot} slot on the rondel.`;
@@ -186,10 +189,10 @@ export default {
           return `${action.payload.player} received 2m for holding the investor card.`;
         }
         case 'unfriendlyEntrance': {
-          return `${stringify(action.payload.challenger.value)} has violently entered ${this.capitalize(action.payload.province)} (${stringify(action.payload.incumbent.value)}).`;
+          return `${displayNationName(action.payload.challenger.value)} has violently entered ${this.capitalize(action.payload.province)} (${displayNationName(action.payload.incumbent.value)}).`;
         }
         case 'friendlyEntrance': {
-          return `${stringify(action.payload.challenger.value)} has peacefully entered ${this.capitalize(action.payload.province)} (${stringify(action.payload.incumbent.value)}).`;
+          return `${displayNationName(action.payload.challenger.value)} has peacefully entered ${this.capitalize(action.payload.province)} (${displayNationName(action.payload.incumbent.value)}).`;
         }
         case 'blockCanal': {
           return 'A canal has been blocked.';
@@ -202,7 +205,7 @@ export default {
     },
     initializeAction(player) {
       const name = player.id;
-      const nation = stringify(player.nation.value);
+      const nation = displayNationName(player.nation.value);
       return `<strong>${nation}</strong> is controlled by <strong>${name}</strong>`;
     },
     getNation(nation) {
@@ -212,7 +215,7 @@ export default {
       return nation.value;
     },
     rondelAction(payload) {
-      const nation = stringify(payload.nation.value);
+      const nation = displayNationName(payload.nation.value);
       const slot = this.capitalize(payload.slot).replace(/\d/g, '');
       return `${nation} advanced to the ${slot} rondel slot.`;
     },
@@ -223,7 +226,7 @@ export default {
     bondPurchaseAction(payload) {
       const { player } = payload;
       const { cost } = payload;
-      const nation = stringify(payload.nation.value);
+      const nation = displayNationName(payload.nation.value);
       return `${player} bought the ${cost}m bond from ${nation}.`;
     },
     importAction(payload) {
@@ -246,14 +249,14 @@ export default {
       // technically it could be a fleet in port sharing the province with an army
 
       const province = this.capitalize(payload.province);
-      const nations = `${stringify(payload.incumbent.value)} and ${stringify(payload.challenger.value)}`;
+      const nations = `${displayNationName(payload.incumbent.value)} and ${displayNationName(payload.challenger.value)}`;
 
       return `${units} from ${nations} are peacefully coexisting in ${province}.`;
     },
     fightAction(payload) {
       const province = this.capitalize(payload.province);
-      const incumbent = stringify(payload.incumbent.value);
-      const challenger = stringify(payload.challenger.value);
+      const incumbent = displayNationName(payload.incumbent.value);
+      const challenger = displayNationName(payload.challenger.value);
       return `${challenger} has picked a fight with ${incumbent} in ${province}.`;
     },
     destroyFactoryAction(payload) {

@@ -1,4 +1,4 @@
-export default (nation) => {
+export const displayNationName = (nation) => {
   switch (nation) {
     case 'AH':
       return 'Austria-Hungary';
@@ -29,5 +29,13 @@ export default (nation) => {
     case 'US':
       return 'United States of America';
     default: return '';
+  }
+};
+
+export const displayMonetaryValue_InMillions = (value) => {
+  if (value < 0) {
+    return `-$${Math.abs(value)}m`;
+  } else {
+    return `$${value}m`;
   }
 };
