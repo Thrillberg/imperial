@@ -38,7 +38,7 @@ export const displayLocationName = (word) => {
       default: return capitalize(word);
     }
   }
-  return '';
+  return 'Location';
 };
 
 export const displayNationName = (nation) => {
@@ -71,7 +71,7 @@ export const displayNationName = (nation) => {
       return 'Turkey';
     case 'US':
       return 'United States of America';
-    default: return '';
+    default: return 'Nation';
   }
 };
 
