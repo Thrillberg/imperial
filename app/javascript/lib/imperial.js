@@ -2249,7 +2249,7 @@ export default class Imperial {
 
   powerPointsGainedFrom(taxes) {
     let powerPoints = 0;
-
+    
     if (this.baseGame === 'imperial') {
       powerPoints = Math.min(Math.max(0, taxes - 5), 10);
     } else if (this.baseGame === 'imperial2030' || this.baseGame === 'imperialAsia') {

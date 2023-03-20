@@ -6,127 +6,147 @@
     :height="height"
   >
     <g
-    v-bind:clip-path="this.fleet ? 'url(#fleetClip)' : ''" :filter="activeFilter"
+      :clip-path="fleet ? 'url(#fleetClip)' : ''"
+      :filter="activeFilter"
     >
-    <g
-       id="s">
       <g
-         id="c">
-        <path
-           id="t"
-           d="M0,0v1h0.5z"
-           transform="translate(0,-1)rotate(18)" />
+        :id="randomId2"
+      >
+        <g
+          :id="randomId3"
+        >
+          <path
+            :id="randomId1"
+            d="M0,0v1h0.5z"
+            transform="translate(0,-1)rotate(18)"
+          />
+          <use
+            :href="'#' + randomId1"
+            transform="scale(-1,1)"
+          />
+        </g>
+        <g
+          :id="randomId4"
+        >
+          <use
+            :href="'#' + randomId3"
+            transform="rotate(72)"
+          />
+          <use
+            :href="'#' + randomId3"
+            transform="rotate(144)"
+          />
+        </g>
         <use
-           xlink:href="#t"
-           transform="scale(-1,1)"
-           id="use74" />
+          :href="'#' + randomId4"
+          transform="scale(-1,1)"
+        />
       </g>
+      <rect
+        fill="#003399"
+        width="1500"
+        height="1000"
+        x="0"
+        y="0"
+        style="stroke-width:1.85185"
+      />
       <g
-         id="a">
+        fill="#ffcc00"
+        transform="matrix(55.555556,0,0,55.555556,750,500)"
+      >
         <use
-           xlink:href="#c"
-           transform="rotate(72)"
-           id="use77" />
+          :href="'#' + randomId2"
+          y="-6"
+          x="0"
+          width="100%"
+          height="100%"
+        />
         <use
-           xlink:href="#c"
-           transform="rotate(144)"
-           id="use79" />
+          :href="'#' + randomId2"
+          y="6"
+          x="0"
+          width="100%"
+          height="100%"
+        />
+        <g
+          :id="randomId5"
+        >
+          <use
+            :href="'#' + randomId2"
+            x="-6"
+            y="0"
+            width="100%"
+            height="100%"
+          />
+          <use
+            :href="'#' + randomId2"
+            transform="rotate(-144,-2.3441661,-2.1106967)"
+            x="0"
+            y="0"
+            width="100%"
+            height="100%"
+          />
+          <use
+            :href="'#' + randomId2"
+            transform="rotate(144,-2.1106967,-2.3441661)"
+            x="0"
+            y="0"
+            width="100%"
+            height="100%"
+          />
+          <use
+            :href="'#' + randomId2"
+            transform="rotate(72,-4.6626491,-2.0759451)"
+            x="0"
+            y="0"
+            width="100%"
+            height="100%"
+          />
+          <use
+            :href="'#' + randomId2"
+            transform="rotate(72,-5.0759451,0.53350333)"
+            x="0"
+            y="0"
+            width="100%"
+            height="100%"
+          />
+        </g>
+        <use
+          :href="'#' + randomId5"
+          transform="scale(-1,1)"
+          x="0"
+          y="0"
+          width="100%"
+          height="100%"
+        />
       </g>
-      <use
-         xlink:href="#a"
-         transform="scale(-1,1)"
-         id="use82" />
-    </g>
-  <rect
-     fill="#003399"
-     width="1500"
-     height="1000"
-     id="rect87"
-     x="0"
-     y="0"
-     style="stroke-width:1.85185" />
-  <g
-     fill="#ffcc00"
-     transform="matrix(55.555556,0,0,55.555556,750,500)"
-     id="g106">
-    <use
-       xlink:href="#s"
-       y="-6"
-       id="use89"
-       x="0"
-       width="100%"
-       height="100%" />
-    <use
-       xlink:href="#s"
-       y="6"
-       id="use91"
-       x="0"
-       width="100%"
-       height="100%" />
-    <g
-       id="l">
-      <use
-         xlink:href="#s"
-         x="-6"
-         id="use93"
-         y="0"
-         width="100%"
-         height="100%" />
-      <use
-         xlink:href="#s"
-         transform="rotate(-144,-2.3441661,-2.1106967)"
-         id="use95"
-         x="0"
-         y="0"
-         width="100%"
-         height="100%" />
-      <use
-         xlink:href="#s"
-         transform="rotate(144,-2.1106967,-2.3441661)"
-         id="use97"
-         x="0"
-         y="0"
-         width="100%"
-         height="100%" />
-      <use
-         xlink:href="#s"
-         transform="rotate(72,-4.6626491,-2.0759451)"
-         id="use99"
-         x="0"
-         y="0"
-         width="100%"
-         height="100%" />
-      <use
-         xlink:href="#s"
-         transform="rotate(72,-5.0759451,0.53350333)"
-         id="use101"
-         x="0"
-         y="0"
-         width="100%"
-         height="100%" />
-    </g>
-    <use
-       xlink:href="#l"
-       transform="scale(-1,1)"
-       id="use104"
-       x="0"
-       y="0"
-       width="100%"
-       height="100%" />
-  </g>
     </g>
   </svg>
 </template>
 
 <script>
 export default {
-  name: "EUFlag",
+  name: 'EUFlag',
   props: {
     activeFilter: String,
     fleet: Boolean,
     width: String,
     height: String,
-    transform: String
-  }
+    transform: String,
+  },
+  data: () => ({
+    randomId1: '',
+    randomId2: '',
+    randomId3: '',
+    randomId4: '',
+    randomId5: '',
+  }),
+  created() {
+    this.randomId1 = Math.floor(Math.random() * 1000000).toString();
+    this.randomId2 = Math.floor(Math.random() * 1000000).toString();
+    this.randomId3 = Math.floor(Math.random() * 1000000).toString();
+    this.randomId4 = Math.floor(Math.random() * 1000000).toString();
+    this.randomId5 = Math.floor(Math.random() * 1000000).toString();
+  },
 };
 </script>
