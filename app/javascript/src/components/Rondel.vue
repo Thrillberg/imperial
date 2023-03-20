@@ -35,7 +35,7 @@
           v-for="[bearer, amount] of bondBearers"
           :key="bearer"
         >
-          <b>{{ bearer }}</b> would receive {{ amount }}m
+          <b>{{ bearer }}</b> would receive {{ this.displayMonetaryValue_InMillions(amount) }}
         </div>
         <div v-if="game.variant !== 'withoutInvestorCard'">
           <b>{{ game.investorCardHolder }}</b> has the investor card
@@ -47,21 +47,21 @@
       >
         <div>
           <div v-if="game.baseGame === 'imperial'">
-            <b> Tax Chart Position </b> will go from {{ game.nations.get(game.currentNation).taxChartPosition }}m to {{ nextTaxChartPosition }}m
+            <b> Tax Revenue </b> will go from {{ this.displayMonetaryValue_InMillions(game.nations.get(game.currentNation).taxChartPosition) }} to {{ this.displayMonetaryValue_InMillions(nextTaxChartPosition) }}
           </div>
           <div>
-            <b> {{ game.currentPlayerName }} </b> would receive {{ playerBonus }}m
+            <b> {{ game.currentPlayerName }} </b> would receive {{ this.displayMonetaryValue_InMillions(playerBonus) }}
           </div>
           <div>
-            <b> {{ stringify(game.currentNation.value) }} </b>'s treasury would change by {{ nationProfit }}m
+            <b> {{ this.displayNationName(game.currentNation.value) }} </b>'s treasury would change by {{ this.displayMonetaryValue_InMillions(nationProfit) }}
           </div>
           <div>
-            <b> {{ stringify(game.currentNation.value) }} </b>'s power points would be {{ nextTaxationPowerPoints }}
+            <b> {{ this.displayNationName(game.currentNation.value) }} </b>'s power points would be {{ nextTaxationPowerPoints }}
           </div>
         </div>
       </div>
       <div v-if="!!cost">
-        <b>Cost: {{ cost }}m</b>
+        <b>Cost: {{ this.displayMonetaryValue_InMillions(cost) }}</b>
       </div>
       <div>
         <span v-if="displayHelperFlag">
@@ -79,8 +79,8 @@
 </template>
 
 <script>
-import stringify from '../stringify';
-import { nextTaxationPowerPoints, nextTaxChartPosition } from '../taxChartHelpers';
+import { displayNationName, displayMonetaryValue_InMillions } from '../stringify';
+import { nextTaxationPowerPoints } from '../taxChartHelpers';
 import Flag from './flags/Flag.vue';
 
 import RondelSlot from './RondelSlot.vue';
@@ -148,19 +148,28 @@ export default {
       }).filter(Boolean);
     },
     nextTaxChartPosition() {
-      return nextTaxChartPosition(this.game);
+      const taxRevenue = this.game.taxRevenueOf(this.game.currentNation);
+      return this.game.getTaxChartPosition(taxRevenue);
     },
     playerBonus() {
-      return this.game.playerBonusAfterUnitMaintenanceCosts(this.game.currentNation, this.game.getTaxes(this.game.currentNation));
+      const taxRevenue = this.game.taxRevenueOf(this.game.currentNation);
+      return this.game.playerBonusAfterUnitMaintenanceCosts(this.game.currentNation, taxRevenue);
     },
     nationProfit() {
-      return this.game.nationTaxationProfit(this.game.currentNation, this.game.getTaxes(this.game.currentNation));
+      const taxRevenue = this.game.taxRevenueOf(this.game.currentNation);
+      return this.game.nationTaxationProfit(this.game.currentNation, taxRevenue);
     },
     nextTaxationPowerPoints() {
-      return nextTaxationPowerPoints(this.game);
+      return nextTaxationPowerPoints(this.game, this.game.currentNation);
     },
   },
   methods: {
+    displayNationName(nation) {
+      return displayNationName(nation);
+    },
+    displayMonetaryValue_InMillions(value) {
+      return displayMonetaryValue_InMillions(value);
+    },
     isValid(slot) {
       if (this.paused) return false;
 
@@ -196,14 +205,14 @@ export default {
             if (this.game.variant === 'withoutInvestorCard') {
               this.helperText = 'Nation pays players interest';
             } else {
-              this.helperText = 'Nation pays players interest, investor card holder receives 2m and may purchase a bond, Swiss Banks may invest.';
+              this.helperText = `Nation pays players interest, investor card holder receives ${this.displayMonetaryValue_InMillions(2)} and may purchase a bond, Swiss Banks may invest.`;
             }
             break;
           }
           case 'import': {
             this.onInvestorSlot = false;
             this.onTaxationSlot = false;
-            this.helperText = 'Nation may purchase up to 3 units for 1m each, to be placed anywhere in their home territory.';
+            this.helperText = `Nation may purchase up to 3 units for ${this.displayMonetaryValue_InMillions(1)} each, to be placed anywhere in their home territory.`;
             break;
           }
           case 'production1':
@@ -223,13 +232,14 @@ export default {
           case 'taxation': {
             this.onInvestorSlot = false;
             this.onTaxationSlot = true;
-            this.helperText = "Player receives tax (2m per unoccupied factory and 1m per dot) from the nation. Power points are increased and nation receives tax, less soldiers' pay (1m per unit).";
+            this.helperText = `Player receives tax (${this.displayMonetaryValue_InMillions(2)} per unoccupied factory and ${this.displayMonetaryValue_InMillions(1)} per flag) from the nation. ` +
+            `Power points are increased and nation receives tax, less soldiers' pay (${this.displayMonetaryValue_InMillions(1)} per unit).`;
             break;
           }
           case 'factory': {
             this.onInvestorSlot = false;
             this.onTaxationSlot = false;
-            this.helperText = 'Nation builds a factory for 5m.';
+            this.helperText = `Nation builds a factory for ${this.displayMonetaryValue_InMillions(5)}.`;
             break;
           }
           default: { break; }
@@ -274,7 +284,7 @@ export default {
     handleCircleHovered(nation) {
       this.displayHelperFlag = true;
       this.helperNation = nation;
-      this.helperText = stringify(nation);
+      this.helperText = displayNationName(nation);
     },
     validSlots() {
       const slots = [];
@@ -284,9 +294,6 @@ export default {
         }
       }
       return slots;
-    },
-    stringify(string) {
-      return stringify(string);
     },
   },
 };

@@ -3,7 +3,7 @@
     class="p-0.5"
     :class="currentNationClass() + width()"
   >
-    <p><b>{{ stringify(nation) }}</b></p>
+    <p><b>{{ displayNationName(nation) }}</b></p>
     <Flag
       :nation="nation"
       :filter="controller === currentPlayer ? '' : 'grayscale'"
@@ -31,7 +31,7 @@
 <script>
 import Flag from './flags/Flag.vue';
 
-import stringify from '../stringify';
+import { displayNationName } from '../stringify';
 
 export default {
   name: 'NationComponent',
@@ -70,9 +70,6 @@ export default {
 
       return '';
     },
-    stringify(nation) {
-      return stringify(nation);
-    },
     truncate(string) {
       string = string || '';
       if (string.length > 10) {
@@ -80,6 +77,10 @@ export default {
       }
 
       return string;
+    },
+    
+    displayNationName(nation) {
+      return displayNationName(nation);
     },
   },
 };

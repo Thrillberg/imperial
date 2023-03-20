@@ -18,17 +18,17 @@
       <div class="flex justify-between">
         <span class="w-1/3"></span>
         <span class="w-1/6">Flags</span>
-        <span class="w-1/6">Tax Amount</span>
+        <span class="w-1/6">Tax Revenue</span>
         <span class="w-1/6">Nation Profit</span>
         <span class="w-1/6">Power Points</span>
       </div>
       <div v-for="[nation,] of game.nations" :key="nation.value" class="flex justify-between">
         <span class="w-1/3">
-          <strong>{{ stringify(nation.value) }}</strong>
+          <strong>{{ displayNationName(nation.value) }}</strong>
         </span>
         <span class="w-1/6"> {{ flagsPlaced(nation) }} </span>
-        <span class="w-1/6"> {{ nextTaxAmount(nation) }} </span>
-        <span class="w-1/6"> {{ nextNationProfit(nation) }} </span>
+        <span class="w-1/6"> {{ this.displayMonetaryValue_InMillions(nextTaxRevenue(nation)) }} </span>
+        <span class="w-1/6"> {{ this.displayMonetaryValue_InMillions(nextNationProfit(nation)) }} </span>
         <span class="w-1/6"> {{ nextTaxationPowerPoints(nation) }} </span>
       </div>
       <p class="text-sm">This shows the power points and tax chart positions of each nation if they were to tax <i>right now</i>.</p>
@@ -38,32 +38,28 @@
 
 <script>
 import { nextTaxationPowerPoints } from "../taxChartHelpers.js";
-import stringify from "../stringify.js";
+import { displayNationName, displayMonetaryValue_InMillions } from "../stringify.js";
 
 export default {
   name: "TaxStatus",
   props: { game: Object },
   data: () => ({ showTaxStatus: false }),
   methods: {
-    stringify(nationName) {
-      return stringify(nationName)
+    displayNationName(nation) {
+      return displayNationName(nation);
+    },
+    displayMonetaryValue_InMillions(value) {
+      return displayMonetaryValue_InMillions(value);
     },
     flagsPlaced(nationName) {
-      return this.game.flagCount(nationName || this.game.currentNation);
+      return this.game.flagCount(nationName);
     },
-    nextTaxAmount(nationName) {
-      return `$${this.game.getTaxes(nationName || this.game.currentNation)}m`;
+    nextTaxRevenue(nationName) {
+      return this.game.taxRevenueOf(nationName);
     },
     nextNationProfit(nationName) {
-      nationName = nationName || this.game.currentNation;
-      const taxes = this.game.getTaxes(nationName);
-      const nationProfit = this.game.nationTaxationProfit(nationName, taxes);
-
-      if (nationProfit < 0) {
-        return `-$${Math.abs(nationProfit)}m`;
-      } else {
-        return `$${nationProfit}m`;
-      }
+      const taxRevenue = this.game.taxRevenueOf(nationName);
+      return this.game.nationTaxationProfit(nationName, taxRevenue);
     },
     nextTaxationPowerPoints(nationName) {
       const uncappedPowerPoints = nextTaxationPowerPoints(this.game, nationName);

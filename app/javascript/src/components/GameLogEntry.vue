@@ -56,7 +56,7 @@
 import { DateTime } from 'luxon';
 
 import Flag from './flags/Flag.vue';
-import stringify from '../stringify';
+import { capitalize, displayLocationName, displayNationName, unitTypeByDestination_Singular, unitTypeByDestination_Plural } from '../stringify';
 
 export default {
   name: 'GameLogEntry',
@@ -73,56 +73,19 @@ export default {
   },
   methods: {
     capitalize(word) {
-      if (word) {
-        switch (word) {
-          case 'bayofbiscay': return 'Bay of Biscay';
-          case 'blacksea': return 'Black Sea';
-          case 'westernmediterraneansea': return 'Western Mediterranean Sea';
-          case 'easternmediterraneansea': return 'Eastern Mediterranean Sea';
-          case 'northsea': return 'North Sea';
-          case 'northatlantic': return 'North Atlantic';
-          case 'balticsea': return 'Baltic Sea';
-          case 'englishchannel': return 'English Channel';
-          case 'westbalkan': return 'West Balkan';
-          case 'stpetersburg': return 'St. Petersburg';
-          case 'northpacific': return 'North Pacific';
-          case 'southpacific': return 'South Pacific';
-          case 'caribbeansea': return 'Caribbean Sea';
-          case 'southatlantic': return 'South Atlantic';
-          case 'gulfofguinea': return 'Gulf of Guinea';
-          case 'mediterraneansea': return 'Mediterranean Sea';
-          case 'indianocean': return 'Indian Ocean';
-          case 'seaofjapan': return 'Sea of Japan';
-          case 'chinasea': return 'China Sea';
-          case 'tasmansea': return 'Tasman Sea';
-          case 'northafrica': return 'North Africa';
-          case 'southafrica': return 'South Africa';
-          case 'eastafrica': return 'East Africa';
-          case 'neareast': return 'Near East';
-          case 'newzealand': return 'New Zealand';
-          case 'newdelhi': return 'New Delhi';
-          case 'riodejaneiro': return 'Rio de Janeiro';
-          case 'newyork': return 'New York';
-          case 'neworleans': return 'New Orleans';
-          case 'sanfrancisco': return 'San Francisco';
-          default: return (word[0].toUpperCase() + word.substring(1));
-        }
-      }
-      return '';
+      return capitalize(word);
+    },
+    displayLocationName(word) {
+      return displayLocationName(word);
     },
     unitTypeByDestination_Singular(destination) {
-      if (this.board.graph.get(destination).isOcean) {
-        return 'a fleet';
-      } else {
-        return 'an army';
-      }
+      return unitTypeByDestination_Singular(this.board.graph.get(destination).isOcean);
     },
     unitTypeByDestination_Plural(destination) {
-      if (this.board.graph.get(destination).isOcean) {
-        return 'fleets';
-      } else {
-        return 'armies';
-      }
+      return unitTypeByDestination_Plural(this.board.graph.get(destination).isOcean);
+    },
+    displayNationName(nation) {
+      return displayNationName(nation);
     },
     processAction(action) {
       const notImplemented = 'NOT IMPLEMENTED';
@@ -136,7 +99,7 @@ export default {
         case 'buildFactory':
           return this.buildFactoryAction(action.payload);
         case 'skipBuildFactory':
-          return `${action.payload.player} chose not to build a factory for ${stringify(action.payload.nation.value)}.`;
+          return `${action.payload.player} chose not to build a factory for ${this.displayNationName(action.payload.nation.value)}.`;
         case 'bondPurchase':
           return this.bondPurchaseAction(action.payload);
         case 'skipBondPurchase':
@@ -166,19 +129,19 @@ export default {
         case 'playerGainsCash':
           return `${action.payload.player} gained ${action.payload.amount}m in taxes.`;
         case 'nationGainsTreasury':
-          return `${stringify(action.payload.nation.value)} has changed by ${action.payload.amount}m in taxes.`;
+          return `${this.displayNationName(action.payload.nation.value)} has changed by ${action.payload.amount}m in taxes.`;
         case 'nationGainsPowerPoints':
-          return `${stringify(action.payload.nation.value)} gained ${action.payload.powerPoints} power points.`;
+          return `${this.displayNationName(action.payload.nation.value)} gained ${action.payload.powerPoints} power points.`;
         case 'nationPaysPlayer':
-          return `${stringify(action.payload.nation.value)} paid ${action.payload.player} ${action.payload.amount}m.`;
+          return `${this.displayNationName(action.payload.nation.value)} paid ${action.payload.player} ${action.payload.amount}m.`;
         case 'investorCardHolderChanged':
           return `${action.payload.oldInvestorCardHolder} has passed the investor card to ${action.payload.newInvestorCardHolder}.`;
         case 'nationControllerChanged':
-          return `Control of ${stringify(action.payload.nation.value)} has passed from ${action.payload.oldNationController} to ${action.payload.newNationController}.`;
+          return `Control of ${this.displayNationName(action.payload.nation.value)} has passed from ${action.payload.oldNationController} to ${action.payload.newNationController}.`;
         case 'playerTradedInForABond':
-          return `${action.payload.player} traded in their ${stringify(action.payload.bondNation.value)} bond for ${action.payload.bondCost}m.`;
+          return `${action.payload.player} traded in their ${this.displayNationName(action.payload.bondNation.value)} bond for ${action.payload.bondCost}m.`;
         case 'playerAutoSkipsBondPurchase':
-          return `${action.payload.player} could not buy a bond from ${stringify(action.payload.bondNation.value)} because of insufficient funds.`;
+          return `${action.payload.player} could not buy a bond from ${this.displayNationName(action.payload.bondNation.value)} because of insufficient funds.`;
         case 'playerPaysForRondel': {
           const slot = this.capitalize(action.payload.slot).replace(/\d/g, '');
           return `${action.payload.player} paid ${action.payload.cost}m to move to the ${slot} slot on the rondel.`;
@@ -187,10 +150,10 @@ export default {
           return `${action.payload.player} received 2m for holding the investor card.`;
         }
         case 'unfriendlyEntrance': {
-          return `${stringify(action.payload.challenger.value)} has violently entered ${this.capitalize(action.payload.province)} (${stringify(action.payload.incumbent.value)}).`;
+          return `${this.displayNationName(action.payload.challenger.value)} has violently entered ${this.displayLocationName(action.payload.province)} (${this.displayNationName(action.payload.incumbent.value)}).`;
         }
         case 'friendlyEntrance': {
-          return `${stringify(action.payload.challenger.value)} has peacefully entered ${this.capitalize(action.payload.province)} (${stringify(action.payload.incumbent.value)}).`;
+          return `${this.displayNationName(action.payload.challenger.value)} has peacefully entered ${this.displayLocationName(action.payload.province)} (${this.displayNationName(action.payload.incumbent.value)}).`;
         }
         case 'blockCanal': {
           return 'A canal has been blocked.';
@@ -203,7 +166,7 @@ export default {
     },
     initializeAction(player) {
       const name = player.id;
-      const nation = stringify(player.nation.value);
+      const nation = this.displayNationName(player.nation.value);
       return `<strong>${nation}</strong> is controlled by <strong>${name}</strong>`;
     },
     getNation(nation) {
@@ -213,22 +176,22 @@ export default {
       return nation.value;
     },
     rondelAction(payload) {
-      const nation = stringify(payload.nation.value);
+      const nation = this.displayNationName(payload.nation.value);
       const slot = this.capitalize(payload.slot).replace(/\d/g, '');
       return `${nation} advanced to the ${slot} rondel slot.`;
     },
     buildFactoryAction(payload) {
-      const province = this.capitalize(payload.province);
+      const province = this.displayLocationName(payload.province);
       return `Built a factory in ${province} for 5m.`;
     },
     bondPurchaseAction(payload) {
       const { player } = payload;
       const { cost } = payload;
-      const nation = stringify(payload.nation.value);
+      const nation = this.displayNationName(payload.nation.value);
       return `${player} bought the ${cost}m bond from ${nation}.`;
     },
     importAction(payload) {
-      const provincesList = payload.placements.map((item) => this.capitalize(item.province));
+      const provincesList = payload.placements.map((item) => this.displayLocationName(item.province));
       const province = provincesList[0];
       const provinces = `${provincesList.slice(0, -1).join(', ')} and ${provincesList.slice(-1)}`;
       const provincesText = provincesList.length > 1 ? provinces : province;
@@ -237,8 +200,8 @@ export default {
     },
     maneuverAction(payload) {
       const unit = this.unitTypeByDestination_Singular(payload.destination);
-      const origin = this.capitalize(payload.origin);
-      const destination = this.capitalize(payload.destination);
+      const origin = this.displayLocationName(payload.origin);
+      const destination = this.displayLocationName(payload.destination);
 
       return `Moved ${unit} from ${origin} to ${destination}.`;
     },
@@ -246,19 +209,19 @@ export default {
       const units = this.capitalize(this.unitTypeByDestination_Plural(payload.province));
       // technically it could be a fleet in port sharing the province with an army
 
-      const province = this.capitalize(payload.province);
-      const nations = `${stringify(payload.incumbent.value)} and ${stringify(payload.challenger.value)}`;
+      const province = this.displayLocationName(payload.province);
+      const nations = `${this.displayNationName(payload.incumbent.value)} and ${this.displayNationName(payload.challenger.value)}`;
 
       return `${units} from ${nations} are peacefully coexisting in ${province}.`;
     },
     fightAction(payload) {
-      const province = this.capitalize(payload.province);
-      const incumbent = stringify(payload.incumbent.value);
-      const challenger = stringify(payload.challenger.value);
+      const province = this.displayLocationName(payload.province);
+      const incumbent = this.displayNationName(payload.incumbent.value);
+      const challenger = this.displayNationName(payload.challenger.value);
       return `${challenger} has picked a fight with ${incumbent} in ${province}.`;
     },
     destroyFactoryAction(payload) {
-      const province = this.capitalize(payload.province);
+      const province = this.displayLocationName(payload.province);
       return `Factory destroyed in ${province}.`;
     },
     endManeuverAction() {

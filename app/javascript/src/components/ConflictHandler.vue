@@ -18,7 +18,7 @@
         :key="fightAction.payload.incumbent.value + fightAction.payload.targetType"
         class="rounded p-2 m-1 sm:m-4 bg-green-800 text-white cursor-pointer"
       >
-        Fight {{ stringify(fightAction.payload.incumbent.value) }} ({{ fightAction.payload.targetType }})
+        Fight {{ displayNationName(fightAction.payload.incumbent.value) }} ({{ fightAction.payload.targetType }})
       </button>
     </div>
     <div
@@ -46,19 +46,19 @@
       :key="fightAction.payload.province + fightAction.payload.challenger"
       class="rounded p-2 m-1 sm:m-4 bg-green-800 text-white cursor-pointer"
     >
-    Fight {{ stringify(fightAction.payload.challenger.value) }} in {{ fightAction.payload.province }}
+    Fight {{ displayNationName(fightAction.payload.challenger.value) }} in {{ fightAction.payload.province }}
     </button>
   </div>
 </template>
 
 <script>
-import stringify from "../stringify.js";
+import { displayNationName } from "../stringify.js";
 
 export default {
   name: "ConflictHandler",
   props: { game: Object, profile: Object, controllingPlayerName: String, hostingThisGame: Boolean },
   methods: {
-    fighting: function() {
+    fighting() {
       let fighting = false;
       for (const action of this.game.availableActions) {
         if (action.type === "coexist" || action.type === "fight") {
@@ -67,7 +67,7 @@ export default {
       }
       return fighting;
     },
-    occupying: function() {
+    occupying() {
       let occupying = true;
       for (const action of this.game.availableActions) {
         if (action.type !== "friendlyEntrance" && action.type !== "unfriendlyEntrance" && action.type !== "undo") {
@@ -76,7 +76,7 @@ export default {
       }
       return occupying;
     },
-    coexist: function() {
+    coexist() {
       let coexistAction = {};
       for (const action of this.game.availableActions) {
         if (action.type === "coexist") {
@@ -85,7 +85,7 @@ export default {
       }
       this.$emit("tick-with-action", coexistAction);
     },
-    fight: function() {
+    fight() {
       let fightAction = {};
       for (const action of this.game.availableActions) {
         if (action.type === "fight") {
@@ -94,7 +94,7 @@ export default {
       }
       this.$emit("tick-with-action", fightAction);
     },
-    friendlyEntrance: function() {
+    friendlyEntrance() {
       let friendlyEntranceAction = {};
       for (const action of this.game.availableActions) {
         if (action.type === "friendlyEntrance") {
@@ -103,7 +103,7 @@ export default {
       }
       this.$emit("tick-with-action", friendlyEntranceAction);
     },
-    unfriendlyEntrance: function() {
+    unfriendlyEntrance() {
       let unfriendlyEntranceAction = {};
       for (const action of this.game.availableActions) {
         if (action.type === "unfriendlyEntrance") {
@@ -112,7 +112,7 @@ export default {
       }
       this.$emit("tick-with-action", unfriendlyEntranceAction);
     },
-    fightActions: function() {
+    fightActions() {
       let fightActions = [];
       for (const action of this.game.availableActions) {
         if (action.type === "fight") {
@@ -121,9 +121,9 @@ export default {
       }
       return fightActions;
     },
-    stringify(string) {
-      return stringify(string)
-    }
+    displayNationName(nation) {
+      return displayNationName(nation);
+    },
   }
 }
 </script>
