@@ -166,7 +166,7 @@ export default {
         case 'playerGainsCash':
           return `${action.payload.player} gained ${action.payload.amount}m in taxes.`;
         case 'nationGainsTreasury':
-          return `${stringify(action.payload.nation.value)} gained ${action.payload.amount}m in taxes.`;
+          return `${stringify(action.payload.nation.value)} has changed by ${action.payload.amount}m in taxes.`;
         case 'nationGainsPowerPoints':
           return `${stringify(action.payload.nation.value)} gained ${action.payload.powerPoints} power points.`;
         case 'nationPaysPlayer':
