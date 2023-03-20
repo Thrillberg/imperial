@@ -145,7 +145,7 @@ describe('imperial2030', () => {
 
       test('nations lose money if they control many units', () => {
         const game = newGame();
-        // Arbitrarily give RU 5 treasury; we want this to increase by 1
+        // Arbitrarily give RU 5 treasury; we want this to decrease by 1
         game.nations.get(Nation2030.RU).treasury = 5;
         // RU controls one army
         game.units.get(Nation2030.RU).get('a').armies = 1;

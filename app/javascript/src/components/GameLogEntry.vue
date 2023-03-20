@@ -28,6 +28,7 @@
         </p>
       </div>
       <div v-else-if="action.type === 'rondel'">
+        <b>Turn {{ index }}: </b>
         <Flag
           :nation="getNation(action.payload.nation)"
           class="inline-block mr-1"

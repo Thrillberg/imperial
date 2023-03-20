@@ -162,6 +162,15 @@ export default {
     nextTaxationPowerPoints() {
       return nextTaxationPowerPoints(this.game, this.game.currentNation);
     },
+    playerBonus() {
+      return this.game.playerBonusAfterUnitMaintenanceCosts(this.game.currentNation, this.game.getTaxes(this.game.currentNation));
+    },
+    nationProfit() {
+      return this.game.nationTaxationProfit(this.game.currentNation, this.game.getTaxes(this.game.currentNation));
+    },
+    nextTaxationPowerPoints() {
+      return nextTaxationPowerPoints(this.game);
+    },
   },
   methods: {
     displayNationName(nation) {
