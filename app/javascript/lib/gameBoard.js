@@ -106,8 +106,7 @@ export default class GameBoard {
           },
           currentPath.concat([province]),
         );
-
-        return this.validatePaths(paths.concat(newPaths), isFleet, origin);
+        paths = paths.concat(newPaths);
         // Army maneuvering from its own unoccupied land to foreign land
       } else if (
         !isFleet
@@ -150,23 +149,8 @@ export default class GameBoard {
       }
     }
 
-    return this.validatePaths(paths, isFleet, origin);
-  }
-
-  validate(origin) {
-    if (!this.graph.has(origin)) {
-      throw new Error(
-        `province ${origin} not found. Available provinces are: ${[
-          ...this.graph.keys(),
-        ]}`,
-      );
-    }
-  }
-
-  validatePaths(paths, isFleet, origin) {
-    let validPaths = [];
     // Armies cannot end up on the ocean
-    validPaths = paths.filter((path) => {
+    paths = paths.filter((path) => {
       if (!isFleet && this.graph.get(path[path.length - 1]).isOcean) {
         return false;
       }
@@ -174,10 +158,10 @@ export default class GameBoard {
     });
 
     // Units cannot begin and end in the same spot
-    validPaths = validPaths.filter((path) => path.length > 1);
+    paths = paths.filter((path) => path.length > 1);
 
     // Fleets can only exit a home province into one particular egress
-    validPaths = validPaths.filter((path) => {
+    paths = paths.filter((path) => {
       const destinationIsNotCorrectEgress = path[path.length - 1] !== this.graph.get(origin).egress;
       if (
         isFleet
@@ -188,7 +172,16 @@ export default class GameBoard {
       }
       return true;
     });
+    return paths;
+  }
 
-    return validPaths;
+  validate(origin) {
+    if (!this.graph.has(origin)) {
+      throw new Error(
+        `province ${origin} not found. Available provinces are: ${[
+          ...this.graph.keys(),
+        ]}`,
+      );
+    }
   }
 }
