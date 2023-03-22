@@ -29,7 +29,7 @@ Rails.application.routes.draw do
   get "*path", to: "pages#index", format: false
 
   if Rails.env.test?
-    scope :cypress do
+    namespace :cypress do
       delete "cleanup", to: "cleanup#destroy"
 
       resource :factories, only: %i[create]
