@@ -1207,13 +1207,12 @@ export default class Imperial {
   rondel(action) {
     this.currentNation = action.payload.nation;
     const currentNation = this.nations.get(this.currentNation);
-    if (
-      Imperial.passedThroughInvestor(
-        currentNation.rondelPosition,
-        action.payload.slot,
-      )
-      && this.passingThroughInvestor === false
-    ) {
+    
+    const rondelEntity = new Rondel();
+    const fromRondelTile = rondelEntity.representationToEntity(currentNation.rondelPosition);
+    const toRondelTile = rondelEntity.representationToEntity(action.payload.slot);
+
+    if (fromRondelTile && rondelEntity.passedInvestor(fromRondelTile, toRondelTile) && this.passingThroughInvestor === false) {
       this.passingThroughInvestor = true;
       // Allow Swiss Bank holders to interrupt
       this.swissBanksWhoDoNotInterrupt = [];
@@ -2326,35 +2325,6 @@ export default class Imperial {
     return (
       action.type === 'rondel' && (slot === 'maneuver1' || slot === 'maneuver2')
     );
-  }
-
-  static passedThroughInvestor(from, to) {
-    switch (from) {
-      case 'maneuver1': {
-        return [
-          'import',
-          'production2',
-          'maneuver2',
-          'taxation',
-          'factory',
-        ].includes(to);
-      }
-      case 'production1': {
-        return ['import', 'production2', 'maneuver2', 'taxation'].includes(to);
-      }
-      case 'factory': {
-        return ['import', 'production2', 'maneuver2'].includes(to);
-      }
-      case 'taxation': {
-        return ['import', 'production2'].includes(to);
-      }
-      case 'maneuver2': {
-        return ['import'].includes(to);
-      }
-      default: {
-        return false;
-      }
-    }
   }
 
   static isEqual(action1, action2) {

@@ -63,4 +63,24 @@ export default class Rondel {
     representationToEntity(string) {
         return this.#translator.get(string)
     }
+
+    tileClockwiseTo(tile, counts) {
+        let tileIndex = this.tileOrder.indexOf(tile); 
+        tileIndex += counts;
+
+        tileIndex %= this.tileOrder.length;
+        return this.tileOrder[tileIndex];
+    }
+
+    passedInvestor(fromTile, toTile) {
+        do {
+            fromTile = this.tileClockwiseTo(fromTile, 1);
+
+            if (fromTile == this.investorTile) {
+                return true;
+            }
+        } while (fromTile != toTile);
+
+        return false;
+    }
 };
