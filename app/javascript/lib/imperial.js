@@ -1846,9 +1846,9 @@ export default class Imperial {
     const availableTilesUseCase = new Rondel_SelectNextTile_AvailableTiles(rondelEntity, 3, 3, costPerPaidDistance);
 
     const availableRondelTiles = new Set();
-    
-    const nextAvailableFreeActionTiles = nationCurrentRondelTile ? availableTilesUseCase.nextAvailableFreeActionTiles(nationCurrentRondelTile) : rondelEntity.tileOrder;
-    for (const freeRondelTile of nextAvailableFreeActionTiles) {
+
+    const nextAvailableFreeRondelTiles = nationCurrentRondelTile ? availableTilesUseCase.nextAvailableFreeRondelTiles(nationCurrentRondelTile) : rondelEntity.tileOrder;
+    for (const freeRondelTile of nextAvailableFreeRondelTiles) {
       availableRondelTiles.add(
         Action.rondel({
           nation: nationName,
@@ -1859,7 +1859,7 @@ export default class Imperial {
     }
 
     if (nationCurrentRondelTile) {
-      for (const [paidRondelTile, cost] of availableTilesUseCase.nextAvailablePaidActionTiles(nationCurrentRondelTile)) {
+      for (const [paidRondelTile, cost] of availableTilesUseCase.nextAvailablePaidRondelTiles(nationCurrentRondelTile)) {
         availableRondelTiles.add(
           Action.rondel({
             nation: nationName,

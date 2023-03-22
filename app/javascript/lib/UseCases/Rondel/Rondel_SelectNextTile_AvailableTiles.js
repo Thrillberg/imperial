@@ -9,7 +9,7 @@ export default class Rondel_SelectNextTile_AvailableTiles {
     }
 
     
-    nextAvailableFreeActionTiles(currentTile) {
+    nextAvailableFreeRondelTiles(currentTile) {
         const availableFreeActions = new Set();
 
         if (currentTile) {
@@ -26,7 +26,7 @@ export default class Rondel_SelectNextTile_AvailableTiles {
         return availableFreeActions;
     }
 
-    nextAvailablePaidActionTiles(currentTile) {
+    nextAvailablePaidRondelTiles(currentTile) {
         const availablePaidActions = new Map();
 
         currentTile = this.rondel.tileClockwiseTo(currentTile, this.availableFreeActionsTileCount);
