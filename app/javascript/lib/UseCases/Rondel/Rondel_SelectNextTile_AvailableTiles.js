@@ -29,15 +29,13 @@ export default class Rondel_SelectNextTile_AvailableTiles {
     nextAvailablePaidActionTiles(currentTile) {
         const availablePaidActions = new Map();
 
-        if (currentTile) {
-            currentTile = this.rondel.tileClockwiseTo(currentTile, this.availableFreeActionsTileCount);
+        currentTile = this.rondel.tileClockwiseTo(currentTile, this.availableFreeActionsTileCount);
 
-            for (let i = 0; i < this.availablePaidActionsTileCount; i++) {
-                const cost = (i + 1) * this.costPerPaidTileDistance;
+        for (let i = 0; i < this.availablePaidActionsTileCount; i++) {
+            const cost = (i + 1) * this.costPerPaidTileDistance;
 
-                currentTile = this.rondel.tileClockwiseTo(currentTile, 1);
-                availablePaidActions.set(currentTile, cost);
-            }
+            currentTile = this.rondel.tileClockwiseTo(currentTile, 1);
+            availablePaidActions.set(currentTile, cost);
         }
 
         return availablePaidActions;

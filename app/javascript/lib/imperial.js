@@ -1846,7 +1846,9 @@ export default class Imperial {
     const availableTilesUseCase = new Rondel_SelectNextTile_AvailableTiles(rondelEntity, 3, 3, costPerPaidDistance);
 
     const availableRondelTiles = new Set();
-    for (const freeRondelTile of availableTilesUseCase.nextAvailableFreeActionTiles(nationCurrentRondelTile)) {
+    
+    const nextAvailableFreeActionTiles = nationCurrentRondelTile ? availableTilesUseCase.nextAvailableFreeActionTiles(nationCurrentRondelTile) : rondelEntity.tileOrder;
+    for (const freeRondelTile of nextAvailableFreeActionTiles) {
       availableRondelTiles.add(
         Action.rondel({
           nation: nationName,
@@ -1856,14 +1858,16 @@ export default class Imperial {
       );
     }
 
-    for (const [paidRondelTile, cost] of availableTilesUseCase.nextAvailablePaidActionTiles(nationCurrentRondelTile)) {
-      availableRondelTiles.add(
-        Action.rondel({
-          nation: nationName,
-          cost: cost,
-          slot: paidRondelTile.representation,
-        }),
-      );
+    if (nationCurrentRondelTile) {
+      for (const [paidRondelTile, cost] of availableTilesUseCase.nextAvailablePaidActionTiles(nationCurrentRondelTile)) {
+        availableRondelTiles.add(
+          Action.rondel({
+            nation: nationName,
+            cost: cost,
+            slot: paidRondelTile.representation,
+          }),
+        );
+      }
     }
 
     // Remove rondel positions that the player cannot afford.
