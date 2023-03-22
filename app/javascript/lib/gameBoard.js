@@ -106,7 +106,8 @@ export default class GameBoard {
           },
           currentPath.concat([province]),
         );
-        paths = paths.concat(newPaths);
+
+        return this.validatePaths(paths.concat(newPaths), isFleet, origin);
         // Army maneuvering from its own unoccupied land to foreign land
       } else if (
         !isFleet
@@ -149,30 +150,7 @@ export default class GameBoard {
       }
     }
 
-    // Armies cannot end up on the ocean
-    paths = paths.filter((path) => {
-      if (!isFleet && this.graph.get(path[path.length - 1]).isOcean) {
-        return false;
-      }
-      return true;
-    });
-
-    // Units cannot begin and end in the same spot
-    paths = paths.filter((path) => path.length > 1);
-
-    // Fleets can only exit a home province into one particular egress
-    paths = paths.filter((path) => {
-      const destinationIsNotCorrectEgress = path[path.length - 1] !== this.graph.get(origin).egress;
-      if (
-        isFleet
-        && this.graph.get(origin).nation
-        && destinationIsNotCorrectEgress
-      ) {
-        return false;
-      }
-      return true;
-    });
-    return paths;
+    return this.validatePaths(paths, isFleet, origin);
   }
 
   validate(origin) {
@@ -183,5 +161,34 @@ export default class GameBoard {
         ]}`,
       );
     }
+  }
+
+  validatePaths(paths, isFleet, origin) {
+    let validPaths = [];
+    // Armies cannot end up on the ocean
+    validPaths = paths.filter((path) => {
+      if (!isFleet && this.graph.get(path[path.length - 1]).isOcean) {
+        return false;
+      }
+      return true;
+    });
+
+    // Units cannot begin and end in the same spot
+    validPaths = validPaths.filter((path) => path.length > 1);
+
+    // Fleets can only exit a home province into one particular egress
+    validPaths = validPaths.filter((path) => {
+      const destinationIsNotCorrectEgress = path[path.length - 1] !== this.graph.get(origin).egress;
+      if (
+        isFleet
+        && this.graph.get(origin).nation
+        && destinationIsNotCorrectEgress
+      ) {
+        return false;
+      }
+      return true;
+    });
+
+    return validPaths;
   }
 }
