@@ -64,22 +64,24 @@ export default class Rondel {
         return this.#translator.get(string)
     }
 
-    tileClockwiseTo(tile, counts) {
+    tileClockwiseTo(tile, tileCounts) {
         let tileIndex = this.tileOrder.indexOf(tile); 
-        tileIndex += counts;
+        tileIndex += tileCounts;
 
         tileIndex %= this.tileOrder.length;
         return this.tileOrder[tileIndex];
     }
 
-    passedInvestor(fromTile, toTile) {
-        do {
-            fromTile = this.tileClockwiseTo(fromTile, 1);
+    passedInvestor(exclusiveFromTile, exclusiveToTile) {
+        exclusiveFromTile = this.tileClockwiseTo(exclusiveToTile, 1);
 
-            if (fromTile == this.investorTile) {
+        while (exclusiveFromTile != exclusiveToTile) {
+            exclusiveFromTile = this.tileClockwiseTo(exclusiveToTile, 1);
+
+            if (exclusiveFromTile == this.investorTile) {
                 return true;
             }
-        } while (fromTile != toTile);
+        }
 
         return false;
     }
