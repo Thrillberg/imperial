@@ -58,16 +58,15 @@ export default class GameBoard {
     this.validate(origin);
     let paths = [currentPath];
 
-    // Add all immediate neighbors
     for (const province of this.graph.get(origin).neighbors) {
-      // Don't repeat ourselves
+      // Add all immediate neighbors
       if (currentPath.includes(province)) {
+        // Don't repeat ourselves
         continue; // eslint-disable-line no-continue
       }
-      // Fleet maneuvering to the ocean
       if (isFleet && this.graph.get(province).isOcean) {
+        // Fleet maneuvering to the ocean
         paths.push(currentPath.concat([province]));
-        // Army maneuvering from its own unoccupied land to its own unoccupied land
       } else if (
         !isFleet
         && !this.graph.get(province).isOcean
@@ -75,6 +74,7 @@ export default class GameBoard {
         && this.graph.get(province).nation === nation
         && !occupiedHomeProvinces.includes(province)
       ) {
+        // Army maneuvering from its own unoccupied land to its own unoccupied land
         const newPaths = this.pathsFrom(
           {
             origin: province,
@@ -87,7 +87,6 @@ export default class GameBoard {
           currentPath.concat([province]),
         );
         paths = paths.concat(newPaths);
-        // Army maneuvering from foreign land to its own unoccupied land
       } else if (
         !isFleet
         && !this.graph.get(province).isOcean
@@ -95,6 +94,7 @@ export default class GameBoard {
         && this.graph.get(province).nation === nation
         && !occupiedHomeProvinces.includes(province)
       ) {
+        // Army maneuvering from foreign land to its own unoccupied land
         const newPaths = this.pathsFrom(
           {
             origin: province,
@@ -107,7 +107,6 @@ export default class GameBoard {
           currentPath.concat([province]),
         );
         paths = paths.concat(newPaths);
-        // Army maneuvering from its own unoccupied land to foreign land
       } else if (
         !isFleet
         && !this.graph.get(province).isOcean
@@ -115,8 +114,8 @@ export default class GameBoard {
         && this.graph.get(province).nation !== nation
         && !hasMoved
       ) {
+        // Army maneuvering from its own unoccupied land to foreign land
         paths.push(currentPath.concat([province]));
-        // Army maneuvering to its own occupied land
       } else if (
         !isFleet
         && !this.graph.get(province).isOcean
@@ -124,17 +123,18 @@ export default class GameBoard {
         && occupiedHomeProvinces.includes(province)
         && !hasMoved
       ) {
+        // Army maneuvering to its own occupied land
         paths.push(currentPath.concat([province]));
-        // Army maneuvering to foreign land
       } else if (!isFleet && !this.graph.get(province).isOcean && !hasMoved) {
+        // Army maneuvering to foreign land
         paths.push(currentPath.concat([province]));
-        // Army convoying over ocean
       } else if (
         !isFleet
         && this.graph.get(province).isOcean
         && friendlyFleets.has(province)
         && !hasMoved
       ) {
+        // Army convoying over ocean
         const newPaths = this.pathsFrom(
           {
             origin: province,
@@ -149,30 +149,7 @@ export default class GameBoard {
       }
     }
 
-    // Armies cannot end up on the ocean
-    paths = paths.filter((path) => {
-      if (!isFleet && this.graph.get(path[path.length - 1]).isOcean) {
-        return false;
-      }
-      return true;
-    });
-
-    // Units cannot begin and end in the same spot
-    paths = paths.filter((path) => path.length > 1);
-
-    // Fleets can only exit a home province into one particular egress
-    paths = paths.filter((path) => {
-      const destinationIsNotCorrectEgress = path[path.length - 1] !== this.graph.get(origin).egress;
-      if (
-        isFleet
-        && this.graph.get(origin).nation
-        && destinationIsNotCorrectEgress
-      ) {
-        return false;
-      }
-      return true;
-    });
-    return paths;
+    return this.validatePaths(paths, isFleet, origin);
   }
 
   validate(origin) {
@@ -183,5 +160,34 @@ export default class GameBoard {
         ]}`,
       );
     }
+  }
+
+  validatePaths(paths, isFleet, origin) {
+    let validPaths = [];
+    // Armies cannot end up on the ocean
+    validPaths = paths.filter((path) => {
+      if (!isFleet && this.graph.get(path[path.length - 1]).isOcean) {
+        return false;
+      }
+      return true;
+    });
+
+    // Units cannot begin and end in the same spot
+    validPaths = validPaths.filter((path) => path.length > 1);
+
+    // Fleets can only exit a home province into one particular egress
+    validPaths = validPaths.filter((path) => {
+      const destinationIsNotCorrectEgress = path[path.length - 1] !== this.graph.get(origin).egress;
+      if (
+        isFleet
+        && this.graph.get(origin).nation
+        && destinationIsNotCorrectEgress
+      ) {
+        return false;
+      }
+      return true;
+    });
+
+    return validPaths;
   }
 }
