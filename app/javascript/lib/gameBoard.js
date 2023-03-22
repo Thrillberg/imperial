@@ -133,6 +133,7 @@ export default class GameBoard {
         !isFleet
         && this.graph.get(province).isOcean
         && friendlyFleets.has(province)
+        && !hasMoved
       ) {
         const newPaths = this.pathsFrom(
           {
