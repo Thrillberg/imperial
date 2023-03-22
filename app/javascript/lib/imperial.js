@@ -1842,26 +1842,27 @@ export default class Imperial {
     const nation = this.nations.get(nationName);
     const costPerPaidDistance = this.costPerPaidRondelAction(nation);
 
-    const rondelModel = new Rondel();
-    const availableTilesUseCase = new Rondel_SelectNextTile_AvailableTiles(rondelModel, 3, 3, costPerPaidDistance);
+    const rondelEntity = new Rondel();
+    const nationCurrentRondelTile = rondelEntity.representationToEntity(nation.rondelPosition);
+    const availableTilesUseCase = new Rondel_SelectNextTile_AvailableTiles(rondelEntity, 3, 3, costPerPaidDistance);
 
     const availableRondelTiles = new Set();
-    for (const freeAction of availableTilesUseCase.nextAvailableFreeActionTiles(nation.rondelPosition)) {
+    for (const freeRondelTile of availableTilesUseCase.nextAvailableFreeActionTiles(nationCurrentRondelTile)) {
       availableRondelTiles.add(
         Action.rondel({
           nation: nationName,
           cost: 0,
-          slot: freeAction,
+          slot: freeRondelTile.representation,
         }),
       );
     }
 
-    for (const [paidAction, cost] of availableTilesUseCase.nextAvailablePaidActionTiles(nation.rondelPosition)) {
+    for (const [paidRondelTile, cost] of availableTilesUseCase.nextAvailablePaidActionTiles(nationCurrentRondelTile)) {
       availableRondelTiles.add(
         Action.rondel({
           nation: nationName,
           cost: cost,
-          slot: paidAction,
+          slot: paidRondelTile.representation,
         }),
       );
     }

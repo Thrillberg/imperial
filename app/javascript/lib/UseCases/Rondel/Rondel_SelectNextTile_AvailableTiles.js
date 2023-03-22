@@ -13,18 +13,18 @@ export default class Rondel_SelectNextTile_AvailableTiles {
         const availableFreeActions = new Set();
 
         if (currentTile) {
-            const firstAvailableFreeTileIndex = this.rondel.tiles.indexOf(currentTile) + 1;
+            const firstAvailableFreeTileIndex = this.rondel.tileOrder.indexOf(currentTile) + 1;
 
             for (let i = 0; i < this.availableFreeActionsTileCount; i++) {
                 let availableIndex = firstAvailableFreeTileIndex + i;
-                if (availableIndex >= this.rondel.tiles.length) {
-                    availableIndex -= this.rondel.tiles.length;
+                if (availableIndex >= this.rondel.tileOrder.length) {
+                    availableIndex -= this.rondel.tileOrder.length;
                 }
 
-                availableFreeActions.add(this.rondel.tiles[availableIndex]);
+                availableFreeActions.add(this.rondel.tileOrder[availableIndex]);
             }
         } else {
-            for (const availableTile of this.rondel.tiles) {
+            for (const availableTile of this.rondel.tileOrder) {
                 availableFreeActions.add(availableTile);
             }
         }
@@ -36,17 +36,17 @@ export default class Rondel_SelectNextTile_AvailableTiles {
         const availablePaidActions = new Map();
 
         if (currentTile) {
-            const firstAvailablePaidTileIndex = this.rondel.tiles.indexOf(currentTile) + 1 + this.availableFreeActionsTileCount;
+            const firstAvailablePaidTileIndex = this.rondel.tileOrder.indexOf(currentTile) + 1 + this.availableFreeActionsTileCount;
 
             for (let i = 0; i < this.availablePaidActionsTileCount; i++) {
                 const cost = (i + 1) * this.costPerPaidTileDistance;
 
                 let availableIndex = firstAvailablePaidTileIndex + i;
-                if (availableIndex >= this.rondel.tiles.length) {
-                    availableIndex -= this.rondel.tiles.length;
+                if (availableIndex >= this.rondel.tileOrder.length) {
+                    availableIndex -= this.rondel.tileOrder.length;
                 }
 
-                availablePaidActions.set(this.rondel.tiles[availableIndex], cost);
+                availablePaidActions.set(this.rondel.tileOrder[availableIndex], cost);
             }
         }
 
