@@ -1,14 +1,14 @@
-export default class rondel {
+export default class Rondel {
     constructor(availableFreeActionsTileCount, availablePaidActionsTileCount, costPerPaidTileDistance) {
         this.tiles = [
-            this.factoryAction,
-            this.production1Action,
-            this.maneuver1Action,
-            this.investorAction,
-            this.importAction,
-            this.production2Action,
-            this.maneuver2Action,
-            this.taxationAction,
+            this.factoryTile,
+            this.production1Tile,
+            this.maneuver1Tile,
+            this.investorTile,
+            this.importTile,
+            this.production2Tile,
+            this.maneuver2Tile,
+            this.taxationTile,
         ];
 
         this.availableFreeActionsTileCount = availableFreeActionsTileCount;
@@ -17,28 +17,28 @@ export default class rondel {
         this.costPerPaidTileDistance = costPerPaidTileDistance;
     }
 
-    get factoryAction() {
+    get factoryTile() {
         return 'factory';
     }
-    get production1Action() {
+    get production1Tile() {
         return 'production1';
     }
-    get maneuver1Action() {
+    get maneuver1Tile() {
         return 'maneuver1';
     }
-    get investorAction() {
+    get investorTile() {
         return 'investor';
     }
-    get importAction() {
+    get importTile() {
         return 'import';
     }
-    get production2Action() {
+    get production2Tile() {
         return 'production2';
     }
-    get maneuver2Action() {
+    get maneuver2Tile() {
         return 'maneuver2';
     }
-    get taxationAction() {
+    get taxationTile() {
         return 'taxation';
     }
 

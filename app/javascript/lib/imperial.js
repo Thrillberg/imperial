@@ -1,4 +1,4 @@
-import rondel from './entities/rondel.js';
+import Rondel from './Entities/Rondel.js';
 
 import Action from './action';
 import Auction from './auction';
@@ -297,7 +297,7 @@ export default class Imperial {
       this.currentPlayerName = this.getStartingPlayer();
       this.previousPlayerName = this.currentPlayerName;
       if (this.variant === 'standard') {
-        for (const availableAction of this.rondelActions(this.currentNation)) {
+        for (const availableAction of this.availableRondelActions(this.currentNation)) {
           this.availableActions.add(availableAction);
         }
       }
@@ -471,7 +471,7 @@ export default class Imperial {
                 this.availableActions.delete(availableAction);
               }
             });
-            for (const rondelAction of this.rondelActions(this.currentNation)) {
+            for (const rondelAction of this.availableRondelActions(this.currentNation)) {
               this.availableActions.add(rondelAction);
             }
 
@@ -544,7 +544,7 @@ export default class Imperial {
           ).controller;
           this.advanceInvestorCard();
 
-          for (const rondelAction of this.rondelActions(this.currentNation)) {
+          for (const rondelAction of this.availableRondelActions(this.currentNation)) {
             this.availableActions.add(rondelAction);
           }
         }
@@ -556,7 +556,7 @@ export default class Imperial {
       this.currentNation = this.nextNation(this.currentNation);
       this.currentPlayerName = this.nations.get(this.currentNation).controller;
       this.advanceInvestorCard();
-      for (const rondelAction of this.rondelActions(this.currentNation)) {
+      for (const rondelAction of this.availableRondelActions(this.currentNation)) {
         this.availableActions.add(rondelAction);
       }
     }
@@ -845,7 +845,7 @@ export default class Imperial {
         this.roundOfInvestment();
       } else {
         this.handleAdvancePlayer();
-        for (const rondelAction of this.rondelActions(this.currentNation)) {
+        for (const rondelAction of this.availableRondelActions(this.currentNation)) {
           this.availableActions.add(rondelAction);
         }
       }
@@ -1836,11 +1836,11 @@ export default class Imperial {
     );
   }
 
-  rondelActions(nationName) {
+  availableRondelActions(nationName) {
     const nation = this.nations.get(nationName);
     const costPerPaidDistance = this.costPerPaidRondelAction(nation);
 
-    const rondelModel = new rondel(3, 3, costPerPaidDistance);
+    const rondelModel = new Rondel(3, 3, costPerPaidDistance);
 
     const availableRondelTiles = new Set();
     for (const freeAction of rondelModel.nextAvailableFreeActionTiles(nation.rondelPosition)) {
@@ -2098,7 +2098,7 @@ export default class Imperial {
         }
         this.handleAdvancePlayer();
         this.advanceInvestorCard();
-        for (const rondelAction of this.rondelActions(this.currentNation)) {
+        for (const rondelAction of this.availableRondelActions(this.currentNation)) {
           this.availableActions.add(rondelAction);
         }
 
@@ -2131,7 +2131,7 @@ export default class Imperial {
       this.roundOfInvestment();
     } else {
       this.handleAdvancePlayer();
-      for (const rondelAction of this.rondelActions(this.currentNation)) {
+      for (const rondelAction of this.availableRondelActions(this.currentNation)) {
         this.availableActions.add(rondelAction);
       }
     }
