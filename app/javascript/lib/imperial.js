@@ -19,6 +19,8 @@ import standard2030Setup from './standard2030Setup';
 import standardAsiaSetup from './standardAsiaSetup';
 import standardSetup from './standardSetup';
 
+import Rondel_SelectNextTile_AvailableTiles from './UseCases/Rondel/Rondel_SelectNextTile_AvailableTiles.js';
+
 export default class Imperial {
   static fromLog(log, board) {
     const game = new Imperial(board);
@@ -1840,10 +1842,11 @@ export default class Imperial {
     const nation = this.nations.get(nationName);
     const costPerPaidDistance = this.costPerPaidRondelAction(nation);
 
-    const rondelModel = new Rondel(3, 3, costPerPaidDistance);
+    const rondelModel = new Rondel();
+    const availableTilesUseCase = new Rondel_SelectNextTile_AvailableTiles(rondelModel, 3, 3, costPerPaidDistance);
 
     const availableRondelTiles = new Set();
-    for (const freeAction of rondelModel.nextAvailableFreeActionTiles(nation.rondelPosition)) {
+    for (const freeAction of availableTilesUseCase.nextAvailableFreeActionTiles(nation.rondelPosition)) {
       availableRondelTiles.add(
         Action.rondel({
           nation: nationName,
@@ -1853,7 +1856,7 @@ export default class Imperial {
       );
     }
 
-    for (const [paidAction, cost] of rondelModel.nextAvailablePaidActionTiles(nation.rondelPosition)) {
+    for (const [paidAction, cost] of availableTilesUseCase.nextAvailablePaidActionTiles(nation.rondelPosition)) {
       availableRondelTiles.add(
         Action.rondel({
           nation: nationName,
