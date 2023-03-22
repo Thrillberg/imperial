@@ -40,7 +40,11 @@ export default class GameBoard {
   }
 
   neighborsFor(originData) {
-    const allPaths = this.pathsFrom(originData, [originData.origin]);
+    const allPaths = this.validatePaths(
+      this.pathsFrom(originData, [originData.origin], []),
+      originData.isFleet,
+      originData.origin,
+    );
     return allPaths.map((path) => path[path.length - 1]);
   }
 
@@ -54,20 +58,23 @@ export default class GameBoard {
       hasMoved = false,
     },
     currentPath,
+    paths = [],
   ) {
     this.validate(origin);
-    let paths = [currentPath];
-
+    paths.push(currentPath);
     for (const province of this.graph.get(origin).neighbors) {
       // Add all immediate neighbors
       if (currentPath.includes(province)) {
         // Don't repeat ourselves
         continue; // eslint-disable-line no-continue
       }
+
       if (isFleet && this.graph.get(province).isOcean) {
         // Fleet maneuvering to the ocean
         paths.push(currentPath.concat([province]));
-      } else if (
+      }
+
+      if (
         !isFleet
         && !this.graph.get(province).isOcean
         && this.graph.get(origin).nation === nation
@@ -75,7 +82,8 @@ export default class GameBoard {
         && !occupiedHomeProvinces.includes(province)
       ) {
         // Army maneuvering from its own unoccupied land to its own unoccupied land
-        const newPaths = this.pathsFrom(
+        currentPath = currentPath.concat(province);
+        this.pathsFrom(
           {
             origin: province,
             nation,
@@ -84,10 +92,10 @@ export default class GameBoard {
             occupiedHomeProvinces,
             hasMoved,
           },
-          currentPath.concat([province]),
+          currentPath,
+          paths,
         );
-        paths = paths.concat(newPaths);
-      } else if (
+      } if (
         !isFleet
         && !this.graph.get(province).isOcean
         && this.graph.get(origin).nation !== nation
@@ -95,7 +103,8 @@ export default class GameBoard {
         && !occupiedHomeProvinces.includes(province)
       ) {
         // Army maneuvering from foreign land to its own unoccupied land
-        const newPaths = this.pathsFrom(
+        currentPath = currentPath.concat(province);
+        this.pathsFrom(
           {
             origin: province,
             nation,
@@ -104,9 +113,9 @@ export default class GameBoard {
             occupiedHomeProvinces,
             hasMoved: true,
           },
-          currentPath.concat([province]),
+          currentPath,
+          paths,
         );
-        paths = paths.concat(newPaths);
       } else if (
         !isFleet
         && !this.graph.get(province).isOcean
@@ -115,7 +124,7 @@ export default class GameBoard {
         && !hasMoved
       ) {
         // Army maneuvering from its own unoccupied land to foreign land
-        paths.push(currentPath.concat([province]));
+        paths.push(currentPath.concat(province));
       } else if (
         !isFleet
         && !this.graph.get(province).isOcean
@@ -127,7 +136,10 @@ export default class GameBoard {
         paths.push(currentPath.concat([province]));
       } else if (!isFleet && !this.graph.get(province).isOcean && !hasMoved) {
         // Army maneuvering to foreign land
-        paths.push(currentPath.concat([province]));
+        if (currentPath[currentPath.length - 1] !== province) {
+          // Don't repeat the province
+          paths.push(currentPath.concat(province));
+        }
       } else if (
         !isFleet
         && this.graph.get(province).isOcean
@@ -135,7 +147,8 @@ export default class GameBoard {
         && !hasMoved
       ) {
         // Army convoying over ocean
-        const newPaths = this.pathsFrom(
+        currentPath = currentPath.concat(province);
+        this.pathsFrom(
           {
             origin: province,
             nation,
@@ -143,23 +156,12 @@ export default class GameBoard {
             friendlyFleets,
             occupiedHomeProvinces,
           },
-          currentPath.concat([province]),
+          currentPath,
+          paths,
         );
-        paths = paths.concat(newPaths);
       }
     }
-
-    return this.validatePaths(paths, isFleet, origin);
-  }
-
-  validate(origin) {
-    if (!this.graph.has(origin)) {
-      throw new Error(
-        `province ${origin} not found. Available provinces are: ${[
-          ...this.graph.keys(),
-        ]}`,
-      );
-    }
+    return paths;
   }
 
   validatePaths(paths, isFleet, origin) {
@@ -189,5 +191,15 @@ export default class GameBoard {
     });
 
     return validPaths;
+  }
+
+  validate(origin) {
+    if (!this.graph.has(origin)) {
+      throw new Error(
+        `province ${origin} not found. Available provinces are: ${[
+          ...this.graph.keys(),
+        ]}`,
+      );
+    }
   }
 }
