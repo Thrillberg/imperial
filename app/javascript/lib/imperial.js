@@ -1,3 +1,5 @@
+import rondel from './entities/rondel.js';
+
 import Action from './action';
 import Auction from './auction';
 import auction2030Setup from './auction2030Setup';
@@ -1834,91 +1836,54 @@ export default class Imperial {
     );
   }
 
-  rondelActions(nation) {
-    const rondelPositions = [
-      'factory',
-      'production1',
-      'maneuver1',
-      'investor',
-      'import',
-      'production2',
-      'maneuver2',
-      'taxation',
-    ];
-    const currentPosition = this.nations.get(nation).rondelPosition;
-    const out = new Set();
-    if (currentPosition) {
-      const currentIndex = rondelPositions.indexOf(currentPosition);
-      const distance = currentIndex - 8;
-      [
-        rondelPositions[currentIndex + 1] || rondelPositions[distance + 1],
-        rondelPositions[currentIndex + 2] || rondelPositions[distance + 2],
-        rondelPositions[currentIndex + 3] || rondelPositions[distance + 3],
-      ].forEach((slot) => {
-        out.add(Action.rondel({ nation, cost: 0, slot }));
-      });
-      out.add(
+  rondelActions(nationName) {
+    const nation = this.nations.get(nationName);
+    const costPerPaidDistance = this.costPerPaidRondelAction(nation);
+
+    const rondelModel = new rondel(3, 3, costPerPaidDistance);
+
+    const availableRondelTiles = new Set();
+    for (const freeAction of rondelModel.nextAvailableFreeActionTiles(nation.rondelPosition)) {
+      availableRondelTiles.add(
         Action.rondel({
-          nation,
-          cost: this.extraRondelCost(1),
-          slot:
-            rondelPositions[currentIndex + 4] || rondelPositions[distance + 4],
+          nation: nationName,
+          cost: 0,
+          slot: freeAction,
         }),
       );
-      out.add(
-        Action.rondel({
-          nation,
-          cost: this.extraRondelCost(2),
-          slot:
-            rondelPositions[currentIndex + 5] || rondelPositions[distance + 5],
-        }),
-      );
-      out.add(
-        Action.rondel({
-          nation,
-          cost: this.extraRondelCost(3),
-          slot:
-            rondelPositions[currentIndex + 6] || rondelPositions[distance + 6],
-        }),
-      );
-    } else {
-      rondelPositions.forEach((slot) => {
-        out.add(Action.rondel({ nation, cost: 0, slot }));
-      });
     }
+
+    for (const [paidAction, cost] of rondelModel.nextAvailablePaidActionTiles(nation.rondelPosition)) {
+      availableRondelTiles.add(
+        Action.rondel({
+          nation: nationName,
+          cost: cost,
+          slot: paidAction,
+        }),
+      );
+    }
+
     // Remove rondel positions that the player cannot afford.
     const { cash } = this.players[this.currentPlayerName];
-    for (const position of out) {
+    for (const position of availableRondelTiles) {
       if (position.payload.cost > cash) {
-        out.delete(position);
+        availableRondelTiles.delete(position);
       }
     }
-    // Remove factory if the nation cannot afford it.
-    const { treasury } = this.nations.get(nation);
-    let factoryAction = {};
-    for (const action of out) {
-      if (action.payload.slot === 'factory') {
-        factoryAction = action;
-      }
-    }
-    if (treasury < 5) {
-      out.delete(factoryAction);
-    }
-    return out;
+
+    return availableRondelTiles;
   }
 
-  extraRondelCost(index) {
+  costPerPaidRondelAction(nation) {
+    let costPerPaidDistance = 1;
+
     if (this.baseGame === 'imperial') {
-      return index * 2;
+      costPerPaidDistance += 1;
+    } else if (this.baseGame === 'imperial2030' || this.baseGame === 'imperialAsia') {
+      costPerPaidDistance += Math.floor(nation.powerPoints / 5);
     }
 
-    if (this.baseGame === 'imperial2030' || this.baseGame === 'imperialAsia') {
-      return (
-        index + (Math.floor(this.nations.get(this.currentNation).powerPoints / 5)) * index
-      );
-    }
-
-    return 0;
+    return costPerPaidDistance;
   }
 
   nextNation(lastTurnNation) {
