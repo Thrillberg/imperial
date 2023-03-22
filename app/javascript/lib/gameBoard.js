@@ -40,11 +40,7 @@ export default class GameBoard {
   }
 
   neighborsFor(originData) {
-    const allPaths = this.validatePaths(
-      this.pathsFrom(originData, [originData.origin], []),
-      originData.isFleet,
-      originData.origin,
-    );
+    const allPaths = this.pathsFrom(originData, [originData.origin]);
     return allPaths.map((path) => path[path.length - 1]);
   }
 
@@ -58,32 +54,28 @@ export default class GameBoard {
       hasMoved = false,
     },
     currentPath,
-    paths = [],
   ) {
     this.validate(origin);
-    paths.push(currentPath);
+    let paths = [currentPath];
+
+    // Add all immediate neighbors
     for (const province of this.graph.get(origin).neighbors) {
-      // Add all immediate neighbors
+      // Don't repeat ourselves
       if (currentPath.includes(province)) {
-        // Don't repeat ourselves
         continue; // eslint-disable-line no-continue
       }
-
+      // Fleet maneuvering to the ocean
       if (isFleet && this.graph.get(province).isOcean) {
-        // Fleet maneuvering to the ocean
-        paths.push(currentPath.concat(province));
-      }
-
-      if (
+        paths.push(currentPath.concat([province]));
+        // Army maneuvering from its own unoccupied land to its own unoccupied land
+      } else if (
         !isFleet
         && !this.graph.get(province).isOcean
         && this.graph.get(origin).nation === nation
         && this.graph.get(province).nation === nation
         && !occupiedHomeProvinces.includes(province)
       ) {
-        // Army maneuvering from its own unoccupied land to its own unoccupied land
-        currentPath = currentPath.concat(province);
-        this.pathsFrom(
+        const newPaths = this.pathsFrom(
           {
             origin: province,
             nation,
@@ -92,9 +84,10 @@ export default class GameBoard {
             occupiedHomeProvinces,
             hasMoved,
           },
-          currentPath,
-          paths,
+          currentPath.concat([province]),
         );
+        paths = paths.concat(newPaths);
+        // Army maneuvering from foreign land to its own unoccupied land
       } else if (
         !isFleet
         && !this.graph.get(province).isOcean
@@ -102,9 +95,7 @@ export default class GameBoard {
         && this.graph.get(province).nation === nation
         && !occupiedHomeProvinces.includes(province)
       ) {
-        // Army maneuvering from foreign land to its own unoccupied land
-        currentPath = currentPath.concat(province);
-        this.pathsFrom(
+        const newPaths = this.pathsFrom(
           {
             origin: province,
             nation,
@@ -113,9 +104,10 @@ export default class GameBoard {
             occupiedHomeProvinces,
             hasMoved: true,
           },
-          currentPath,
-          paths,
+          currentPath.concat([province]),
         );
+        paths = paths.concat(newPaths);
+        // Army maneuvering from its own unoccupied land to foreign land
       } else if (
         !isFleet
         && !this.graph.get(province).isOcean
@@ -123,11 +115,8 @@ export default class GameBoard {
         && this.graph.get(province).nation !== nation
         && !hasMoved
       ) {
-        // Army maneuvering from its own unoccupied land to foreign land
-        if (currentPath[currentPath.length - 1] !== province) {
-          // Don't repeat the province
-          paths.push(currentPath.concat(province));
-        }
+        paths.push(currentPath.concat([province]));
+        // Army maneuvering to its own occupied land
       } else if (
         !isFleet
         && !this.graph.get(province).isOcean
@@ -135,43 +124,33 @@ export default class GameBoard {
         && occupiedHomeProvinces.includes(province)
         && !hasMoved
       ) {
-        // Army maneuvering to its own occupied land
-        paths.push(currentPath.concat(province));
-      } else if (!isFleet && !this.graph.get(province).isOcean && !hasMoved) {
+        paths.push(currentPath.concat([province]));
         // Army maneuvering to foreign land
-        const destinations = paths.map((path) => path[path.length - 1]);
-        if (!destinations.includes(province)) {
-          // Don't repeat the province
-          paths.push(currentPath.concat(province));
-        }
+      } else if (!isFleet && !this.graph.get(province).isOcean && !hasMoved) {
+        paths.push(currentPath.concat([province]));
+        // Army convoying over ocean
       } else if (
         !isFleet
         && this.graph.get(province).isOcean
         && friendlyFleets.has(province)
+        && !hasMoved
       ) {
-        // Army convoying over ocean
-        currentPath = currentPath.concat(province);
-        this.pathsFrom(
+        const newPaths = this.pathsFrom(
           {
             origin: province,
             nation,
             isFleet,
             friendlyFleets,
             occupiedHomeProvinces,
-            hasMoved,
           },
-          currentPath,
-          paths,
+          currentPath.concat([province]),
         );
+        paths = paths.concat(newPaths);
       }
     }
-    return paths;
-  }
 
-  validatePaths(paths, isFleet, origin) {
-    let validPaths = [];
     // Armies cannot end up on the ocean
-    validPaths = paths.filter((path) => {
+    paths = paths.filter((path) => {
       if (!isFleet && this.graph.get(path[path.length - 1]).isOcean) {
         return false;
       }
@@ -179,10 +158,10 @@ export default class GameBoard {
     });
 
     // Units cannot begin and end in the same spot
-    validPaths = validPaths.filter((path) => path.length > 1);
+    paths = paths.filter((path) => path.length > 1);
 
     // Fleets can only exit a home province into one particular egress
-    validPaths = validPaths.filter((path) => {
+    paths = paths.filter((path) => {
       const destinationIsNotCorrectEgress = path[path.length - 1] !== this.graph.get(origin).egress;
       if (
         isFleet
@@ -193,8 +172,7 @@ export default class GameBoard {
       }
       return true;
     });
-
-    return validPaths;
+    return paths;
   }
 
   validate(origin) {

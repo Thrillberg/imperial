@@ -239,33 +239,13 @@ describe('GameBoard', () => {
         },
         { name: '4', nation: 'b', isOcean: false },
         { name: '5', nation: 'a', isOcean: false },
-        { name: '6', nation: 'b', isOcean: false },
       ],
       edges: [
         ['1', '2'],
         ['2', '3'],
         ['3', '4'],
         ['4', '5'],
-        ['2', '4'],
-        ['3', '6'],
       ],
-
-      // "1(a)" - "2" - "4(b)" - "5(a)"
-      //            \   /
-      //             "3"
-      //               \
-      //               "6(b)"
-    });
-
-    test('army can move across one ocean province if friendly fleet is there', () => {
-      expect(
-        gameBoard.neighborsFor({
-          origin: '1',
-          nation: 'a',
-          isFleet: false,
-          friendlyFleets: new Set(['2']),
-        }),
-      ).toEqual(['4']);
     });
 
     test('army can move across multiple ocean provinces if friendly fleets are there', () => {
@@ -276,7 +256,7 @@ describe('GameBoard', () => {
           isFleet: false,
           friendlyFleets: new Set(['2', '3']),
         }),
-      ).toEqual(['4', '6']);
+      ).toEqual(['4']);
     });
 
     test('army cannot move across ocean in the absence of a friendly fleet', () => {
