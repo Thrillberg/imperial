@@ -30,8 +30,12 @@ const makeAction = (type, payloadKeys) => {
   const expected = new Set(payloadKeys);
   return memoize(payload => {
     // lightly validate the payload keys
+
     const [l, b, r] = membership(expected, new Set(Object.keys(payload || {})));
+
     if (l.size > 0 || r.size > 0) {
+      console.log([l, b, r])
+
       throw new Error(
         JSON.stringify({
           expected: [...l],
@@ -41,6 +45,7 @@ const makeAction = (type, payloadKeys) => {
         })
       );
     }
+
     return { type, payload };
   });
 };
@@ -64,7 +69,7 @@ export default {
   initialize: makeAction("initialize", ["players", "soloMode", "variant", "baseGame"]),
   blockCanal: makeAction("blockCanal", []),
   bondPurchase: makeAction("bondPurchase", ["nation", "player", "cost", "tradeInValue"]),
-  buildFactory: makeAction("buildFactory", ["province"]),
+  buildFactory: makeAction("buildFactory", ["nation", "province", "player", "nationCosts", "playerCosts"]),
   coexist: makeAction("coexist", ["province", "incumbent", "challenger"]),
   destroyFactory: makeAction("destroyFactory", ["province"]),
   endGame: makeAction("endGame", []),

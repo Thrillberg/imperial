@@ -37,7 +37,7 @@
         />
         <b>{{ action.playerName }}</b>
         <div class="flex justify-between">
-          <p>{{ processAction(action) }}</p>
+          <p>{{ renderAction(action) }}</p>
           <p>{{ toString(timestamp) }}</p>
         </div>
       </div>
@@ -45,7 +45,7 @@
         v-else
         class="flex justify-between"
       >
-        <p>- {{ processAction(action) }}</p>
+        <p>- {{ renderAction(action) }}</p>
         <p>{{ toString(timestamp) }}</p>
       </div>
     </div>
@@ -56,7 +56,11 @@
 import { DateTime } from 'luxon';
 
 import Flag from './flags/Flag.vue';
-import { capitalize, displayLocationName, displayNationName, unitTypeByDestination_Singular, unitTypeByDestination_Plural } from '../stringify';
+import {
+  capitalize,
+  displayLocationName, displayNationName, displayMonetaryValue_InMillions,
+  unitTypeByDestination_Singular, unitTypeByDestination_Plural
+} from '../stringify';
 
 export default {
   name: 'GameLogEntry',
@@ -87,7 +91,7 @@ export default {
     displayNationName(nation) {
       return displayNationName(nation);
     },
-    processAction(action) {
+    renderAction(action) {
       const notImplemented = 'NOT IMPLEMENTED';
       switch (action.type) {
         case 'initialize':
@@ -100,6 +104,8 @@ export default {
           return this.buildFactoryAction(action.payload);
         case 'skipBuildFactory':
           return `${action.payload.player} chose not to build a factory for ${this.displayNationName(action.payload.nation.value)}.`;
+        case 'couldNotBuildFactory':
+          return `There were insufficient funds to build a factory for ${this.displayNationName(action.payload.nation.value)}.`;
         case 'bondPurchase':
           return this.bondPurchaseAction(action.payload);
         case 'skipBondPurchase':
@@ -182,7 +188,22 @@ export default {
     },
     buildFactoryAction(payload) {
       const province = this.displayLocationName(payload.province);
-      return `Built a factory in ${province} for 5m.`;
+      const totalCost = payload.nation ? payload.nationCosts + payload.playerCosts : 5;
+
+      const factoryDescription = `a factory in ${province} for ${this.displayMonetaryValue_InMillions(totalCost)}.`;
+
+      if (payload.nation) {
+        const nation = this.displayNationName(payload.nation.value);
+        const { player } = payload;
+        
+        if (payload.playerCost == 0) {
+          return "Built " + factoryDescription;
+        } else {
+          return `${player} funded ${nation} ${this.displayMonetaryValue_InMillions(payload.playerCost)} to build ` + factoryDescription;
+        }
+      } else {
+        return "Built " + factoryDescription;
+      }
     },
     bondPurchaseAction(payload) {
       const { player } = payload;

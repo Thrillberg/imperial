@@ -6,8 +6,9 @@ export default class Province extends Entity {
 
         this.isLand = isLand;
 
-        this.hasFactory = false;
-        this.ownership = ownership;
+        this.ownership = null;
+        this.hasArmsFactory = false;
+        this.hasNavalFactory = false;
 
         this.friendlyUnits = new Map();
         this.hostileUnits = new Map();
@@ -20,6 +21,9 @@ export default class Province extends Entity {
         this.isLand = bool === false;
     }
 
+    get hasFactory() {
+        return this.hasArmsFactory || this.hasNavalFactory;
+    }
     get isDevoidOfFactory() {
         return this.hasFactory === false;
     }
@@ -31,21 +35,22 @@ export default class Province extends Entity {
     }
 };
 
-export const translateOldModel = (oldProvinceModel, representation, nation, allUnits) => {
+export const translateProvinceModel = (oldProvinceModel, representation, nation, allUnits) => {
     // temporary until migration is complete
     const province = new Province(oldProvinceModel.isOcean === false, representation);
 
-    province.hasFactory = oldProvinceModel.factory !== '';
     province.ownership = nation;
+    province.hasArmsFactory = oldProvinceModel.factory === 'armaments';
+    province.hasNavalFactory = oldProvinceModel.factory === 'shipyard';
 
     for (const [occupyingNation] of allUnits) {
-        const { armies, friendly } = allUnits
+        const { armies, fleets, friendly } = allUnits
             .get(occupyingNation)
             .get(representation);
 
-        if (armies > 0) {
+        if (armies > 0 || fleets > 0) {
             const unitPool = friendly ? province.friendlyUnits : province.hostileUnits;
-            unitPool.set(occupyingNation, armies);
+            unitPool.set(occupyingNation, armies + fleets);
         }
     }
 

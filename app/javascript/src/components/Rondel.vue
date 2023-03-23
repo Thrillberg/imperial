@@ -60,7 +60,7 @@
           </div>
         </div>
       </div>
-      <div v-if="!!cost">
+      <div v-if="cost > 0">
         <b>Cost: {{ this.displayMonetaryValue_InMillions(cost) }}</b>
       </div>
       <div>
@@ -232,8 +232,9 @@ export default {
           case 'taxation': {
             this.onInvestorSlot = false;
             this.onTaxationSlot = true;
-            this.helperText = `Player receives tax (${this.displayMonetaryValue_InMillions(2)} per unoccupied factory and ${this.displayMonetaryValue_InMillions(1)} per flag) from the nation. ` +
-            `Power points are increased and nation receives tax, less soldiers' pay (${this.displayMonetaryValue_InMillions(1)} per unit).`;
+            this.helperText = `Nation taxes (${this.displayMonetaryValue_InMillions(2)} per unoccupied factory and ${this.displayMonetaryValue_InMillions(1)} per flag in) its empire. ` +
+            `Power points are increased and nation receives tax, less soldiers' pay (${this.displayMonetaryValue_InMillions(1)} per unit). ` +
+            `Player is paid a bonus accordingly.`;
             break;
           }
           case 'factory': {
@@ -244,10 +245,17 @@ export default {
           }
           default: { break; }
         }
-        this.cost = '';
+        
+        this.cost = 0;
         for (const action of this.game.availableActions) {
           if (action.payload.slot === slot) {
-            this.cost = action.payload.cost;
+            if (action.payload.cost) {
+              this.cost += action.payload.cost;
+            }
+
+            if (action.payload.playerCosts) {
+              this.cost += action.payload.playerCosts;
+            }
           }
         }
       }
