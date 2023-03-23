@@ -72,16 +72,14 @@ export default class Rondel {
         return this.tileOrder[tileIndex];
     }
 
-    passedInvestor(exclusiveFromTile, exclusiveToTile) {
-        exclusiveFromTile = this.tileClockwiseTo(exclusiveToTile, 1);
+    passedInvestor(exclusiveFromTile, inclusiveToTile) {
+        do {
+            exclusiveFromTile = this.tileClockwiseTo(exclusiveFromTile, 1);
 
-        while (exclusiveFromTile != exclusiveToTile) {
-            exclusiveFromTile = this.tileClockwiseTo(exclusiveToTile, 1);
-
-            if (exclusiveFromTile == this.investorTile) {
+            if (exclusiveFromTile === this.investorTile) {
                 return true;
             }
-        }
+        } while (exclusiveFromTile !== inclusiveToTile);
 
         return false;
     }
