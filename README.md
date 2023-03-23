@@ -82,17 +82,3 @@ To run Ruby RSpec tests, run the following command from the project root:
 ```
 rspec
 ```
-
-This project also uses [Cypress](https://www.cypress.io/) for feature tests. **These tests have not been maintained, however.** To
-run these tests, run the following command from the project root:
-
-```
-bin/webpack
-./test_server
-```
-
-And in another terminal:
-
-```
-npm run cypress
-```
