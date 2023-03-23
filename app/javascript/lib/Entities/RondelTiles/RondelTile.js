@@ -1,11 +1,7 @@
-export default class RondelTile {
-    #representation;
+import Entity from "../Entity";
 
+export default class RondelTile extends Entity {
     constructor(representation) {
-        this.#representation = representation;
+        super(representation);
     }
-
-    get representation() {
-        return this.#representation;
-    }
-};
+}
