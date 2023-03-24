@@ -244,7 +244,7 @@ export default class Imperial {
         this.advanceOnRondel(action);
         break;
       }
-      
+
       case 'noop':
       default: {
         break;
@@ -1371,7 +1371,7 @@ export default class Imperial {
           const nationCosts = buildCostsUseCase.nationCosts(currentNation);
           const playerCosts = buildCostsUseCase.playerCosts(currentNation, currentPlayer);
 
-          for (const buildableProvince of buildPermissionsUseCase.buildableFactoriesLocations(homeProvinces)) {
+          for (const buildableProvince of FactorySlotBuildPermissions.buildableFactoriesLocations(homeProvinces)) {
             this.availableActions.add(
               Action.buildFactory({
                 province: buildableProvince.id,

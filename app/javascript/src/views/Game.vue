@@ -643,7 +643,7 @@ export default {
       // This function returns all provinces that a unit can move
       // or be imported to.
       const provinces = new Set();
-      
+
       if (this.game.currentPlayerName === this.profile.username || (this.game.soloMode && this.hostingThisGame)) {
         for (const action of this.game.availableActions) {
           if (action.type === 'maneuver' && this.game.maneuvering) {
@@ -661,6 +661,7 @@ export default {
           }
         }
       }
+
       return Array.from(provinces);
     },
     selectProvince(inputProvince) {
@@ -773,7 +774,8 @@ export default {
     },
     backToRoundStart() {
       const startingNation = this.game.baseGame === 'imperial' ? Nation.AH : Nation2030.RU;
-      while ((this.game.log[this.game.log.length - 1].payload.nation !== startingNation) || (this.game.log[this.game.log.length - 1].type !== 'rondel')) {
+      while ((this.game.log[this.game.log.length - 1].payload.nation !== startingNation)
+        || (this.game.log[this.game.log.length - 1].type !== 'rondel')) {
         this.back();
       }
 
