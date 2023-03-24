@@ -43,7 +43,8 @@ export const translateProvinceModel = (representation, allProvinces, allUnits, g
 
   const province = new Province(
     geographicModel.isOcean === false || geographicModel.isOcean === undefined,
-    representation);
+    representation,
+  );
 
   province.ownership = geographicModel.nation;
   province.hasArmsFactory = oldProvinceModel.factory === 'armaments';
@@ -61,4 +62,4 @@ export const translateProvinceModel = (representation, allProvinces, allUnits, g
   }
 
   return province;
-}
+};

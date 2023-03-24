@@ -61,12 +61,12 @@ export default class Rondel {
   }
 
   representationToEntity(string) {
-    return this.#translator.get(string)
+    return this.#translator.get(string);
   }
 
-  slotClockwiseTo(Slot, SlotCounts) {
-    let slotIndex = this.slotOrder.indexOf(Slot); 
-    slotIndex += SlotCounts;
+  slotClockwiseTo(slot, slotCounts) {
+    let slotIndex = this.slotOrder.indexOf(slot);
+    slotIndex += slotCounts;
 
     slotIndex %= this.slotOrder.length;
     return this.slotOrder[slotIndex];

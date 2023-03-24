@@ -1,5 +1,5 @@
-import Rondel from './Entities/Rondel.js';
-import { Province, translateProvinceModel } from './Entities/Board/Province.js';
+import Rondel from './Entities/Rondel';
+import { translateProvinceModel } from './Entities/Board/Province';
 
 import Action from './action';
 import Auction from './auction';
@@ -20,9 +20,9 @@ import standard2030Setup from './standard2030Setup';
 import standardAsiaSetup from './standardAsiaSetup';
 import standardSetup from './standardSetup';
 
-import AvailableSlots from './UseCases/Rondels/SlotSelection/AvailableSlots.js';
-import FactorySlotBuildPermissions from './UseCases/Rondels/FactorySlots/Build/Permissions.js';
-import FactorySlotBuildChargeCosts from './UseCases/Rondels/FactorySlots/Build/ChargeCosts.js';
+import AvailableSlots from './UseCases/Rondels/SlotSelection/AvailableSlots';
+import FactorySlotBuildPermissions from './UseCases/Rondels/FactorySlots/Build/Permissions';
+import FactorySlotBuildChargeCosts from './UseCases/Rondels/FactorySlots/Build/ChargeCosts';
 
 export default class Imperial {
   static fromLog(log, board) {
@@ -908,7 +908,7 @@ export default class Imperial {
 
   buildFactory(action) {
     const currentNation = this.nations.get(action.payload.nation ? action.payload.nation : this.currentNation);
-    const currentPlayer = this.players[action.payload.player || this.currentPlayerName]
+    const currentPlayer = this.players[action.payload.player || this.currentPlayerName];
 
     this.provinces.get(action.payload.province).factory = this.board.graph.get(action.payload.province).factoryType;
 
@@ -918,7 +918,7 @@ export default class Imperial {
 
     currentNation.treasury -= nationCosts;
     currentPlayer.cash -= playerCosts;
-    
+
     this.handlePassingThroughInvestor();
     this.buildingFactory = false;
   }
@@ -1225,7 +1225,7 @@ export default class Imperial {
     this.currentNation = action.payload.nation;
     const currentNation = this.nations.get(this.currentNation);
     const currentPlayer = this.players[this.currentPlayerName];
-    
+
     const fromRondelSlot = this.rondel.representationToEntity(currentNation.rondelPosition);
     const toRondelSlot = this.rondel.representationToEntity(action.payload.slot);
 
@@ -1308,7 +1308,7 @@ export default class Imperial {
         nation.taxChartPosition = this.getTaxChartPosition(taxes);
         nation.treasury += nationProfit;
         // can be less than 0m
-        
+
         this.annotatedLog.push(
           Action.nationGainsTreasury({
             nation: nationName,
@@ -1376,9 +1376,10 @@ export default class Imperial {
                 player: this.currentPlayerName,
                 nationCosts,
                 playerCosts,
-              }));
+              }),
+            );
           }
-  
+
           this.availableActions.add(
             Action.skipBuildFactory({
               nation: this.currentNation,
@@ -1877,7 +1878,8 @@ export default class Imperial {
 
     const availableRondelSlots = new Set();
 
-    const nextAvailableFreeRondelSlots = nationCurrentRondelSlot ? availableSlots.nextAvailableFreeRondelSlots(nationCurrentRondelSlot) : this.rondel.slotOrder;
+    const nextAvailableFreeRondelSlots = nationCurrentRondelSlot
+      ? availableSlots.nextAvailableFreeRondelSlots(nationCurrentRondelSlot) : this.rondel.slotOrder;
     for (const freeRondelSlot of nextAvailableFreeRondelSlots) {
       availableRondelSlots.add(
         Action.rondel({
@@ -1893,7 +1895,7 @@ export default class Imperial {
         availableRondelSlots.add(
           Action.rondel({
             nation: nationName,
-            cost: cost,
+            cost,
             slot: paidRondelSlot.representation,
           }),
         );
@@ -2334,7 +2336,8 @@ export default class Imperial {
     let bonus = this.playerBonusBeforeUnitMaintenanceCosts(nationName, taxes);
 
     if (this.baseGame === 'imperial2030' || this.baseGame === 'imperialAsia') {
-      const treasuryAmountAfterMaintenanceCosts = this.nations.get(nationName).treasury + taxes - this.unitMaintenanceCosts(nationName);
+      const treasuryAmountBeforeMaintenanceCosts = this.nations.get(nationName).treasury + taxes;
+      const treasuryAmountAfterMaintenanceCosts = treasuryAmountBeforeMaintenanceCosts - this.unitMaintenanceCosts(nationName);
       bonus = Math.max(0, Math.min(bonus, treasuryAmountAfterMaintenanceCosts));
     }
 
