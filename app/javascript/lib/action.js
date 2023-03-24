@@ -33,8 +33,6 @@ const makeAction = (type, payloadKeys) => {
     const [l, b, r] = membership(expected, new Set(Object.keys(payload || {})));
 
     if (l.size > 0 || r.size > 0) {
-      console.log([l, b, r])
-
       throw new Error(
         JSON.stringify({
           expected: [...l],
