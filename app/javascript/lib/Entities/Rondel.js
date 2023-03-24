@@ -14,7 +14,7 @@ export default class Rondel {
 
   constructor() {
     this.#translator = new Map();
-    this.#translator.set(FactorySlot.id, new FactorySlot(5));
+    this.#translator.set(FactorySlot.classId, new FactorySlot(5));
     this.#translator.set(Production1, new RondelSlot(Production1));
     this.#translator.set(Maneuver1, new RondelSlot(Maneuver1));
     this.#translator.set(Investor, new RondelSlot(Investor));
@@ -36,7 +36,7 @@ export default class Rondel {
   }
 
   get factorySlot() {
-    return this.idToEntity(FactorySlot.id);
+    return this.idToEntity(FactorySlot.classId);
   }
   get production1Slot() {
     return this.idToEntity(Production1);
