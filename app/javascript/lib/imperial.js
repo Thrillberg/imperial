@@ -1,3 +1,6 @@
+import ImperialEuropeGame from './Entities/ImperialEuropeGame';
+import Imperial2030Game from './Entities/Imperial2030Game';
+import ImperialAsiaGame from './Entities/ImperialAsiaGame';
 import Rondel from './Entities/Rondel';
 import { translateProvinceModel } from './Entities/Board/Province';
 
@@ -20,7 +23,9 @@ import standard2030Setup from './standard2030Setup';
 import standardAsiaSetup from './standardAsiaSetup';
 import standardSetup from './standardSetup';
 
+// Rondel use cases
 import AvailableSlots from './UseCases/Rondels/SlotSelection/AvailableSlots';
+import SlotDistanceCosts from './UseCases/Rondels/SlotSelection/SlotDistanceCosts';
 import FactorySlotBuildPermissions from './UseCases/Rondels/FactorySlots/Build/Permissions';
 import FactorySlotBuildChargeCosts from './UseCases/Rondels/FactorySlots/Build/ChargeCosts';
 
@@ -1871,7 +1876,8 @@ export default class Imperial {
 
   availableRondelActions(nationName) {
     const nation = this.nations.get(nationName);
-    const costPerPaidDistance = this.costPerPaidRondelAction(nation);
+    const slotCostCalculator = new SlotDistanceCosts();
+    const costPerPaidDistance = slotCostCalculator.costPerPaidRondelSlot(this.translateBaseGameModel(), nation);
 
     const nationCurrentRondelSlot = this.rondel.idToEntity(nation.rondelPosition);
     const availableSlots = new AvailableSlots(this.rondel, 3, 3, costPerPaidDistance);
@@ -1911,18 +1917,6 @@ export default class Imperial {
     }
 
     return availableRondelSlots;
-  }
-
-  costPerPaidRondelAction(nation) {
-    let costPerPaidDistance = 1;
-
-    if (this.baseGame === 'imperial') {
-      costPerPaidDistance += 1;
-    } else if (this.baseGame === 'imperial2030' || this.baseGame === 'imperialAsia') {
-      costPerPaidDistance += Math.floor(nation.powerPoints / 5);
-    }
-
-    return costPerPaidDistance;
   }
 
   nextNation(lastTurnNation) {
@@ -2400,5 +2394,21 @@ export default class Imperial {
     }
 
     return true;
+  }
+
+  translateBaseGameModel() {
+    switch (this.baseGame) {
+      case ImperialEuropeGame.classId:
+        return new ImperialEuropeGame();
+
+      case Imperial2030Game.classId:
+        return new Imperial2030Game();
+
+      case ImperialAsiaGame.classId:
+        return new ImperialAsiaGame();
+
+      default:
+        return null;
+    }
   }
 }

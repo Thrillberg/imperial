@@ -1,12 +1,12 @@
 import RondelSlot from "./RondelSlot";
 
 export default class FactorySlot extends RondelSlot {
-    static get id() {
+    static get classId() {
         return 'factory';
     }
 
     constructor(costToBuild) {
-        super(FactorySlot.id);
+        super(FactorySlot.classId);
 
         this.costToBuild = costToBuild;
     }
