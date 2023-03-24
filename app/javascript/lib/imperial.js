@@ -187,7 +187,7 @@ export default class Imperial {
         return;
       }
       case 'buildFactory': {
-        this.buildFactory(action);
+        this.buildFactory(action.payload.province);
         return;
       }
       case 'couldNotBuildFactory':
@@ -906,11 +906,11 @@ export default class Imperial {
     }
   }
 
-  buildFactory(action) {
-    const currentNation = this.nations.get(action.payload.nation ? action.payload.nation : this.currentNation);
-    const currentPlayer = this.players[action.payload.player || this.currentPlayerName];
+  buildFactory(province) {
+    const currentNation = this.nations.get(this.currentNation);
+    const currentPlayer = this.players[this.currentPlayerName];
 
-    this.provinces.get(action.payload.province).factory = this.board.graph.get(action.payload.province).factoryType;
+    this.provinces.get(province).factory = this.board.graph.get(province).factoryType;
 
     const buildCostsUseCase = new FactorySlotBuildChargeCosts(this.rondel.factorySlot);
     const nationCosts = buildCostsUseCase.nationCosts(currentNation);
