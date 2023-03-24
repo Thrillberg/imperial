@@ -1,6 +1,4 @@
-export const capitalize = (word) => {
-  return (word[0].toUpperCase() + word.substring(1));
-}
+export const capitalize = (word) => (word[0].toUpperCase() + word.substring(1));
 
 export const displayLocationName = (word) => {
   if (word) {
@@ -75,26 +73,23 @@ export const displayNationName = (nation) => {
   }
 };
 
-export const displayMonetaryValue_InMillions = (value) => {
+export const displayMonetaryValueInMillions = (value) => {
   if (value < 0) {
     return `-$${Math.abs(value)}m`;
-  } else {
-    return `$${value}m`;
   }
+  return `$${value}m`;
 };
 
-export const unitTypeByDestination_Singular = (isDestinationOcean) => {
+export const unitTypeByDestinationSingular = (isDestinationOcean) => {
   if (isDestinationOcean) {
     return 'a fleet';
-  } else {
-    return 'an army';
   }
+  return 'an army';
 };
 
-export const unitTypeByDestination_Plural = (isDestinationOcean) => {
+export const unitTypeByDestinationPlural = (isDestinationOcean) => {
   if (isDestinationOcean) {
     return 'fleets';
-  } else {
-    return 'armies';
   }
+  return 'armies';
 };

@@ -37,7 +37,7 @@
         />
         <b>{{ action.playerName }}</b>
         <div class="flex justify-between">
-          <p>{{ processAction(action) }}</p>
+          <p>{{ renderAction(action) }}</p>
           <p>{{ toString(timestamp) }}</p>
         </div>
       </div>
@@ -45,7 +45,7 @@
         v-else
         class="flex justify-between"
       >
-        <p>- {{ processAction(action) }}</p>
+        <p>- {{ renderAction(action) }}</p>
         <p>{{ toString(timestamp) }}</p>
       </div>
     </div>
@@ -56,7 +56,11 @@
 import { DateTime } from 'luxon';
 
 import Flag from './flags/Flag.vue';
-import { capitalize, displayLocationName, displayNationName, unitTypeByDestination_Singular, unitTypeByDestination_Plural } from '../stringify';
+import {
+  capitalize,
+  displayLocationName, displayNationName, displayMonetaryValueInMillions,
+  unitTypeByDestinationSingular, unitTypeByDestinationPlural,
+} from '../stringify';
 
 export default {
   name: 'GameLogEntry',
@@ -78,16 +82,19 @@ export default {
     displayLocationName(word) {
       return displayLocationName(word);
     },
-    unitTypeByDestination_Singular(destination) {
-      return unitTypeByDestination_Singular(this.board.graph.get(destination).isOcean);
+    displayMonetaryValueInMillions(value) {
+      return displayMonetaryValueInMillions(value);
     },
-    unitTypeByDestination_Plural(destination) {
-      return unitTypeByDestination_Plural(this.board.graph.get(destination).isOcean);
+    unitTypeByDestinationSingular(destination) {
+      return unitTypeByDestinationSingular(this.board.graph.get(destination).isOcean);
+    },
+    unitTypeByDestinationPlural(destination) {
+      return unitTypeByDestinationPlural(this.board.graph.get(destination).isOcean);
     },
     displayNationName(nation) {
       return displayNationName(nation);
     },
-    processAction(action) {
+    renderAction(action) {
       const notImplemented = 'NOT IMPLEMENTED';
       switch (action.type) {
         case 'initialize':
@@ -99,7 +106,10 @@ export default {
         case 'buildFactory':
           return this.buildFactoryAction(action.payload);
         case 'skipBuildFactory':
-          return `${action.payload.player} chose not to build a factory for ${this.displayNationName(action.payload.nation.value)}.`;
+          return `${action.payload.player} chose not to build a factory for `
+            + `${this.displayNationName(action.payload.nation.value)}.`;
+        case 'couldNotBuildFactory':
+          return `There were insufficient funds to build a factory for ${this.displayNationName(action.payload.nation.value)}.`;
         case 'bondPurchase':
           return this.bondPurchaseAction(action.payload);
         case 'skipBondPurchase':
@@ -133,15 +143,20 @@ export default {
         case 'nationGainsPowerPoints':
           return `${this.displayNationName(action.payload.nation.value)} gained ${action.payload.powerPoints} power points.`;
         case 'nationPaysPlayer':
-          return `${this.displayNationName(action.payload.nation.value)} paid ${action.payload.player} ${action.payload.amount}m.`;
+          return `${this.displayNationName(action.payload.nation.value)} paid `
+            + `${action.payload.player} ${action.payload.amount}m.`;
         case 'investorCardHolderChanged':
-          return `${action.payload.oldInvestorCardHolder} has passed the investor card to ${action.payload.newInvestorCardHolder}.`;
+          return `${action.payload.oldInvestorCardHolder} has passed the investor card to `
+            + `${action.payload.newInvestorCardHolder}.`;
         case 'nationControllerChanged':
-          return `Control of ${this.displayNationName(action.payload.nation.value)} has passed from ${action.payload.oldNationController} to ${action.payload.newNationController}.`;
+          return `Control of ${this.displayNationName(action.payload.nation.value)} has passed from `
+            + `${action.payload.oldNationController} to ${action.payload.newNationController}.`;
         case 'playerTradedInForABond':
-          return `${action.payload.player} traded in their ${this.displayNationName(action.payload.bondNation.value)} bond for ${action.payload.bondCost}m.`;
+          return `${action.payload.player} traded in their ${this.displayNationName(action.payload.bondNation.value)} bond `
+            + `for ${action.payload.bondCost}m.`;
         case 'playerAutoSkipsBondPurchase':
-          return `${action.payload.player} could not buy a bond from ${this.displayNationName(action.payload.bondNation.value)} because of insufficient funds.`;
+          return `${action.payload.player} could not buy a bond from ${this.displayNationName(action.payload.bondNation.value)} `
+            + 'because of insufficient funds.';
         case 'playerPaysForRondel': {
           const slot = this.capitalize(action.payload.slot).replace(/\d/g, '');
           return `${action.payload.player} paid ${action.payload.cost}m to move to the ${slot} slot on the rondel.`;
@@ -150,10 +165,12 @@ export default {
           return `${action.payload.player} received 2m for holding the investor card.`;
         }
         case 'unfriendlyEntrance': {
-          return `${this.displayNationName(action.payload.challenger.value)} has violently entered ${this.displayLocationName(action.payload.province)} (${this.displayNationName(action.payload.incumbent.value)}).`;
+          return `${this.displayNationName(action.payload.challenger.value)} has violently entered `
+            + `${this.displayLocationName(action.payload.province)} (${this.displayNationName(action.payload.incumbent.value)}).`;
         }
         case 'friendlyEntrance': {
-          return `${this.displayNationName(action.payload.challenger.value)} has peacefully entered ${this.displayLocationName(action.payload.province)} (${this.displayNationName(action.payload.incumbent.value)}).`;
+          return `${this.displayNationName(action.payload.challenger.value)} has peacefully entered `
+            + `${this.displayLocationName(action.payload.province)} (${this.displayNationName(action.payload.incumbent.value)}).`;
         }
         case 'blockCanal': {
           return 'A canal has been blocked.';
@@ -182,7 +199,21 @@ export default {
     },
     buildFactoryAction(payload) {
       const province = this.displayLocationName(payload.province);
-      return `Built a factory in ${province} for 5m.`;
+      const totalCost = payload.nationCosts ? payload.nationCosts + payload.playerCosts : 5;
+
+      const factoryDescription = `a factory in ${province} for ${this.displayMonetaryValueInMillions(totalCost)}.`;
+
+      if (payload.nationCosts) {
+        const nation = this.displayNationName(this.board.graph.get(payload.province).nation.value);
+        const { player } = payload;
+
+        if (payload.playerCosts === 0) {
+          return `Built ${factoryDescription}`;
+        }
+        return `${player} funded ${nation} ${this.displayMonetaryValueInMillions(payload.playerCosts)} `
+          + `to build ${factoryDescription}`;
+      }
+      return `Built ${factoryDescription}`;
     },
     bondPurchaseAction(payload) {
       const { player } = payload;
@@ -199,18 +230,19 @@ export default {
       return `Imported a total of ${provincesList.length} ${unit} into ${provincesText}.`;
     },
     maneuverAction(payload) {
-      const unit = this.unitTypeByDestination_Singular(payload.destination);
+      const unit = this.unitTypeByDestinationSingular(payload.destination);
       const origin = this.displayLocationName(payload.origin);
       const destination = this.displayLocationName(payload.destination);
 
       return `Moved ${unit} from ${origin} to ${destination}.`;
     },
     coexistAction(payload) {
-      const units = this.capitalize(this.unitTypeByDestination_Plural(payload.province));
+      const units = this.capitalize(this.unitTypeByDestinationPlural(payload.province));
       // technically it could be a fleet in port sharing the province with an army
 
       const province = this.displayLocationName(payload.province);
-      const nations = `${this.displayNationName(payload.incumbent.value)} and ${this.displayNationName(payload.challenger.value)}`;
+      const nations = `${this.displayNationName(payload.incumbent.value)} and `
+        + `${this.displayNationName(payload.challenger.value)}`;
 
       return `${units} from ${nations} are peacefully coexisting in ${province}.`;
     },
