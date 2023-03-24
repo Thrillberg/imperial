@@ -24,5 +24,10 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm ci
-      - run: npm run lint
+      - name: Run eslint on changed files
+        uses: tj-actions/eslint-changed-files@v18
+        with:
+          file_extensions: |
+            **/*.js
+            **/*.vue
       - run: npm test
