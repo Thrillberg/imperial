@@ -1876,8 +1876,8 @@ export default class Imperial {
 
   availableRondelActions(nationName) {
     const nation = this.nations.get(nationName);
-    const slotCostCalculator = new SlotDistanceCosts();
-    const costPerPaidDistance = slotCostCalculator.costPerPaidRondelSlot(this.translateBaseGameModel(), nation);
+    const slotCostCalculator = new SlotDistanceCosts(this.translateBaseGameModel());
+    const costPerPaidDistance = slotCostCalculator.costPerPaidRondelSlot(nation);
 
     const nationCurrentRondelSlot = this.rondel.idToEntity(nation.rondelPosition);
     const availableSlots = new AvailableSlots(this.rondel, 3, 3, costPerPaidDistance);

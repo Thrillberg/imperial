@@ -142,7 +142,8 @@ export default {
 
       if (this.game.availableActions) {
         return [...this.game.availableActions].every(
-          (action) => action.type === 'buildFactory' || action.type === 'skipBuildFactory');
+          (action) => action.type === 'buildFactory' || action.type === 'skipBuildFactory',
+        );
       }
 
       return false;
