@@ -141,7 +141,8 @@ export default {
       if (this.paused) return false;
 
       if (this.game.availableActions) {
-        return [...this.game.availableActions].every((action) => action.type === 'buildFactory' || action.type === 'skipBuildFactory');
+        return [...this.game.availableActions].every(
+          (action) => action.type === 'buildFactory' || action.type === 'skipBuildFactory');
       }
 
       return false;

@@ -190,6 +190,9 @@ export default class Imperial {
         this.buildFactory(action);
         return;
       }
+      case 'couldNotBuildFactory':
+        this.handlePassingThroughInvestor();
+        return;
       case 'skipBuildFactory': {
         this.handlePassingThroughInvestor();
         this.buildingFactory = false;
@@ -904,7 +907,7 @@ export default class Imperial {
   }
 
   buildFactory(action) {
-    const currentNation = action.payload.nation ? this.nations.get(action.payload.nation) : this.currentNation;
+    const currentNation = this.nations.get(action.payload.nation ? action.payload.nation : this.currentNation);
     const currentPlayer = this.players[action.payload.player || this.currentPlayerName]
 
     this.provinces.get(action.payload.province).factory = this.board.graph.get(action.payload.province).factoryType;
@@ -914,7 +917,7 @@ export default class Imperial {
     const playerCosts = buildCostsUseCase.playerCosts(currentNation, currentPlayer);
 
     currentNation.treasury -= nationCosts;
-    playerCosts.cash -= playerCosts;
+    currentPlayer.cash -= playerCosts;
     
     this.handlePassingThroughInvestor();
     this.buildingFactory = false;
@@ -1369,22 +1372,28 @@ export default class Imperial {
           for (const buildableProvince of buildPermissionsUseCase.buildableFactoriesLocations(homeProvinces)) {
             this.availableActions.add(
               Action.buildFactory({
-                nation: this.currentNation,
+                //nation: this.currentNation,
                 province: buildableProvince.representation,
-                player: this.currentPlayerName,
-                nationCosts,
-                playerCosts,
+                //player: this.currentPlayerName,
+                //nationCosts,
+                //playerCosts,
               }));
           }
   
           this.availableActions.add(
             Action.skipBuildFactory({
-              player: this.currentPlayerName,
               nation: this.currentNation,
+              player: this.currentPlayerName,
             }),
           );
         } else {
-         this.handlePassingThroughInvestor();
+          this.annotatedLog.push(
+            Action.couldNotBuildFactory({
+              nation: this.currentNation,
+            }),
+          );
+
+          this.handlePassingThroughInvestor();
         }
 
         break;

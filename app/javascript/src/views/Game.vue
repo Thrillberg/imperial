@@ -656,10 +656,7 @@ export default {
             action.payload.placements.forEach((placement) => {
               provinces.add(placement.province);
             });
-          } else if (
-            action.type === 'buildFactory'
-            && this.game.buildingFactory
-          ) {
+          } else if (action.type === 'buildFactory' && this.game.buildingFactory) {
             provinces.add(action.payload.province);
           }
         }

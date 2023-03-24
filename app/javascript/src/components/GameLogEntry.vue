@@ -82,6 +82,9 @@ export default {
     displayLocationName(word) {
       return displayLocationName(word);
     },
+    displayMonetaryValue_InMillions(value) {
+      return displayMonetaryValue_InMillions(value);
+    },
     unitTypeByDestination_Singular(destination) {
       return unitTypeByDestination_Singular(this.board.graph.get(destination).isOcean);
     },
@@ -196,10 +199,10 @@ export default {
         const nation = this.displayNationName(payload.nation.value);
         const { player } = payload;
         
-        if (payload.playerCost == 0) {
+        if (payload.playerCosts === 0) {
           return "Built " + factoryDescription;
         } else {
-          return `${player} funded ${nation} ${this.displayMonetaryValue_InMillions(payload.playerCost)} to build ` + factoryDescription;
+          return `${player} funded ${nation} ${this.displayMonetaryValue_InMillions(payload.playerCosts)} to build ` + factoryDescription;
         }
       } else {
         return "Built " + factoryDescription;
