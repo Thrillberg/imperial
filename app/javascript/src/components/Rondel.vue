@@ -248,7 +248,8 @@ export default {
           case 'factory': {
             this.onInvestorSlot = false;
             this.onTaxationSlot = false;
-            this.helperText = `Nation builds a factory for ${this.displayMonetaryValueInMillions(5)}.`;
+            this.helperText = `Nation builds a factory for ${this.displayMonetaryValueInMillions(5)}. `
+            + 'If the nation has insufficient funds, the governor of the nation will fund the rest of the costs.';
             break;
           }
           default: { break; }
