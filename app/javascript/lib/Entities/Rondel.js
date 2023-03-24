@@ -1,5 +1,5 @@
-import FactoryTile from "./RondelTiles/FactoryTile";
-import RondelTile from "./RondelTiles/RondelTile";
+import FactorySlot from "./RondelSlots/FactorySlot";
+import RondelSlot from "./RondelSlots/RondelSlot";
 
 const Production1 = 'production1';
 const Maneuver1 = 'maneuver1';
@@ -14,49 +14,49 @@ export default class Rondel {
 
     constructor() {
         this.#translator = new Map();
-        this.#translator.set(FactoryTile.Representation, new FactoryTile(5));
-        this.#translator.set(Production1, new RondelTile(Production1));
-        this.#translator.set(Maneuver1, new RondelTile(Maneuver1));
-        this.#translator.set(Investor, new RondelTile(Investor));
-        this.#translator.set(Import, new RondelTile(Import));
-        this.#translator.set(Production2, new RondelTile(Production2));
-        this.#translator.set(Maneuver2, new RondelTile(Maneuver2));
-        this.#translator.set(Taxation, new RondelTile(Taxation));
+        this.#translator.set(FactorySlot.Representation, new FactorySlot(5));
+        this.#translator.set(Production1, new RondelSlot(Production1));
+        this.#translator.set(Maneuver1, new RondelSlot(Maneuver1));
+        this.#translator.set(Investor, new RondelSlot(Investor));
+        this.#translator.set(Import, new RondelSlot(Import));
+        this.#translator.set(Production2, new RondelSlot(Production2));
+        this.#translator.set(Maneuver2, new RondelSlot(Maneuver2));
+        this.#translator.set(Taxation, new RondelSlot(Taxation));
 
-        this.tileOrder = [
-            this.factoryTile,
-            this.production1Tile,
-            this.maneuver1Tile,
-            this.investorTile,
-            this.importTile,
-            this.production2Tile,
-            this.maneuver2Tile,
-            this.taxationTile,
+        this.slotOrder = [
+            this.factorySlot,
+            this.production1Slot,
+            this.maneuver1Slot,
+            this.investorSlot,
+            this.importSlot,
+            this.production2Slot,
+            this.maneuver2Slot,
+            this.taxationSlot,
         ];
     }
 
-    get factoryTile() {
-        return this.representationToEntity(FactoryTile.Representation);
+    get factorySlot() {
+        return this.representationToEntity(FactorySlot.Representation);
     }
-    get production1Tile() {
+    get production1Slot() {
         return this.representationToEntity(Production1);
     }
-    get maneuver1Tile() {
+    get maneuver1Slot() {
         return this.representationToEntity(Maneuver1);
     }
-    get investorTile() {
+    get investorSlot() {
         return this.representationToEntity(Investor);
     }
-    get importTile() {
+    get importSlot() {
         return this.representationToEntity(Import);
     }
-    get production2Tile() {
+    get production2Slot() {
         return this.representationToEntity(Production2);
     }
-    get maneuver2Tile() {
+    get maneuver2Slot() {
         return this.representationToEntity(Maneuver2);
     }
-    get taxationTile() {
+    get taxationSlot() {
         return this.representationToEntity(Taxation);
     }
 
@@ -64,22 +64,22 @@ export default class Rondel {
         return this.#translator.get(string)
     }
 
-    tileClockwiseTo(tile, tileCounts) {
-        let tileIndex = this.tileOrder.indexOf(tile); 
-        tileIndex += tileCounts;
+    slotClockwiseTo(Slot, SlotCounts) {
+        let slotIndex = this.slotOrder.indexOf(Slot); 
+        slotIndex += SlotCounts;
 
-        tileIndex %= this.tileOrder.length;
-        return this.tileOrder[tileIndex];
+        slotIndex %= this.slotOrder.length;
+        return this.slotOrder[slotIndex];
     }
 
-    passedInvestor(exclusiveFromTile, inclusiveToTile) {
+    passedInvestor(exclusiveFromSlot, inclusiveToSlot) {
         do {
-            exclusiveFromTile = this.tileClockwiseTo(exclusiveFromTile, 1);
+            exclusiveFromSlot = this.slotClockwiseTo(exclusiveFromSlot, 1);
 
-            if (exclusiveFromTile === this.investorTile) {
+            if (exclusiveFromSlot === this.investorSlot) {
                 return true;
             }
-        } while (exclusiveFromTile !== inclusiveToTile);
+        } while (exclusiveFromSlot !== inclusiveToSlot);
 
         return false;
     }

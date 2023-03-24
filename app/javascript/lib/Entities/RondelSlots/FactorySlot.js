@@ -1,12 +1,12 @@
-import RondelTile from "./RondelTile";
+import RondelSlot from "./RondelSlot";
 
-export default class FactoryTile extends RondelTile {
+export default class FactorySlot extends RondelSlot {
     static get Representation() {
         return 'factory';
     }
 
     constructor(costToBuild) {
-        super(FactoryTile.Representation);
+        super(FactorySlot.Representation);
 
         this.costToBuild = costToBuild;
     }

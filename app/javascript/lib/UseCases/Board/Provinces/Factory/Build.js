@@ -1,4 +1,4 @@
-export default class Province_Factory_Build {
+export default class Build {
     constructor(province) {
         this.province = province;
     }
