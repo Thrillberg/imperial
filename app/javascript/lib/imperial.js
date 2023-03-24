@@ -111,8 +111,6 @@ export default class Imperial {
     this.annotatedLog.push(annotatedAction);
 
     switch (action.type) {
-      case 'noop':
-        return;
       case 'undo': {
         Object.assign(this, this.oldState);
         if (this.auction?.inAuction) {
@@ -195,9 +193,6 @@ export default class Imperial {
         this.buildFactory(action.payload.province);
         return;
       }
-      case 'couldNotBuildFactory':
-        this.handlePassingThroughInvestor();
-        return;
       case 'skipBuildFactory': {
         this.handlePassingThroughInvestor();
         this.buildingFactory = false;
@@ -249,6 +244,8 @@ export default class Imperial {
         this.advanceOnRondel(action);
         break;
       }
+      
+      case 'noop':
       default: {
         break;
       }

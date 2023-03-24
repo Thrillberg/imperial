@@ -20,16 +20,18 @@ export default (rawLog, baseGame) => rawLog.map((rawAction) => {
     }));
   }
 
-  if (action.payload.incumbent) {
-    action.payload.incumbent = nations[action.payload.incumbent.value];
-  }
+  if (action.payload) {
+    if (action.payload.incumbent) {
+      action.payload.incumbent = nations[action.payload.incumbent.value];
+    }
 
-  if (action.payload.challenger) {
-    action.payload.challenger = nations[action.payload.challenger.value];
-  }
+    if (action.payload.challenger) {
+      action.payload.challenger = nations[action.payload.challenger.value];
+    }
 
-  if (action.payload.nation) {
-    action.payload.nation = nations[action.payload.nation.value];
+    if (action.payload.nation) {
+      action.payload.nation = nations[action.payload.nation.value];
+    }
   }
 
   return action;
