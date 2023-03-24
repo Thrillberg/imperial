@@ -599,7 +599,9 @@ export default {
           ({ baseGame } = this.gameData.baseGame);
         }
       }
+
       const gameLog = getGameLog(log, baseGame);
+
       if (baseGame === 'imperial') {
         this.board = imperialBoard;
       } else if (baseGame === 'imperial2030') {

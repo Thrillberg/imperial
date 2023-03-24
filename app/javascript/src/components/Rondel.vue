@@ -253,9 +253,7 @@ export default {
               this.cost += action.payload.cost;
             }
 
-            if (action.payload.playerCosts) {
-              this.cost += action.payload.playerCosts;
-            }
+            break;
           }
         }
       }

@@ -1372,11 +1372,11 @@ export default class Imperial {
           for (const buildableProvince of buildPermissionsUseCase.buildableFactoriesLocations(homeProvinces)) {
             this.availableActions.add(
               Action.buildFactory({
-                //nation: this.currentNation,
+                nation: this.currentNation,
                 province: buildableProvince.representation,
-                //player: this.currentPlayerName,
-                //nationCosts,
-                //playerCosts,
+                player: this.currentPlayerName,
+                nationCosts,
+                playerCosts,
               }));
           }
   
@@ -2371,6 +2371,11 @@ export default class Imperial {
           action1.payload.placements,
           action2.payload.placements,
         );
+      }
+
+      if (action1.type === 'buildFactory' && action2.type === 'buildFactory') {
+        // accept migrations from older designs, which previously did not allow for funding nations direction
+        return action1.payload.province === action2.payload.province;
       }
 
       return Object.keys(action1.payload).every((key) => (
