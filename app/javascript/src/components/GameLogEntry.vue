@@ -191,12 +191,12 @@ export default {
     },
     buildFactoryAction(payload) {
       const province = this.displayLocationName(payload.province);
-      const totalCost = payload.nation ? payload.nationCosts + payload.playerCosts : 5;
+      const totalCost = payload.nationCosts ? payload.nationCosts + payload.playerCosts : 5;
 
       const factoryDescription = `a factory in ${province} for ${this.displayMonetaryValue_InMillions(totalCost)}.`;
 
-      if (payload.nation) {
-        const nation = this.displayNationName(payload.nation.value);
+      if (payload.nationCosts) {
+        const nation = this.displayNationName(this.board.graph.get(payload.province).nation.value);
         const { player } = payload;
         
         if (payload.playerCosts === 0) {

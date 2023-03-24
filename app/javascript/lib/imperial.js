@@ -1372,7 +1372,6 @@ export default class Imperial {
           for (const buildableProvince of buildPermissionsUseCase.buildableFactoriesLocations(homeProvinces)) {
             this.availableActions.add(
               Action.buildFactory({
-                nation: this.currentNation,
                 province: buildableProvince.representation,
                 player: this.currentPlayerName,
                 nationCosts,

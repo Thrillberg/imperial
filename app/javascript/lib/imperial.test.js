@@ -332,7 +332,7 @@ describe('imperial', () => {
         game.tick(
           Action.rondel({ nation: Nation.AH, cost: 0, slot: 'factory' }),
         );
-        game.tick(Action.buildFactory({ nation: Nation.AH,  province: 'a', player: 'player1', nationCosts: 5, playerCosts: 0 }));
+        game.tick(Action.buildFactory({ province: 'a', player: 'player1', nationCosts: 5, playerCosts: 0 }));
         
         // Assert
         const expected = new Set(
@@ -3075,8 +3075,8 @@ describe('imperial', () => {
 
           expect(game.availableActions).toEqual(
             new Set([
-              Action.buildFactory({ nation: Nation.AH,  province: 'a', player: 'player1', nationCosts: 5, playerCosts: 0 }),
-              Action.buildFactory({ nation: Nation.AH,  province: 'b', player: 'player1', nationCosts: 5, playerCosts: 0 }),
+              Action.buildFactory({ province: 'a', player: 'player1', nationCosts: 5, playerCosts: 0 }),
+              Action.buildFactory({ province: 'b', player: 'player1', nationCosts: 5, playerCosts: 0 }),
               Action.skipBuildFactory({ nation: Nation.AH, player: 'player1' }),
               Action.undo({ player: 'player1' }),
             ]),
@@ -3094,7 +3094,7 @@ describe('imperial', () => {
 
           expect(game.availableActions).toEqual(
             new Set([
-              Action.buildFactory({ nation: Nation.AH,  province: 'b', player: 'player1', nationCosts: 5, playerCosts: 0 }),
+              Action.buildFactory({ province: 'b', player: 'player1', nationCosts: 5, playerCosts: 0 }),
               Action.skipBuildFactory({ nation: Nation.AH, player: 'player1' }),
               Action.undo({ player: 'player1' }),
             ]),
@@ -3115,8 +3115,8 @@ describe('imperial', () => {
           // Assert
           expect(game.availableActions).toEqual(
             new Set([
-              Action.buildFactory({ nation: Nation.AH,  province: 'a', player: 'player1', nationCosts: 3, playerCosts: 2 }),
-              Action.buildFactory({ nation: Nation.AH,  province: 'b', player: 'player1', nationCosts: 3, playerCosts: 2 }),
+              Action.buildFactory({ province: 'a', player: 'player1', nationCosts: 3, playerCosts: 2 }),
+              Action.buildFactory({ province: 'b', player: 'player1', nationCosts: 3, playerCosts: 2 }),
               Action.skipBuildFactory({ nation: Nation.AH, player: 'player1' }),
               Action.undo({ player: 'player1' }),
             ]),
@@ -3134,7 +3134,7 @@ describe('imperial', () => {
 
           expect(game.availableActions).toEqual(
             new Set([
-              Action.buildFactory({ nation: Nation.AH,  province: 'b', player: 'player1', nationCosts: 5, playerCosts: 0 }),
+              Action.buildFactory({ province: 'b', player: 'player1', nationCosts: 5, playerCosts: 0 }),
               Action.skipBuildFactory({ nation: Nation.AH, player: 'player1' }),
               Action.undo({ player: 'player1' }),
             ]),

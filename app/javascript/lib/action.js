@@ -66,7 +66,7 @@ export default {
   initialize: makeAction("initialize", ["players", "soloMode", "variant", "baseGame"]),
   blockCanal: makeAction("blockCanal", []),
   bondPurchase: makeAction("bondPurchase", ["nation", "player", "cost", "tradeInValue"]),
-  buildFactory: makeAction("buildFactory", ["nation", "province", "player", "nationCosts", "playerCosts"]),
+  buildFactory: makeAction("buildFactory", ["province", "player", "nationCosts", "playerCosts"]),
   coexist: makeAction("coexist", ["province", "incumbent", "challenger"]),
   destroyFactory: makeAction("destroyFactory", ["province"]),
   endGame: makeAction("endGame", []),
