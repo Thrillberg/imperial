@@ -35,11 +35,14 @@ export default class Province extends Entity {
     }
 };
 
-export const translateProvinceModel = (oldProvinceModel, representation, nation, allUnits) => {
+export const translateProvinceModel = (representation, allProvinces, allUnits, gameBoard) => {
     // temporary until migration is complete
-    const province = new Province(oldProvinceModel.isOcean === false, representation);
+    const oldProvinceModel = allProvinces.get(representation)
+    const geographicModel = gameBoard.graph.get(representation)
 
-    province.ownership = nation;
+    const province = new Province(geographicModel.isOcean === false || geographicModel.isOcean === undefined, representation);
+
+    province.ownership = geographicModel.nation;
     province.hasArmsFactory = oldProvinceModel.factory === 'armaments';
     province.hasNavalFactory = oldProvinceModel.factory === 'shipyard';
 

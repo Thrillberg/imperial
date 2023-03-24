@@ -1358,7 +1358,7 @@ export default class Imperial {
       case 'factory': {
         const homeProvinces = new Set();
         for (const homeProvince of this.board.byNation.get(this.currentNation)) {
-          homeProvinces.add(translateProvinceModel(this.provinces.get(homeProvince), homeProvince, currentNation, this.units));
+          homeProvinces.add(translateProvinceModel(homeProvince, this.provinces, this.units, this.board));
         }
 
         const buildPermissionsUseCase = new FactoryTile_Build_Permissions(this.rondel.factoryTile);
