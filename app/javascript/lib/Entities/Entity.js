@@ -1,11 +1,11 @@
 export default class Entity {
-  #representation;
+  #id;
 
-  constructor(representation) {
-    this.#representation = representation;
+  constructor(id) {
+    this.#id = id;
   }
 
-  get representation() {
-    return this.#representation;
+  get id() {
+    return this.#id;
   }
 }

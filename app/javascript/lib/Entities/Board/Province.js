@@ -1,8 +1,8 @@
 import Entity from '../Entity';
 
 export default class Province extends Entity {
-  constructor(isLand, representation) {
-    super(representation);
+  constructor(isLand, id) {
+    super(id);
 
     this.isLand = isLand;
 
@@ -36,12 +36,12 @@ export default class Province extends Entity {
   }
 }
 
-export const translateProvinceModel = (representation, allProvinces, allUnits, gameBoard) => {
+export const translateProvinceModel = (id, allProvinces, allUnits, gameBoard) => {
   // temporary until migration is complete
-  const oldProvinceModel = allProvinces.get(representation);
-  const geographicModel = gameBoard.graph.get(representation);
+  const oldProvinceModel = allProvinces.get(id);
+  const geographicModel = gameBoard.graph.get(id);
 
-  const province = new Province(!geographicModel.isOcean, representation);
+  const province = new Province(!geographicModel.isOcean, id);
 
   province.ownership = geographicModel.nation;
   province.hasArmsFactory = oldProvinceModel.factory === 'armaments';
@@ -50,7 +50,7 @@ export const translateProvinceModel = (representation, allProvinces, allUnits, g
   for (const [occupyingNation] of allUnits) {
     const { armies, fleets, friendly } = allUnits
       .get(occupyingNation)
-      .get(representation);
+      .get(id);
 
     if (armies > 0 || fleets > 0) {
       const unitPool = friendly ? province.friendlyUnits : province.hostileUnits;

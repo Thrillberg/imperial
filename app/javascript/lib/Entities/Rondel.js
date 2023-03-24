@@ -14,7 +14,7 @@ export default class Rondel {
 
   constructor() {
     this.#translator = new Map();
-    this.#translator.set(FactorySlot.Representation, new FactorySlot(5));
+    this.#translator.set(FactorySlot.id, new FactorySlot(5));
     this.#translator.set(Production1, new RondelSlot(Production1));
     this.#translator.set(Maneuver1, new RondelSlot(Maneuver1));
     this.#translator.set(Investor, new RondelSlot(Investor));
@@ -36,31 +36,31 @@ export default class Rondel {
   }
 
   get factorySlot() {
-    return this.representationToEntity(FactorySlot.Representation);
+    return this.idToEntity(FactorySlot.id);
   }
   get production1Slot() {
-    return this.representationToEntity(Production1);
+    return this.idToEntity(Production1);
   }
   get maneuver1Slot() {
-    return this.representationToEntity(Maneuver1);
+    return this.idToEntity(Maneuver1);
   }
   get investorSlot() {
-    return this.representationToEntity(Investor);
+    return this.idToEntity(Investor);
   }
   get importSlot() {
-    return this.representationToEntity(Import);
+    return this.idToEntity(Import);
   }
   get production2Slot() {
-    return this.representationToEntity(Production2);
+    return this.idToEntity(Production2);
   }
   get maneuver2Slot() {
-    return this.representationToEntity(Maneuver2);
+    return this.idToEntity(Maneuver2);
   }
   get taxationSlot() {
-    return this.representationToEntity(Taxation);
+    return this.idToEntity(Taxation);
   }
 
-  representationToEntity(string) {
+  idToEntity(string) {
     return this.#translator.get(string);
   }
 

@@ -1226,8 +1226,8 @@ export default class Imperial {
     const currentNation = this.nations.get(this.currentNation);
     const currentPlayer = this.players[this.currentPlayerName];
 
-    const fromRondelSlot = this.rondel.representationToEntity(currentNation.rondelPosition);
-    const toRondelSlot = this.rondel.representationToEntity(action.payload.slot);
+    const fromRondelSlot = this.rondel.idToEntity(currentNation.rondelPosition);
+    const toRondelSlot = this.rondel.idToEntity(action.payload.slot);
 
     if (fromRondelSlot && this.rondel.passedInvestor(fromRondelSlot, toRondelSlot) && this.passingThroughInvestor === false) {
       this.passingThroughInvestor = true;
@@ -1372,7 +1372,7 @@ export default class Imperial {
           for (const buildableProvince of buildPermissionsUseCase.buildableFactoriesLocations(homeProvinces)) {
             this.availableActions.add(
               Action.buildFactory({
-                province: buildableProvince.representation,
+                province: buildableProvince.id,
                 player: this.currentPlayerName,
                 nationCosts,
                 playerCosts,
@@ -1873,7 +1873,7 @@ export default class Imperial {
     const nation = this.nations.get(nationName);
     const costPerPaidDistance = this.costPerPaidRondelAction(nation);
 
-    const nationCurrentRondelSlot = this.rondel.representationToEntity(nation.rondelPosition);
+    const nationCurrentRondelSlot = this.rondel.idToEntity(nation.rondelPosition);
     const availableSlots = new AvailableSlots(this.rondel, 3, 3, costPerPaidDistance);
 
     const availableRondelSlots = new Set();
@@ -1885,7 +1885,7 @@ export default class Imperial {
         Action.rondel({
           nation: nationName,
           cost: 0,
-          slot: freeRondelSlot.representation,
+          slot: freeRondelSlot.id,
         }),
       );
     }
@@ -1896,7 +1896,7 @@ export default class Imperial {
           Action.rondel({
             nation: nationName,
             cost,
-            slot: paidRondelSlot.representation,
+            slot: paidRondelSlot.id,
           }),
         );
       }
