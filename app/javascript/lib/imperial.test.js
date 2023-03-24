@@ -332,8 +332,10 @@ describe('imperial', () => {
         game.tick(
           Action.rondel({ nation: Nation.AH, cost: 0, slot: 'factory' }),
         );
-        game.tick(Action.buildFactory({ province: 'a', player: 'player1', nationCosts: 5, playerCosts: 0 }));
-        
+        game.tick(Action.buildFactory({
+          province: 'a', player: 'player1', nationCosts: 5, playerCosts: 0,
+        }));
+
         // Assert
         const expected = new Set(
           [
@@ -1543,9 +1545,11 @@ describe('imperial', () => {
             );
 
             const expected = new Set();
-            ['factory', 'production1', 'maneuver1', 'investor', 'import', 'production2', 'maneuver2', 'taxation'].forEach((slot) => {
-              expected.add(Action.rondel({ nation: Nation.IT, cost: 0, slot }));
-            });
+            ['factory', 'production1', 'maneuver1', 'investor', 'import', 'production2', 'maneuver2', 'taxation'].forEach(
+              (slot) => {
+                expected.add(Action.rondel({ nation: Nation.IT, cost: 0, slot }));
+              },
+            );
             expected.add(Action.undo({ player: 'player1' }));
 
             expect(game.availableActions).toEqual(expected);
@@ -2318,7 +2322,8 @@ describe('imperial', () => {
                 expect(game.players.player2.cash).toEqual(0);
               });
 
-              test('multiple players with a Swiss Bank may invest in clockwise order, starting with the current bearer of the investor card', () => {
+              test('multiple players with a Swiss Bank may invest in clockwise order, '
+                + 'starting with the current bearer of the investor card', () => {
                 const game = newGame();
                 game.investorCardHolder = 'player2';
                 // Make player3 control all countries
@@ -2405,7 +2410,8 @@ describe('imperial', () => {
                 });
               });
 
-              test('a player who has a Swiss Bank may choose to force the current nation to stay on the Investor slot, if the nation can pay out all the money it owes', () => {
+              test('a player who has a Swiss Bank may choose to force the current nation to stay on the Investor slot, '
+                + 'if the nation can pay out all the money it owes', () => {
                 const game = newGame();
                 game.players.player1.cash = 2;
                 game.investorCardHolder = 'player1';
@@ -2587,7 +2593,8 @@ describe('imperial', () => {
                 );
               });
 
-              test('a player who has a Swiss Bank may not choose to force the current nation to stay on the Investor slot, if the nation cannot pay out all the money it owes', () => {
+              test('a player who has a Swiss Bank may not choose to force the current nation to stay on the Investor slot, '
+                + 'if the nation cannot pay out all the money it owes', () => {
                 const game = newGame();
                 game.players.player1.cash = 2;
                 game.investorCardHolder = 'player1';
@@ -3075,8 +3082,12 @@ describe('imperial', () => {
 
           expect(game.availableActions).toEqual(
             new Set([
-              Action.buildFactory({ province: 'a', player: 'player1', nationCosts: 5, playerCosts: 0 }),
-              Action.buildFactory({ province: 'b', player: 'player1', nationCosts: 5, playerCosts: 0 }),
+              Action.buildFactory({
+                province: 'a', player: 'player1', nationCosts: 5, playerCosts: 0,
+              }),
+              Action.buildFactory({
+                province: 'b', player: 'player1', nationCosts: 5, playerCosts: 0,
+              }),
               Action.skipBuildFactory({ nation: Nation.AH, player: 'player1' }),
               Action.undo({ player: 'player1' }),
             ]),
@@ -3094,7 +3105,9 @@ describe('imperial', () => {
 
           expect(game.availableActions).toEqual(
             new Set([
-              Action.buildFactory({ province: 'b', player: 'player1', nationCosts: 5, playerCosts: 0 }),
+              Action.buildFactory({
+                province: 'b', player: 'player1', nationCosts: 5, playerCosts: 0,
+              }),
               Action.skipBuildFactory({ nation: Nation.AH, player: 'player1' }),
               Action.undo({ player: 'player1' }),
             ]),
@@ -3115,8 +3128,12 @@ describe('imperial', () => {
           // Assert
           expect(game.availableActions).toEqual(
             new Set([
-              Action.buildFactory({ province: 'a', player: 'player1', nationCosts: 3, playerCosts: 2 }),
-              Action.buildFactory({ province: 'b', player: 'player1', nationCosts: 3, playerCosts: 2 }),
+              Action.buildFactory({
+                province: 'a', player: 'player1', nationCosts: 3, playerCosts: 2,
+              }),
+              Action.buildFactory({
+                province: 'b', player: 'player1', nationCosts: 3, playerCosts: 2,
+              }),
               Action.skipBuildFactory({ nation: Nation.AH, player: 'player1' }),
               Action.undo({ player: 'player1' }),
             ]),
@@ -3134,7 +3151,9 @@ describe('imperial', () => {
 
           expect(game.availableActions).toEqual(
             new Set([
-              Action.buildFactory({ province: 'b', player: 'player1', nationCosts: 5, playerCosts: 0 }),
+              Action.buildFactory({
+                province: 'b', player: 'player1', nationCosts: 5, playerCosts: 0,
+              }),
               Action.skipBuildFactory({ nation: Nation.AH, player: 'player1' }),
               Action.undo({ player: 'player1' }),
             ]),
@@ -3380,7 +3399,8 @@ describe('imperial', () => {
           );
         });
 
-        test('maneuver army to home province of another nation that also contains an army belonging to the other nation sets army to friendly if they agree to be friendly', () => {
+        test('maneuver army to home province of another nation that '
+          + ' also contains an army belonging to the other nation sets army to friendly if they agree to be friendly', () => {
           const game = newGame();
           game.units.get(Nation.AH).get('d').armies += 1;
           game.units.get(Nation.IT).get('f').armies += 1;
@@ -3821,22 +3841,25 @@ describe('imperial', () => {
           expect(game.provinces.get('f').flag).toEqual(Nation.IT);
         });
 
-        test('without endManeuver(), maneuver away from coexisting province switches flag to other nation at the end of the turn', () => {
-          const game = newGame();
-          game.units.get(Nation.AH).get('f').armies += 1;
-          game.units.get(Nation.AH).get('c').armies += 1;
-          game.units.get(Nation.IT).get('f').armies += 1;
-          game.provinces.get('f').flag = Nation.AH;
+        test(
+          'without endManeuver(), maneuver away from coexisting province switches flag to other nation at the end of the turn',
+          () => {
+            const game = newGame();
+            game.units.get(Nation.AH).get('f').armies += 1;
+            game.units.get(Nation.AH).get('c').armies += 1;
+            game.units.get(Nation.IT).get('f').armies += 1;
+            game.provinces.get('f').flag = Nation.AH;
 
-          game.tick(
-            Action.rondel({ slot: 'maneuver1', nation: Nation.AH, cost: 0 }),
-          );
-          game.tick(Action.maneuver({ origin: 'f', destination: 'd' }));
-          game.tick(Action.maneuver({ origin: 'c', destination: 'd' }));
+            game.tick(
+              Action.rondel({ slot: 'maneuver1', nation: Nation.AH, cost: 0 }),
+            );
+            game.tick(Action.maneuver({ origin: 'f', destination: 'd' }));
+            game.tick(Action.maneuver({ origin: 'c', destination: 'd' }));
 
-          // The turn is over now and the flag should switch to Italy
-          expect(game.provinces.get('f').flag).toEqual(Nation.IT);
-        });
+            // The turn is over now and the flag should switch to Italy
+            expect(game.provinces.get('f').flag).toEqual(Nation.IT);
+          },
+        );
 
         test('maneuver away from coexisting province keeps flag on original nation, if province is still contested', () => {
           const game = newGame();
