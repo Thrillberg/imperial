@@ -389,7 +389,7 @@ describe('imperial', () => {
 
         expect(game.nations.get(Nation.AH).treasury).toEqual(11);
 
-        game.rondelExecute(
+        game.advanceOnRondel(
           Action.rondel({ nation: Nation.AH, cost: 0, slot: 'import' }),
         );
         game.tick(Action.import({ placements: [] }));
@@ -406,7 +406,7 @@ describe('imperial', () => {
         expected.get(Nation.AH).get('a').armies += 1;
         expect(game.nations.get(Nation.AH).treasury).toEqual(11);
 
-        game.rondelExecute(
+        game.advanceOnRondel(
           Action.rondel({ nation: Nation.AH, cost: 0, slot: 'import' }),
         );
         game.tick(
@@ -451,7 +451,7 @@ describe('imperial', () => {
         expected.get(Nation.AH).get('a').fleets += 1;
         expect(game.nations.get(Nation.AH).treasury).toEqual(11);
 
-        game.rondelExecute(
+        game.advanceOnRondel(
           Action.rondel({ nation: Nation.AH, cost: 0, slot: 'import' }),
         );
         game.tick(

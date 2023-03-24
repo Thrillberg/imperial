@@ -241,7 +241,7 @@ export default class Imperial {
       }
       case 'rondel': {
         this.previousPlayerName = this.currentPlayerName;
-        this.rondelExecute(action);
+        this.advanceOnRondel(action);
         break;
       }
       default: {
@@ -1221,7 +1221,7 @@ export default class Imperial {
     }
   }
 
-  rondelExecute(action) {
+  advanceOnRondel(action) {
     this.currentNation = action.payload.nation;
     const currentNation = this.nations.get(this.currentNation);
     const currentPlayer = this.players[this.currentPlayerName];
