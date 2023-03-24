@@ -41,10 +41,7 @@ export const translateProvinceModel = (representation, allProvinces, allUnits, g
   const oldProvinceModel = allProvinces.get(representation);
   const geographicModel = gameBoard.graph.get(representation);
 
-  const province = new Province(
-    geographicModel.isOcean === false || geographicModel.isOcean === undefined,
-    representation,
-  );
+  const province = new Province(!geographicModel.isOcean, representation);
 
   province.ownership = geographicModel.nation;
   province.hasArmsFactory = oldProvinceModel.factory === 'armaments';
