@@ -35,7 +35,7 @@
           v-for="[bearer, amount] of bondBearers"
           :key="bearer"
         >
-          <b>{{ bearer }}</b> would receive {{ displayMonetaryValueInMillions(amount) }}
+          <b>{{ bearer }}</b> would receive {{ this.displayMonetaryValue_InMillions(amount) }}
         </div>
         <div v-if="game.variant !== 'withoutInvestorCard'">
           <b>{{ game.investorCardHolder }}</b> has the investor card
@@ -47,24 +47,21 @@
       >
         <div>
           <div v-if="game.baseGame === 'imperial'">
-            <b> Tax Revenue </b> will go from
-            {{ displayMonetaryValueInMillions(game.nations.get(game.currentNation).taxChartPosition) }} to
-            {{ displayMonetaryValueInMillions(nextTaxChartPosition) }}
+            <b> Tax Revenue </b> will go from {{ this.displayMonetaryValue_InMillions(game.nations.get(game.currentNation).taxChartPosition) }} to {{ this.displayMonetaryValue_InMillions(nextTaxChartPosition) }}
           </div>
           <div>
-            <b> {{ game.currentPlayerName }} </b> would receive {{ displayMonetaryValueInMillions(playerBonus) }}
+            <b> {{ game.currentPlayerName }} </b> would receive {{ this.displayMonetaryValue_InMillions(playerBonus) }}
           </div>
           <div>
-            <b> {{ displayNationName(game.currentNation.value) }} </b>'s treasury would
-            change by {{ displayMonetaryValueInMillions(nationProfit) }}
+            <b> {{ this.displayNationName(game.currentNation.value) }} </b>'s treasury would change by {{ this.displayMonetaryValue_InMillions(nationProfit) }}
           </div>
           <div>
-            <b> {{ displayNationName(game.currentNation.value) }} </b>'s power points would be {{ nextTaxationPowerPoints }}
+            <b> {{ this.displayNationName(game.currentNation.value) }} </b>'s power points would be {{ nextTaxationPowerPoints }}
           </div>
         </div>
       </div>
-      <div v-if="cost > 0">
-        <b>Cost: {{ displayMonetaryValueInMillions(cost) }}</b>
+      <div v-if="!!cost">
+        <b>Cost: {{ this.displayMonetaryValue_InMillions(cost) }}</b>
       </div>
       <div>
         <span v-if="displayHelperFlag">
@@ -82,7 +79,7 @@
 </template>
 
 <script>
-import { displayNationName, displayMonetaryValueInMillions } from '../stringify';
+import { displayNationName, displayMonetaryValue_InMillions } from '../stringify';
 import { nextTaxationPowerPoints } from '../taxChartHelpers';
 import Flag from './flags/Flag.vue';
 
@@ -170,8 +167,8 @@ export default {
     displayNationName(nation) {
       return displayNationName(nation);
     },
-    displayMonetaryValueInMillions(value) {
-      return displayMonetaryValueInMillions(value);
+    displayMonetaryValue_InMillions(value) {
+      return displayMonetaryValue_InMillions(value);
     },
     isValid(slot) {
       if (this.paused) return false;
@@ -208,17 +205,14 @@ export default {
             if (this.game.variant === 'withoutInvestorCard') {
               this.helperText = 'Nation pays players interest';
             } else {
-              this.helperText = 'Nation pays players interest, '
-                + `investor card holder receives ${this.displayMonetaryValueInMillions(2)} and may purchase a bond, `
-                + 'Swiss Banks may invest.';
+              this.helperText = `Nation pays players interest, investor card holder receives ${this.displayMonetaryValue_InMillions(2)} and may purchase a bond, Swiss Banks may invest.`;
             }
             break;
           }
           case 'import': {
             this.onInvestorSlot = false;
             this.onTaxationSlot = false;
-            this.helperText = `Nation may purchase up to 3 units for ${this.displayMonetaryValueInMillions(1)} each, `
-              + 'to be placed anywhere in their home territory.';
+            this.helperText = `Nation may purchase up to 3 units for ${this.displayMonetaryValue_InMillions(1)} each, to be placed anywhere in their home territory.`;
             break;
           }
           case 'production1':
@@ -238,31 +232,22 @@ export default {
           case 'taxation': {
             this.onInvestorSlot = false;
             this.onTaxationSlot = true;
-            this.helperText = `Nation taxes (${this.displayMonetaryValueInMillions(2)} per unoccupied factory and `
-            + `${this.displayMonetaryValueInMillions(1)} per flag in) its empire. `
-            + 'Power points are increased and nation receives tax, less soldiers\' pay '
-            + `(${this.displayMonetaryValueInMillions(1)} per unit). `
-            + 'Player is paid a bonus accordingly.';
+            this.helperText = `Player receives tax (${this.displayMonetaryValue_InMillions(2)} per unoccupied factory and ${this.displayMonetaryValue_InMillions(1)} per flag) from the nation. ` +
+            `Power points are increased and nation receives tax, less soldiers' pay (${this.displayMonetaryValue_InMillions(1)} per unit).`;
             break;
           }
           case 'factory': {
             this.onInvestorSlot = false;
             this.onTaxationSlot = false;
-            this.helperText = `Nation builds a factory for ${this.displayMonetaryValueInMillions(5)}. `
-            + 'If the nation has insufficient funds, the governor of the nation will fund the rest of the costs.';
+            this.helperText = `Nation builds a factory for ${this.displayMonetaryValue_InMillions(5)}.`;
             break;
           }
           default: { break; }
         }
-
-        this.cost = 0;
+        this.cost = '';
         for (const action of this.game.availableActions) {
           if (action.payload.slot === slot) {
-            if (action.payload.cost) {
-              this.cost += action.payload.cost;
-            }
-
-            break;
+            this.cost = action.payload.cost;
           }
         }
       }
