@@ -93,10 +93,13 @@ export default class Imperial {
     for (const availableAction of this.availableActions) {
       if (Imperial.isEqual(availableAction, action)) {
         validAction = true;
+        break;
       }
     }
 
-    if (!validAction) {
+    if (validAction === false) {
+      console.error("The following submitted action is invalid: ", action);
+      console.log("Expected actions were: ", this.availableActions);
       return;
     }
 
