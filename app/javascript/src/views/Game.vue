@@ -599,7 +599,9 @@ export default {
           ({ baseGame } = this.gameData.baseGame);
         }
       }
+
       const gameLog = getGameLog(log, baseGame);
+
       if (baseGame === 'imperial') {
         this.board = imperialBoard;
       } else if (baseGame === 'imperial2030') {
@@ -641,10 +643,8 @@ export default {
       // This function returns all provinces that a unit can move
       // or be imported to.
       const provinces = new Set();
-      if (
-        this.game.currentPlayerName === this.profile.username
-        || (this.game.soloMode && this.hostingThisGame)
-      ) {
+
+      if (this.game.currentPlayerName === this.profile.username || (this.game.soloMode && this.hostingThisGame)) {
         for (const action of this.game.availableActions) {
           if (action.type === 'maneuver' && this.game.maneuvering) {
             if (this.maneuverOrigin === action.payload.origin) {
@@ -656,14 +656,12 @@ export default {
             action.payload.placements.forEach((placement) => {
               provinces.add(placement.province);
             });
-          } else if (
-            action.type === 'buildFactory'
-            && this.game.buildingFactory
-          ) {
+          } else if (action.type === 'buildFactory' && this.game.buildingFactory) {
             provinces.add(action.payload.province);
           }
         }
       }
+
       return Array.from(provinces);
     },
     selectProvince(inputProvince) {
@@ -672,8 +670,10 @@ export default {
       for (const validProvince of this.validProvinces()) {
         if (validProvince === province) {
           provinceIsValid = true;
+          break;
         }
       }
+
       if (!provinceIsValid) {
         this.maneuverOrigin = '';
         return;
@@ -774,7 +774,8 @@ export default {
     },
     backToRoundStart() {
       const startingNation = this.game.baseGame === 'imperial' ? Nation.AH : Nation2030.RU;
-      while ((this.game.log[this.game.log.length - 1].payload.nation !== startingNation) || (this.game.log[this.game.log.length - 1].type !== 'rondel')) {
+      while ((this.game.log[this.game.log.length - 1].payload.nation !== startingNation)
+        || (this.game.log[this.game.log.length - 1].type !== 'rondel')) {
         this.back();
       }
 

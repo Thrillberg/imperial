@@ -325,7 +325,18 @@ describe('imperial', () => {
       };
 
       test('AH builds a factory', () => {
+        // Arrange
         const game = newGame();
+
+        // Act
+        game.tick(
+          Action.rondel({ nation: Nation.AH, cost: 0, slot: 'factory' }),
+        );
+        game.tick(Action.buildFactory({
+          province: 'a', player: 'player1', nationCosts: 5, playerCosts: 0,
+        }));
+
+        // Assert
         const expected = new Set(
           [
             'factory',
@@ -339,12 +350,6 @@ describe('imperial', () => {
           ].map((slot) => Action.rondel({ nation: Nation.IT, cost: 0, slot })),
         );
         expected.add(Action.undo({ player: 'player1' }));
-
-        game.tick(
-          Action.rondel({ nation: Nation.AH, cost: 0, slot: 'factory' }),
-        );
-        game.tick(Action.buildFactory({ province: 'a' }));
-
         expect(game.availableActions).toEqual(expected);
         expect(game.buildingFactory).toEqual(false);
       });
@@ -384,7 +389,7 @@ describe('imperial', () => {
 
         expect(game.nations.get(Nation.AH).treasury).toEqual(11);
 
-        game.rondel(
+        game.advanceOnRondel(
           Action.rondel({ nation: Nation.AH, cost: 0, slot: 'import' }),
         );
         game.tick(Action.import({ placements: [] }));
@@ -401,7 +406,7 @@ describe('imperial', () => {
         expected.get(Nation.AH).get('a').armies += 1;
         expect(game.nations.get(Nation.AH).treasury).toEqual(11);
 
-        game.rondel(
+        game.advanceOnRondel(
           Action.rondel({ nation: Nation.AH, cost: 0, slot: 'import' }),
         );
         game.tick(
@@ -446,7 +451,7 @@ describe('imperial', () => {
         expected.get(Nation.AH).get('a').fleets += 1;
         expect(game.nations.get(Nation.AH).treasury).toEqual(11);
 
-        game.rondel(
+        game.advanceOnRondel(
           Action.rondel({ nation: Nation.AH, cost: 0, slot: 'import' }),
         );
         game.tick(
@@ -619,9 +624,8 @@ describe('imperial', () => {
           );
         });
 
-        test('nation cannot move to Factory if they cannot afford to buy a factory', () => {
+        test('nation can move to Factory even if they cannot afford to buy a factory', () => {
           const game = newGame();
-
           game.nations.get(Nation.AH).treasury = 0;
 
           game.tick(
@@ -647,11 +651,8 @@ describe('imperial', () => {
           expect(game.availableActions).toEqual(
             new Set([
               Action.rondel({ slot: 'taxation', cost: 0, nation: Nation.AH }),
-              Action.rondel({
-                slot: 'production1',
-                cost: 0,
-                nation: Nation.AH,
-              }),
+              Action.rondel({ slot: 'production1', cost: 0, nation: Nation.AH }),
+              Action.rondel({ slot: 'factory', cost: 0, nation: Nation.AH }),
               Action.rondel({ slot: 'maneuver1', cost: 2, nation: Nation.AH }),
               Action.undo({ player: 'player2' }),
             ]),
@@ -2416,8 +2417,8 @@ describe('imperial', () => {
                 });
               });
 
-              test('a player who has a Swiss Bank may choose to force the current nation to stay on '
-                + 'the Investor slot, if the nation can pay out all the money it owes', () => {
+              test('a player who has a Swiss Bank may choose to force the current nation to stay on the Investor slot, '
+                + 'if the nation can pay out all the money it owes', () => {
                 const game = newGame();
                 game.players.player1.cash = 2;
                 game.investorCardHolder = 'player1';
@@ -2599,8 +2600,8 @@ describe('imperial', () => {
                 );
               });
 
-              test('a player who has a Swiss Bank may not choose to force the current nation to stay on '
-                + 'the Investor slot, if the nation cannot pay out all the money it owes', () => {
+              test('a player who has a Swiss Bank may not choose to force the current nation to stay on the Investor slot, '
+                + 'if the nation cannot pay out all the money it owes', () => {
                 const game = newGame();
                 game.players.player1.cash = 2;
                 game.investorCardHolder = 'player1';
@@ -3088,8 +3089,12 @@ describe('imperial', () => {
 
           expect(game.availableActions).toEqual(
             new Set([
-              Action.buildFactory({ province: 'a' }),
-              Action.buildFactory({ province: 'b' }),
+              Action.buildFactory({
+                province: 'a', player: 'player1', nationCosts: 5, playerCosts: 0,
+              }),
+              Action.buildFactory({
+                province: 'b', player: 'player1', nationCosts: 5, playerCosts: 0,
+              }),
               Action.skipBuildFactory({ nation: Nation.AH, player: 'player1' }),
               Action.undo({ player: 'player1' }),
             ]),
@@ -3107,7 +3112,35 @@ describe('imperial', () => {
 
           expect(game.availableActions).toEqual(
             new Set([
-              Action.buildFactory({ province: 'b' }),
+              Action.buildFactory({
+                province: 'b', player: 'player1', nationCosts: 5, playerCosts: 0,
+              }),
+              Action.skipBuildFactory({ nation: Nation.AH, player: 'player1' }),
+              Action.undo({ player: 'player1' }),
+            ]),
+          );
+          expect(game.buildingFactory).toEqual(true);
+        });
+
+        test('player may fund nation to build factory if deficit', () => {
+          // Arrange
+          const game = newGame();
+          game.nations.get(Nation.AH).treasury = 3;
+
+          // Act
+          game.tick(
+            Action.rondel({ slot: 'factory', cost: 0, nation: Nation.AH }),
+          );
+
+          // Assert
+          expect(game.availableActions).toEqual(
+            new Set([
+              Action.buildFactory({
+                province: 'a', player: 'player1', nationCosts: 3, playerCosts: 2,
+              }),
+              Action.buildFactory({
+                province: 'b', player: 'player1', nationCosts: 3, playerCosts: 2,
+              }),
               Action.skipBuildFactory({ nation: Nation.AH, player: 'player1' }),
               Action.undo({ player: 'player1' }),
             ]),
@@ -3125,7 +3158,9 @@ describe('imperial', () => {
 
           expect(game.availableActions).toEqual(
             new Set([
-              Action.buildFactory({ province: 'b' }),
+              Action.buildFactory({
+                province: 'b', player: 'player1', nationCosts: 5, playerCosts: 0,
+              }),
               Action.skipBuildFactory({ nation: Nation.AH, player: 'player1' }),
               Action.undo({ player: 'player1' }),
             ]),
