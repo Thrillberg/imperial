@@ -21,6 +21,7 @@
           :games-fetched="gamesFetched"
           :observers="observers"
           :game-data="gameData"
+          :env="env"
           @registered="register"
           @signedIn="signIn"
           @openGame="openGame"
@@ -49,6 +50,9 @@ import favicon3 from './assets/favicon3.ico';
 export default {
   name: 'App',
   components: { Header },
+  props: {
+    env: { type: String, default: '' },
+  },
   data() {
     return {
       profile: {},

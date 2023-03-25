@@ -441,7 +441,7 @@ export default {
     apiClient.userStoppedObservingGame(this.profile.username, this.$route.params.id);
     next();
   },
-  props: ['profile', 'users', 'gameData', 'games', 'observers'],
+  props: ['profile', 'users', 'gameData', 'games', 'observers', 'env'],
   data: () => ({
     importProvince: '',
     board: {},
@@ -612,7 +612,7 @@ export default {
       }
 
       this.game = Imperial.fromLog(gameLog, this.board);
-      if (this.game.invalidAction) {
+      if (this.env === 'production' && this.game.invalidAction) {
         const logtail = new Logtail('3bdHcA8P3mcww2ojgC5G8YiT');
         logtail.error(
           'Invalid action error',
