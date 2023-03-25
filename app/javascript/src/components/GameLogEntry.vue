@@ -203,7 +203,7 @@ export default {
 
       const factoryDescription = `a factory in ${province} for ${this.displayMonetaryValue_InMillions(totalCost)}.`;
 
-      if (payload.nationCosts) {
+      if (payload.playerCosts) {
         const nation = this.displayNationName(this.board.graph.get(payload.province).nation.value);
         const { player } = payload;
 
