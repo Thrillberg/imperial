@@ -2367,7 +2367,7 @@ export default class Imperial {
       }
 
       if (action1.type === 'buildFactory' && action2.type === 'buildFactory') {
-        // accept migrations from older designs, which previously did not allow for funding nations direction
+        // accept migrations from older designs, which previously did not allow for funding nations directly
         return action1.payload.province === action2.payload.province;
       }
 
