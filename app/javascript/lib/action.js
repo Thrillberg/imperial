@@ -31,6 +31,7 @@ const makeAction = (type, payloadKeys) => {
   return memoize((payload) => {
     // lightly validate the payload keys
     const [l, b, r] = membership(expected, new Set(Object.keys(payload || {})));
+
     if (l.size > 0 || r.size > 0) {
       throw new Error(
         JSON.stringify({
@@ -41,6 +42,7 @@ const makeAction = (type, payloadKeys) => {
         }),
       );
     }
+
     return { type, payload };
   });
 };
@@ -64,7 +66,7 @@ export default {
   initialize: makeAction('initialize', ['players', 'soloMode', 'variant', 'baseGame']),
   blockCanal: makeAction('blockCanal', []),
   bondPurchase: makeAction('bondPurchase', ['nation', 'player', 'cost', 'tradeInValue']),
-  buildFactory: makeAction('buildFactory', ['province']),
+  buildFactory: makeAction('buildFactory', ['province', 'player', 'nationCosts', 'playerCosts']),
   coexist: makeAction('coexist', ['province', 'incumbent', 'challenger']),
   destroyFactory: makeAction('destroyFactory', ['province']),
   endGame: makeAction('endGame', []),
@@ -81,6 +83,7 @@ export default {
   maneuver: makeAction('maneuver', ['origin', 'destination']),
   production: makeAction('production', ['province']),
   rondel: makeAction('rondel', ['nation', 'cost', 'slot']),
+  couldNotBuildFactory: makeAction('couldNotBuildFactory', ['nation']),
   skipBuildFactory: makeAction('skipBuildFactory', ['player', 'nation']),
   skipBondPurchase: makeAction('skipBondPurchase', ['player', 'nation']),
   skipDestroyFactory: makeAction('skipDestroyFactory', ['province']),

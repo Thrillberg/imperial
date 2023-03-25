@@ -226,7 +226,7 @@ export default class Auction {
     );
     game.currentPlayerName = startingPlayer;
     game.currentNation = startingNation;
-    for (const rondelAction of game.rondelActions(startingNation)) {
+    for (const rondelAction of game.availableRondelActions(startingNation)) {
       game.availableActions.add(rondelAction);
     }
     this.inAuction = false;
