@@ -19,7 +19,7 @@ import VueCookies from 'vue3-cookies';
 import App from '../src/App.vue';
 import router from '../src/router';
 
-const app = createApp(App);
+const app = createApp(App, { env: process.env.NODE_ENV });
 
 app.use(router);
 app.use(VueCookies);

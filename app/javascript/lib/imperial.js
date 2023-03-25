@@ -1,8 +1,9 @@
-import ImperialEuropeGame from './Entities/ImperialEuropeGame';
+import { Logtail } from '@logtail/browser';
+import { translateProvinceModel } from './Entities/Board/Province';
 import Imperial2030Game from './Entities/Imperial2030Game';
 import ImperialAsiaGame from './Entities/ImperialAsiaGame';
+import ImperialEuropeGame from './Entities/ImperialEuropeGame';
 import Rondel from './Entities/Rondel';
-import { translateProvinceModel } from './Entities/Board/Province';
 
 import Action from './action';
 import Auction from './auction';
@@ -24,10 +25,10 @@ import standardAsiaSetup from './standardAsiaSetup';
 import standardSetup from './standardSetup';
 
 // Rondel use cases
+import FactorySlotBuildChargeCosts from './UseCases/Rondels/FactorySlots/Build/ChargeCosts';
+import FactorySlotBuildPermissions from './UseCases/Rondels/FactorySlots/Build/Permissions';
 import AvailableSlots from './UseCases/Rondels/SlotSelection/AvailableSlots';
 import SlotDistanceCosts from './UseCases/Rondels/SlotSelection/SlotDistanceCosts';
-import FactorySlotBuildPermissions from './UseCases/Rondels/FactorySlots/Build/Permissions';
-import FactorySlotBuildChargeCosts from './UseCases/Rondels/FactorySlots/Build/ChargeCosts';
 
 export default class Imperial {
   static fromLog(log, board) {
@@ -37,6 +38,8 @@ export default class Imperial {
   }
 
   constructor(board) {
+    this.logtail = new Logtail('3bdHcA8P3mcww2ojgC5G8YiT');
+    this.invalidAction = false;
     this.board = board || standardGameBoard;
     // This is the canonical log from which game state is derived.
     this.log = [];
@@ -97,9 +100,9 @@ export default class Imperial {
       }
     }
 
+    this.invalidAction = false;
     if (validAction === false) {
-      console.error('The following submitted action is invalid: ', action);
-      console.log('Expected actions were: ', this.availableActions);
+      this.invalidAction = true;
       return;
     }
 

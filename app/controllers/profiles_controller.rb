@@ -13,7 +13,7 @@ class ProfilesController < ApplicationController
         end
       end
       profile[:name] = user.name
-      profile[:anonymity_confirmed_at] = user.anonymity_confirmed_at
+      profile[:anonymityConfirmedAt] = user.anonymity_confirmed_at
       profile[:id] = user.id
       profile[:turn_notifications_enabled] = user.turn_notifications_enabled
     end
