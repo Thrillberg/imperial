@@ -285,6 +285,7 @@ export default class Imperial {
         break;
 
       default:
+        console.error("Undefined gamemode ", this.baseGame);
         this.game = null;
         break;
     }
