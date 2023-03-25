@@ -230,14 +230,14 @@ export default {
       return `Imported a total of ${provincesList.length} ${unit} into ${provincesText}.`;
     },
     maneuverAction(payload) {
-      const unit = this.unitTypeByDestinationSingular(payload.destination);
+      const unit = this.unitTypeByDestination_Singular(payload.destination);
       const origin = this.displayLocationName(payload.origin);
       const destination = this.displayLocationName(payload.destination);
 
       return `Moved ${unit} from ${origin} to ${destination}.`;
     },
     coexistAction(payload) {
-      const units = this.capitalize(this.unitTypeByDestinationPlural(payload.province));
+      const units = this.capitalize(this.unitTypeByDestination_Singular(payload.province));
       // technically it could be a fleet in port sharing the province with an army
 
       const province = this.displayLocationName(payload.province);

@@ -213,7 +213,7 @@ export default {
           case 'import': {
             this.onInvestorSlot = false;
             this.onTaxationSlot = false;
-            this.helperText = `Nation may purchase up to 3 units for ${this.displayMonetaryValueInMillions(1)} each, `
+            this.helperText = `Nation may purchase up to 3 units for ${this.displayMonetaryValue_InMillions(1)} each, `
               + 'to be placed anywhere in their home territory.';
             break;
           }
@@ -234,17 +234,17 @@ export default {
           case 'taxation': {
             this.onInvestorSlot = false;
             this.onTaxationSlot = true;
-            this.helperText = `Nation taxes (${this.displayMonetaryValueInMillions(2)} per unoccupied factory and `
-            + `${this.displayMonetaryValueInMillions(1)} per flag in) its empire. `
+            this.helperText = `Nation taxes (${this.displayMonetaryValue_InMillions(2)} per unoccupied factory and `
+            + `${this.displayMonetaryValue_InMillions(1)} per flag in) its empire. `
             + 'Power points are increased and nation receives tax, less soldiers\' pay '
-            + `(${this.displayMonetaryValueInMillions(1)} per unit). `
+            + `(${this.displayMonetaryValue_InMillions(1)} per unit). `
             + 'Player is paid a bonus accordingly.';
             break;
           }
           case 'factory': {
             this.onInvestorSlot = false;
             this.onTaxationSlot = false;
-            this.helperText = `Nation builds a factory for ${this.displayMonetaryValueInMillions(5)}. `
+            this.helperText = `Nation builds a factory for ${this.displayMonetaryValue_InMillions(5)}. `
             + 'If the nation has insufficient funds, the governor of the nation will fund the rest of the costs.';
             break;
           }
