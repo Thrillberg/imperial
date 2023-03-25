@@ -72,14 +72,18 @@ export default class Rondel {
     return this.slotOrder[slotIndex];
   }
 
-  passedInvestor(exclusiveFromSlot, inclusiveToSlot) {
-    do {
+  passedInvestor(exclusiveFromSlot, exclusiveToSlot) {
+    while (exclusiveFromSlot !== exclusiveToSlot) {
       exclusiveFromSlot = this.slotClockwiseTo(exclusiveFromSlot, 1);
+
+      if (exclusiveFromSlot === exclusiveToSlot) {
+        break;
+      }
 
       if (exclusiveFromSlot === this.investorSlot) {
         return true;
       }
-    } while (exclusiveFromSlot !== inclusiveToSlot);
+    }
 
     return false;
   }
