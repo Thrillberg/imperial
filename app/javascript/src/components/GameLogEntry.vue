@@ -207,9 +207,6 @@ export default {
         const nation = this.displayNationName(this.board.graph.get(payload.province).nation.value);
         const { player } = payload;
 
-        if (payload.playerCosts === 0) {
-          return `Built ${factoryDescription}`;
-        }
         return `${player} funded ${nation} ${this.displayMonetaryValue_InMillions(payload.playerCosts)} `
           + `to build ${factoryDescription}`;
       }
