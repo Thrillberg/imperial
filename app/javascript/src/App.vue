@@ -39,8 +39,8 @@
 </template>
 
 <script>
-import { apiClient } from './router/index.js';
-import translateToGameData from './translateToGameData.js';
+import { apiClient } from './router/index';
+import translateToGameData from './translateToGameData';
 
 import Header from './components/Header.vue';
 
@@ -100,13 +100,13 @@ export default {
       fetch(`/profiles/${this.$cookies.get('user_id')}`, { method: 'GET' })
         .then((response) => response.json())
         .then(({
-          name, email, registered, anonymity_confirmed_at, id,
+          name, email, registered, anonymityConfirmedAt, id,
         }) => {
           if (!name) {
             this.createUserProfile();
           } else {
             this.profile = {
-              username: name, email, registered, anonymity_confirmed_at, id,
+              username: name, email, registered, anonymityConfirmedAt, id,
             };
             this.profileFetched = true;
           }
@@ -168,7 +168,7 @@ export default {
       this.profile = {};
     },
     anonymityConfirmed(date) {
-      const profile = { ...this.profile, anonymity_confirmed_at: date };
+      const profile = { ...this.profile, anonymityConfirmedAt: date };
       this.profile = profile;
     },
     openGame(game) {

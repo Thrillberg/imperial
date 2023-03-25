@@ -28,8 +28,9 @@
             "object": true
         }],
         "vue/multi-word-component-names": ["error", {
-            "ignores": ["Board", "Game", "Province", "Flag", "Bond", "Player", "Rondel", "About"]
+            "ignores": ["Board", "Game", "Province", "Flag", "Bond", "Player", "Rondel", "About", "Header", "Home"]
         }],
+        "vue/no-reserved-component-names": ["off"],
         "vue/no-v-html": ["off"]
     }
 }

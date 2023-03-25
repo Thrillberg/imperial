@@ -21,14 +21,27 @@
           >
             Rankings
           </router-link>
-          <div v-for="(error, index) in errors" v-bind:key="index" class="text-red-700 px-1 sm:pr-8">
+          <div
+            v-for="(error, index) in errors"
+            :key="index"
+            class="text-red-700 px-1 sm:pr-8"
+          >
             <b>{{ error }}</b>
           </div>
         </div>
         <div class="flex">
-          <span v-if="profile.anonymity_confirmed_at && !profile.registered" class="self-center px-1 sm:px-8">Playing as {{ profile.username }}</span>
-          <span v-if="profile.email" class="self-center px-1 sm:px-8">Signed in as
-            <router-link :to="{ path: '/users/' + profile.id }" class="underline">
+          <span
+            v-if="profile.anonymityConfirmedAt && !profile.registered"
+            class="self-center px-1 sm:px-8"
+          >Playing as {{ profile.username }}</span>
+          <span
+            v-if="profile.email"
+            class="self-center px-1 sm:px-8"
+          >Signed in as
+            <router-link
+              :to="{ path: '/users/' + profile.id }"
+              class="underline"
+            >
               {{ profile.username }}
             </router-link>
           </span>
@@ -50,21 +63,28 @@
             v-if="profile.email"
             class="rounded py-2 px-1 sm:px-6 my-1 sm:my-4 bg-green-800 text-white cursor-pointer"
             @click="signOut"
-            >
+          >
             Sign Out
           </button>
         </div>
       </div>
       <div
-        v-if="!profile.anonymity_confirmed_at && !profile.registered"
+        v-if="!profile.anonymityConfirmedAt && !profile.registered"
         class="bg-yellow-100 py-2 px-1 sm:px-6"
       >
         You are not yet registered. You may
-        <span @click="setAnonymous" v-if="profile.username" class="underline cursor-pointer">
+        <span
+          v-if="profile.username"
+          class="underline cursor-pointer"
+          @click="setAnonymous"
+        >
           play anonymously as {{ profile.username }}
         </span>
         or
-        <span @click="register" class="underline cursor-pointer">
+        <span
+          class="underline cursor-pointer"
+          @click="register"
+        >
           register an account
         </span>
         .
@@ -75,51 +95,49 @@
 
 <script>
 export default {
-  name: "Header",
-  props: ["profile"],
-  data: () => {
-    return {
-      email: "",
-      errors: [],
-      password: "",
-      tempName: ""
-    };
-  },
+  name: 'Header',
+  props: ['profile'],
+  data: () => ({
+    email: '',
+    errors: [],
+    password: '',
+    tempName: '',
+  }),
   methods: {
     signIn() {
-      if (this.$route.path !== "/sign_in") {
-        this.$router.push("/sign_in");
+      if (this.$route.path !== '/sign_in') {
+        this.$router.push('/sign_in');
       }
     },
-    signOut: function (e) {
-      fetch("/accounts/sign_out", {
-        method: "DELETE",
+    signOut(e) {
+      fetch('/accounts/sign_out', {
+        method: 'DELETE',
         headers: {
-          "X-CSRF-Token": this.$cookies.get("CSRF-TOKEN")
-        }
-      })
-      this.$emit("signOut");
+          'X-CSRF-Token': this.$cookies.get('CSRF-TOKEN'),
+        },
+      });
+      this.$emit('signOut');
       e.preventDefault();
     },
     register() {
-      if (this.$route.path !== "/register") {
-        this.$router.push("/register");
+      if (this.$route.path !== '/register') {
+        this.$router.push('/register');
       }
     },
     setAnonymous() {
       fetch(
-        "/anonymity_confirmations",
+        '/anonymity_confirmations',
         {
-          method: "POST",
-          body: JSON.stringify({ id: this.$cookies.get("user_id") }),
-          headers: { "Content-Type": "application/json" }
-        }
+          method: 'POST',
+          body: JSON.stringify({ id: this.$cookies.get('user_id') }),
+          headers: { 'Content-Type': 'application/json' },
+        },
       )
         .then((response) => response.json())
         .then((data) => {
-          this.$emit("anonymity_confirmed", data.anonymity_confirmed_at)
-        })
+          this.$emit('anonymity_confirmed', data.anonymityConfirmedAt);
+        });
     },
-  }
+  },
 };
 </script>
