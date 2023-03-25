@@ -63,7 +63,7 @@
           </div>
         </div>
       </div>
-      <div v-if="cost > 0">
+      <div v-if="!!cost">
         <b>Cost: {{ displayMonetaryValue_InMillions(cost) }}</b>
       </div>
       <div>
@@ -176,8 +176,11 @@ export default {
     isValid(slot) {
       if (this.paused) return false;
 
-      if (this.validSlots().includes(slot)
-        && (this.game.currentPlayerName === this.name || (this.game.soloMode && this.hostingThisGame))) {
+      if (
+        this.validSlots().includes(slot)
+        && (this.game.currentPlayerName === this.name
+        || (this.game.soloMode && this.hostingThisGame))
+      ) {
         return true;
       }
 
@@ -213,8 +216,8 @@ export default {
           case 'import': {
             this.onInvestorSlot = false;
             this.onTaxationSlot = false;
-            this.helperText = `Nation may purchase up to 3 units for ${this.displayMonetaryValue_InMillions(1)} each, `
-              + 'to be placed anywhere in their home territory.';
+            this.helperText = 'Nation may purchase up to 3 units for '
+              + `${this.displayMonetaryValue_InMillions(1)} each, to be placed anywhere in their home territory.`;
             break;
           }
           case 'production1':
@@ -234,31 +237,24 @@ export default {
           case 'taxation': {
             this.onInvestorSlot = false;
             this.onTaxationSlot = true;
-            this.helperText = `Nation taxes (${this.displayMonetaryValue_InMillions(2)} per unoccupied factory and `
-            + `${this.displayMonetaryValue_InMillions(1)} per flag in) its empire. `
-            + 'Power points are increased and nation receives tax, less soldiers\' pay '
-            + `(${this.displayMonetaryValue_InMillions(1)} per unit). `
-            + 'Player is paid a bonus accordingly.';
+            this.helperText = `Player receives tax (${this.displayMonetaryValue_InMillions(2)} `
+              + `per unoccupied factory and ${this.displayMonetaryValue_InMillions(1)} per flag) from the nation. `
+              + 'Power points are increased and nation receives tax, less soldiers\' pay '
+              + `(${this.displayMonetaryValue_InMillions(1)} per unit).`;
             break;
           }
           case 'factory': {
             this.onInvestorSlot = false;
             this.onTaxationSlot = false;
-            this.helperText = `Nation builds a factory for ${this.displayMonetaryValue_InMillions(5)}. `
-            + 'If the nation has insufficient funds, the governor of the nation will fund the rest of the costs.';
+            this.helperText = `Nation builds a factory for ${this.displayMonetaryValue_InMillions(5)}.`;
             break;
           }
           default: { break; }
         }
-
-        this.cost = 0;
+        this.cost = '';
         for (const action of this.game.availableActions) {
           if (action.payload.slot === slot) {
-            if (action.payload.cost) {
-              this.cost += action.payload.cost;
-            }
-
-            break;
+            this.cost = action.payload.cost;
           }
         }
       }

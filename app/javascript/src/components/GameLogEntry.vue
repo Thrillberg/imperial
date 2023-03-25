@@ -37,7 +37,7 @@
         />
         <b>{{ action.playerName }}</b>
         <div class="flex justify-between">
-          <p>{{ renderAction(action) }}</p>
+          <p>{{ processAction(action) }}</p>
           <p>{{ timestampToString(timestamp) }}</p>
         </div>
       </div>
@@ -45,7 +45,7 @@
         v-else
         class="flex justify-between"
       >
-        <p>- {{ renderAction(action) }}</p>
+        <p>- {{ processAction(action) }}</p>
         <p>{{ timestampToString(timestamp) }}</p>
       </div>
     </div>
@@ -56,9 +56,7 @@
 import { DateTime } from 'luxon';
 
 import {
-  capitalize,
-  displayLocationName, displayNationName, displayMonetaryValueInMillions,
-  unitTypeByDestinationSingular, unitTypeByDestinationPlural,
+  capitalize, displayLocationName, displayNationName, unitTypeByDestinationPlural, unitTypeByDestinationSingular,
 } from '../stringify';
 import Flag from './flags/Flag.vue';
 
@@ -82,9 +80,6 @@ export default {
     displayLocationName(word) {
       return displayLocationName(word);
     },
-    displayMonetaryValue_InMillions(value) {
-      return displayMonetaryValueInMillions(value);
-    },
     unitTypeByDestination_Singular(destination) {
       return unitTypeByDestinationSingular(this.board.graph.get(destination).isOcean);
     },
@@ -94,7 +89,7 @@ export default {
     displayNationName(nation) {
       return displayNationName(nation);
     },
-    renderAction(action) {
+    processAction(action) {
       const notImplemented = 'NOT IMPLEMENTED';
       switch (action.type) {
         case 'initialize':
@@ -108,8 +103,6 @@ export default {
         case 'skipBuildFactory':
           return `${action.payload.player} chose not to build a factory for `
             + `${this.displayNationName(action.payload.nation.value)}.`;
-        case 'couldNotBuildFactory':
-          return `There were insufficient funds to build a factory for ${this.displayNationName(action.payload.nation.value)}.`;
         case 'bondPurchase':
           return this.bondPurchaseAction(action.payload);
         case 'skipBondPurchase':
@@ -152,11 +145,11 @@ export default {
           return `Control of ${this.displayNationName(action.payload.nation.value)} has passed from `
             + `${action.payload.oldNationController} to ${action.payload.newNationController}.`;
         case 'playerTradedInForABond':
-          return `${action.payload.player} traded in their ${this.displayNationName(action.payload.bondNation.value)} bond `
-            + `for ${action.payload.bondCost}m.`;
+          return `${action.payload.player} traded in their `
+            + `${this.displayNationName(action.payload.bondNation.value)} bond for ${action.payload.bondCost}m.`;
         case 'playerAutoSkipsBondPurchase':
-          return `${action.payload.player} could not buy a bond from ${this.displayNationName(action.payload.bondNation.value)} `
-            + 'because of insufficient funds.';
+          return `${action.payload.player} could not buy a bond from `
+            + `${this.displayNationName(action.payload.bondNation.value)} because of insufficient funds.`;
         case 'playerPaysForRondel': {
           const slot = this.capitalize(action.payload.slot).replace(/\d/g, '');
           return `${action.payload.player} paid ${action.payload.cost}m to move to the ${slot} slot on the rondel.`;
@@ -199,21 +192,7 @@ export default {
     },
     buildFactoryAction(payload) {
       const province = this.displayLocationName(payload.province);
-      const totalCost = payload.nationCosts ? payload.nationCosts + payload.playerCosts : 5;
-
-      const factoryDescription = `a factory in ${province} for ${this.displayMonetaryValue_InMillions(totalCost)}.`;
-
-      if (payload.playerCosts) {
-        const nation = this.displayNationName(this.board.graph.get(payload.province).nation.value);
-        const { player } = payload;
-
-        if (payload.playerCosts === 0) {
-          return `Built ${factoryDescription}`;
-        }
-        return `${player} funded ${nation} ${this.displayMonetaryValue_InMillions(payload.playerCosts)} `
-          + `to build ${factoryDescription}`;
-      }
-      return `Built ${factoryDescription}`;
+      return `Built a factory in ${province} for 5m.`;
     },
     bondPurchaseAction(payload) {
       const { player } = payload;
@@ -237,7 +216,7 @@ export default {
       return `Moved ${unit} from ${origin} to ${destination}.`;
     },
     coexistAction(payload) {
-      const units = this.capitalize(this.unitTypeByDestination_Singular(payload.province));
+      const units = this.capitalize(this.unitTypeByDestination_Plural(payload.province));
       // technically it could be a fleet in port sharing the province with an army
 
       const province = this.displayLocationName(payload.province);
