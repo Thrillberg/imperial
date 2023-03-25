@@ -7,7 +7,7 @@
       <div v-if="action.type === 'initialize'">
         <div class="flex justify-between">
           <p>{{ action.payload.soloMode ? "Solo game started!" : "Game started!" }}</p>
-          <p>{{ toString(timestamp) }}</p>
+          <p>{{ timestampToString(timestamp) }}</p>
         </div>
         <p>Variant: {{ action.payload.variant || "standard" }}</p>
         <p
@@ -38,7 +38,7 @@
         <b>{{ action.playerName }}</b>
         <div class="flex justify-between">
           <p>{{ renderAction(action) }}</p>
-          <p>{{ toString(timestamp) }}</p>
+          <p>{{ timestampToString(timestamp) }}</p>
         </div>
       </div>
       <div
@@ -46,7 +46,7 @@
         class="flex justify-between"
       >
         <p>- {{ renderAction(action) }}</p>
-        <p>{{ toString(timestamp) }}</p>
+        <p>{{ timestampToString(timestamp) }}</p>
       </div>
     </div>
   </div>
@@ -55,12 +55,12 @@
 <script>
 import { DateTime } from 'luxon';
 
-import Flag from './flags/Flag.vue';
 import {
   capitalize,
   displayLocationName, displayNationName, displayMonetaryValueInMillions,
   unitTypeByDestinationSingular, unitTypeByDestinationPlural,
 } from '../stringify';
+import Flag from './flags/Flag.vue';
 
 export default {
   name: 'GameLogEntry',
@@ -82,13 +82,13 @@ export default {
     displayLocationName(word) {
       return displayLocationName(word);
     },
-    displayMonetaryValueInMillions(value) {
+    displayMonetaryValue_InMillions(value) {
       return displayMonetaryValueInMillions(value);
     },
-    unitTypeByDestinationSingular(destination) {
+    unitTypeByDestination_Singular(destination) {
       return unitTypeByDestinationSingular(this.board.graph.get(destination).isOcean);
     },
-    unitTypeByDestinationPlural(destination) {
+    unitTypeByDestination_Plural(destination) {
       return unitTypeByDestinationPlural(this.board.graph.get(destination).isOcean);
     },
     displayNationName(nation) {
@@ -201,7 +201,7 @@ export default {
       const province = this.displayLocationName(payload.province);
       const totalCost = payload.nationCosts ? payload.nationCosts + payload.playerCosts : 5;
 
-      const factoryDescription = `a factory in ${province} for ${this.displayMonetaryValueInMillions(totalCost)}.`;
+      const factoryDescription = `a factory in ${province} for ${this.displayMonetaryValue_InMillions(totalCost)}.`;
 
       if (payload.nationCosts) {
         const nation = this.displayNationName(this.board.graph.get(payload.province).nation.value);
@@ -210,7 +210,7 @@ export default {
         if (payload.playerCosts === 0) {
           return `Built ${factoryDescription}`;
         }
-        return `${player} funded ${nation} ${this.displayMonetaryValueInMillions(payload.playerCosts)} `
+        return `${player} funded ${nation} ${this.displayMonetaryValue_InMillions(payload.playerCosts)} `
           + `to build ${factoryDescription}`;
       }
       return `Built ${factoryDescription}`;
@@ -259,7 +259,7 @@ export default {
     endManeuverAction() {
       return 'Military maneuvers have ended for now.';
     },
-    toString(timestamp) {
+    timestampToString(timestamp) {
       if (timestamp !== '' && timestamp) {
         let out = DateTime.fromISO(timestamp).toLocaleString(DateTime.DATETIME_FULL);
         if (out === 'Invalid DateTime') {

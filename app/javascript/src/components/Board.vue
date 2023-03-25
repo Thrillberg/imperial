@@ -58,7 +58,7 @@
         :fleets="fleets(name)"
         :is-valid="isValid(name)"
         :dot="dot(name)"
-        :province-with-fight="provinceWithFight === (name.replace(/\.*\s/gm, '').toLowerCase())"
+        :province-with-fight="provinceWithFight === (name.toString().replace(/\.*\s/gm, '').toLowerCase())"
         :adjustments="config.adjustments[name]"
         :nation-color="config.nationColors[dot(name)]"
         :is-impassable="isImpassable(name)"
@@ -79,7 +79,7 @@
         :building-factory="buildingFactory()"
         :factory="factory(name)"
         :factory-type="factoryType(name)"
-        :province-with-fight="provinceWithFight === (name.replace(/\.*\s/gm, '').toLowerCase())"
+        :province-with-fight="provinceWithFight === (name.toString().replace(/\.*\s/gm, '').toLowerCase())"
         :adjustments="config.adjustments[name]"
         :nation-color="config.nationColors[dot(name)]"
         :is-impassable="isImpassable(name)"
@@ -141,9 +141,9 @@ export default {
       if (this.paused) return false;
 
       if (this.game.availableActions) {
-        return [...this.game.availableActions].every(
-          (action) => action.type === 'buildFactory' || action.type === 'skipBuildFactory',
-        );
+        return [
+          ...this.game.availableActions,
+        ].every((action) => action.type === 'buildFactory' || action.type === 'skipBuildFactory');
       }
 
       return false;

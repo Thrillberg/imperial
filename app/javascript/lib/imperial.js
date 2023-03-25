@@ -98,8 +98,8 @@ export default class Imperial {
     }
 
     if (validAction === false) {
-      console.error("The following submitted action is invalid: ", action);
-      console.log("Expected actions were: ", this.availableActions);
+      console.error('The following submitted action is invalid: ', action);
+      console.log('Expected actions were: ', this.availableActions);
       return;
     }
 

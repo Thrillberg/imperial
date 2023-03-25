@@ -31,8 +31,8 @@
           <strong>{{ displayNationName(nation.value) }}</strong>
         </span>
         <span class="w-1/6"> {{ flagsPlaced(nation) }} </span>
-        <span class="w-1/6"> {{ displayMonetaryValueInMillions(nextTaxRevenue(nation)) }} </span>
-        <span class="w-1/6"> {{ displayMonetaryValueInMillions(nextNationProfit(nation)) }} </span>
+        <span class="w-1/6"> {{ displayMonetaryValue_InMillions(nextTaxRevenue(nation)) }} </span>
+        <span class="w-1/6"> {{ displayMonetaryValue_InMillions(nextNationProfit(nation)) }} </span>
         <span class="w-1/6"> {{ nextTaxationPowerPoints(nation) }} </span>
       </div>
       <p class="text-sm">
@@ -43,18 +43,18 @@
 </template>
 
 <script>
+import { displayMonetaryValueInMillions, displayNationName } from '../stringify';
 import { nextTaxationPowerPoints } from '../taxChartHelpers';
-import { displayNationName, displayMonetaryValueInMillions } from '../stringify';
 
 export default {
   name: 'TaxStatus',
-  props: { game: Object },
+  props: { game: { type: Object, default: () => {} } },
   data: () => ({ showTaxStatus: false }),
   methods: {
     displayNationName(nation) {
       return displayNationName(nation);
     },
-    displayMonetaryValueInMillions(value) {
+    displayMonetaryValue_InMillions(value) {
       return displayMonetaryValueInMillions(value);
     },
     flagsPlaced(nationName) {

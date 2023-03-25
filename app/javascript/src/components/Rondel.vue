@@ -35,7 +35,7 @@
           v-for="[bearer, amount] of bondBearers"
           :key="bearer"
         >
-          <b>{{ bearer }}</b> would receive {{ displayMonetaryValueInMillions(amount) }}
+          <b>{{ bearer }}</b> would receive {{ displayMonetaryValue_InMillions(amount) }}
         </div>
         <div v-if="game.variant !== 'withoutInvestorCard'">
           <b>{{ game.investorCardHolder }}</b> has the investor card
@@ -47,24 +47,24 @@
       >
         <div>
           <div v-if="game.baseGame === 'imperial'">
-            <b> Tax Revenue </b> will go from
-            {{ displayMonetaryValueInMillions(game.nations.get(game.currentNation).taxChartPosition) }} to
-            {{ displayMonetaryValueInMillions(nextTaxChartPosition) }}
+            <b>Tax Revenue</b> will go from
+            {{ displayMonetaryValue_InMillions(game.nations.get(game.currentNation).taxChartPosition) }} to
+            {{ displayMonetaryValue_InMillions(nextTaxChartPosition) }}
           </div>
           <div>
-            <b> {{ game.currentPlayerName }} </b> would receive {{ displayMonetaryValueInMillions(playerBonus) }}
+            <b>{{ game.currentPlayerName }}</b> would receive {{ displayMonetaryValue_InMillions(playerBonus) }}
           </div>
           <div>
-            <b> {{ displayNationName(game.currentNation.value) }} </b>'s treasury would
-            change by {{ displayMonetaryValueInMillions(nationProfit) }}
+            <b>{{ displayNationName(game.currentNation.value) }}</b>'s treasury would change by
+            {{ displayMonetaryValue_InMillions(nationProfit) }}
           </div>
           <div>
-            <b> {{ displayNationName(game.currentNation.value) }} </b>'s power points would be {{ nextTaxationPowerPoints }}
+            <b>{{ displayNationName(game.currentNation.value) }}</b>'s power points would be {{ nextTaxationPowerPoints }}
           </div>
         </div>
       </div>
       <div v-if="cost > 0">
-        <b>Cost: {{ displayMonetaryValueInMillions(cost) }}</b>
+        <b>Cost: {{ displayMonetaryValue_InMillions(cost) }}</b>
       </div>
       <div>
         <span v-if="displayHelperFlag">
@@ -82,7 +82,7 @@
 </template>
 
 <script>
-import { displayNationName, displayMonetaryValueInMillions } from '../stringify';
+import { displayMonetaryValueInMillions, displayNationName } from '../stringify';
 import { nextTaxationPowerPoints } from '../taxChartHelpers';
 import Flag from './flags/Flag.vue';
 
@@ -170,17 +170,14 @@ export default {
     displayNationName(nation) {
       return displayNationName(nation);
     },
-    displayMonetaryValueInMillions(value) {
+    displayMonetaryValue_InMillions(value) {
       return displayMonetaryValueInMillions(value);
     },
     isValid(slot) {
       if (this.paused) return false;
 
-      if (
-        this.validSlots().includes(slot)
-        && (this.game.currentPlayerName === this.name
-        || (this.game.soloMode && this.hostingThisGame))
-      ) {
+      if (this.validSlots().includes(slot)
+        && (this.game.currentPlayerName === this.name || (this.game.soloMode && this.hostingThisGame))) {
         return true;
       }
 
@@ -208,9 +205,8 @@ export default {
             if (this.game.variant === 'withoutInvestorCard') {
               this.helperText = 'Nation pays players interest';
             } else {
-              this.helperText = 'Nation pays players interest, '
-                + `investor card holder receives ${this.displayMonetaryValueInMillions(2)} and may purchase a bond, `
-                + 'Swiss Banks may invest.';
+              this.helperText = 'Nation pays players interest, investor card holder receives '
+              + `${this.displayMonetaryValue_InMillions(2)} and may purchase a bond, Swiss Banks may invest.`;
             }
             break;
           }
