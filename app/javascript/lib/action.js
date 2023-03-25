@@ -1,4 +1,4 @@
-import { memoize } from "./memo.js";
+import { memoize } from './memo';
 
 // Given two sets, A and B, membership calculates a 3-tuple containing:
 // [A - B, A & B, B - A]
@@ -28,7 +28,7 @@ const membership = (a, b) => {
 
 const makeAction = (type, payloadKeys) => {
   const expected = new Set(payloadKeys);
-  return memoize(payload => {
+  return memoize((payload) => {
     // lightly validate the payload keys
     const [l, b, r] = membership(expected, new Set(Object.keys(payload || {})));
     if (l.size > 0 || r.size > 0) {
@@ -37,55 +37,55 @@ const makeAction = (type, payloadKeys) => {
           expected: [...l],
           unexpected: [...r],
           ok: [...b],
-          type: type
-        })
+          type,
+        }),
       );
     }
     return { type, payload };
   });
 };
 
-const noop = Object.freeze({ type: "noop" });
+const noop = Object.freeze({ type: 'noop' });
 
 export default {
   noop,
   // The following are only for annotations
-  playerGainsCash: makeAction("playerGainsCash", ["player", "amount"]),
-  playerTradedInForABond: makeAction("playerTradedInForABond", ["player", "bondNation", "bondCost"]),
-  playerAutoSkipsBondPurchase: makeAction("playerAutoSkipsBondPurchase", ["player", "bondNation"]),
-  playerPaysForRondel: makeAction("playerPaysForRondel", ["player", "cost", "slot"]),
-  playerInvests: makeAction("playerInvests", ["player"]),
-  nationGainsTreasury: makeAction("nationGainsTreasury", ["nation", "amount"]),
-  nationGainsPowerPoints: makeAction("nationGainsPowerPoints", ["nation", "powerPoints"]),
-  nationPaysPlayer: makeAction("nationPaysPlayer", ["player", "nation", "amount"]),
-  investorCardHolderChanged: makeAction("investorCardHolderChanged", ["oldInvestorCardHolder", "newInvestorCardHolder"]),
-  nationControllerChanged: makeAction("nationControllerChanged", ["oldNationController", "newNationController", "nation"]),
+  playerGainsCash: makeAction('playerGainsCash', ['player', 'amount']),
+  playerTradedInForABond: makeAction('playerTradedInForABond', ['player', 'bondNation', 'bondCost']),
+  playerAutoSkipsBondPurchase: makeAction('playerAutoSkipsBondPurchase', ['player', 'bondNation']),
+  playerPaysForRondel: makeAction('playerPaysForRondel', ['player', 'cost', 'slot']),
+  playerInvests: makeAction('playerInvests', ['player']),
+  nationGainsTreasury: makeAction('nationGainsTreasury', ['nation', 'amount']),
+  nationGainsPowerPoints: makeAction('nationGainsPowerPoints', ['nation', 'powerPoints']),
+  nationPaysPlayer: makeAction('nationPaysPlayer', ['player', 'nation', 'amount']),
+  investorCardHolderChanged: makeAction('investorCardHolderChanged', ['oldInvestorCardHolder', 'newInvestorCardHolder']),
+  nationControllerChanged: makeAction('nationControllerChanged', ['oldNationController', 'newNationController', 'nation']),
   // The remaining actions are for the main log
-  initialize: makeAction("initialize", ["players", "soloMode", "variant", "baseGame"]),
-  blockCanal: makeAction("blockCanal", []),
-  bondPurchase: makeAction("bondPurchase", ["nation", "player", "cost", "tradeInValue"]),
-  buildFactory: makeAction("buildFactory", ["province"]),
-  coexist: makeAction("coexist", ["province", "incumbent", "challenger"]),
-  destroyFactory: makeAction("destroyFactory", ["province"]),
-  endGame: makeAction("endGame", []),
-  endManeuver: makeAction("endManeuver", []),
-  fight: makeAction("fight", [
-    "province",
-    "incumbent",
-    "challenger",
-    "targetType"
+  initialize: makeAction('initialize', ['players', 'soloMode', 'variant', 'baseGame']),
+  blockCanal: makeAction('blockCanal', []),
+  bondPurchase: makeAction('bondPurchase', ['nation', 'player', 'cost', 'tradeInValue']),
+  buildFactory: makeAction('buildFactory', ['province']),
+  coexist: makeAction('coexist', ['province', 'incumbent', 'challenger']),
+  destroyFactory: makeAction('destroyFactory', ['province']),
+  endGame: makeAction('endGame', []),
+  endManeuver: makeAction('endManeuver', []),
+  fight: makeAction('fight', [
+    'province',
+    'incumbent',
+    'challenger',
+    'targetType',
   ]),
-  forceInvestor: makeAction("forceInvestor", ["player"]),
-  friendlyEntrance: makeAction("friendlyEntrance", ["incumbent", "challenger", "province"]),
-  import: makeAction("import", ["placements"]), // placement : { province: string, type: "army"|"fleet" }
-  maneuver: makeAction("maneuver", ["origin", "destination"]),
-  production: makeAction("production", ["province"]),
-  rondel: makeAction("rondel", ["nation", "cost", "slot"]),
-  skipBuildFactory: makeAction("skipBuildFactory", ["player", "nation"]),
-  skipBondPurchase: makeAction("skipBondPurchase", ["player", "nation"]),
-  skipDestroyFactory: makeAction("skipDestroyFactory", ["province"]),
-  skipForceInvestor: makeAction("skipForceInvestor", ["player"]),
-  unblockCanal: makeAction("unblockCanal", []),
-  undo: makeAction("undo", ["player"]),
-  unfriendlyEntrance: makeAction("unfriendlyEntrance", ["incumbent", "challenger", "province"])
+  forceInvestor: makeAction('forceInvestor', ['player']),
+  friendlyEntrance: makeAction('friendlyEntrance', ['incumbent', 'challenger', 'province']),
+  import: makeAction('import', ['placements']), // placement : { province: string, type: "army"|"fleet" }
+  maneuver: makeAction('maneuver', ['origin', 'destination']),
+  production: makeAction('production', ['province']),
+  rondel: makeAction('rondel', ['nation', 'cost', 'slot']),
+  skipBuildFactory: makeAction('skipBuildFactory', ['player', 'nation']),
+  skipBondPurchase: makeAction('skipBondPurchase', ['player', 'nation']),
+  skipDestroyFactory: makeAction('skipDestroyFactory', ['province']),
+  skipForceInvestor: makeAction('skipForceInvestor', ['player']),
+  unblockCanal: makeAction('unblockCanal', []),
+  undo: makeAction('undo', ['player']),
+  unfriendlyEntrance: makeAction('unfriendlyEntrance', ['incumbent', 'challenger', 'province']),
 };

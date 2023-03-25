@@ -1288,7 +1288,7 @@ export default class Imperial {
         nation.taxChartPosition = this.getTaxChartPosition(taxes);
         nation.treasury += nationProfit;
         // can be less than 0m
-        
+
         this.annotatedLog.push(
           Action.nationGainsTreasury({
             nation: nationName,
@@ -2332,7 +2332,9 @@ export default class Imperial {
     let bonus = this.playerBonusBeforeUnitMaintenanceCosts(nationName, taxes);
 
     if (this.baseGame === 'imperial2030' || this.baseGame === 'imperialAsia') {
-      const treasuryAmountAfterMaintenanceCosts = this.nations.get(nationName).treasury + taxes - this.unitMaintenanceCosts(nationName);
+      const treasuryAmountAfterMaintenanceCosts = this.nations.get(nationName).treasury
+        + taxes
+        - this.unitMaintenanceCosts(nationName);
       bonus = Math.max(0, Math.min(bonus, treasuryAmountAfterMaintenanceCosts));
     }
 

@@ -1,7 +1,7 @@
 import Action from './action';
+import { Bond, Nation } from './constants';
 import GameBoard from './gameBoard';
 import Imperial from './imperial';
-import { Bond, Nation } from './constants';
 
 const cloneUnits = (units) => {
   const out = new Map();
@@ -1544,7 +1544,16 @@ describe('imperial', () => {
             );
 
             const expected = new Set();
-            ['factory', 'production1', 'maneuver1', 'investor', 'import', 'production2', 'maneuver2', 'taxation'].forEach((slot) => {
+            [
+              'factory',
+              'production1',
+              'maneuver1',
+              'investor',
+              'import',
+              'production2',
+              'maneuver2',
+              'taxation',
+            ].forEach((slot) => {
               expected.add(Action.rondel({ nation: Nation.IT, cost: 0, slot }));
             });
             expected.add(Action.undo({ player: 'player1' }));
@@ -2319,7 +2328,8 @@ describe('imperial', () => {
                 expect(game.players.player2.cash).toEqual(0);
               });
 
-              test('multiple players with a Swiss Bank may invest in clockwise order, starting with the current bearer of the investor card', () => {
+              test('multiple players with a Swiss Bank may invest in clockwise order, '
+                + 'starting with the current bearer of the investor card', () => {
                 const game = newGame();
                 game.investorCardHolder = 'player2';
                 // Make player3 control all countries
@@ -2406,7 +2416,8 @@ describe('imperial', () => {
                 });
               });
 
-              test('a player who has a Swiss Bank may choose to force the current nation to stay on the Investor slot, if the nation can pay out all the money it owes', () => {
+              test('a player who has a Swiss Bank may choose to force the current nation to stay on '
+                + 'the Investor slot, if the nation can pay out all the money it owes', () => {
                 const game = newGame();
                 game.players.player1.cash = 2;
                 game.investorCardHolder = 'player1';
@@ -2588,7 +2599,8 @@ describe('imperial', () => {
                 );
               });
 
-              test('a player who has a Swiss Bank may not choose to force the current nation to stay on the Investor slot, if the nation cannot pay out all the money it owes', () => {
+              test('a player who has a Swiss Bank may not choose to force the current nation to stay on '
+                + 'the Investor slot, if the nation cannot pay out all the money it owes', () => {
                 const game = newGame();
                 game.players.player1.cash = 2;
                 game.investorCardHolder = 'player1';
@@ -3359,7 +3371,8 @@ describe('imperial', () => {
           );
         });
 
-        test('maneuver army to home province of another nation that also contains an army belonging to the other nation sets army to friendly if they agree to be friendly', () => {
+        test('maneuver army to home province of another nation that also contains an army'
+          + 'belonging to the other nation sets army to friendly if they agree to be friendly', () => {
           const game = newGame();
           game.units.get(Nation.AH).get('d').armies += 1;
           game.units.get(Nation.IT).get('f').armies += 1;
@@ -3800,7 +3813,8 @@ describe('imperial', () => {
           expect(game.provinces.get('f').flag).toEqual(Nation.IT);
         });
 
-        test('without endManeuver(), maneuver away from coexisting province switches flag to other nation at the end of the turn', () => {
+        test('without endManeuver(), maneuver away from coexisting province switches flag '
+          + 'to other nation at the end of the turn', () => {
           const game = newGame();
           game.units.get(Nation.AH).get('f').armies += 1;
           game.units.get(Nation.AH).get('c').armies += 1;
