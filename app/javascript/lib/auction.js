@@ -1,8 +1,8 @@
-import {
-  Nation, Nation2030, NationAsia, Bond,
-} from './constants';
 import Action from './action';
 import board from './board';
+import {
+  Bond, Nation, Nation2030, NationAsia,
+} from './constants';
 
 export default class Auction {
   static fromLog(log, game, auctionSetup) {
@@ -170,11 +170,11 @@ export default class Auction {
   }
 
   shouldAdvanceNation(game) {
-    return game.currentPlayerName === this.order[this.firstPlayerIndex];
+    return game.currentPlayerName === this.order[this.firstPlayerIndex || 0];
   }
 
   static advanceNation(game) {
-    let nations;
+    let nations = [];
     if (game.baseGame === 'imperial' || !game.baseGame) {
       nations = [
         Nation.AH,
@@ -209,7 +209,7 @@ export default class Auction {
   }
 
   resetCurrentPlayer(game) {
-    this.firstPlayerIndex += 1;
+    if (this.firstPlayerIndex) { this.firstPlayerIndex += 1; } else { this.firstPlayerIndex = 1; }
     if (!this.order[this.firstPlayerIndex]) {
       this.firstPlayerIndex = 0;
     }
