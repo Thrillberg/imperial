@@ -18,6 +18,7 @@ Rails.application.routes.draw do
 
   resources :clone_games, only: [:create]
   resources :exports, only: [:show]
+  resources :imports, only: [:create]
 
   namespace :api do
     resources :users, only: [:show, :create, :update]
