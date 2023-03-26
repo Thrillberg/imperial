@@ -18,6 +18,24 @@ class Game < ActiveRecord::Base
       .order(created_at: :desc)
   }
 
+  def self.import(log, host_id)
+    initialize_payload = log[0]["payload"]
+    raise ArgumentError unless log[0]["type"] == "initialize"
+
+    host = User.find(host_id)
+    game = Game.new(base_game: initialize_payload["baseGame"], variant: initialize_payload["variant"], host: host)
+    initialize_payload["players"].each do |player|
+      user = User.create!(name: player["id"] + "-import(#{rand(100000)})")
+      game.players << Player.new(user: user)
+    end
+    log.each do |action|
+      game.actions << Action.new(data: action.to_json)
+    end
+    game.is_imported = true
+    game.save!
+    game
+  end
+
   def to_json
     observers = JSON.parse(REDIS.get("users_observing_games"))[id] || []
     {

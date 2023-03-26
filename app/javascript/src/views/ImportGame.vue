@@ -20,7 +20,9 @@
 <script>
 export default {
   name: 'ImportGame',
-  props: ['profile'],
+  props: {
+    profile: { type: Object, default: () => {} },
+  },
   data() {
     return {
       gameLog: '',
@@ -37,7 +39,7 @@ export default {
           'X-CSRF-Token': this.$cookies.get('CSRF-TOKEN'),
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ log: this.gameLog }),
+        body: JSON.stringify({ log: this.gameLog, hostId: this.profile.id }),
       })
         .then((response) => response.json())
         .then((game) => {
