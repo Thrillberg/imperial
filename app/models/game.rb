@@ -22,6 +22,7 @@ class Game < ActiveRecord::Base
     initialize_payload = log[0]["payload"]
     raise ArgumentError unless log[0]["type"] == "initialize"
 
+    imported_games_count = Game.where(is_imported: true).count
     host = User.find(host_id)
     game = Game.new(base_game: initialize_payload["baseGame"], variant: initialize_payload["variant"], host: host)
     initialize_payload["players"].each do |player|
@@ -29,9 +30,13 @@ class Game < ActiveRecord::Base
       game.players << Player.new(user: user)
     end
     log.each do |action|
+      if action["type"] == "initialize"
+        action["payload"]["soloMode"] = true
+      end
       game.actions << Action.new(data: action.to_json)
     end
     game.is_imported = true
+    game.name = "Imported game: #{imported_games_count + 1}"
     game.save!
     game
   end
