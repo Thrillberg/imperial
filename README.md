@@ -82,3 +82,17 @@ To run Ruby RSpec tests, run the following command from the project root:
 ```
 rspec
 ```
+
+## Local debugging
+
+Production games will often present situations that are hard to reproduce locally and therefore get challening to debug. Therefore, we have implemented the ability to **export** and **import** games.
+
+### Exporting a game
+
+Visit `/exports/[game_id]` and a `JSON` file will be downloaded to your computer. This file contains the game log and can be used when importing a game.
+
+### Importing a game
+
+Visit `http://localhost:3000/import_game` and paste the contents of the downloaded `JSON` in the box and click `Import game`. This will reconstruct the game locally in your database and let you play around with it and, hopefully, improve debugging.
+
+Please *only* do this in local development. Imported games are not allowed on the production database.
