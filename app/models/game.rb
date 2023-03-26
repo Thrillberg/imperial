@@ -40,6 +40,12 @@ class Game < ActiveRecord::Base
     }
   end
 
+  def log
+    actions.order(:created_at).map do |action|
+      JSON.parse(action.data)
+    end
+  end
+
   def abandoned?
     if actions.length > 0 && !force_ended_at
       return actions.order(:created_at).last.created_at < 7.days.ago
