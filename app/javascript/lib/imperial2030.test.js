@@ -4,8 +4,6 @@ import GameBoard from './gameBoard';
 import Imperial from './imperial';
 import { Nation2030 } from './constants';
 
-const newImperialGame = (board) => new Imperial(board);
-
 const initialize = (game) => {
   game.tick(
     Action.initialize({
@@ -49,7 +47,7 @@ describe('imperial2030', () => {
         edges: [],
       });
 
-      const game = newImperialGame(board);
+      const game = new Imperial(board);
       initialize(game);
       return game;
     };
@@ -259,7 +257,7 @@ describe('imperial2030', () => {
     const newGame = () => {
       const board = new GameBoard({ nodes: [], edges: [] });
 
-      const game = newImperialGame(board);
+      const game = new Imperial(board);
       initialize(game);
       return game;
     };
@@ -346,7 +344,7 @@ describe('imperial2030', () => {
         ],
       });
 
-      const game = newImperialGame(board);
+      const game = new Imperial(board);
       initialize(game);
       return game;
     };
