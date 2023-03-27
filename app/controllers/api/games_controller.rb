@@ -1,10 +1,22 @@
-class GamesController < ApplicationController
+class API::GamesController < ApplicationController
   skip_before_action :verify_authenticity_token
 
   def index
     games = Game
       .includes(:host, :users, :actions, :winner)
       .order(created_at: :desc)
+      .where(cancelled_at: nil)
+
+    if params[:filter] == "your_cloned"
+      games = games.where(host_id: params[:host_id]).where.not(cloned_from_game: nil)
+    else
+      games = games.where(cloned_from_game: nil)
+
+      if params[:filter] == "finished"
+        games = games.where.not(winner: nil) if params[:filter] == "finished"
+      end
+    end
+
     render json: games.map(&:to_json)
   end
 
