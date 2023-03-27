@@ -1,9 +1,11 @@
-import { createRouter, createWebHistory } from 'vue-router';
+import { Logtail } from '@logtail/browser';
 import ActionCable from 'actioncable';
+import { createRouter, createWebHistory } from 'vue-router';
 import Home from '../views/Home.vue';
 
 class APIClient {
   constructor() {
+    this.logtail = new Logtail('3bdHcA8P3mcww2ojgC5G8YiT');
     this.ws = this.initws();
     this.handlers = {};
     this.messageQueue = [];
@@ -20,7 +22,7 @@ class APIClient {
         if (this.handlers[envelope.kind]) {
           this.handlers[envelope.kind](envelope.data);
         } else {
-          console.error(envelope);
+          this.logtail.error('unhandled websocket envelope kind in GameChannel', envelope);
           throw new Error(`unhandled kind: ${envelope.kind}`);
         }
       },
@@ -30,7 +32,7 @@ class APIClient {
         if (this.handlers[envelope.kind]) {
           this.handlers[envelope.kind](envelope.data);
         } else {
-          console.error(envelope);
+          this.logtail.error('unhandled websocket envelope kind in AppearanceChannel', envelope);
           throw new Error(`unhandled kind: ${envelope.kind}`);
         }
       },
@@ -39,12 +41,7 @@ class APIClient {
   }
 
   onclose() {
-    console.info('replacing closed websocket');
     this.ws = this.initws();
-  }
-
-  onerror(err) {
-    console.error('websocket error', err);
   }
 
   send(data, channel) {
@@ -102,11 +99,11 @@ class APIClient {
     );
   }
 
-  openGame(id, base_game, variant, create_discord_channel, is_game_public) {
+  openGame(id, baseGame, variant, createDiscordChannel, isGamePublic) {
     return fetch('/games', {
       method: 'POST',
       body: JSON.stringify({
-        id, base_game, variant, create_discord_channel, is_game_public,
+        id, base_game: baseGame, variant, create_discord_channel: createDiscordChannel, is_game_public: isGamePublic,
       }),
       headers: { 'Content-Type': 'application/json' },
     })
@@ -285,6 +282,11 @@ const routes = [
     path: '/cloned_games',
     name: 'ClonedGames',
     component: () => import('../views/ClonedGames.vue'),
+  },
+  {
+    path: '/import_game',
+    name: 'ImportGame',
+    component: () => import('../views/ImportGame.vue'),
   },
   {
     path: '/forgot_password',

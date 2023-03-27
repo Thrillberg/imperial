@@ -40,6 +40,7 @@ export default class Imperial {
 
   constructor(board) {
     this.logtail = new Logtail('3bdHcA8P3mcww2ojgC5G8YiT');
+
     this.invalidAction = false;
     this.board = board || standardGameBoard;
     // This is the canonical log from which game state is derived.
