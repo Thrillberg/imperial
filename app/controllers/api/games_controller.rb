@@ -1,4 +1,4 @@
-class GamesController < ApplicationController
+class API::GamesController < ApplicationController
   skip_before_action :verify_authenticity_token
 
   def index

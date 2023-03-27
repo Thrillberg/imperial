@@ -13,16 +13,14 @@ Rails.application.routes.draw do
   post "/session", to: "sessions#create"
   post "/anonymity_confirmations", to: "anonymity_confirmations#create"
 
-  get "/get_games", to: "games#index"
-  post "/games", to: "games#create"
-
   resources :clone_games, only: [:create]
   resources :exports, only: [:show]
   resources :imports, only: [:create]
 
   namespace :api do
-    resources :users, only: [:show, :create, :update]
+    resources :games, only: [:index, :create]
     resources :ranked_games, only: [:index]
+    resources :users, only: [:show, :create, :update]
   end
 
   resources :profiles, only: [:show]
