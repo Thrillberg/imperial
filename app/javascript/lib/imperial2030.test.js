@@ -1,4 +1,5 @@
 import Action from './action';
+
 import GameBoard from './gameBoard';
 import Imperial from './imperial';
 import { Nation2030 } from './constants';
@@ -348,7 +349,8 @@ describe('imperial2030', () => {
       return game;
     };
 
-    test("a nation can block another nation's army from moving from North Pacific to the Caribbean Sea if the nation has a flag in Colombia", () => {
+    test("a nation can block another nation's army from moving from North Pacific to "
+    + ' the Caribbean Sea if the nation has a flag in Colombia', () => {
       const game = newGame();
       game.provinces.get('colombia').flag = Nation2030.CN;
       game.units.get(Nation2030.RU).get('northpacific').fleets = 1;
@@ -388,7 +390,8 @@ describe('imperial2030', () => {
       expect(game.availableActions).toEqual(expected);
     });
 
-    test("a nation can block another nation's army from moving from Mediterranean Sea to the Indian Ocean if the nation has a flag in North Africa", () => {
+    test("a nation can block another nation's army from moving from Mediterranean Sea to "
+    + 'the Indian Ocean if the nation has a flag in North Africa', () => {
       const game = newGame();
       game.provinces.get('northafrica').flag = Nation2030.CN;
       game.units.get(Nation2030.RU).get('mediterraneansea').fleets = 1;

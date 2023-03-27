@@ -1,6 +1,17 @@
 import Action from './action';
+
 import Imperial from './imperial';
+
+import BoardEurope from './board';
 import { Nation } from './constants';
+
+const ImperialFromLog = (log) => {
+  const game = new Imperial(BoardEurope);
+
+  game.tickFromLog(log);
+
+  return game;
+};
 
 const log = [
   Action.initialize({
@@ -112,7 +123,8 @@ describe('round of investment', () => {
         player: 'player2',
       }),
     );
-    const game = Imperial.fromLog(log);
+
+    const game = ImperialFromLog(log);
 
     game.tick(Action.rondel({ nation: Nation.AH, cost: 0, slot: 'investor' }));
 
@@ -126,7 +138,7 @@ describe('round of investment', () => {
   });
 
   test('it auto-skips a player who cannot afford to invest', () => {
-    const game = Imperial.fromLog(log);
+    const game = ImperialFromLog(log);
     const expected = new Set(
       [
         'factory',
@@ -232,7 +244,7 @@ describe('round of investment', () => {
       }),
     ];
 
-    const game = Imperial.fromLog(gameLog);
+    const game = ImperialFromLog(gameLog);
 
     game.tick(Action.rondel({ nation: Nation.AH, cost: 0, slot: 'investor' }));
     game.tick(Action.skipBondPurchase({ player: 'player1', nation: Nation.AH }));

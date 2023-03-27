@@ -1,6 +1,8 @@
 import Action from './action';
+
 import { Bond, Nation } from './constants';
 import GameBoard from './gameBoard';
+
 import Imperial from './imperial';
 
 const cloneUnits = (units) => {
