@@ -31,6 +31,7 @@ import SlotDistanceCosts from './UseCases/Rondels/SlotSelection/SlotDistanceCost
 
 export default class Imperial {
   #logger;
+  #game;
 
   constructor(board, logger) {
     this.#logger = logger;
@@ -100,9 +101,8 @@ export default class Imperial {
       this.#logger.error(
         'Invalid action error',
         {
-          action: log[log.length - 1],
-          gameId: this.gameData.id,
-          expectedAvailableActions: Object.assign([...this.game.availableActions]),
+          action: action,
+          expectedAvailableActions: Object.assign([...this.availableActions]),
         },
       );
       return;
@@ -281,27 +281,26 @@ export default class Imperial {
     this.baseGame = action.payload.baseGame || ImperialEuropeGame.classId;
     switch (this.baseGame) {
       case ImperialEuropeGame.classId:
-        this.game = new ImperialEuropeGame();
+        this.#game = new ImperialEuropeGame();
         break;
 
       case Imperial2030Game.classId:
-        this.game = new Imperial2030Game();
+        this.#game = new Imperial2030Game();
         break;
 
       case ImperialAsiaGame.classId:
-        this.game = new ImperialAsiaGame();
+        this.#game = new ImperialAsiaGame();
         break;
 
       default:
         this.logger.error(
           'Undefined gamemode error',
           {
-            // gameId: this.gameData.id,
             gameMode: this.baseGame,
           },
         );
 
-        this.game = null;
+        this.#game = null;
         break;
     }
     this.variant = action.payload.variant;
@@ -948,7 +947,7 @@ export default class Imperial {
 
     this.provinces.get(province).factory = this.board.graph.get(province).factoryType;
 
-    const buildCostsUseCase = new FactorySlotBuildChargeCosts(this.game.rondel.factorySlot);
+    const buildCostsUseCase = new FactorySlotBuildChargeCosts(this.#game.rondel.factorySlot);
     const nationCosts = buildCostsUseCase.nationCosts(currentNation);
     const playerCosts = buildCostsUseCase.playerCosts(currentNation, currentPlayer);
 
@@ -1262,11 +1261,11 @@ export default class Imperial {
     const currentNation = this.nations.get(this.currentNation);
     const currentPlayer = this.players[this.currentPlayerName];
 
-    const fromRondelSlot = this.game.rondel.idToEntity(currentNation.rondelPosition);
-    const toRondelSlot = this.game.rondel.idToEntity(action.payload.slot);
+    const fromRondelSlot = this.#game.rondel.idToEntity(currentNation.rondelPosition);
+    const toRondelSlot = this.#game.rondel.idToEntity(action.payload.slot);
 
     if (fromRondelSlot
-      && this.game.rondel.passedInvestor(fromRondelSlot, toRondelSlot)
+      && this.#game.rondel.passedInvestor(fromRondelSlot, toRondelSlot)
       && this.passingThroughInvestor === false) {
       this.passingThroughInvestor = true;
       // Allow Swiss Bank holders to interrupt
@@ -1399,11 +1398,11 @@ export default class Imperial {
           homeProvinces.add(translateProvinceModel(homeProvince, this.provinces, this.units, this.board));
         }
 
-        const buildPermissionsUseCase = new FactorySlotBuildPermissions(this.game.rondel.factorySlot);
+        const buildPermissionsUseCase = new FactorySlotBuildPermissions(this.#game.rondel.factorySlot);
         if (buildPermissionsUseCase.canAffordToBuild(currentNation, currentPlayer)) {
           this.buildingFactory = true;
 
-          const buildCostsUseCase = new FactorySlotBuildChargeCosts(this.game.rondel.factorySlot);
+          const buildCostsUseCase = new FactorySlotBuildChargeCosts(this.#game.rondel.factorySlot);
           const nationCosts = buildCostsUseCase.nationCosts(currentNation);
           const playerCosts = buildCostsUseCase.playerCosts(currentNation, currentPlayer);
 
@@ -1909,16 +1908,16 @@ export default class Imperial {
 
   availableRondelActions(nationName) {
     const nation = this.nations.get(nationName);
-    const slotCostCalculator = new SlotDistanceCosts(this.game);
+    const slotCostCalculator = new SlotDistanceCosts(this.#game);
     const costPerPaidDistance = slotCostCalculator.costPerPaidRondelSlot(nation);
 
-    const nationCurrentRondelSlot = this.game.rondel.idToEntity(nation.rondelPosition);
-    const availableSlots = new AvailableSlots(this.game.rondel, 3, 3, costPerPaidDistance);
+    const nationCurrentRondelSlot = this.#game.rondel.idToEntity(nation.rondelPosition);
+    const availableSlots = new AvailableSlots(this.#game.rondel, 3, 3, costPerPaidDistance);
 
     const availableRondelSlots = new Set();
 
     const nextAvailableFreeRondelSlots = nationCurrentRondelSlot
-      ? availableSlots.nextAvailableFreeRondelSlots(nationCurrentRondelSlot) : this.game.rondel.slotOrder;
+      ? availableSlots.nextAvailableFreeRondelSlots(nationCurrentRondelSlot) : this.#game.rondel.slotOrder;
     for (const freeRondelSlot of nextAvailableFreeRondelSlots) {
       availableRondelSlots.add(
         Action.rondel({

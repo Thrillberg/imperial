@@ -6,7 +6,7 @@ import BoardEurope from './board';
 import { Nation } from './constants';
 
 ImperialFromLog = (log) => {
-  const game = new Imperial(BoardEurope, new Logger('unittests'));
+  const game = new Imperial(BoardEurope, new Logger('unittests', 'stub-test-id'));
 
   game.tickfromLog(log);
 

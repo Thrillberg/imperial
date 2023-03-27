@@ -612,7 +612,7 @@ export default {
         this.board = imperialAsiaBoard;
       }
 
-      this.game = new Imperial(this.board, new Logger(this.env));
+      this.game = new Imperial(this.board, new Logger(this.env, this.gameData.id));
       if (baseGame) {
         this.game.baseGame = baseGame;
       }
@@ -775,7 +775,7 @@ export default {
       const { log } = this.game;
       const { board } = this.game;
 
-      this.game = new Imperial(board, new Logger('replay'));
+      this.game = new Imperial(board, new Logger('replay', this.gameData.id));
       if (baseGame) {
         this.game.baseGame = baseGame;
       }
@@ -795,7 +795,7 @@ const startingNation = this.game.baseGame === 'imperial' ? Nation.AH : Nation203
       const { log } = this.game;
       const { board } = this.game;
 
-      this.game = new Imperial(board, new Logger('replay'));
+      this.game = new Imperial(board, new Logger('replay', this.gameData.id));
       this.game.tickFromLog(log);
     },
     backToGameStart() {
@@ -812,7 +812,7 @@ const startingNation = this.game.baseGame === 'imperial' ? Nation.AH : Nation203
       }
       const { board } = this.game;
 
-      this.game = new Imperial(board, new Logger('replay'));
+      this.game = new Imperial(board, new Logger('replay', this.gameData.id));
       this.game.tickFromLog(newLog);
     },
     forwardToCurrentAction() {
