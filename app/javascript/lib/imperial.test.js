@@ -1,7 +1,13 @@
 import Action from './action';
+
+import Logger from '../src/Logger';
+
 import { Bond, Nation } from './constants';
 import GameBoard from './gameBoard';
+
 import Imperial from './imperial';
+
+const newImperialGame = (board) => new Imperial(board, new Logger('unittests', 'stub-test-id'));
 
 const cloneUnits = (units) => {
   const out = new Map();
@@ -40,7 +46,7 @@ describe('imperial', () => {
           edges: [],
         });
 
-        const game = new Imperial(board);
+        const game = newImperialGame(board);
         initialize(game);
         return game;
       };
@@ -175,7 +181,7 @@ describe('imperial', () => {
           edges: [],
         });
 
-        const game = new Imperial(board);
+        const game = newImperialGame(board);
         initialize(game);
         return game;
       };
@@ -213,7 +219,7 @@ describe('imperial', () => {
           edges: [],
         });
 
-        const game = new Imperial(board);
+        const game = newImperialGame(board);
         initialize(game);
         return game;
       };
@@ -255,7 +261,7 @@ describe('imperial', () => {
           edges: [],
         });
 
-        const game = new Imperial(board);
+        const game = newImperialGame(board);
         initialize(game);
         return game;
       };
@@ -319,7 +325,7 @@ describe('imperial', () => {
           edges: [],
         });
 
-        const game = new Imperial(board);
+        const game = newImperialGame(board);
         initialize(game);
         return game;
       };
@@ -365,7 +371,7 @@ describe('imperial', () => {
           edges: [],
         });
 
-        const game = new Imperial(board);
+        const game = newImperialGame(board);
         initialize(game);
         return game;
       };
@@ -477,7 +483,7 @@ describe('imperial', () => {
           edges: [],
         });
 
-        const game = new Imperial(board);
+        const game = newImperialGame(board);
         return game;
       };
 
@@ -528,7 +534,7 @@ describe('imperial', () => {
             edges: [],
           });
 
-          const game = new Imperial(board);
+          const game = newImperialGame(board);
           initialize(game);
           return game;
         };
@@ -671,7 +677,7 @@ describe('imperial', () => {
             edges: [],
           });
 
-          const game = new Imperial(board);
+          const game = newImperialGame(board);
           initialize(game);
 
           const availableActions = new Set([Action.import({ placements: [] })]);
@@ -716,7 +722,7 @@ describe('imperial', () => {
             edges: [],
           });
 
-          const game = new Imperial(board);
+          const game = newImperialGame(board);
           initialize(game);
           game.units.get(Nation.AH).get('a').armies = game.unitLimits.get(
             Nation.AH,
@@ -742,7 +748,7 @@ describe('imperial', () => {
             edges: [],
           });
 
-          const game = new Imperial(board);
+          const game = newImperialGame(board);
           initialize(game);
           game.units.get(Nation.AH).get('a').armies = game.unitLimits.get(Nation.AH).armies - 1;
           const availableActions = new Set([Action.import({ placements: [] }), Action.undo({ player: 'player1' })]);
@@ -770,7 +776,7 @@ describe('imperial', () => {
             edges: [],
           });
 
-          const game = new Imperial(board);
+          const game = newImperialGame(board);
           initialize(game);
           game.units.get(Nation.AH).get('a').armies = game.unitLimits.get(Nation.AH).armies - 2;
           const availableActions = new Set([Action.import({ placements: [] })]);
@@ -807,7 +813,7 @@ describe('imperial', () => {
             edges: [],
           });
 
-          const game = new Imperial(board);
+          const game = newImperialGame(board);
           initialize(game);
           game.units.get(Nation.AH).get('a').armies = game.unitLimits.get(Nation.AH).armies - 3;
           const availableActions = new Set([Action.import({ placements: [] })]);
@@ -853,7 +859,7 @@ describe('imperial', () => {
             edges: [],
           });
 
-          const game = new Imperial(board);
+          const game = newImperialGame(board);
           initialize(game);
 
           const availableActions = new Set([Action.import({ placements: [] })]);
@@ -988,7 +994,7 @@ describe('imperial', () => {
             edges: [],
           });
 
-          const game = new Imperial(board);
+          const game = newImperialGame(board);
           initialize(game);
           game.units.get(Nation.AH).get('a').fleets = game.unitLimits.get(
             Nation.AH,
@@ -1036,7 +1042,7 @@ describe('imperial', () => {
             edges: [],
           });
 
-          const game = new Imperial(board);
+          const game = newImperialGame(board);
           initialize(game);
           game.units.get(Nation.AH).get('a').fleets = game.unitLimits.get(Nation.AH).fleets - 1;
           const availableActions = new Set([Action.import({ placements: [] })]);
@@ -1128,7 +1134,7 @@ describe('imperial', () => {
             edges: [],
           });
 
-          const game = new Imperial(board);
+          const game = newImperialGame(board);
           initialize(game);
           game.units.get(Nation.AH).get('a').fleets = game.unitLimits.get(Nation.AH).fleets - 2;
           const availableActions = new Set([Action.import({ placements: [] })]);
@@ -1254,7 +1260,7 @@ describe('imperial', () => {
             edges: [],
           });
 
-          const game = new Imperial(board);
+          const game = newImperialGame(board);
           initialize(game);
           game.units.get(Nation.AH).get('a').fleets = game.unitLimits.get(Nation.AH).fleets - 3;
           const availableActions = new Set([Action.import({ placements: [] })]);
@@ -1390,7 +1396,7 @@ describe('imperial', () => {
             edges: [],
           });
 
-          const game = new Imperial(board);
+          const game = newImperialGame(board);
           initialize(game);
           game.units.get(Nation.AH).get('a').armies = game.unitLimits.get(
             Nation.AH,
@@ -1419,7 +1425,7 @@ describe('imperial', () => {
             edges: [],
           });
 
-          const game = new Imperial(board);
+          const game = newImperialGame(board);
           initialize(game);
           game.units.get(Nation.AH).get('a').armies = game.unitLimits.get(Nation.AH).armies - 1;
           game.units.get(Nation.AH).get('a').fleets = game.unitLimits.get(Nation.AH).fleets - 1;
@@ -1463,7 +1469,7 @@ describe('imperial', () => {
             edges: [],
           });
 
-          const game = new Imperial(board);
+          const game = newImperialGame(board);
           initialize(game);
           game.nations.get(Nation.AH).treasury = 1;
 
@@ -1493,7 +1499,7 @@ describe('imperial', () => {
             edges: [],
           });
 
-          const game = new Imperial(board);
+          const game = newImperialGame(board);
           initialize(game);
           game.units.get(Nation.IT).get('a').armies += 1;
           game.nations.get(Nation.AH).treasury = 1;
@@ -1531,7 +1537,7 @@ describe('imperial', () => {
             ],
           });
 
-          const game = new Imperial(board);
+          const game = newImperialGame(board);
           initialize(game);
           return game;
         };
@@ -1637,7 +1643,7 @@ describe('imperial', () => {
             edges: [],
           });
 
-          const game = new Imperial(board);
+          const game = newImperialGame(board);
           initialize(game);
           return game;
         };
@@ -1748,7 +1754,7 @@ describe('imperial', () => {
             edges: [],
           });
 
-          const game = new Imperial(board);
+          const game = newImperialGame(board);
           initialize(game);
           return game;
         };
@@ -2023,7 +2029,7 @@ describe('imperial', () => {
             edges: [],
           });
 
-          const game = new Imperial(board);
+          const game = newImperialGame(board);
           game.tick(
             Action.initialize({
               players: [
@@ -2720,7 +2726,7 @@ describe('imperial', () => {
               edges: [['a', 'b']],
             });
 
-            const game = new Imperial(board);
+            const game = newImperialGame(board);
             game.tick(
               Action.initialize({
                 players: [
@@ -2830,7 +2836,7 @@ describe('imperial', () => {
             edges: [],
           });
 
-          const game = new Imperial(board);
+          const game = newImperialGame(board);
           initialize(game);
           return game;
         };
@@ -3075,7 +3081,7 @@ describe('imperial', () => {
             edges: [],
           });
 
-          const game = new Imperial(board);
+          const game = newImperialGame(board);
           initialize(game);
           return game;
         };
@@ -3197,7 +3203,7 @@ describe('imperial', () => {
           ],
         });
 
-        const game = new Imperial(board);
+        const game = newImperialGame(board);
         initialize(game);
         // Allow Italy to be able to afford a factory
         game.nations.get(Nation.IT).treasury = 5;
@@ -3897,7 +3903,7 @@ describe('imperial', () => {
           ],
         });
 
-        const game = new Imperial(board);
+        const game = newImperialGame(board);
         initialize(game);
         // Allow Italy to be able to afford a factory
         game.nations.get(Nation.IT).treasury = 5;
@@ -4246,7 +4252,7 @@ describe('imperial', () => {
           edges: [['a', 'b']],
         });
 
-        const game = new Imperial(board);
+        const game = newImperialGame(board);
         initialize(game);
         // Allow Italy to be able to afford a factory
         game.nations.get(Nation.IT).treasury = 5;
@@ -4508,7 +4514,7 @@ describe('imperial', () => {
           edges: [],
         });
 
-        const game = new Imperial(board);
+        const game = newImperialGame(board);
         initialize(game);
         return game;
       };
@@ -4539,7 +4545,7 @@ describe('imperial', () => {
           edges: [],
         });
 
-        const game = new Imperial(board);
+        const game = newImperialGame(board);
         initialize(game);
         return game;
       };
@@ -4622,7 +4628,7 @@ describe('imperial', () => {
           edges: [['a', 'c']],
         });
 
-        const game = new Imperial(board);
+        const game = newImperialGame(board);
         initialize(game);
         return game;
       };
