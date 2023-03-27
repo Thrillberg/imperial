@@ -1,12 +1,10 @@
 import Action from './action';
 
-import Logger from '../src/Logger';
-
 import GameBoard from './gameBoard';
 import Imperial from './imperial';
 import { Nation2030 } from './constants';
 
-const newImperialGame = (board) => new Imperial(board, new Logger('unittests', 'stub-test-id'));
+const newImperialGame = (board) => new Imperial(board);
 
 const initialize = (game) => {
   game.tick(

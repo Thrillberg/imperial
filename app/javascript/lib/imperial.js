@@ -29,12 +29,14 @@ import FactorySlotBuildPermissions from './UseCases/Rondels/FactorySlots/Build/P
 import AvailableSlots from './UseCases/Rondels/SlotSelection/AvailableSlots';
 import SlotDistanceCosts from './UseCases/Rondels/SlotSelection/SlotDistanceCosts';
 
+import Logger from '../src/Logger';
+
 export default class Imperial {
   #logger;
   #game;
 
   constructor(board, logger) {
-    this.#logger = logger;
+    this.#logger = logger || new Logger();
 
     this.board = board || standardGameBoard;
     // This is the canonical log from which game state is derived.

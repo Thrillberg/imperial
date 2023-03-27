@@ -1,13 +1,11 @@
 import Action from './action';
 
-import Logger from '../src/Logger';
-
 import { Bond, Nation } from './constants';
 import GameBoard from './gameBoard';
 
 import Imperial from './imperial';
 
-const newImperialGame = (board) => new Imperial(board, new Logger('unittests', 'stub-test-id'));
+const newImperialGame = (board) => new Imperial(board);
 
 const cloneUnits = (units) => {
   const out = new Map();
