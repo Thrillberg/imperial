@@ -10,7 +10,7 @@ import auctionSetup from './auctionSetup';
 import BoardEurope from './board';
 
 const ImperialFromLog = (log) => {
-  const game = new Imperial(BoardEurope, new Logger('unittests', 'stub-test-id'));
+  const game = new Imperial(BoardEurope);
 
   game.tickFromLog(log);
 
