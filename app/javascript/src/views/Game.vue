@@ -395,11 +395,12 @@
 </template>
 
 <script>
-import { Logtail } from '@logtail/browser';
 import { Howl } from 'howler';
 import Action from '../../lib/action';
 import Imperial from '../../lib/imperial';
 import { apiClient } from '../router/index';
+
+import Logger from '../Logger'
 
 import Board from '../components/Board.vue';
 import ControlPanel from '../components/ControlPanel.vue';
@@ -611,22 +612,11 @@ export default {
         this.board = imperialAsiaBoard;
       }
 
-      this.game = Imperial.fromLog(gameLog, this.board);
-      if (this.env === 'production' && this.game.invalidAction) {
-        const logtail = new Logtail('3bdHcA8P3mcww2ojgC5G8YiT');
-        logtail.error(
-          'Invalid action error',
-          {
-            action: log[log.length - 1],
-            gameId: this.gameData.id,
-            expectedAvailableActions: Object.assign([...this.game.availableActions]),
-          },
-        );
-      }
-
+      this.game = new Imperial(this.board, new Logger(this.env));
       if (baseGame) {
         this.game.baseGame = baseGame;
       }
+      this.game.tickFromLog(gameLog);
 
       if (Object.keys(this.game.players).length > 0) {
         this.gameStarted = true;
@@ -785,10 +775,14 @@ export default {
       const { log } = this.game;
       const { board } = this.game;
 
-      this.game = Imperial.fromLog(log, board);
+      this.game = new Imperial(board, new Logger('replay'));
+      if (baseGame) {
+        this.game.baseGame = baseGame;
+      }
+      this.game.tickFromLog(log);
     },
     backToRoundStart() {
-      const startingNation = this.game.baseGame === 'imperial' ? Nation.AH : Nation2030.RU;
+const startingNation = this.game.baseGame === 'imperial' ? Nation.AH : Nation2030.RU;
       while ((this.game.log[this.game.log.length - 1].payload.nation !== startingNation)
         || (this.game.log[this.game.log.length - 1].type !== 'rondel')) {
         this.back();
@@ -800,7 +794,9 @@ export default {
 
       const { log } = this.game;
       const { board } = this.game;
-      this.game = Imperial.fromLog(log, board);
+
+      this.game = new Imperial(board, new Logger('replay'));
+      this.game.tickFromLog(log);
     },
     backToGameStart() {
       while (this.game.log[this.game.log.length - 1].type !== 'initialize') {
@@ -815,7 +811,9 @@ export default {
         newLog.push(this.poppedTurns.pop());
       }
       const { board } = this.game;
-      this.game = Imperial.fromLog(newLog, board);
+
+      this.game = new Imperial(board, new Logger('replay'));
+      this.game.tickFromLog(newLog);
     },
     forwardToCurrentAction() {
       while (this.poppedTurns.length > 0) {

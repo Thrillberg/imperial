@@ -1,5 +1,3 @@
-import { Logtail } from '@logtail/browser';
-
 import Imperial2030Game from './Entities/Imperial2030Game';
 import ImperialAsiaGame from './Entities/ImperialAsiaGame';
 import ImperialEuropeGame from './Entities/ImperialEuropeGame';
@@ -32,16 +30,11 @@ import AvailableSlots from './UseCases/Rondels/SlotSelection/AvailableSlots';
 import SlotDistanceCosts from './UseCases/Rondels/SlotSelection/SlotDistanceCosts';
 
 export default class Imperial {
-  static fromLog(log, board) {
-    const game = new Imperial(board);
-    log.forEach((entry) => game.tick(entry));
-    return game;
-  }
+  #logger;
 
-  constructor(board) {
-    this.logtail = new Logtail('3bdHcA8P3mcww2ojgC5G8YiT');
+  constructor(board, logger) {
+    this.#logger = logger;
 
-    this.invalidAction = false;
     this.board = board || standardGameBoard;
     // This is the canonical log from which game state is derived.
     this.log = [];
@@ -75,6 +68,10 @@ export default class Imperial {
     this.baseGame = '';
   }
 
+  tickFromLog(log) {
+    log.forEach((entry) => game.tick(entry));
+  }
+
   tick(action) {
     this.setOldState(action);
     // Initialize and endGame actions are always valid.
@@ -99,9 +96,15 @@ export default class Imperial {
       }
     }
 
-    this.invalidAction = false;
     if (validAction === false) {
-      this.invalidAction = true;
+      this.#logger.error(
+        'Invalid action error',
+        {
+          action: log[log.length - 1],
+          gameId: this.gameData.id,
+          expectedAvailableActions: Object.assign([...this.game.availableActions]),
+        },
+      );
       return;
     }
 
