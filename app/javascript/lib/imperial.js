@@ -289,14 +289,14 @@ export default class Imperial {
         break;
 
       default:
-        logtail.error(
+        this.logtail.error(
           'Undefined gamemode error',
           {
             // gameId: this.gameData.id,
             gameMode: this.baseGame,
           },
         );
-        
+
         this.game = null;
         break;
     }
