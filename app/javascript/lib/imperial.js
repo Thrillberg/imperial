@@ -69,7 +69,7 @@ export default class Imperial {
   }
 
   tickFromLog(log) {
-    log.forEach((entry) => game.tick(entry));
+    log.forEach((entry) => this.tick(entry));
   }
 
   tick(action) {
@@ -293,7 +293,7 @@ export default class Imperial {
         break;
 
       default:
-        this.logtail.error(
+        this.logger.error(
           'Undefined gamemode error',
           {
             // gameId: this.gameData.id,

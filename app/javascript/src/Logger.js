@@ -1,3 +1,5 @@
+import { Logtail } from '@logtail/browser';
+
 export default class Logger {
   #environment;
   #logtail;
