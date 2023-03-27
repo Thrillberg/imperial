@@ -1,7 +1,5 @@
 import Action from './action';
 
-import Logger from '../src/Logger';
-
 import Auction from './auction';
 import Imperial from './imperial';
 import { Bond, Nation } from './constants';
