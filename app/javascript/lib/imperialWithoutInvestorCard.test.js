@@ -1,11 +1,13 @@
 import Action from './action';
 
+import Logger from '../src/Logger';
+
 import Imperial from './imperial';
 
 import BoardEurope from './board';
 import { Nation } from './constants';
 
-ImperialFromLog = (log) => {
+const ImperialFromLog = (log) => {
   const game = new Imperial(BoardEurope, new Logger('unittests', 'stub-test-id'));
 
   game.tickfromLog(log);

@@ -67,6 +67,8 @@ export default class Imperial {
     this.coexistingNations = [];
     this.swissBanksWhoDoNotInterrupt = [];
     this.baseGame = '';
+
+    this.#game = null;
   }
 
   tickFromLog(log) {
@@ -101,7 +103,7 @@ export default class Imperial {
       this.#logger.error(
         'Invalid action error',
         {
-          action: action,
+          action,
           expectedAvailableActions: Object.assign([...this.availableActions]),
         },
       );
@@ -279,6 +281,7 @@ export default class Imperial {
 
   initialize(action) {
     this.baseGame = action.payload.baseGame || ImperialEuropeGame.classId;
+
     switch (this.baseGame) {
       case ImperialEuropeGame.classId:
         this.#game = new ImperialEuropeGame();
@@ -293,7 +296,7 @@ export default class Imperial {
         break;
 
       default:
-        this.logger.error(
+        this.#logger.error(
           'Undefined gamemode error',
           {
             gameMode: this.baseGame,

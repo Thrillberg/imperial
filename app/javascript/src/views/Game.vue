@@ -400,7 +400,7 @@ import Action from '../../lib/action';
 import Imperial from '../../lib/imperial';
 import { apiClient } from '../router/index';
 
-import Logger from '../Logger'
+import Logger from '../Logger';
 
 import Board from '../components/Board.vue';
 import ControlPanel from '../components/ControlPanel.vue';
@@ -612,11 +612,13 @@ export default {
         this.board = imperialAsiaBoard;
       }
 
-      this.game = new Imperial(this.board, new Logger(this.env, this.gameData.id));
+      const game = new Imperial(this.board, new Logger(this.env, this.gameData.id));
       if (baseGame) {
-        this.game.baseGame = baseGame;
+        game.baseGame = baseGame;
       }
-      this.game.tickFromLog(gameLog);
+      game.tickFromLog(gameLog);
+      // assigning to this.game makes the object a proxy and unable to access private fields
+      this.game = game;
 
       if (Object.keys(this.game.players).length > 0) {
         this.gameStarted = true;
@@ -773,16 +775,18 @@ export default {
       }
 
       const { log } = this.game;
-      const { board } = this.game;
+      const { baseGame } = this.game;
 
-      this.game = new Imperial(board, new Logger('replay', this.gameData.id));
+      const game = new Imperial(this.board, new Logger('replay', this.gameData.id));
       if (baseGame) {
-        this.game.baseGame = baseGame;
+        game.baseGame = baseGame;
       }
-      this.game.tickFromLog(log);
+      game.tickFromLog(log);
+      // assigning to this.game makes the object a proxy and unable to access private fields, doing it last
+      this.game = game;
     },
     backToRoundStart() {
-const startingNation = this.game.baseGame === 'imperial' ? Nation.AH : Nation2030.RU;
+      const startingNation = this.game.baseGame === 'imperial' ? Nation.AH : Nation2030.RU;
       while ((this.game.log[this.game.log.length - 1].payload.nation !== startingNation)
         || (this.game.log[this.game.log.length - 1].type !== 'rondel')) {
         this.back();
@@ -793,10 +797,15 @@ const startingNation = this.game.baseGame === 'imperial' ? Nation.AH : Nation203
       this.poppedTurns.push(lastTurn);
 
       const { log } = this.game;
-      const { board } = this.game;
+      const { baseGame } = this.game;
 
-      this.game = new Imperial(board, new Logger('replay', this.gameData.id));
-      this.game.tickFromLog(log);
+      const game = new Imperial(this.board, new Logger('replay', this.gameData.id));
+      if (baseGame) {
+        game.baseGame = baseGame;
+      }
+      game.tickFromLog(log);
+      // assigning to this.game makes the object a proxy and unable to access private fields, doing it last
+      this.game = game;
     },
     backToGameStart() {
       while (this.game.log[this.game.log.length - 1].type !== 'initialize') {
@@ -810,10 +819,15 @@ const startingNation = this.game.baseGame === 'imperial' ? Nation.AH : Nation203
       while (this.poppedTurns[this.poppedTurns.length - 1]?.type === 'maneuver') {
         newLog.push(this.poppedTurns.pop());
       }
-      const { board } = this.game;
+      const { baseGame } = this.game;
 
-      this.game = new Imperial(board, new Logger('replay', this.gameData.id));
-      this.game.tickFromLog(newLog);
+      const game = new Imperial(this.board, new Logger('replay', this.gameData.id));
+      if (baseGame) {
+        game.baseGame = baseGame;
+      }
+      game.tickFromLog(newLog);
+      // assigning to this.game makes the object a proxy and unable to access private fields, doing it last
+      this.game = game;
     },
     forwardToCurrentAction() {
       while (this.poppedTurns.length > 0) {
