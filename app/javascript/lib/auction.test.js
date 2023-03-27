@@ -1,8 +1,21 @@
 import Action from './action';
+
+import Logger from '../src/Logger';
+
 import Auction from './auction';
 import Imperial from './imperial';
 import { Bond, Nation } from './constants';
 import auctionSetup from './auctionSetup';
+
+import BoardEurope from './board';
+
+const ImperialFromLog = (log) => {
+  const game = new Imperial(BoardEurope, new Logger('unittests', 'stub-test-id'));
+
+  game.tickFromLog(log);
+
+  return game;
+};
 
 describe('auction', () => {
   describe('initialize', () => {
@@ -218,7 +231,7 @@ describe('auction', () => {
       );
       expected.add(Action.undo({ player: 'player1' }));
 
-      const game = Imperial.fromLog(log);
+      const game = ImperialFromLog(log);
 
       expect(game.availableActions).toEqual(expected);
       expect(game.swissBanks).toEqual(['player2']);
@@ -263,7 +276,7 @@ describe('auction', () => {
         }),
       ];
 
-      const game = Imperial.fromLog(log);
+      const game = ImperialFromLog(log);
 
       expect(game.availableActions).toEqual(expectedActions);
     });
@@ -317,7 +330,7 @@ describe('auction', () => {
         }),
       ];
 
-      const game = Imperial.fromLog(log);
+      const game = ImperialFromLog(log);
 
       expect(game.availableActions).toEqual(expectedActions);
     });

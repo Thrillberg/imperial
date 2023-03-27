@@ -10,7 +10,7 @@ import { Nation } from './constants';
 const ImperialFromLog = (log) => {
   const game = new Imperial(BoardEurope, new Logger('unittests', 'stub-test-id'));
 
-  game.tickfromLog(log);
+  game.tickFromLog(log);
 
   return game;
 };
