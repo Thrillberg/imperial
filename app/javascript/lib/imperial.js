@@ -1,6 +1,8 @@
-import ImperialEuropeGame from './Entities/ImperialEuropeGame';
+import { Logtail } from '@logtail/browser';
+
 import Imperial2030Game from './Entities/Imperial2030Game';
 import ImperialAsiaGame from './Entities/ImperialAsiaGame';
+import ImperialEuropeGame from './Entities/ImperialEuropeGame';
 
 import { translateProvinceModel } from './Entities/Board/Province';
 
@@ -24,10 +26,10 @@ import standardAsiaSetup from './standardAsiaSetup';
 import standardSetup from './standardSetup';
 
 // Rondel use cases
+import FactorySlotBuildChargeCosts from './UseCases/Rondels/FactorySlots/Build/ChargeCosts';
+import FactorySlotBuildPermissions from './UseCases/Rondels/FactorySlots/Build/Permissions';
 import AvailableSlots from './UseCases/Rondels/SlotSelection/AvailableSlots';
 import SlotDistanceCosts from './UseCases/Rondels/SlotSelection/SlotDistanceCosts';
-import FactorySlotBuildPermissions from './UseCases/Rondels/FactorySlots/Build/Permissions';
-import FactorySlotBuildChargeCosts from './UseCases/Rondels/FactorySlots/Build/ChargeCosts';
 
 export default class Imperial {
   static fromLog(log, board) {
@@ -37,6 +39,8 @@ export default class Imperial {
   }
 
   constructor(board) {
+    this.logtail = new Logtail('3bdHcA8P3mcww2ojgC5G8YiT');
+    this.invalidAction = false;
     this.board = board || standardGameBoard;
     // This is the canonical log from which game state is derived.
     this.log = [];
@@ -94,9 +98,9 @@ export default class Imperial {
       }
     }
 
+    this.invalidAction = false;
     if (validAction === false) {
-      console.error('The following submitted action is invalid: ', action);
-      console.log('Expected actions were: ', this.availableActions);
+      this.invalidAction = true;
       return;
     }
 
@@ -285,7 +289,14 @@ export default class Imperial {
         break;
 
       default:
-        console.error('Undefined gamemode ', this.baseGame);
+        logtail.error(
+          'Undefined gamemode error',
+          {
+            // gameId: this.gameData.id,
+            gameMode: this.baseGame,
+          },
+        );
+        
         this.game = null;
         break;
     }
@@ -2412,5 +2423,21 @@ export default class Imperial {
     }
 
     return true;
+  }
+
+  translateBaseGameModel() {
+    switch (this.baseGame) {
+      case ImperialEuropeGame.classId:
+        return new ImperialEuropeGame();
+
+      case Imperial2030Game.classId:
+        return new Imperial2030Game();
+
+      case ImperialAsiaGame.classId:
+        return new ImperialAsiaGame();
+
+      default:
+        return null;
+    }
   }
 }

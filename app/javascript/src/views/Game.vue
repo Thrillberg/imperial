@@ -395,6 +395,7 @@
 </template>
 
 <script>
+import { Logtail } from '@logtail/browser';
 import { Howl } from 'howler';
 import Action from '../../lib/action';
 import Imperial from '../../lib/imperial';
@@ -440,7 +441,7 @@ export default {
     apiClient.userStoppedObservingGame(this.profile.username, this.$route.params.id);
     next();
   },
-  props: ['profile', 'users', 'gameData', 'games', 'observers'],
+  props: ['profile', 'users', 'gameData', 'games', 'observers', 'env'],
   data: () => ({
     importProvince: '',
     board: {},
@@ -609,10 +610,24 @@ export default {
       } else if (baseGame === 'imperialAsia') {
         this.board = imperialAsiaBoard;
       }
+
       this.game = Imperial.fromLog(gameLog, this.board);
+      if (this.env === 'production' && this.game.invalidAction) {
+        const logtail = new Logtail('3bdHcA8P3mcww2ojgC5G8YiT');
+        logtail.error(
+          'Invalid action error',
+          {
+            action: log[log.length - 1],
+            gameId: this.gameData.id,
+            expectedAvailableActions: Object.assign([...this.game.availableActions]),
+          },
+        );
+      }
+
       if (baseGame) {
         this.game.baseGame = baseGame;
       }
+
       if (Object.keys(this.game.players).length > 0) {
         this.gameStarted = true;
         this.currentPlayer = this.game.players[this.profile.username] || {};
