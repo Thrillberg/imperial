@@ -31,15 +31,15 @@
 <script>
 export default {
   name: 'FinishedGames',
-  props: { profile: Object },
+  props: { profile: { type: Object, default: () => {} } },
   data: () => ({
     games: [],
   }),
   created() {
     document.title = 'Finished Games - Imperial';
-    fetch('/api/games', { method: 'GET' })
+    fetch('/api/games?filter=finished', { method: 'GET' })
       .then((response) => response.json())
-      .then((data) => this.games = data.filter((game) => !game.cancelled_at && !game.cloned_from_game && game.winner_name));
+      .then((data) => { this.games = data; });
   },
 };
 </script>

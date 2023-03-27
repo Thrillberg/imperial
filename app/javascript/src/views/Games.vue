@@ -33,7 +33,7 @@ import { DateTime } from 'luxon';
 
 export default {
   name: 'Games',
-  props: { profile: Object },
+  props: { profile: { type: Object, default: () => {} } },
   data: () => ({
     games: [],
   }),
@@ -41,7 +41,7 @@ export default {
     document.title = 'Games - Imperial';
     fetch('/api/games', { method: 'GET' })
       .then((response) => response.json())
-      .then((data) => this.games = data.filter((game) => !game.cancelled_at && !game.cloned_from_game));
+      .then((data) => { this.games = data; });
   },
   methods: {
     toDate(timestamp) {

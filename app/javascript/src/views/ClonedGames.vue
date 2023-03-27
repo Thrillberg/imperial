@@ -25,17 +25,15 @@
 <script>
 export default {
   name: 'ClonedGames',
-  props: { profile: Object },
+  props: { profile: { type: Object, default: () => {} } },
   data: () => ({
     games: [],
   }),
   created() {
     document.title = 'Your Cloned Games - Imperial';
-    fetch('/api/games', { method: 'GET' })
+    fetch(`/api/games?filter=your_cloned&host_id=${this.profile.id}`, { method: 'GET' })
       .then((response) => response.json())
-      .then((data) => this.games = data.filter(
-        (game) => !game.cancelled_at && game.cloned_from_game_id && game.host_id === this.profile.id,
-      ));
+      .then((data) => { this.games = data; });
   },
 };
 </script>

@@ -28,7 +28,7 @@
             "object": true
         }],
         "vue/multi-word-component-names": ["error", {
-            "ignores": ["Board", "Game", "Province", "Flag", "Bond", "Player", "Rondel", "About", "Header", "Home", "Import"]
+            "ignores": ["Board", "Game", "Province", "Flag", "Bond", "Player", "Rondel", "About", "Header", "Home", "Import", "Games"]
         }],
         "vue/no-reserved-component-names": ["off"],
         "vue/no-v-html": ["off"]
