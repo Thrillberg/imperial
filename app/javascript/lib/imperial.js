@@ -133,7 +133,7 @@ export default class Imperial {
         const currentNation = this.nations.get(this.currentNation);
         if (currentNation.rondelPosition) {
           const lastRondelSlot = this.#game.rondel.idToEntity(currentNation.rondelPosition);
-          this.#moveToRondelSlot.forceMoveNation(this.#game.nationIdToEntity(this.currentNation.value), lastRondelSlot);
+          MoveToRondelSlot.forceMoveNation(this.#game.nationIdToEntity(this.currentNation.value), lastRondelSlot);
         }
         return;
       }
@@ -179,7 +179,7 @@ export default class Imperial {
 
         this.nations.get(this.currentNation).rondelPosition = 'investor';
         const nationEntity = this.#game.nationIdToEntity(this.currentNation.value);
-        this.#moveToRondelSlot.forceMoveNation(nationEntity, this.#game.rondel.investorSlot);
+        MoveToRondelSlot.forceMoveNation(nationEntity, this.#game.rondel.investorSlot);
 
         const investorAction = Action.rondel({
           slot: 'investor',

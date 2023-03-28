@@ -29,7 +29,7 @@ export default class MoveToSlot {
     return this.#costs;
   }
 
-  forceMoveNation(nation, toRondelSlot) {
+  static forceMoveNation(nation, toRondelSlot) {
     if (nation.residingRondelSlot) {
       nation.residingRondelSlot.residingNations.delete(nation);
     }
@@ -38,13 +38,15 @@ export default class MoveToSlot {
     toRondelSlot.residingNations.add(nation);
   }
   tryMoveNation(governor, nation, toRondelSlot) {
-    const availableFreeSlots = this.#availableSlots.nextAvailableFreeRondelSlots(nation.residingRondelSlot);
+    const fromRondelSlot = nation.residingRondelSlot;
+    const availableFreeSlots = this.#availableSlots.nextAvailableFreeRondelSlots(fromRondelSlot);
 
     let isValidMove = availableFreeSlots.has(toRondelSlot);
     let moveCosts = 0;
 
-    if (isValidMove == false) {
-      const availablePaidSlots = this.#availableSlots.nextAvailablePaidRondelSlots(nation.residingRondelSlot, this.#costs.costPerPaidRondelSlot(nation));
+    if (isValidMove === false) {
+      const costPerPaidRondelSlot = this.#costs.costPerPaidRondelSlot(nation);
+      const availablePaidSlots = this.#availableSlots.nextAvailablePaidRondelSlots(fromRondelSlot, costPerPaidRondelSlot);
 
       isValidMove = availablePaidSlots.has(toRondelSlot);
       if (isValidMove) {
@@ -53,7 +55,7 @@ export default class MoveToSlot {
     }
 
     if (isValidMove) {
-      this.forceMoveNation(nation, toRondelSlot);
+      MoveToSlot.forceMoveNation(nation, toRondelSlot);
       governor.cash -= moveCosts;
     } else {
       throw new InvalidMoveError(nation.residingRondelSlot, toRondelSlot);
