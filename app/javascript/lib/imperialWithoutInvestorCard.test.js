@@ -253,6 +253,7 @@ describe('round of investment', () => {
     game.tick(Action.bondPurchase({
       player: 'player2', cost: 9, nation: Nation.IT, tradeInValue: 0,
     }));
+    game.tick(Action.skipBondPurchase({ player: 'player3', nation: Nation.IT }));
     game.tick(Action.rondel({ nation: Nation.FR, cost: 0, slot: 'investor' }));
     game.tick(Action.bondPurchase({
       player: 'player3', cost: 9, nation: Nation.FR, tradeInValue: 0,
