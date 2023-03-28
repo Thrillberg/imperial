@@ -1,8 +1,8 @@
 import Action from './action';
 
+import { Nation2030 } from './constants';
 import GameBoard from './gameBoard';
 import Imperial from './imperial';
-import { Nation2030 } from './constants';
 
 const initialize = (game) => {
   game.tick(
@@ -285,7 +285,6 @@ describe('imperial2030', () => {
         game.tick(
           Action.rondel({ slot: 'maneuver1', cost: 0, nation: Nation2030.RU }),
         );
-        game.tick(Action.endManeuver());
 
         expect(game.availableActions).toEqual(expected);
       });
@@ -314,7 +313,6 @@ describe('imperial2030', () => {
         game.tick(
           Action.rondel({ slot: 'maneuver1', cost: 0, nation: Nation2030.RU }),
         );
-        game.tick(Action.endManeuver());
 
         expect(game.availableActions).toEqual(expected);
       });

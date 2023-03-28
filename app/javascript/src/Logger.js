@@ -22,6 +22,7 @@ export default class Logger {
         break;
 
       case 'replay':
+      case 'silent':
         // no-op
         break;
 
