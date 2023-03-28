@@ -2420,13 +2420,6 @@ export default class Imperial {
     return Math.max(nationMinProfit, taxes - this.unitMaintenanceCosts(nationName) - bonusPaidByNation);
   }
 
-  static actionIsRondelAndManeuver(action) {
-    const slot = action.payload?.slot;
-    return (
-      action.type === 'rondel' && (slot === 'maneuver1' || slot === 'maneuver2')
-    );
-  }
-
   static isEqual(action1, action2) {
     if (action1.type !== action2.type) return false;
 
@@ -2463,21 +2456,5 @@ export default class Imperial {
     }
 
     return true;
-  }
-
-  translateBaseGameModel() {
-    switch (this.baseGame) {
-      case ImperialEuropeGame.classId:
-        return new ImperialEuropeGame();
-
-      case Imperial2030Game.classId:
-        return new Imperial2030Game();
-
-      case ImperialAsiaGame.classId:
-        return new ImperialAsiaGame();
-
-      default:
-        return null;
-    }
   }
 }
