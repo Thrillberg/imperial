@@ -3,14 +3,16 @@ import ImperialAsiaGame from '../../../Entities/ImperialAsiaGame';
 import ImperialEuropeGame from '../../../Entities/ImperialEuropeGame';
 
 export default class SlotDistanceCosts {
+  #game;
+
   constructor(game) {
-    this.game = game;
+    this.#game = game;
   }
 
   costPerPaidRondelSlot(nation) {
     let costPerPaidDistance = 1;
 
-    switch (this.game.constructor) {
+    switch (this.#game.constructor) {
       case ImperialEuropeGame:
         costPerPaidDistance += 1;
         break;

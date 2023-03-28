@@ -12,6 +12,8 @@ const Taxation = 'taxation';
 export default class Rondel {
   #translator;
 
+  #slotOrder;
+
   constructor() {
     this.#translator = new Map();
     this.#translator.set(FactorySlot.classId, new FactorySlot(5));
@@ -23,7 +25,7 @@ export default class Rondel {
     this.#translator.set(Maneuver2, new RondelSlot(Maneuver2));
     this.#translator.set(Taxation, new RondelSlot(Taxation));
 
-    this.slotOrder = [
+    this.#slotOrder = [
       this.factorySlot,
       this.production1Slot,
       this.maneuver1Slot,
@@ -35,6 +37,11 @@ export default class Rondel {
     ];
   }
 
+  * allSlots() {
+    for (const slot of this.#slotOrder) {
+      yield slot;
+    }
+  }
   get factorySlot() {
     return this.idToEntity(FactorySlot.classId);
   }
@@ -65,11 +72,12 @@ export default class Rondel {
   }
 
   slotClockwiseTo(slot, slotCounts) {
-    let slotIndex = this.slotOrder.indexOf(slot);
-    slotIndex += slotCounts;
+    let slotIndex = this.#slotOrder.indexOf(slot);
 
-    slotIndex %= this.slotOrder.length;
-    return this.slotOrder[slotIndex];
+    slotIndex += slotCounts;
+    slotIndex %= this.#slotOrder.length;
+
+    return this.#slotOrder[slotIndex];
   }
 
   passedInvestor(exclusiveFromSlot, exclusiveToSlot) {
