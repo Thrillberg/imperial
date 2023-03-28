@@ -20,6 +20,7 @@
     "rules": {
         "guard-for-in": ["off"],
         "lines-between-class-members": ["off"],
+        "max-classes-per-file": ["off"],
         "max-len": ["error", { "code": 130 }],
         "no-param-reassign": ["off"],
         "no-restricted-syntax": ["error", "WithStatement"],
