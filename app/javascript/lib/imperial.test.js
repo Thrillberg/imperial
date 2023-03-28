@@ -3,6 +3,8 @@ import Action from './action';
 import { Bond, Nation } from './constants';
 import GameBoard from './gameBoard';
 
+import Logger from '../src/Logger';
+
 import Imperial from './imperial';
 
 const cloneUnits = (units) => {
@@ -633,7 +635,6 @@ describe('imperial', () => {
           game.tick(
             Action.rondel({ slot: 'maneuver2', cost: 0, nation: Nation.AH }),
           );
-          game.tick(Action.endManeuver());
           game.tick(
             Action.rondel({ slot: 'taxation', cost: 0, nation: Nation.IT }),
           );
@@ -2222,7 +2223,7 @@ describe('imperial', () => {
                 // Set AH's rondel position to be something *before* investor
                 game.nations.get(Nation.AH).rondelPosition = startingPosition;
 
-                // The investor slot lies between 'maneuver1' and 'maneuver2'
+                // The investor slot lies between 'maneuver1' and 'production2'
                 game.tick(
                   Action.rondel({
                     slot: 'production2',
@@ -2270,7 +2271,7 @@ describe('imperial', () => {
                 // Set AH's rondel position to be something *before* investor
                 game.nations.get(Nation.AH).rondelPosition = startingPosition;
 
-                // The investor slot lies between 'maneuver1' and 'maneuver2'
+                // The investor slot lies between 'maneuver1' and 'production2'
                 game.tick(
                   Action.rondel({
                     slot: 'production2',
@@ -2278,7 +2279,6 @@ describe('imperial', () => {
                     cost: 0,
                   }),
                 );
-                game.tick(Action.skipForceInvestor({ player: 'player2' }));
                 // InvestorCardHolder buys a bond first
                 game.tick(
                   Action.bondPurchase({
@@ -3878,7 +3878,7 @@ describe('imperial', () => {
           game.tick(
             Action.rondel({ slot: 'maneuver1', nation: Nation.AH, cost: 0 }),
           );
-          game.tick(Action.maneuver({ origin: 'f', destination: 'e' }));
+          game.tick(Action.maneuver({ origin: 'f', destination: 'c' }));
 
           expect(game.provinces.get('f').flag).toEqual(Nation.AH);
         });
@@ -3914,11 +3914,18 @@ describe('imperial', () => {
           game.units.get(Nation.IT).get('a').armies += 1;
 
           game.tick(
+            Action.rondel({
+              nation: Nation.AH,
+              cost: 0,
+              slot: 'maneuver1',
+            }),
+          );
+          game.tick(
             Action.fight({
               province: 'a',
               incumbent: Nation.AH,
               challenger: Nation.IT,
-              targetType: null,
+              targetType: 'army',
             }),
           );
 
@@ -4624,7 +4631,8 @@ describe('imperial', () => {
           edges: [['a', 'c']],
         });
 
-        const game = new Imperial(board);
+        const logger = new Logger('silent');
+        const game = new Imperial(board, logger);
         initialize(game);
         return game;
       };
