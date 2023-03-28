@@ -4,6 +4,8 @@ import { Nation2030 } from './constants';
 import GameBoard from './gameBoard';
 import Imperial from './imperial';
 
+import MoveToRondelSlot from './UseCases/Rondels/MoveToSlot';
+
 const initialize = (game) => {
   game.tick(
     Action.initialize({
@@ -264,9 +266,10 @@ describe('imperial2030', () => {
 
     describe('moving beyond 3 slots', () => {
       test('it costs 1 + nation score to move extra slots', () => {
-        const game = newGame();
+        const gameCoordinator = newGame();
+        const { game } = gameCoordinator;
         // Give player2 3 cash so they can afford all rondel positions
-        game.players.player2.cash = 3;
+        gameCoordinator.players.player2.cash = 3;
         const expected = new Set();
         ['investor', 'import', 'production2'].forEach((slot) => {
           expected.add(Action.rondel({ nation: Nation2030.CN, cost: 0, slot }));
@@ -281,20 +284,24 @@ describe('imperial2030', () => {
           Action.rondel({ nation: Nation2030.CN, cost: 3, slot: 'factory' }),
         );
         expected.add(Action.undo({ player: 'player1' }));
-        game.nations.get(Nation2030.CN).rondelPosition = 'maneuver1';
-        game.tick(
+        gameCoordinator.nations.get(Nation2030.CN).rondelPosition = 'maneuver1';
+        MoveToRondelSlot.forceMoveNation(game.China, game.rondel.maneuver1Slot);
+        gameCoordinator.tick(
           Action.rondel({ slot: 'maneuver1', cost: 0, nation: Nation2030.RU }),
         );
 
-        expect(game.availableActions).toEqual(expected);
+        expect(gameCoordinator.availableActions).toEqual(expected);
       });
 
       test('it costs 4 + nation score * 4 to move extra slots', () => {
-        const game = newGame();
+        const gameCoordinator = newGame();
+        const { game } = gameCoordinator;
         // Give player2 3 cash so they can afford all rondel positions
-        game.players.player2.cash = 30;
+        gameCoordinator.players.player2.cash = 30;
         // Give CN 24 power points so that they need to pay an extra 4 per slot
-        game.nations.get(Nation2030.CN).powerPoints = 24;
+        gameCoordinator.nations.get(Nation2030.CN).powerPoints = 24;
+        game.China.powerPoints = 24;
+
         const expected = new Set();
         ['investor', 'import', 'production2'].forEach((slot) => {
           expected.add(Action.rondel({ nation: Nation2030.CN, cost: 0, slot }));
@@ -309,12 +316,13 @@ describe('imperial2030', () => {
           Action.rondel({ nation: Nation2030.CN, cost: 15, slot: 'factory' }),
         );
         expected.add(Action.undo({ player: 'player1' }));
-        game.nations.get(Nation2030.CN).rondelPosition = 'maneuver1';
-        game.tick(
+        gameCoordinator.nations.get(Nation2030.CN).rondelPosition = 'maneuver1';
+        MoveToRondelSlot.forceMoveNation(game.China, game.rondel.maneuver1Slot);
+        gameCoordinator.tick(
           Action.rondel({ slot: 'maneuver1', cost: 0, nation: Nation2030.RU }),
         );
 
-        expect(game.availableActions).toEqual(expected);
+        expect(gameCoordinator.availableActions).toEqual(expected);
       });
     });
   });

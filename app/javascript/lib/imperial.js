@@ -74,6 +74,10 @@ export default class Imperial {
     this.#game = null;
   }
 
+  get game() {
+    return this.#game;
+  }
+
   tickFromLog(log) {
     log.forEach((entry) => this.tick(entry));
   }
