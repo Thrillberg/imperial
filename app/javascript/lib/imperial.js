@@ -1764,8 +1764,8 @@ export default class Imperial {
           this.availableActions.add(
             Action.fight({
               province,
-              incumbent: this.currentNation,
-              challenger: nation,
+              incumbent: nation,
+              challenger: this.currentNation,
               targetType: unitType,
             }),
           );
