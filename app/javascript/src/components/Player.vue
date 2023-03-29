@@ -69,7 +69,7 @@
 import Bond from './Bond.vue';
 import Flag from './flags/Flag.vue';
 
-import { Nation, Nation2030, NationAsia } from '../../lib/constants';
+import { Nation, Nation2030, NationAsia } from '../../Domain/constants';
 
 export default {
   name: 'Player',

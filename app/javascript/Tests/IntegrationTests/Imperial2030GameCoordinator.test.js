@@ -1,10 +1,10 @@
-import Action from '../../lib/action';
+import Action from '../../Domain/action';
 
-import { Nation2030 } from '../../lib/constants';
-import GameBoard from '../../lib/gameBoard';
-import Imperial from '../../lib/ImperialGameCoordinator';
+import { Nation2030 } from '../../Domain/constants';
+import GameBoard from '../../Domain/gameBoard';
+import Imperial from '../../Domain/ImperialGameCoordinator';
 
-import MoveToRondelSlot from '../../lib/UseCases/Rondels/MoveToSlot';
+import MoveToRondelSlot from '../../Domain/UseCases/Rondels/MoveToSlot';
 
 const initialize = (game) => {
   game.tick(

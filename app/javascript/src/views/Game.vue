@@ -396,8 +396,8 @@
 
 <script>
 import { Howl } from 'howler';
-import Action from '../../lib/action';
-import Imperial from '../../lib/ImperialGameCoordinator';
+import Action from '../../Domain/action';
+import Imperial from '../../Domain/ImperialGameCoordinator';
 import { apiClient } from '../router/index';
 
 import Logger from '../Logger';
@@ -412,15 +412,15 @@ import TaxChart from '../components/TaxChart.vue';
 import TimeTravelButtons from '../components/TimeTravelButtons.vue';
 import TurnStatus from '../components/TurnStatus.vue';
 
-import imperialBoard from '../../lib/board';
-import imperial2030Board from '../../lib/board2030';
-import imperialAsiaBoard from '../../lib/boardAsia';
+import imperialBoard from '../../Domain/board';
+import imperial2030Board from '../../Domain/board2030';
+import imperialAsiaBoard from '../../Domain/boardAsia';
 import assignNations from '../assignNations';
 import getGameLog from '../getGameLog';
 
 import favicon2 from '../assets/favicon2.ico';
 
-import { Nation, Nation2030 } from '../../lib/constants';
+import { Nation, Nation2030 } from '../../Domain/constants';
 import notification from '../assets/notification.mp3';
 
 export default {

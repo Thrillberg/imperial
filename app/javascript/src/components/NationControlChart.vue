@@ -13,7 +13,7 @@
 // Temporarily removing vue-google-charts in case it's a performance issue
 // import { GChart } from "vue-google-charts";
 
-import Imperial from '../../lib/imperial.js';
+import Imperial from '../../Domain/imperial.js';
 
 import { nationColors } from '../../../../nationColors.js';
 

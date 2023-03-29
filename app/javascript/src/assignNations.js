@@ -1,4 +1,4 @@
-import { Nation, Nation2030, NationAsia } from '../lib/constants';
+import { Nation, Nation2030, NationAsia } from '../Domain/constants';
 
 export default (players, baseGame) => {
   if (baseGame === 'imperial') {
