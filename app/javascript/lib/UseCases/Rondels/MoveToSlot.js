@@ -35,7 +35,7 @@ export default class MoveToSlot {
     }
 
     nation.residingRondelSlot = toRondelSlot;
-    toRondelSlot.residingNations.add(nation);
+    toRondelSlot?.residingNations.add(nation);
   }
   tryMoveNation(governor, nation, toRondelSlot) {
     const fromRondelSlot = nation.residingRondelSlot;

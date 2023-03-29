@@ -1,5 +1,6 @@
-import FactorySlot from './RondelSlots/FactorySlot';
 import RondelSlot from './RondelSlots/RondelSlot';
+
+import FactorySlot from './RondelSlots/FactorySlot';
 
 const Production1 = 'production1';
 const Maneuver1 = 'maneuver1';

@@ -135,10 +135,8 @@ export default class Imperial {
         }
 
         const currentNation = this.nations.get(this.currentNation);
-        if (currentNation.rondelPosition) {
-          const lastRondelSlot = this.#game.rondel.idToEntity(currentNation.rondelPosition);
-          MoveToRondelSlot.forceMoveNation(this.#game.nationIdToEntity(this.currentNation.value), lastRondelSlot);
-        }
+        const lastRondelSlot = currentNation.rondelPosition ? this.#game.rondel.idToEntity(currentNation.rondelPosition) : null;
+        MoveToRondelSlot.forceMoveNation(this.#game.nationIdToEntity(this.currentNation.value), lastRondelSlot);
         return;
       }
       case 'bondPurchase': {
