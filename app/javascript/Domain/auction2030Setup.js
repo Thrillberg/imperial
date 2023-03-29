@@ -1,29 +1,30 @@
-import { AllBonds2030, Nation2030 } from "./constants.js";
+import { AllBonds2030, Nation2030 } from './constants';
 
 export default ({ players, provinceNames }) => {
   const out = {
     availableBonds: AllBonds2030(),
     nations: new Map(),
-    order: players.map(p => p.id),
-    players: {}
-  }
+    order: players.map((p) => p.id),
+    players: {},
+  };
 
   let cash;
   switch (players.length) {
     case 6:
-      cash = 13
+      cash = 13;
       break;
     case 5:
-      cash = 15
+      cash = 15;
       break;
     case 4:
-      cash = 19
+      cash = 19;
       break;
     case 3:
-      cash = 25
+      cash = 25;
       break;
     case 2:
-      cash = 37
+    default:
+      cash = 37;
       break;
   }
 
@@ -32,8 +33,8 @@ export default ({ players, provinceNames }) => {
       name: id,
       cash,
       bonds: new Set(),
-      rawScore: 0
-    }
+      rawScore: 0,
+    };
   });
 
   for (const n of Nation2030) {
@@ -43,7 +44,7 @@ export default ({ players, provinceNames }) => {
       rondelPosition: null,
       flagCount: 0,
       powerPoints: 0,
-      taxChartPosition: 5
+      taxChartPosition: 5,
     });
   }
 
@@ -62,37 +63,35 @@ export default ({ players, provinceNames }) => {
     Nation2030.IN,
     Nation2030.BR,
     Nation2030.US,
-    Nation2030.EU
+    Nation2030.EU,
   ].map(
-    nation => {
-      units.set(nation, emptyProvinces());
-    }
+    (nation) => units.set(nation, emptyProvinces()),
   );
   out.units = units;
 
   const provinces = new Map();
   const armaments = [
-    "chicago",
-    "brasilia",
-    "paris",
-    "moscow",
-    "beijing",
-    "newdelhi"
+    'chicago',
+    'brasilia',
+    'paris',
+    'moscow',
+    'beijing',
+    'newdelhi',
   ];
   const shipyard = [
-    "neworleans",
-    "riodejaneiro",
-    "london",
-    "vladivostok",
-    "shanghai",
-    "mumbai"
+    'neworleans',
+    'riodejaneiro',
+    'london',
+    'vladivostok',
+    'shanghai',
+    'mumbai',
   ];
   for (const province of provinceNames) {
     let factory = null;
     if (armaments.includes(province)) {
-      factory = "armaments";
+      factory = 'armaments';
     } else if (shipyard.includes(province)) {
-      factory = "shipyard";
+      factory = 'shipyard';
     }
     provinces.set(province, { factory });
   }
@@ -101,11 +100,11 @@ export default ({ players, provinceNames }) => {
 
   for (const nation of Nation2030) {
     if (nation === Nation2030.CN) {
-      unitLimits.set(nation, {armies: 10, fleets: 6});
+      unitLimits.set(nation, { armies: 10, fleets: 6 });
     } else if (nation === Nation2030.US) {
-      unitLimits.set(nation, {armies: 6, fleets: 10});
+      unitLimits.set(nation, { armies: 6, fleets: 10 });
     } else {
-      unitLimits.set(nation, {armies: 8, fleets: 8});
+      unitLimits.set(nation, { armies: 8, fleets: 8 });
     }
   }
 

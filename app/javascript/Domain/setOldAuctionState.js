@@ -1,5 +1,3 @@
-export default (auction) => {
-  return {
-    firstPlayerIndex: auction.firstPlayerIndex
-  }
-}
+export default (auction) => ({
+  firstPlayerIndex: auction.firstPlayerIndex,
+});
