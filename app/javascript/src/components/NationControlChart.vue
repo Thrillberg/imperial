@@ -13,9 +13,9 @@
 // Temporarily removing vue-google-charts in case it's a performance issue
 // import { GChart } from "vue-google-charts";
 
-import Imperial from '../../Domain/imperial.js';
+import Imperial from '../../Domain/ImperialGameCoordinator';
 
-import { nationColors } from '../../../../nationColors.js';
+import { nationColors } from '../../../../nationColors';
 
 export default {
   // components: { GChart },

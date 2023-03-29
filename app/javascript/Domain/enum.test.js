@@ -1,4 +1,4 @@
-import { Enum } from './enum';
+import Enum from './enum';
 
 describe('Enum', () => {
   const MyEnum = Enum.fromArray(['HUHU', 'BEBE'], 'MyEnum');

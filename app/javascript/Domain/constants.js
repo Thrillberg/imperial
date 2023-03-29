@@ -1,4 +1,4 @@
-import { Enum } from './enum';
+import Enum from './enum';
 import memoize from './memo';
 
 const Nation = Enum.fromArray(['AH', 'IT', 'FR', 'GB', 'GE', 'RU'], 'Nation');
