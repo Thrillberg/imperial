@@ -31,6 +31,13 @@
         r="500"
       />
     </clipPath>
+    <clipPath id="fleetClipBR">
+      <circle
+        cx="325"
+        cy="250"
+        r="250"
+      />
+    </clipPath>
     <clipPath id="fleetClipTR">
       <circle
         cx="500"

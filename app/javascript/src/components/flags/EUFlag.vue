@@ -52,6 +52,7 @@
       />
       <g
         fill="#ffcc00"
+        stroke-width="0"
         transform="matrix(55.555556,0,0,55.555556,750,500)"
       >
         <use
