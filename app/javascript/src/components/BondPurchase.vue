@@ -1,16 +1,21 @@
 <template>
   <div>
-    <div class="text-lg m-2">Purchase a bond - You have {{ game.players[current_player].cash }}m in cash.</div>
+    <div class="text-lg m-2">
+      Purchase a bond - You have {{ game.players[current_player].cash }}m in cash.
+    </div>
     <div class="flex flex-wrap">
-      <div v-for="bond of game.availableBonds" :key="bond.nation+bond.cost">
+      <div
+        v-for="bond of game.availableBonds"
+        :key="bond.nation+bond.cost"
+      >
         <Bond
           v-if="canBePurchased(bond)"
           :bond="bond"
-          :canBePurchased="true"
-          @click="purchase(bond)"
+          :can-be-purchased="true"
           class="cursor-pointer"
-          :isBeingAppliedToTradeIn="tradedInValue > 0"
-          :tradedInValue="tradedInValue"
+          :is-being-applied-to-trade-in="tradedInValue > 0"
+          :traded-in-value="tradedInValue"
+          @click="purchase(bond)"
         />
         <Bond
           v-else
@@ -19,35 +24,48 @@
         />
       </div>
     </div>
-    <div @click="skipBondPurchase" class="rounded m-2 p-2 bg-green-800 text-white cursor-pointer inline-block mt-8">
+    <div
+      class="rounded m-2 p-2 bg-green-800 text-white cursor-pointer inline-block mt-8"
+      @click="skipBondPurchase"
+    >
       Do not buy a bond
     </div>
   </div>
 </template>
 
 <script>
-import Bond from "../components/Bond.vue";
+import Bond from './Bond.vue';
 
 export default {
-  name: "BondPurchase",
+  name: 'BondPurchase',
   components: { Bond },
-  props: { game: Object, current_player: String, profile: Object, tradedInValue: Number },
+  props: {
+    game: { type: Object, default: () => {} },
+    currentPlayer: { type: String, default: '' },
+    profile: { type: Object, default: () => {} },
+    tradedInValue: { type: Number, default: 0 },
+  },
+  emits: ['purchaseBond', 'skip'],
   methods: {
     canBePurchased(bond) {
       let canBePurchased = false;
       for (const action of this.game.availableActions) {
-        if (action.payload.cost === bond.cost && action.payload.nation === bond.nation && action.payload.tradeInValue === this.tradedInValue) {
+        if (
+          action.payload.cost === bond.cost
+          && action.payload.nation === bond.nation
+          && action.payload.tradeInValue === this.tradedInValue
+        ) {
           canBePurchased = true;
         }
       }
       return canBePurchased;
     },
     purchase(bond) {
-      this.$emit("purchaseBond", bond);
+      this.$emit('purchaseBond', bond);
     },
-    skipBondPurchase: function() {
-      this.$emit("skip");
+    skipBondPurchase() {
+      this.$emit('skip');
     },
-  }
-}
+  },
+};
 </script>
