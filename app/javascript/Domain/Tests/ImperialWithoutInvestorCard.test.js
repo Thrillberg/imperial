@@ -1,9 +1,9 @@
-import Action from '../../Domain/action';
+import Action from '../action';
 
-import Imperial from '../../Domain/ImperialGameCoordinator';
+import Imperial from '../ImperialGameCoordinator';
 
-import BoardEurope from '../../Domain/board';
-import { Nation } from '../../Domain/constants';
+import BoardEurope from '../board';
+import { Nation } from '../constants';
 
 const ImperialFromLog = (log) => {
   const game = new Imperial(BoardEurope);
