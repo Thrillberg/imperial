@@ -3923,8 +3923,8 @@ describe('imperial', () => {
           game.tick(
             Action.fight({
               province: 'a',
-              incumbent: Nation.AH,
-              challenger: Nation.IT,
+              incumbent: Nation.IT,
+              challenger: Nation.AH,
               targetType: 'army',
             }),
           );
@@ -4237,6 +4237,34 @@ describe('imperial', () => {
           expect(game.availableActions).toEqual(
             new Set([
               Action.maneuver({ origin: 'b', destination: 'a' }),
+              Action.endManeuver(),
+              Action.undo({ player: 'player1' }),
+            ]),
+          );
+        });
+
+        test('challenger can maneuver after a fight, if the fight used to be a coexist', () => {
+          const game = newGame();
+          game.units.get(Nation.AH).get('a').armies += 1;
+          game.units.get(Nation.AH).get('c').armies += 1;
+          game.units.get(Nation.IT).get('c').armies += 1;
+
+          game.tick(
+            Action.rondel({ slot: 'maneuver1', nation: Nation.AH, cost: 0 }),
+          );
+          game.tick(
+            Action.fight({
+              province: 'c',
+              incumbent: Nation.IT,
+              challenger: Nation.AH,
+              targetType: 'army',
+            }),
+          );
+
+          expect(game.currentPlayerName).toEqual('player1');
+          expect(game.availableActions).toEqual(
+            new Set([
+              Action.maneuver({ origin: 'a', destination: 'c' }),
               Action.endManeuver(),
               Action.undo({ player: 'player1' }),
             ]),
