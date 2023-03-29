@@ -26,14 +26,15 @@ import standardSetup from './standardSetup';
 // Rondel use cases
 import FactorySlotBuildChargeCosts from './UseCases/Rondels/FactorySlots/Build/ChargeCosts';
 import FactorySlotBuildPermissions from './UseCases/Rondels/FactorySlots/Build/Permissions';
-import AvailableSlots from './UseCases/Rondels/SlotSelection/AvailableSlots';
-import SlotDistanceCosts from './UseCases/Rondels/SlotSelection/SlotDistanceCosts';
+import MoveToRondelSlot from './UseCases/Rondels/MoveToSlot';
 
 import Logger from '../src/Logger';
 
 export default class Imperial {
   #logger;
+
   #game;
+  #moveToRondelSlot;
 
   constructor(board, logger) {
     this.#logger = logger || new Logger();
@@ -71,6 +72,10 @@ export default class Imperial {
     this.baseGame = '';
 
     this.#game = null;
+  }
+
+  get game() {
+    return this.#game;
   }
 
   tickFromLog(log) {
@@ -128,6 +133,10 @@ export default class Imperial {
         if (this.auction?.inAuction) {
           Object.assign(this.auction, this.oldAuctionState);
         }
+
+        const currentNation = this.nations.get(this.currentNation);
+        const lastRondelSlot = currentNation.rondelPosition ? this.#game.rondel.idToEntity(currentNation.rondelPosition) : null;
+        MoveToRondelSlot.forceMoveNation(this.#game.nationIdToEntity(this.currentNation.value), lastRondelSlot);
         return;
       }
       case 'bondPurchase': {
@@ -169,7 +178,11 @@ export default class Imperial {
       case 'forceInvestor': {
         this.swissBanksWhoDoNotInterrupt = [];
         this.passingThroughInvestor = false;
+
         this.nations.get(this.currentNation).rondelPosition = 'investor';
+        const nationEntity = this.#game.nationIdToEntity(this.currentNation.value);
+        MoveToRondelSlot.forceMoveNation(nationEntity, this.#game.rondel.investorSlot);
+
         const investorAction = Action.rondel({
           slot: 'investor',
           nation: this.currentNation,
@@ -308,6 +321,7 @@ export default class Imperial {
         this.#game = null;
         break;
     }
+    this.#moveToRondelSlot = new MoveToRondelSlot(this.#game);
     this.variant = action.payload.variant;
 
     let setup;
@@ -1264,9 +1278,10 @@ export default class Imperial {
   advanceOnRondel(action) {
     this.currentNation = action.payload.nation;
     const currentNation = this.nations.get(this.currentNation);
+    const currentNationEntity = this.#game.nationIdToEntity(this.currentNation.value);
     const currentPlayer = this.players[this.currentPlayerName];
 
-    const fromRondelSlot = this.#game.rondel.idToEntity(currentNation.rondelPosition);
+    const fromRondelSlot = currentNationEntity.residingRondelSlot;
     const toRondelSlot = this.#game.rondel.idToEntity(action.payload.slot);
 
     if (fromRondelSlot
@@ -1277,10 +1292,12 @@ export default class Imperial {
       this.swissBanksWhoDoNotInterrupt = [];
       if (this.canAffordToPayInvestors(this.currentNation)) {
         this.allowSwissBanksToForceInvestor();
+
         let shouldReturn = false;
         for (const availableAction of this.availableActions) {
           if (availableAction.type !== 'undo') {
             shouldReturn = true;
+            break;
           }
         }
         if (shouldReturn) {
@@ -1289,9 +1306,27 @@ export default class Imperial {
       }
     }
 
-    currentNation.previousRondelPosition = currentNation.rondelPosition;
-    currentNation.rondelPosition = action.payload.slot;
-    currentPlayer.cash -= action.payload.cost;
+    try {
+      currentNation.rondelPosition = action.payload.slot;
+      this.#moveToRondelSlot.tryMoveNation(currentPlayer, currentNationEntity, toRondelSlot);
+    } catch (error) {
+      switch (error.constructor) {
+        case MoveToRondelSlot.InvalidMoveError:
+          this.#logger.error(
+            error.message,
+            {
+              player: currentPlayer,
+              nation: currentNationEntity,
+              rondelSlot: toRondelSlot,
+            },
+          );
+          break;
+
+        default:
+          throw error;
+      }
+    }
+
     if (action.payload.cost > 0) {
       this.annotatedLog.push(
         Action.playerPaysForRondel({
@@ -1302,6 +1337,7 @@ export default class Imperial {
       );
     }
 
+    // execute rondel slot
     switch (action.payload.slot) {
       case 'investor': {
         this.investor(action);
@@ -1339,6 +1375,8 @@ export default class Imperial {
       }
       case 'taxation': {
         const nationName = action.payload.nation;
+        const nation = this.nations.get(nationName);
+        const nationEntity = this.#game.nationIdToEntity(nationName.value);
 
         const taxes = this.taxRevenueOf(nationName);
         const nationProfit = this.nationTaxationProfit(nationName, taxes);
@@ -1346,7 +1384,6 @@ export default class Imperial {
         const powerPoints = this.powerPointsGainedFrom(taxes);
 
         // 1. Tax revenue
-        const nation = this.nations.get(nationName);
         nation.taxChartPosition = this.getTaxChartPosition(taxes);
         nation.treasury += nationProfit;
         // can be less than 0m
@@ -1369,8 +1406,10 @@ export default class Imperial {
 
         // 3. Adding power points
         nation.powerPoints += powerPoints;
+        nationEntity.powerPoints += powerPoints;
         if (nation.powerPoints >= 25) {
           nation.powerPoints = 25;
+          nationEntity.powerPoints = 25;
           this.updateRawScores();
 
           this.tick(Action.endGame());
@@ -1912,17 +1951,12 @@ export default class Imperial {
   }
 
   availableRondelActions(nationName) {
-    const nation = this.nations.get(nationName);
-    const slotCostCalculator = new SlotDistanceCosts(this.#game);
-    const costPerPaidDistance = slotCostCalculator.costPerPaidRondelSlot(nation);
-
-    const nationCurrentRondelSlot = this.#game.rondel.idToEntity(nation.rondelPosition);
-    const availableSlots = new AvailableSlots(this.#game.rondel, 3, 3, costPerPaidDistance);
+    const nation = this.#game.nationIdToEntity(nationName.value);
+    const { availableSlots } = this.#moveToRondelSlot;
 
     const availableRondelSlots = new Set();
 
-    const nextAvailableFreeRondelSlots = nationCurrentRondelSlot
-      ? availableSlots.nextAvailableFreeRondelSlots(nationCurrentRondelSlot) : this.#game.rondel.slotOrder;
+    const nextAvailableFreeRondelSlots = availableSlots.nextAvailableFreeRondelSlots(nation.residingRondelSlot);
     for (const freeRondelSlot of nextAvailableFreeRondelSlots) {
       availableRondelSlots.add(
         Action.rondel({
@@ -1933,23 +1967,23 @@ export default class Imperial {
       );
     }
 
-    if (nationCurrentRondelSlot) {
-      for (const [paidRondelSlot, cost] of availableSlots.nextAvailablePaidRondelSlots(nationCurrentRondelSlot)) {
-        availableRondelSlots.add(
-          Action.rondel({
-            nation: nationName,
-            cost,
-            slot: paidRondelSlot.id,
-          }),
-        );
-      }
-    }
+    if (nation.residingRondelSlot) {
+      const costPerPaidDistance = this.#moveToRondelSlot.slotDistanceCosts.costPerPaidRondelSlot(nation);
 
-    // Remove rondel positions that the player cannot afford.
-    const { cash } = this.players[this.currentPlayerName];
-    for (const position of availableRondelSlots) {
-      if (position.payload.cost > cash) {
-        availableRondelSlots.delete(position);
+      const { cash } = this.players[this.currentPlayerName];
+
+      for (const [paidRondelSlot, cost] of
+        availableSlots.nextAvailablePaidRondelSlots(nation.residingRondelSlot, costPerPaidDistance)) {
+        if (cost <= cash) {
+          // Only allow rondel slots the player can afford.
+          availableRondelSlots.add(
+            Action.rondel({
+              nation: nationName,
+              cost,
+              slot: paidRondelSlot.id,
+            }),
+          );
+        }
       }
     }
 
@@ -2388,13 +2422,6 @@ export default class Imperial {
     return Math.max(nationMinProfit, taxes - this.unitMaintenanceCosts(nationName) - bonusPaidByNation);
   }
 
-  static actionIsRondelAndManeuver(action) {
-    const slot = action.payload?.slot;
-    return (
-      action.type === 'rondel' && (slot === 'maneuver1' || slot === 'maneuver2')
-    );
-  }
-
   static isEqual(action1, action2) {
     if (action1.type !== action2.type) return false;
 
@@ -2431,21 +2458,5 @@ export default class Imperial {
     }
 
     return true;
-  }
-
-  translateBaseGameModel() {
-    switch (this.baseGame) {
-      case ImperialEuropeGame.classId:
-        return new ImperialEuropeGame();
-
-      case Imperial2030Game.classId:
-        return new Imperial2030Game();
-
-      case ImperialAsiaGame.classId:
-        return new ImperialAsiaGame();
-
-      default:
-        return null;
-    }
   }
 }
