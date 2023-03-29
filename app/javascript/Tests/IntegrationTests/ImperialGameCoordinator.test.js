@@ -1,13 +1,13 @@
-import Action from './action';
+import Action from '../../lib/action';
 
-import { Bond, Nation } from './constants';
-import GameBoard from './gameBoard';
+import { Bond, Nation } from '../../lib/constants';
+import GameBoard from '../../lib/gameBoard';
 
-import Logger from '../src/Logger';
+import Logger from '../../src/Logger';
 
-import Imperial from './imperial';
+import Imperial from '../../lib/ImperialGameCoordinator';
 
-import MoveToRondelSlot from './UseCases/Rondels/MoveToSlot';
+import MoveToRondelSlot from '../../lib/UseCases/Rondels/MoveToSlot';
 
 const cloneUnits = (units) => {
   const out = new Map();

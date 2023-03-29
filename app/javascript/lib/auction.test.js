@@ -1,7 +1,7 @@
 import Action from './action';
 
 import Auction from './auction';
-import Imperial from './imperial';
+import Imperial from './ImperialGameCoordinator';
 import { Bond, Nation } from './constants';
 import auctionSetup from './auctionSetup';
 

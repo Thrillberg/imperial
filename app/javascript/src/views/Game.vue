@@ -397,7 +397,7 @@
 <script>
 import { Howl } from 'howler';
 import Action from '../../lib/action';
-import Imperial from '../../lib/imperial';
+import Imperial from '../../lib/ImperialGameCoordinator';
 import { apiClient } from '../router/index';
 
 import Logger from '../Logger';
@@ -407,7 +407,6 @@ import ControlPanel from '../components/ControlPanel.vue';
 import GameDetails from '../components/GameDetails.vue';
 import GameLog from '../components/GameLog.vue';
 import NationComponent from '../components/NationComponent.vue';
-// import NationControlChart from '../components/NationControlChart.vue';
 import Rondel from '../components/Rondel.vue';
 import TaxChart from '../components/TaxChart.vue';
 import TimeTravelButtons from '../components/TimeTravelButtons.vue';
