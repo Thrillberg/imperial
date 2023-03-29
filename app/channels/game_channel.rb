@@ -59,7 +59,7 @@ class GameChannel < ApplicationCable::Channel
       next_player_name = data["data"]["nextPlayerName"]
       next_player = game.users.find_by(name: next_player_name)
 
-      if !game.winner && !game.last_move&.player_notified_at
+      if !game.winner && !game.last_move&.player_notified_at && !game.cloned_from_game
         # Send email notification
         should_send_turn_notification = next_player&.turn_notifications_enabled
         if should_send_turn_notification
@@ -87,7 +87,7 @@ class GameChannel < ApplicationCable::Channel
       winner = game.users.find_by(name: winner_name)
       someone_already_won_the_game = game.winner
       game.update(winner: winner) unless someone_already_won_the_game
-      if !someone_already_won_the_game
+      if !someone_already_won_the_game && !game.cloned_from_game
         # Send email notifications to all players
         game.players.each do |player|
           should_send_turn_notification = player.user&.turn_notifications_enabled
