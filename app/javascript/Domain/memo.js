@@ -1,10 +1,10 @@
-const NO_VALUE = Symbol("NO_VALUE");
+const NO_VALUE = Symbol('NO_VALUE');
 
-const SET_START = Symbol("SET_START");
-const ARY_START = Symbol("ARY_START");
-const MAP_START = Symbol("MAP_START");
-const OBJ_START = Symbol("OBJ_START");
-const ITER_END = Symbol("ITER_END");
+const SET_START = Symbol('SET_START');
+const ARY_START = Symbol('ARY_START');
+const MAP_START = Symbol('MAP_START');
+const OBJ_START = Symbol('OBJ_START');
+const ITER_END = Symbol('ITER_END');
 
 class Trie {
   constructor(value) {
@@ -24,7 +24,7 @@ class Trie {
       return this.getOrInsert(
         [ARY_START, ...head, ITER_END, ...tail],
         fn,
-        args
+        args,
       );
     }
     if (head instanceof Set) {
@@ -33,7 +33,7 @@ class Trie {
       return this.getOrInsert(
         [SET_START, ...entries, ITER_END, ...tail],
         fn,
-        args
+        args,
       );
     }
     if (head instanceof Map) {
@@ -41,7 +41,7 @@ class Trie {
       return this.getOrInsert(
         [MAP_START, ...entries, ITER_END, ...tail],
         fn,
-        args
+        args,
       );
     }
     if (head instanceof Object) {
@@ -49,7 +49,7 @@ class Trie {
       return this.getOrInsert(
         [OBJ_START, ...entries, ITER_END, ...tail],
         fn,
-        args
+        args,
       );
     }
     if (!this.children.has(head)) {
@@ -59,10 +59,10 @@ class Trie {
   }
 }
 
-const memoize = fn => {
+const memoize = (fn) => {
   const memory = new Trie(NO_VALUE);
 
   return (...args) => memory.getOrInsert(args, fn, args);
 };
 
-export { memoize };
+export default memoize;

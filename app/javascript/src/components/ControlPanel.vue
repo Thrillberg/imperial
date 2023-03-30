@@ -142,7 +142,7 @@
 </template>
 
 <script>
-import Action from '../../lib/action';
+import Action from '../../Domain/action';
 
 import AvailableBonds from './AvailableBonds.vue';
 import BondPurchase from './BondPurchase.vue';

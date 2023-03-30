@@ -1,11 +1,11 @@
-import { memoize } from "./memo";
+import memoize from './memo';
 
-describe("memoize()", () => {
-  test("one simple argument", () => {
+describe('memoize()', () => {
+  test('one simple argument', () => {
     let callCount = 0;
 
-    const fn = memoize(arg => {
-      callCount++;
+    const fn = memoize((arg) => {
+      callCount += 1;
       return arg + 1;
     });
 
@@ -16,11 +16,11 @@ describe("memoize()", () => {
     expect(callCount).toBe(1);
   });
 
-  test("list of simple arguments", () => {
+  test('list of simple arguments', () => {
     let callCount = 0;
 
     const fn = memoize((arg1, arg2) => {
-      callCount++;
+      callCount += 1;
       return [arg1 + 1, arg2.huhu + 2];
     });
 
@@ -33,11 +33,11 @@ describe("memoize()", () => {
     expect(callCount).toBe(1);
   });
 
-  test("arbitrary objects", () => {
+  test('arbitrary objects', () => {
     let callCount = 0;
 
     const fn = memoize((arg1, arg2) => {
-      callCount++;
+      callCount += 1;
       return [arg1 + 1, arg2.huhu + 2];
     });
 
@@ -49,11 +49,11 @@ describe("memoize()", () => {
     expect(callCount).toBe(1);
   });
 
-  test("arrays", () => {
+  test('arrays', () => {
     let callCount = 0;
 
-    const fn = memoize(ary => {
-      callCount++;
+    const fn = memoize((ary) => {
+      callCount += 1;
       return [...ary, 42];
     });
 
@@ -65,11 +65,11 @@ describe("memoize()", () => {
     expect(callCount).toBe(1);
   });
 
-  test("sets", () => {
+  test('sets', () => {
     let callCount = 0;
 
-    const fn = memoize(s => {
-      callCount++;
+    const fn = memoize((s) => {
+      callCount += 1;
       return new Set([...s, 42]);
     });
 
@@ -81,47 +81,47 @@ describe("memoize()", () => {
     expect(callCount).toBe(1);
   });
 
-  test("maps", () => {
+  test('maps', () => {
     let callCount = 0;
 
-    const fn = memoize(s => {
-      callCount++;
-      return new Map([...s.entries(), ["the answer", 42]]);
+    const fn = memoize((s) => {
+      callCount += 1;
+      return new Map([...s.entries(), ['the answer', 42]]);
     });
 
     expect(callCount).toBe(0);
-    const out = fn(new Map([["the question", 2]]));
+    const out = fn(new Map([['the question', 2]]));
     expect(callCount).toBe(1);
     expect(out).toEqual(
       new Map([
-        ["the question", 2],
-        ["the answer", 42]
-      ])
+        ['the question', 2],
+        ['the answer', 42],
+      ]),
     );
-    expect(fn(new Map([["the question", 2]]))).toBe(out);
+    expect(fn(new Map([['the question', 2]]))).toBe(out);
     expect(callCount).toBe(1);
   });
 
-  test("deep collections", () => {
+  test('deep collections', () => {
     let callCount = 0;
 
     const input1 = new Map([
-      ["evens", [true, new Set([2, 4, 6])]],
-      ["odds", [false, new Set([1, 3])]]
+      ['evens', [true, new Set([2, 4, 6])]],
+      ['odds', [false, new Set([1, 3])]],
     ]);
 
     const input2 = new Map([
-      ["odds", [false, new Set([3, 1])]],
-      ["evens", [true, new Set([6, 2, 4])]]
+      ['odds', [false, new Set([3, 1])]],
+      ['evens', [true, new Set([6, 2, 4])]],
     ]);
 
     const expected = new Map([
-      ["odds", new Set([3])],
-      ["evens", new Set([4, 6])]
+      ['odds', new Set([3])],
+      ['evens', new Set([4, 6])],
     ]);
 
-    const fn = memoize(m => {
-      callCount++;
+    const fn = memoize((m) => {
+      callCount += 1;
       const out = new Map();
       for (const [k, [, v]] of m) {
         const newV = new Set();

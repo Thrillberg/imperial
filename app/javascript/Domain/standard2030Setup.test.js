@@ -1,76 +1,76 @@
-import setup from "./standard2030Setup";
-import { AllBonds2030, Bond, Nation2030 } from "./constants.js";
+import setup from './standard2030Setup';
+import { AllBonds2030, Bond, Nation2030 } from './constants';
 
-describe("Imperial 2030", () => {
-  describe("constructor", () => {
-    describe("six players", () => {
+describe('Imperial 2030', () => {
+  describe('constructor', () => {
+    describe('six players', () => {
       const payload = {
         players: [
-          { id: "a", nation: Nation2030.US },
-          { id: "b", nation: Nation2030.IN },
-          { id: "c", nation: Nation2030.BR },
-          { id: "d", nation: Nation2030.CN },
-          { id: "e", nation: Nation2030.RU },
-          { id: "f", nation: Nation2030.EU }
+          { id: 'a', nation: Nation2030.US },
+          { id: 'b', nation: Nation2030.IN },
+          { id: 'c', nation: Nation2030.BR },
+          { id: 'd', nation: Nation2030.CN },
+          { id: 'e', nation: Nation2030.RU },
+          { id: 'f', nation: Nation2030.EU },
         ],
-        provinceNames: new Set(["1", "2"])
+        provinceNames: new Set(['1', '2']),
       };
       const actual = setup(payload);
 
-      test("seating order mirrors players array", () => {
-        expect(actual.order).toEqual(["a", "b", "c", "d", "e", "f"]);
+      test('seating order mirrors players array', () => {
+        expect(actual.order).toEqual(['a', 'b', 'c', 'd', 'e', 'f']);
       });
 
-      test("bond assignments", () => {
+      test('bond assignments', () => {
         expect(actual.players).toEqual({
           a: {
-            name: "a",
+            name: 'a',
             cash: 2,
             bonds: new Set([Bond(Nation2030.US, 4), Bond(Nation2030.RU, 1)]),
-            rawScore: 0
+            rawScore: 0,
           },
           b: {
-            name: "b",
+            name: 'b',
             cash: 2,
             bonds: new Set([Bond(Nation2030.IN, 4), Bond(Nation2030.BR, 1)]),
-            rawScore: 0
+            rawScore: 0,
           },
           c: {
-            name: "c",
+            name: 'c',
             cash: 2,
             bonds: new Set([Bond(Nation2030.BR, 4), Bond(Nation2030.CN, 1)]),
-            rawScore: 0
+            rawScore: 0,
           },
           d: {
-            name: "d",
+            name: 'd',
             cash: 2,
             bonds: new Set([Bond(Nation2030.CN, 4), Bond(Nation2030.US, 1)]),
-            rawScore: 0
+            rawScore: 0,
           },
           e: {
-            name: "e",
+            name: 'e',
             cash: 2,
             bonds: new Set([Bond(Nation2030.RU, 4), Bond(Nation2030.EU, 1)]),
-            rawScore: 0
+            rawScore: 0,
           },
           f: {
-            name: "f",
+            name: 'f',
             cash: 2,
             bonds: new Set([Bond(Nation2030.EU, 4), Bond(Nation2030.IN, 1)]),
-            rawScore: 0
-          }
+            rawScore: 0,
+          },
         });
       });
 
-      test("nations", () => {
+      test('nations', () => {
         const expected = new Map(
           [
-            [Nation2030.US, "a"],
-            [Nation2030.IN, "b"],
-            [Nation2030.BR, "c"],
-            [Nation2030.CN, "d"],
-            [Nation2030.RU, "e"],
-            [Nation2030.EU, "f"]
+            [Nation2030.US, 'a'],
+            [Nation2030.IN, 'b'],
+            [Nation2030.BR, 'c'],
+            [Nation2030.CN, 'd'],
+            [Nation2030.RU, 'e'],
+            [Nation2030.EU, 'f'],
           ].map(([k, v]) => [
             k,
             {
@@ -79,18 +79,18 @@ describe("Imperial 2030", () => {
               rondelPosition: null,
               taxChartPosition: 5,
               flagCount: 0,
-              powerPoints: 0
-            }
-          ])
+              powerPoints: 0,
+            },
+          ]),
         );
         expect(actual.nations).toEqual(expected);
       });
 
-      test("investor card holder", () => {
-        expect(actual.investorCardHolder).toEqual("f");
+      test('investor card holder', () => {
+        expect(actual.investorCardHolder).toEqual('f');
       });
 
-      test("available bonds", () => {
+      test('available bonds', () => {
         const expected = AllBonds2030();
         for (const n of Nation2030) {
           n.when({
@@ -117,74 +117,74 @@ describe("Imperial 2030", () => {
             EU: () => {
               expected.delete(Bond(n, 1));
               expected.delete(Bond(n, 4));
-            }
+            },
           });
         }
         expect(actual.availableBonds).toEqual(expected);
       });
     });
 
-    describe("five players", () => {
+    describe('five players', () => {
       const payload = {
         players: [
-          { id: "a", nation: Nation2030.US },
-          { id: "b", nation: Nation2030.IN },
-          { id: "c", nation: Nation2030.BR },
-          { id: "d", nation: Nation2030.CN },
-          { id: "e", nation: Nation2030.RU }
+          { id: 'a', nation: Nation2030.US },
+          { id: 'b', nation: Nation2030.IN },
+          { id: 'c', nation: Nation2030.BR },
+          { id: 'd', nation: Nation2030.CN },
+          { id: 'e', nation: Nation2030.RU },
         ],
-        provinceNames: new Set(["1", "2"])
+        provinceNames: new Set(['1', '2']),
       };
       const actual = setup(payload);
 
-      test("seating order", () => {
-        expect(actual.order).toEqual(["a", "b", "c", "d", "e"]);
+      test('seating order', () => {
+        expect(actual.order).toEqual(['a', 'b', 'c', 'd', 'e']);
       });
 
-      test("bond assignments", () => {
+      test('bond assignments', () => {
         expect(actual.players).toEqual({
           a: {
-            name: "a",
+            name: 'a',
             cash: 2,
             bonds: new Set([Bond(Nation2030.US, 4), Bond(Nation2030.RU, 1)]),
-            rawScore: 0
+            rawScore: 0,
           },
           b: {
-            name: "b",
+            name: 'b',
             cash: 2,
             bonds: new Set([Bond(Nation2030.IN, 4), Bond(Nation2030.BR, 1)]),
-            rawScore: 0
+            rawScore: 0,
           },
           c: {
-            name: "c",
+            name: 'c',
             cash: 2,
             bonds: new Set([Bond(Nation2030.BR, 4), Bond(Nation2030.CN, 1)]),
-            rawScore: 0
+            rawScore: 0,
           },
           d: {
-            name: "d",
+            name: 'd',
             cash: 2,
             bonds: new Set([Bond(Nation2030.CN, 4), Bond(Nation2030.US, 1)]),
-            rawScore: 0
+            rawScore: 0,
           },
           e: {
-            name: "e",
+            name: 'e',
             cash: 2,
             bonds: new Set([Bond(Nation2030.RU, 4), Bond(Nation2030.EU, 1)]),
-            rawScore: 0
-          }
+            rawScore: 0,
+          },
         });
       });
 
-      test("nations", () => {
+      test('nations', () => {
         const expected = new Map(
           [
-            [Nation2030.US, "a", 11],
-            [Nation2030.BR, "c", 11],
-            [Nation2030.CN, "d", 11],
-            [Nation2030.IN, "b", 9], // Nobody bought IN 2
-            [Nation2030.RU, "e", 11],
-            [Nation2030.EU, "e", 2] // RU controller bought EU 2
+            [Nation2030.US, 'a', 11],
+            [Nation2030.BR, 'c', 11],
+            [Nation2030.CN, 'd', 11],
+            [Nation2030.IN, 'b', 9], // Nobody bought IN 2
+            [Nation2030.RU, 'e', 11],
+            [Nation2030.EU, 'e', 2], // RU controller bought EU 2
           ].map(([nation, controller, treasury]) => [
             nation,
             {
@@ -193,18 +193,18 @@ describe("Imperial 2030", () => {
               rondelPosition: null,
               flagCount: 0,
               powerPoints: 0,
-              taxChartPosition: 5
-            }
-          ])
+              taxChartPosition: 5,
+            },
+          ]),
         );
         expect(actual.nations).toEqual(expected);
       });
 
-      test("investor card holder", () => {
-        expect(actual.investorCardHolder).toEqual("a");
+      test('investor card holder', () => {
+        expect(actual.investorCardHolder).toEqual('a');
       });
 
-      test("available bonds", () => {
+      test('available bonds', () => {
         const expected = AllBonds2030();
         for (const n of Nation2030) {
           n.when({
@@ -231,67 +231,67 @@ describe("Imperial 2030", () => {
             RU: () => {
               expected.delete(Bond(n, 1));
               expected.delete(Bond(n, 4));
-            }
+            },
           });
         }
         expect(actual.availableBonds).toEqual(expected);
       });
     });
 
-    describe("four players", () => {
+    describe('four players', () => {
       const payload = {
         players: [
-          { id: "a", nation: Nation2030.US },
-          { id: "b", nation: Nation2030.IN },
-          { id: "c", nation: Nation2030.BR },
-          { id: "d", nation: Nation2030.CN }
+          { id: 'a', nation: Nation2030.US },
+          { id: 'b', nation: Nation2030.IN },
+          { id: 'c', nation: Nation2030.BR },
+          { id: 'd', nation: Nation2030.CN },
         ],
-        provinceNames: new Set(["1", "2"])
+        provinceNames: new Set(['1', '2']),
       };
       const actual = setup(payload);
 
-      test("seating order", () => {
-        expect(actual.order).toEqual(["a", "b", "c", "d"]);
+      test('seating order', () => {
+        expect(actual.order).toEqual(['a', 'b', 'c', 'd']);
       });
 
-      test("bond assignments", () => {
+      test('bond assignments', () => {
         expect(actual.players).toEqual({
           a: {
-            name: "a",
+            name: 'a',
             cash: 2,
             bonds: new Set([Bond(Nation2030.US, 4), Bond(Nation2030.RU, 1)]),
-            rawScore: 0
+            rawScore: 0,
           },
           b: {
-            name: "b",
+            name: 'b',
             cash: 2,
             bonds: new Set([Bond(Nation2030.IN, 4), Bond(Nation2030.BR, 1)]),
-            rawScore: 0
+            rawScore: 0,
           },
           c: {
-            name: "c",
+            name: 'c',
             cash: 2,
             bonds: new Set([Bond(Nation2030.BR, 4), Bond(Nation2030.CN, 1)]),
-            rawScore: 0
+            rawScore: 0,
           },
           d: {
-            name: "d",
+            name: 'd',
             cash: 2,
             bonds: new Set([Bond(Nation2030.CN, 4), Bond(Nation2030.US, 1)]),
-            rawScore: 0
-          }
+            rawScore: 0,
+          },
         });
       });
 
-      test("nations", () => {
+      test('nations', () => {
         const expected = new Map(
           [
-            [Nation2030.US, "a", 11],
-            [Nation2030.IN, "b", 9], // Nobody bought IN 2
-            [Nation2030.BR, "c", 11],
-            [Nation2030.CN, "d", 11],
-            [Nation2030.RU, "a", 2], // US controller bought RU 2
-            [Nation2030.EU, null, 0] // Nobody bought EU 2 or EU 9
+            [Nation2030.US, 'a', 11],
+            [Nation2030.IN, 'b', 9], // Nobody bought IN 2
+            [Nation2030.BR, 'c', 11],
+            [Nation2030.CN, 'd', 11],
+            [Nation2030.RU, 'a', 2], // US controller bought RU 2
+            [Nation2030.EU, null, 0], // Nobody bought EU 2 or EU 9
           ].map(([nation, controller, treasury]) => [
             nation,
             {
@@ -300,18 +300,18 @@ describe("Imperial 2030", () => {
               rondelPosition: null,
               flagCount: 0,
               powerPoints: 0,
-              taxChartPosition: 5
-            }
-          ])
+              taxChartPosition: 5,
+            },
+          ]),
         );
         expect(actual.nations).toEqual(expected);
       });
 
-      test("investor card holder", () => {
-        expect(actual.investorCardHolder).toEqual("b");
+      test('investor card holder', () => {
+        expect(actual.investorCardHolder).toEqual('b');
       });
 
-      test("available bonds", () => {
+      test('available bonds', () => {
         const expected = AllBonds2030();
         for (const n of Nation2030) {
           n.when({
@@ -338,75 +338,75 @@ describe("Imperial 2030", () => {
             EU: () => {
               // Nobody bought EU 2
               // Nobody bought EU 9
-            }
+            },
           });
         }
         expect(actual.availableBonds).toEqual(expected);
       });
     });
 
-    describe("three players", () => {
+    describe('three players', () => {
       const payload = {
         players: [
-          { id: "a", nation: Nation2030.RU },
-          { id: "b", nation: Nation2030.CN },
-          { id: "c", nation: Nation2030.IN }
+          { id: 'a', nation: Nation2030.RU },
+          { id: 'b', nation: Nation2030.CN },
+          { id: 'c', nation: Nation2030.IN },
         ],
-        provinceNames: new Set(["1", "2"])
+        provinceNames: new Set(['1', '2']),
       };
       const actual = setup(payload);
 
-      test("seating order", () => {
-        expect(actual.order).toEqual(["a", "b", "c"]);
+      test('seating order', () => {
+        expect(actual.order).toEqual(['a', 'b', 'c']);
       });
 
-      test("bond assignments", () => {
+      test('bond assignments', () => {
         expect(actual.players).toEqual({
           a: {
-            name: "a",
+            name: 'a',
             cash: 2,
             bonds: new Set([
               Bond(Nation2030.RU, 4),
               Bond(Nation2030.EU, 1),
               Bond(Nation2030.BR, 4),
-              Bond(Nation2030.CN, 1)
+              Bond(Nation2030.CN, 1),
             ]),
-            rawScore: 0
+            rawScore: 0,
           },
           b: {
-            name: "b",
+            name: 'b',
             cash: 2,
             bonds: new Set([
               Bond(Nation2030.CN, 4),
               Bond(Nation2030.US, 1),
               Bond(Nation2030.EU, 4),
-              Bond(Nation2030.IN, 1)
+              Bond(Nation2030.IN, 1),
             ]),
-            rawScore: 0
+            rawScore: 0,
           },
           c: {
-            name: "c",
+            name: 'c',
             cash: 2,
             bonds: new Set([
               Bond(Nation2030.IN, 4),
               Bond(Nation2030.BR, 1),
               Bond(Nation2030.US, 4),
-              Bond(Nation2030.RU, 1)
+              Bond(Nation2030.RU, 1),
             ]),
-            rawScore: 0
-          }
+            rawScore: 0,
+          },
         });
       });
 
-      test("nations", () => {
+      test('nations', () => {
         const expected = new Map(
           [
-            [Nation2030.RU, "a", 11],
-            [Nation2030.CN, "b", 11],
-            [Nation2030.IN, "c", 11],
-            [Nation2030.BR, "a", 11],
-            [Nation2030.EU, "b", 11],
-            [Nation2030.US, "c", 11]
+            [Nation2030.RU, 'a', 11],
+            [Nation2030.CN, 'b', 11],
+            [Nation2030.IN, 'c', 11],
+            [Nation2030.BR, 'a', 11],
+            [Nation2030.EU, 'b', 11],
+            [Nation2030.US, 'c', 11],
           ].map(([nation, controller, treasury]) => [
             nation,
             {
@@ -415,18 +415,18 @@ describe("Imperial 2030", () => {
               rondelPosition: null,
               flagCount: 0,
               powerPoints: 0,
-              taxChartPosition: 5
-            }
-          ])
+              taxChartPosition: 5,
+            },
+          ]),
         );
         expect(actual.nations).toEqual(expected);
       });
 
-      test("investor card holder", () => {
-        expect(actual.investorCardHolder).toEqual("b");
+      test('investor card holder', () => {
+        expect(actual.investorCardHolder).toEqual('b');
       });
 
-      test("available bonds", () => {
+      test('available bonds', () => {
         const expected = AllBonds2030();
         for (const n of Nation2030) {
           n.when({
@@ -453,31 +453,31 @@ describe("Imperial 2030", () => {
             US: () => {
               expected.delete(Bond(n, 1));
               expected.delete(Bond(n, 4));
-            }
+            },
           });
         }
         expect(actual.availableBonds).toEqual(expected);
       });
     });
 
-    describe("two players", () => {
+    describe('two players', () => {
       const payload = {
         players: [
-          { id: "b", nation: Nation2030.RU },
-          { id: "a", nation: Nation2030.CN }
+          { id: 'b', nation: Nation2030.RU },
+          { id: 'a', nation: Nation2030.CN },
         ],
-        provinceNames: new Set(["1", "2"])
+        provinceNames: new Set(['1', '2']),
       };
       const actual = setup(payload);
 
-      test("seating order", () => {
-        expect(actual.order).toEqual(["b", "a"]);
+      test('seating order', () => {
+        expect(actual.order).toEqual(['b', 'a']);
       });
 
-      test("bond assignments", () => {
+      test('bond assignments', () => {
         expect(actual.players).toEqual({
           a: {
-            name: "a",
+            name: 'a',
             cash: 2,
             bonds: new Set([
               Bond(Nation2030.CN, 4),
@@ -485,12 +485,12 @@ describe("Imperial 2030", () => {
               Bond(Nation2030.BR, 4),
               Bond(Nation2030.CN, 1),
               Bond(Nation2030.EU, 4),
-              Bond(Nation2030.IN, 1)
+              Bond(Nation2030.IN, 1),
             ]),
-            rawScore: 0
+            rawScore: 0,
           },
           b: {
-            name: "b",
+            name: 'b',
             cash: 2,
             bonds: new Set([
               Bond(Nation2030.RU, 4),
@@ -498,22 +498,22 @@ describe("Imperial 2030", () => {
               Bond(Nation2030.IN, 4),
               Bond(Nation2030.BR, 1),
               Bond(Nation2030.US, 4),
-              Bond(Nation2030.RU, 1)
+              Bond(Nation2030.RU, 1),
             ]),
-            rawScore: 0
-          }
+            rawScore: 0,
+          },
         });
       });
 
-      test("nations", () => {
+      test('nations', () => {
         const expected = new Map(
           [
-            [Nation2030.CN, "a", 11],
-            [Nation2030.BR, "a", 11],
-            [Nation2030.EU, "a", 11],
-            [Nation2030.RU, "b", 11],
-            [Nation2030.IN, "b", 11],
-            [Nation2030.US, "b", 11]
+            [Nation2030.CN, 'a', 11],
+            [Nation2030.BR, 'a', 11],
+            [Nation2030.EU, 'a', 11],
+            [Nation2030.RU, 'b', 11],
+            [Nation2030.IN, 'b', 11],
+            [Nation2030.US, 'b', 11],
           ].map(([nation, controller, treasury]) => [
             nation,
             {
@@ -522,18 +522,18 @@ describe("Imperial 2030", () => {
               rondelPosition: null,
               flagCount: 0,
               powerPoints: 0,
-              taxChartPosition: 5
-            }
-          ])
+              taxChartPosition: 5,
+            },
+          ]),
         );
         expect(actual.nations).toEqual(expected);
       });
 
-      test("investor card holder", () => {
-        expect(actual.investorCardHolder).toEqual("a");
+      test('investor card holder', () => {
+        expect(actual.investorCardHolder).toEqual('a');
       });
 
-      test("available bonds", () => {
+      test('available bonds', () => {
         const expected = AllBonds2030();
         for (const n of Nation2030) {
           n.when({
@@ -560,7 +560,7 @@ describe("Imperial 2030", () => {
             US: () => {
               expected.delete(Bond(n, 1));
               expected.delete(Bond(n, 4));
-            }
+            },
           });
         }
         expect(actual.availableBonds).toEqual(expected);

@@ -1,56 +1,54 @@
-import { AllBonds, Bond, Nation } from "./constants.js";
+import { AllBonds, Bond, Nation } from './constants';
 
-const error = want => x => {
+const error = (want) => (x) => {
   throw new Error(`got=${x.value}, want=${want}`);
 };
 
 export default ({ players, provinceNames }) => {
   const nationAssignments = {
-    2: ({ id, nation }) =>
-      nation.when({
-        AH: () => [
-          { id, nation: Nation.AH },
-          { id, nation: Nation.FR },
-          { id, nation: Nation.GE }
-        ],
-        IT: () => [
-          { id, nation: Nation.IT },
-          { id, nation: Nation.RU },
-          { id, nation: Nation.GB }
-        ],
-        FR: error("AH|IT"),
-        GB: error("AH|IT"),
-        RU: error("AH|IT"),
-        GE: error("AH|IT")
-      }),
-    3: ({ id, nation }) =>
-      nation.when({
-        AH: () => [
-          { id, nation: Nation.AH },
-          { id, nation: Nation.GB }
-        ],
-        IT: () => [
-          { id, nation: Nation.IT },
-          { id, nation: Nation.RU }
-        ],
-        FR: () => [
-          { id, nation: Nation.FR },
-          { id, nation: Nation.GE }
-        ],
-        GB: error("AH|IT|FR"),
-        RU: error("AH|IT|FR"),
-        GE: error("AH|IT|FR")
-      }),
-    4: x => [x],
-    5: x => [x],
-    6: x => [x]
+    2: ({ id, nation }) => nation.when({
+      AH: () => [
+        { id, nation: Nation.AH },
+        { id, nation: Nation.FR },
+        { id, nation: Nation.GE },
+      ],
+      IT: () => [
+        { id, nation: Nation.IT },
+        { id, nation: Nation.RU },
+        { id, nation: Nation.GB },
+      ],
+      FR: error('AH|IT'),
+      GB: error('AH|IT'),
+      RU: error('AH|IT'),
+      GE: error('AH|IT'),
+    }),
+    3: ({ id, nation }) => nation.when({
+      AH: () => [
+        { id, nation: Nation.AH },
+        { id, nation: Nation.GB },
+      ],
+      IT: () => [
+        { id, nation: Nation.IT },
+        { id, nation: Nation.RU },
+      ],
+      FR: () => [
+        { id, nation: Nation.FR },
+        { id, nation: Nation.GE },
+      ],
+      GB: error('AH|IT|FR'),
+      RU: error('AH|IT|FR'),
+      GE: error('AH|IT|FR'),
+    }),
+    4: (x) => [x],
+    5: (x) => [x],
+    6: (x) => [x],
   };
 
   const out = {
     availableBonds: AllBonds(),
     nations: new Map(),
-    order: players.map(p => p.id),
-    players: {}
+    order: players.map((p) => p.id),
+    players: {},
   };
 
   /* From the initial nation assignments, distribute bonds to the players. */
@@ -63,7 +61,7 @@ export default ({ players, provinceNames }) => {
           name: id,
           cash: 2,
           bonds: new Set(),
-          rawScore: 0
+          rawScore: 0,
         };
       }
 
@@ -73,7 +71,7 @@ export default ({ players, provinceNames }) => {
         AH: () => Nation.GE,
         IT: () => Nation.GB,
         FR: () => Nation.AH,
-        GB: () => Nation.RU
+        GB: () => Nation.RU,
       });
 
       out.availableBonds.delete(Bond(nation, 4));
@@ -92,7 +90,7 @@ export default ({ players, provinceNames }) => {
    */
 
   const purchasedBonds = new Set();
-  Object.keys(out.players).forEach(id => {
+  Object.keys(out.players).forEach((id) => {
     for (const bond of out.players[id].bonds) {
       purchasedBonds.add(bond);
     }
@@ -102,10 +100,13 @@ export default ({ players, provinceNames }) => {
   for (const n of Nation) {
     /* Find bonds for the given nation, sorted by descending cost */
     const forNation = Array.from(purchasedBonds)
-      .filter(b => b.nation === n)
-      .sort(({ cost: aCost }, { cost: bCost }) =>
-        aCost < bCost ? 1 : aCost > bCost ? -1 : 0
-      );
+      .filter((b) => b.nation === n)
+      .sort(({ cost: aCost }, { cost: bCost }) => {
+        if (aCost < bCost) {
+          return 1;
+        }
+        return aCost > bCost ? -1 : 0;
+      });
 
     /* The rules describe in prose this decision table
      *
@@ -122,10 +123,7 @@ export default ({ players, provinceNames }) => {
      */
 
     const highestBond = forNation[0];
-    const highestBondOwner =
-      Object.keys(out.players).find(id =>
-        out.players[id].bonds.has(highestBond)
-      ) || null;
+    const highestBondOwner = Object.keys(out.players).find((id) => out.players[id].bonds.has(highestBond)) || null;
 
     const totalCost = forNation.reduce((sum, { cost }) => sum + cost, 0);
 
@@ -135,7 +133,7 @@ export default ({ players, provinceNames }) => {
       rondelPosition: null,
       flagCount: 0,
       powerPoints: 0,
-      taxChartPosition: 5
+      taxChartPosition: 5,
     });
 
     const AHPlayer = out.nations.get(Nation.AH).controller;
@@ -156,29 +154,29 @@ export default ({ players, provinceNames }) => {
   };
 
   const units = new Map();
-  [Nation.AH, Nation.IT, Nation.FR, Nation.GB, Nation.GE, Nation.RU].map(
-    nation => {
+  [Nation.AH, Nation.IT, Nation.FR, Nation.GB, Nation.GE, Nation.RU].forEach(
+    (nation) => {
       units.set(nation, emptyProvinces());
-    }
+    },
   );
   out.units = units;
 
   const provinces = new Map();
-  const armaments = ["vienna", "budapest", "paris", "berlin", "rome", "moscow"];
+  const armaments = ['vienna', 'budapest', 'paris', 'berlin', 'rome', 'moscow'];
   const shipyard = [
-    "bordeaux",
-    "london",
-    "liverpool",
-    "hamburg",
-    "naples",
-    "odessa"
+    'bordeaux',
+    'london',
+    'liverpool',
+    'hamburg',
+    'naples',
+    'odessa',
   ];
   for (const province of provinceNames) {
     let factory = null;
     if (armaments.includes(province)) {
-      factory = "armaments";
+      factory = 'armaments';
     } else if (shipyard.includes(province)) {
-      factory = "shipyard";
+      factory = 'shipyard';
     }
     provinces.set(province, { factory });
   }
@@ -187,11 +185,11 @@ export default ({ players, provinceNames }) => {
 
   for (const nation of Nation) {
     if (nation === Nation.AH) {
-      unitLimits.set(nation, {armies: 10, fleets: 6});
+      unitLimits.set(nation, { armies: 10, fleets: 6 });
     } else if (nation === Nation.GB) {
-      unitLimits.set(nation, {armies: 6, fleets: 10});
+      unitLimits.set(nation, { armies: 6, fleets: 10 });
     } else {
-      unitLimits.set(nation, {armies: 8, fleets: 8});
+      unitLimits.set(nation, { armies: 8, fleets: 8 });
     }
   }
 

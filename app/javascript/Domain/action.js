@@ -1,4 +1,4 @@
-import { memoize } from './memo';
+import memoize from './memo';
 
 // Given two sets, A and B, membership calculates a 3-tuple containing:
 // [A - B, A & B, B - A]

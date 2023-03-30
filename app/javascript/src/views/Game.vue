@@ -396,8 +396,8 @@
 
 <script>
 import { Howl } from 'howler';
-import Action from '../../lib/action';
-import Imperial from '../../lib/imperial';
+import Action from '../../Domain/action';
+import Imperial from '../../Domain/ImperialGameCoordinator';
 import { apiClient } from '../router/index';
 
 import Logger from '../Logger';
@@ -407,21 +407,20 @@ import ControlPanel from '../components/ControlPanel.vue';
 import GameDetails from '../components/GameDetails.vue';
 import GameLog from '../components/GameLog.vue';
 import NationComponent from '../components/NationComponent.vue';
-// import NationControlChart from '../components/NationControlChart.vue';
 import Rondel from '../components/Rondel.vue';
 import TaxChart from '../components/TaxChart.vue';
 import TimeTravelButtons from '../components/TimeTravelButtons.vue';
 import TurnStatus from '../components/TurnStatus.vue';
 
-import imperialBoard from '../../lib/board';
-import imperial2030Board from '../../lib/board2030';
-import imperialAsiaBoard from '../../lib/boardAsia';
+import imperialBoard from '../../Domain/board';
+import imperial2030Board from '../../Domain/board2030';
+import imperialAsiaBoard from '../../Domain/boardAsia';
 import assignNations from '../assignNations';
 import getGameLog from '../getGameLog';
 
 import favicon2 from '../assets/favicon2.ico';
 
-import { Nation, Nation2030 } from '../../lib/constants';
+import { Nation, Nation2030 } from '../../Domain/constants';
 import notification from '../assets/notification.mp3';
 
 export default {
