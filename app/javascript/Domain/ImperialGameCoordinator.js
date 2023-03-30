@@ -27,6 +27,7 @@ import standardSetup from './standardSetup';
 import FactorySlotBuildChargeCosts from './UseCases/Rondels/FactorySlots/Build/ChargeCosts';
 import FactorySlotBuildPermissions from './UseCases/Rondels/FactorySlots/Build/Permissions';
 import MoveToRondelSlot from './UseCases/Rondels/MoveToSlot';
+import GiveNationTurn from './UseCases/GiveNationTurn';
 
 import Logger from '../src/Logger';
 
@@ -34,7 +35,9 @@ export default class ImperialGameCoordinator {
   #logger;
 
   #game;
+
   #moveToRondelSlot;
+  #giveNationTurn;
 
   constructor(board, logger) {
     this.#logger = logger || new Logger();
@@ -76,6 +79,19 @@ export default class ImperialGameCoordinator {
 
   get game() {
     return this.#game;
+  }
+
+  get currentNation() {
+    let nations;
+    if (this.baseGame === 'imperial') {
+      nations = Nation;
+    } else if (this.baseGame === 'imperial2030') {
+      nations = Nation2030;
+    } else if (this.baseGame === 'imperialAsia') {
+      nations = NationAsia;
+    }
+
+    return nations[this.#game.currentNation.id];
   }
 
   tickFromLog(log) {
@@ -136,7 +152,7 @@ export default class ImperialGameCoordinator {
 
         const currentNation = this.nations.get(this.currentNation);
         const lastRondelSlot = currentNation.rondelPosition ? this.#game.rondel.idToEntity(currentNation.rondelPosition) : null;
-        MoveToRondelSlot.forceMoveNation(this.#game.nationIdToEntity(this.currentNation.value), lastRondelSlot);
+        MoveToRondelSlot.forceMoveNation(this.#game.currentNation, lastRondelSlot);
         return;
       }
       case 'bondPurchase': {
@@ -180,8 +196,7 @@ export default class ImperialGameCoordinator {
         this.passingThroughInvestor = false;
 
         this.nations.get(this.currentNation).rondelPosition = 'investor';
-        const nationEntity = this.#game.nationIdToEntity(this.currentNation.value);
-        MoveToRondelSlot.forceMoveNation(nationEntity, this.#game.rondel.investorSlot);
+        MoveToRondelSlot.forceMoveNation(this.#game.currentNation, this.#game.rondel.investorSlot);
 
         const investorAction = Action.rondel({
           slot: 'investor',
@@ -322,6 +337,8 @@ export default class ImperialGameCoordinator {
         break;
     }
     this.#moveToRondelSlot = new MoveToRondelSlot(this.#game);
+    this.#giveNationTurn = new GiveNationTurn(this.#game);
+
     this.variant = action.payload.variant;
 
     let setup;
@@ -349,8 +366,8 @@ export default class ImperialGameCoordinator {
         players: action.payload.players,
         provinceNames: Array.from(this.board.graph.keys()),
       });
+
       this.availableBonds = s.availableBonds;
-      this.currentNation = s.currentNation;
       this.investorCardHolder = s.investorCardHolder;
       this.nations = s.nations;
       this.order = s.order;
@@ -461,42 +478,15 @@ export default class ImperialGameCoordinator {
   postBondPurchase() {
     if (this.investing) {
       this.previousPlayerName = this.currentPlayerName;
-      let nextNation;
-      if (this.baseGame === 'imperial') {
-        nextNation = this.currentNation.when({
-          AH: () => Nation.IT,
-          IT: () => Nation.FR,
-          FR: () => Nation.GB,
-          GB: () => Nation.GE,
-          GE: () => Nation.RU,
-          RU: () => Nation.AH,
-        });
-      } else if (this.baseGame === 'imperial2030') {
-        nextNation = this.currentNation.when({
-          RU: () => Nation2030.CN,
-          CN: () => Nation2030.IN,
-          IN: () => Nation2030.BR,
-          BR: () => Nation2030.US,
-          US: () => Nation2030.EU,
-          EU: () => Nation2030.RU,
-        });
-      } else if (this.baseGame === 'imperialAsia') {
-        nextNation = this.currentNation.when({
-          CN: () => NationAsia.JP,
-          JP: () => NationAsia.FR,
-          FR: () => NationAsia.GB,
-          GB: () => NationAsia.TR,
-          TR: () => NationAsia.RU,
-          RU: () => NationAsia.GE,
-          GE: () => NationAsia.CN,
-        });
-      }
+      let nextNation = this.#game.nationTurnAfter(this.#game.currentNation);
+      
       const index = this.order.indexOf(this.currentPlayerName);
       if (index === this.order.length - 1) {
         this.currentPlayerName = this.order[0];
       } else {
         this.currentPlayerName = this.order[index + 1];
       }
+      
       if (this.currentPlayerName !== this.firstInvestor) {
         if (this.swissBanks.includes(this.currentPlayerName)) {
           for (const bondPurchase of this.bondPurchasesFromAllNations()) {
@@ -526,7 +516,8 @@ export default class ImperialGameCoordinator {
             for (const player in this.players) {
               this.checkForSwissBank(player);
             }
-            this.currentNation = this.nextNation(this.currentNation);
+
+            this.#giveNationTurn.giveTurnToNextGovernedNation();
             this.currentPlayerName = this.nations.get(
               this.currentNation,
             ).controller;
@@ -556,8 +547,10 @@ export default class ImperialGameCoordinator {
           }
         }
         return;
-      } if (!this.nations.get(nextNation).controller) {
-        this.currentNation = nextNation;
+      }
+      
+      if (!this.nations.get(nextNation).controller) {
+        this.#giveNationTurn.giveTurnToNextNation();
         this.roundOfInvestment();
         return;
       }
@@ -603,7 +596,8 @@ export default class ImperialGameCoordinator {
               bondNation: this.currentNation,
             }),
           );
-          this.currentNation = this.nextNation(this.currentNation);
+
+          this.#giveNationTurn.giveTurnToNextGovernedNation();
           this.currentPlayerName = this.nations.get(
             this.currentNation,
           ).controller;
@@ -618,7 +612,7 @@ export default class ImperialGameCoordinator {
       for (const player in this.players) {
         this.checkForSwissBank(player);
       }
-      this.currentNation = this.nextNation(this.currentNation);
+      this.#giveNationTurn.giveTurnToNextGovernedNation();
       this.currentPlayerName = this.nations.get(this.currentNation).controller;
       this.advanceInvestorCard();
       for (const rondelAction of this.availableRondelActions(this.currentNation)) {
@@ -1276,9 +1270,10 @@ export default class ImperialGameCoordinator {
   }
 
   advanceOnRondel(action) {
-    this.currentNation = action.payload.nation;
+    const currentNationEntity = this.#game.nationIdToEntity(action.payload.nation.value);
+    this.#giveNationTurn.forceGiveTurnTo(currentNationEntity);
     const currentNation = this.nations.get(this.currentNation);
-    const currentNationEntity = this.#game.nationIdToEntity(this.currentNation.value);
+    
     const currentPlayer = this.players[this.currentPlayerName];
 
     const fromRondelSlot = currentNationEntity.residingRondelSlot;
@@ -1885,7 +1880,7 @@ export default class ImperialGameCoordinator {
 
   handleAdvancePlayer() {
     this.previousPlayerName = this.currentPlayerName;
-    this.currentNation = this.nextNation(this.currentNation);
+    this.#giveNationTurn.giveTurnToNextGovernedNation();
     this.currentPlayerName = this.nations.get(this.currentNation).controller;
   }
 
@@ -1988,43 +1983,6 @@ export default class ImperialGameCoordinator {
     }
 
     return availableRondelSlots;
-  }
-
-  nextNation(lastTurnNation) {
-    let nextNation;
-    if (this.baseGame === 'imperial') {
-      nextNation = lastTurnNation.when({
-        AH: () => Nation.IT,
-        IT: () => Nation.FR,
-        FR: () => Nation.GB,
-        GB: () => Nation.GE,
-        GE: () => Nation.RU,
-        RU: () => Nation.AH,
-      });
-    } else if (this.baseGame === 'imperial2030') {
-      nextNation = lastTurnNation.when({
-        RU: () => Nation2030.CN,
-        CN: () => Nation2030.IN,
-        IN: () => Nation2030.BR,
-        BR: () => Nation2030.US,
-        US: () => Nation2030.EU,
-        EU: () => Nation2030.RU,
-      });
-    } else if (this.baseGame === 'imperialAsia') {
-      nextNation = lastTurnNation.when({
-        CN: () => NationAsia.JP,
-        JP: () => NationAsia.FR,
-        FR: () => NationAsia.GB,
-        GB: () => NationAsia.TR,
-        TR: () => NationAsia.RU,
-        RU: () => NationAsia.GE,
-        GE: () => NationAsia.CN,
-      });
-    }
-    if (this.nations.get(nextNation).controller) {
-      return nextNation;
-    }
-    return this.nextNation(nextNation);
   }
 
   importAction(nation) {

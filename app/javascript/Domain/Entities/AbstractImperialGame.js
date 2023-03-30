@@ -21,6 +21,8 @@ export default class AbstractImperialGame extends Entity {
 
     this.#nations = nations;
     this.#nationOrder = nationOrder;
+
+    this.currentNation = this.#nationOrder[0];
   }
 
   get rondel() {
@@ -34,10 +36,14 @@ export default class AbstractImperialGame extends Entity {
     return this.#availablePaidRondelSlotCount;
   }
 
+  * nations() {
+    for (const nation of this.#nationOrder) {
+      yield nation;
+    }
+  }
   nationIdToEntity(nationId) {
     return this.#nations.get(nationId);
   }
-
   nationTurnAfter(nation) {
     let nationIndex = this.#nationOrder.indexOf(nation);
 

@@ -95,7 +95,6 @@ export default ({ players, provinceNames }) => {
   }
 
   out.provinces = provinces;
-  out.currentNation = Nation.AH;
   out.unitLimits = unitLimits;
 
   return out;

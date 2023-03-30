@@ -3,6 +3,7 @@ import board from './board';
 import {
   Bond, Nation, Nation2030, NationAsia,
 } from './constants';
+import GiveNationTurn from './UseCases/GiveNationTurn';
 
 export default class Auction {
   static fromLog(log, game, auctionSetup) {
@@ -41,13 +42,7 @@ export default class Auction {
     this.inAuction = true;
     this.order = s.order;
     this.firstPlayerIndex = 0;
-    if (action.payload.baseGame === 'imperial' || !action.payload.baseGame) {
-      game.currentNation = Nation.AH;
-    } else if (action.payload.baseGame === 'imperial2030') {
-      game.currentNation = Nation2030.RU;
-    } else if (action.payload.baseGame === 'imperialAsia') {
-      game.currentNation = NationAsia.CN;
-    }
+
     game.availableActions = Auction.availableBondPurchases({
       availableBonds: s.availableBonds,
       players: s.players,
@@ -128,42 +123,44 @@ export default class Auction {
     this.setAvailableActions(action, game);
   }
 
-  setAvailableActions(_, game) {
-    game.availableActions = new Set();
+  setAvailableActions(_, gameCoordinator) {
+    gameCoordinator.availableActions = new Set();
     // If there are two available actions, they are the pass action and undo and don't
     // count as real actions.
-    while (game.availableActions.size <= 2) {
-      const currentPlayerIndex = this.order.indexOf(game.currentPlayerName);
-      game.currentPlayerName = this.order[currentPlayerIndex + 1] || this.order[0];
-      game.availableActions.add(Action.undo({ player: game.previousPlayerName }));
+    while (gameCoordinator.availableActions.size <= 2) {
+      const currentPlayerIndex = this.order.indexOf(gameCoordinator.currentPlayerName);
+      gameCoordinator.currentPlayerName = this.order[currentPlayerIndex + 1] || this.order[0];
+      gameCoordinator.availableActions.add(Action.undo({ player: gameCoordinator.previousPlayerName }));
 
       // Nation's bonds have been offered to all players
-      if (this.shouldAdvanceNation(game)) {
-        Auction.advanceNation(game);
-        this.resetCurrentPlayer(game);
+      if (this.shouldAdvanceNation(gameCoordinator)) {
+        const giveNationTurn = new GiveNationTurn(gameCoordinator.game);
+        giveNationTurn.giveTurnToNextNation();
+
+        this.resetCurrentPlayer(gameCoordinator);
 
         // Auction is over and the game should start
-        if (!game.currentNation) {
-          this.prepareToStartGame(game);
+        if (!gameCoordinator.currentNation) {
+          this.prepareToStartGame(gameCoordinator);
           return;
         }
       }
 
-      const availableBondPurchases = Auction.availableBondPurchases(game);
+      const availableBondPurchases = Auction.availableBondPurchases(gameCoordinator);
       if (availableBondPurchases.size === 0) {
-        game.annotatedLog.push(
+        gameCoordinator.annotatedLog.push(
           Action.playerAutoSkipsBondPurchase({
-            player: game.currentPlayerName,
-            bondNation: game.currentNation,
+            player: gameCoordinator.currentPlayerName,
+            bondNation: gameCoordinator.currentNation,
           }),
         );
       } else {
-        for (const bondPurchase of Auction.availableBondPurchases(game)) {
-          game.availableActions.add(bondPurchase);
+        for (const bondPurchase of Auction.availableBondPurchases(gameCoordinator)) {
+          gameCoordinator.availableActions.add(bondPurchase);
         }
-        game.availableActions.add(Action.skipBondPurchase({
-          player: game.currentPlayerName,
-          nation: game.currentNation,
+        gameCoordinator.availableActions.add(Action.skipBondPurchase({
+          player: gameCoordinator.currentPlayerName,
+          nation: gameCoordinator.currentNation,
         }));
       }
     }
@@ -171,41 +168,6 @@ export default class Auction {
 
   shouldAdvanceNation(game) {
     return game.currentPlayerName === this.order[this.firstPlayerIndex || 0];
-  }
-
-  static advanceNation(game) {
-    let nations = [];
-    if (game.baseGame === 'imperial' || !game.baseGame) {
-      nations = [
-        Nation.AH,
-        Nation.IT,
-        Nation.FR,
-        Nation.GB,
-        Nation.GE,
-        Nation.RU,
-      ];
-    } else if (game.baseGame === 'imperial2030') {
-      nations = [
-        Nation2030.RU,
-        Nation2030.CN,
-        Nation2030.IN,
-        Nation2030.BR,
-        Nation2030.US,
-        Nation2030.EU,
-      ];
-    } else if (game.baseGame === 'imperialAsia') {
-      nations = [
-        NationAsia.CN,
-        NationAsia.JP,
-        NationAsia.FR,
-        NationAsia.GB,
-        NationAsia.TR,
-        NationAsia.RU,
-        NationAsia.GE,
-      ];
-    }
-    const nationIndex = nations.indexOf(game.currentNation);
-    game.currentNation = nations[nationIndex + 1];
   }
 
   resetCurrentPlayer(game) {
@@ -225,7 +187,7 @@ export default class Auction {
       game,
     );
     game.currentPlayerName = startingPlayer;
-    game.currentNation = startingNation;
+    
     for (const rondelAction of game.availableRondelActions(startingNation)) {
       game.availableActions.add(rondelAction);
     }

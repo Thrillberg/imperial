@@ -201,7 +201,6 @@ export default ({ players, provinceNames }) => {
   }
 
   out.provinces = provinces;
-  out.currentNation = Nation2030.RU;
   out.unitLimits = unitLimits;
   return out;
 };
