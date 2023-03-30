@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="text-lg m-2">
-      Purchase a bond - You have {{ game.players[current_player].cash }}m in cash.
+      Purchase a bond - You have {{ game.players[currentPlayer].cash }}m in cash.
     </div>
     <div class="flex flex-wrap">
       <div
@@ -43,6 +43,7 @@ export default {
     game: { type: Object, default: () => {} },
     currentPlayer: { type: String, default: '' },
     profile: { type: Object, default: () => {} },
+    tradedInBondNation: { type: String, default: '' },
     tradedInValue: { type: Number, default: 0 },
   },
   emits: ['purchaseBond', 'skip'],
@@ -54,6 +55,7 @@ export default {
           action.payload.cost === bond.cost
           && action.payload.nation === bond.nation
           && action.payload.tradeInValue === this.tradedInValue
+          && action.payload.nation.value === this.tradedInBondNation
         ) {
           canBePurchased = true;
         }
