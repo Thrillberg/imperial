@@ -111,9 +111,10 @@
       <BondPurchase
         v-if="purchasingBond"
         :game="game"
-        :current_player="controllingPlayerName"
+        :current-player="controllingPlayerName"
         :profile="profile"
         :traded-in-value="tradedInValue"
+        :traded-in-bond-nation="tradedInBondNation"
         @purchase-bond="purchaseBond"
         @skip="skipPurchaseBond"
       />
@@ -185,9 +186,10 @@ export default {
     },
     canForceInvestor() {
       if (this.game.availableActions.size > 0
-        && Array.from(this.game.availableActions).every(
-          (action) => action.type === 'forceInvestor' || action.type === 'skipForceInvestor' || action.type === 'undo',
-        )) {
+        && Array.from(
+          this.game.availableActions,
+        ).every((action) => action.type === 'forceInvestor' || action.type === 'skipForceInvestor' || action.type === 'undo')
+      ) {
         if (
           this.game.swissBanks.includes(this.profile.username)
           || (this.game.soloMode && this.hostingThisGame)
