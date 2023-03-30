@@ -30,7 +30,7 @@ import MoveToRondelSlot from './UseCases/Rondels/MoveToSlot';
 
 import Logger from '../src/Logger';
 
-export default class Imperial {
+export default class ImperialGameCoordinator {
   #logger;
 
   #game;
@@ -100,7 +100,7 @@ export default class Imperial {
     // Check if the requested action is invalid.
     let validAction = false;
     for (const availableAction of this.availableActions) {
-      if (Imperial.isEqual(availableAction, action)) {
+      if (ImperialGameCoordinator.isEqual(availableAction, action)) {
         validAction = true;
         break;
       }
@@ -2427,7 +2427,7 @@ export default class Imperial {
 
     if (action1.payload && action2.payload) {
       if (action1.type === 'import' && action2.type === 'import') {
-        return Imperial.arraysAreEqual(
+        return ImperialGameCoordinator.arraysAreEqual(
           action1.payload.placements,
           action2.payload.placements,
         );

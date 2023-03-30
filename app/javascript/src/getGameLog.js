@@ -1,4 +1,4 @@
-import { Nation, Nation2030, NationAsia } from '../lib/constants';
+import { Nation, Nation2030, NationAsia } from '../Domain/constants';
 
 export default (rawLog, baseGame) => rawLog.map((rawAction) => {
   // The following map only exists because of our custom Nation type, which

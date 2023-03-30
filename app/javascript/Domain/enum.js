@@ -1,6 +1,6 @@
 const cleanroom = Object.freeze(Object.create(null));
 
-class Enum {
+export default class Enum {
   constructor(value, members, label) {
     Object.defineProperties(this, {
       value: { value, enumerable: true },
@@ -68,5 +68,3 @@ class Enum {
     });
   }
 }
-
-export { Enum };

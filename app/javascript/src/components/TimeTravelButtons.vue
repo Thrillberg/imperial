@@ -69,7 +69,6 @@
 </template>
 
 <script>
-// import Imperial from '../../lib/imperial';
 
 export default {
   name: 'TimeTravelButtons',
