@@ -140,7 +140,8 @@ export default class Auction {
         this.resetCurrentPlayer(gameCoordinator);
 
         // Auction is over and the game should start
-        if (!gameCoordinator.currentNation) {
+        const firstNation = gameCoordinator.game.firstNation;
+        if (gameCoordinator.game.currentNation === firstNation) {
           this.prepareToStartGame(gameCoordinator);
           return;
         }
@@ -178,36 +179,37 @@ export default class Auction {
     game.currentPlayerName = this.order[this.firstPlayerIndex];
   }
 
-  prepareToStartGame(game) {
-    for (const player in game.players) {
-      game.checkForSwissBank(player);
+  prepareToStartGame(gameCoordinator) {
+    for (const player in gameCoordinator.players) {
+      gameCoordinator.checkForSwissBank(player);
     }
 
     const [startingPlayer, startingNation] = Auction.getStartingPlayerAndNation(
-      game,
+      gameCoordinator,
     );
-    game.currentPlayerName = startingPlayer;
+    gameCoordinator.currentPlayerName = startingPlayer;
+    new GiveNationTurn(gameCoordinator.game).forceGiveTurnTo(gameCoordinator.game.nationIdToEntity(startingNation.value));
     
-    for (const rondelAction of game.availableRondelActions(startingNation)) {
-      game.availableActions.add(rondelAction);
+    for (const rondelAction of gameCoordinator.availableRondelActions(startingNation)) {
+      gameCoordinator.availableActions.add(rondelAction);
     }
     this.inAuction = false;
     let startingControllerIndex;
-    if (game.baseGame === 'imperial' || !game.baseGame) {
+    if (gameCoordinator.baseGame === 'imperial' || !gameCoordinator.baseGame) {
       startingControllerIndex = this.order.indexOf(
-        game.nations.get(Nation.AH).controller,
+        gameCoordinator.nations.get(Nation.AH).controller,
       );
-    } else if (game.baseGame === 'imperial2030') {
+    } else if (gameCoordinator.baseGame === 'imperial2030') {
       startingControllerIndex = this.order.indexOf(
-        game.nations.get(Nation2030.RU).controller,
+        gameCoordinator.nations.get(Nation2030.RU).controller,
       );
-    } else if (game.baseGame === 'imperialAsia') {
+    } else if (gameCoordinator.baseGame === 'imperialAsia') {
       startingControllerIndex = this.order.indexOf(
-        game.nations.get(NationAsia.CN).controller,
+        gameCoordinator.nations.get(NationAsia.CN).controller,
       );
     }
-    if (game.variant !== 'withoutInvestorCard') {
-      game.investorCardHolder = this.order[startingControllerIndex + 1] || this.order[0];
+    if (gameCoordinator.variant !== 'withoutInvestorCard') {
+      gameCoordinator.investorCardHolder = this.order[startingControllerIndex + 1] || this.order[0];
     }
   }
 

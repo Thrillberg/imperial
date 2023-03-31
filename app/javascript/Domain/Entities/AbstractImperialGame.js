@@ -44,6 +44,9 @@ export default class AbstractImperialGame extends Entity {
   nationIdToEntity(nationId) {
     return this.#nations.get(nationId);
   }
+  get firstNation() {
+    return this.#nationOrder[0];
+  }
   nationTurnAfter(nation) {
     let nationIndex = this.#nationOrder.indexOf(nation);
 

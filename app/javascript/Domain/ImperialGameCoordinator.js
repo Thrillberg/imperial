@@ -81,8 +81,9 @@ export default class ImperialGameCoordinator {
     return this.#game;
   }
 
-  get currentNation() {
-    let nations;
+  get #nations() {
+    let nations = null;
+
     if (this.baseGame === 'imperial') {
       nations = Nation;
     } else if (this.baseGame === 'imperial2030') {
@@ -91,7 +92,10 @@ export default class ImperialGameCoordinator {
       nations = NationAsia;
     }
 
-    return nations[this.#game.currentNation.id];
+    return nations;
+  }
+  get currentNation() {
+    return this.#nations[this.#game.currentNation.id];
   }
 
   tickFromLog(log) {
@@ -549,7 +553,7 @@ export default class ImperialGameCoordinator {
         return;
       }
       
-      if (!this.nations.get(nextNation).controller) {
+      if (!this.nations.get(this.#nations[nextNation.id]).controller) {
         this.#giveNationTurn.giveTurnToNextNation();
         this.roundOfInvestment();
         return;
