@@ -54,10 +54,17 @@ export default {
         if (
           action.payload.cost === bond.cost
           && action.payload.nation === bond.nation
-          && action.payload.tradeInValue === this.tradedInValue
-          && action.payload.nation.value === this.tradedInBondNation
         ) {
-          canBePurchased = true;
+          if (this.tradedInValue > 0) {
+            if (
+              action.payload.tradeInValue === this.tradedInValue
+              && action.payload.nation.value === this.tradedInBondNation
+            ) {
+              canBePurchased = true;
+            }
+          } else {
+            canBePurchased = true;
+          }
         }
       }
       return canBePurchased;
