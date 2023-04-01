@@ -7,15 +7,11 @@ export default class Permissions {
     return nation.treasury + player.cash >= this.factorySlot.costToBuild;
   }
 
-  static buildableFactoriesLocations(homeProvinces) {
-    const buildableLocations = new Set();
-
+  static* buildableFactoriesLocations(homeProvinces) {
     for (const province of homeProvinces) {
-      if (province.isDevoidOfFactory && province.isNotOccupiedByHostiles) {
-        buildableLocations.add(province);
+      if (province.isDevoidOfFactory && province.isDevoidOfHostiles) {
+        yield province;
       }
     }
-
-    return buildableLocations;
   }
 }

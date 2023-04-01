@@ -1,6 +1,7 @@
 import RondelSlot from './RondelSlots/RondelSlot';
 
 import FactorySlot from './RondelSlots/FactorySlot';
+import TaxationSlot from './RondelSlots/TaxationSlot';
 
 const Production1 = 'production1';
 const Maneuver1 = 'maneuver1';
@@ -8,7 +9,6 @@ const Investor = 'investor';
 const Import = 'import';
 const Production2 = 'production2';
 const Maneuver2 = 'maneuver2';
-const Taxation = 'taxation';
 
 export default class Rondel {
   #translator;
@@ -24,7 +24,7 @@ export default class Rondel {
     this.#translator.set(Import, new RondelSlot(Import));
     this.#translator.set(Production2, new RondelSlot(Production2));
     this.#translator.set(Maneuver2, new RondelSlot(Maneuver2));
-    this.#translator.set(Taxation, new RondelSlot(Taxation));
+    this.#translator.set(TaxationSlot.classId, new TaxationSlot(2, 1, 1));
 
     this.#slotOrder = [
       this.factorySlot,
@@ -65,7 +65,7 @@ export default class Rondel {
     return this.idToEntity(Maneuver2);
   }
   get taxationSlot() {
-    return this.idToEntity(Taxation);
+    return this.idToEntity(TaxationSlot.classId);
   }
 
   idToEntity(string) {

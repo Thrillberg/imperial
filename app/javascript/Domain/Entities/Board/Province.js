@@ -7,8 +7,11 @@ export default class Province extends Entity {
     this.isLand = isLand;
 
     this.ownership = null;
+
     this.hasArmsFactory = false;
     this.hasNavalFactory = false;
+
+    this.hasRailwayNetwork = false;
 
     this.friendlyUnits = new Map();
     this.hostileUnits = new Map();
@@ -28,11 +31,11 @@ export default class Province extends Entity {
     return this.hasFactory === false;
   }
 
-  get isOccupiedByHostiles() {
+  get containsHostiles() {
     return this.hostileUnits.size > 0;
   }
-  get isNotOccupiedByHostiles() {
-    return this.isOccupiedByHostiles === false;
+  get isDevoidOfHostiles() {
+    return this.containsHostiles === false;
   }
 }
 
@@ -43,7 +46,6 @@ export const translateProvinceModel = (id, allProvinces, allUnits, gameBoard) =>
 
   const province = new Province(!geographicModel.isOcean, id);
 
-  province.ownership = geographicModel.nation;
   province.hasArmsFactory = oldProvinceModel.factory === 'armaments';
   province.hasNavalFactory = oldProvinceModel.factory === 'shipyard';
 
