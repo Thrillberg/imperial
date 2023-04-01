@@ -29,6 +29,7 @@ import FactorySlotBuildPermissions from './UseCases/Rondels/FactorySlots/Build/P
 import MoveToRondelSlot from './UseCases/Rondels/MoveToSlot';
 
 import Logger from '../src/Logger';
+import AbstractImperialGame from './Entities/AbstractImperialGame';
 
 export default class ImperialGameCoordinator {
   #logger;
@@ -133,7 +134,18 @@ export default class ImperialGameCoordinator {
 
     switch (action.type) {
       case 'undo': {
-        this.#game.undoToLastCheckpoint();
+        try {
+          this.#game.undoToLastCheckpoint();
+        } catch (error) {
+          switch (error.constructor) {
+            case AbstractImperialGame.InvalidUndoOperationError:
+              this.#logger.error(error.message, action);
+              break;
+
+            default:
+              throw error;
+          }
+        }
 
         Object.assign(this, this.oldState);
         if (this.auction?.inAuction) {

@@ -1,21 +1,21 @@
 export default class AdjustCash {
-    #game;
+  #game;
 
-    constructor(game) {
-        this.#game = game;
-    }
+  constructor(game) {
+    this.#game = game;
+  }
 
-    static changeBy(player, amount) {
-        if (amount) {
-            player.cash = Math.max(0, player.cash + amount);
-        }
+  static changeBy(player, amount) {
+    if (amount) {
+      player.cash = Math.max(0, player.cash + amount);
     }
-    undoableChangeBy(player, amount) {
-        if (amount) {
-            const originalAmount = player.cash;
-            this.#game.pushUndoOperation(() => player.cash = originalAmount);
+  }
+  undoableChangeBy(player, amount) {
+    if (amount) {
+      const originalAmount = player.cash;
+      this.#game.pushUndoOperation(() => { player.cash = originalAmount; });
 
-            AdjustCash.changeBy(player, amount);
-        }
+      AdjustCash.changeBy(player, amount);
     }
+  }
 }

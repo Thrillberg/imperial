@@ -64,7 +64,7 @@ export default class AbstractImperialGame extends Entity {
 
   pushUndoOperation(operation) {
     if (operation instanceof Function) {
-      if (this.#undoStack.length == 0) {
+      if (this.#undoStack.length === 0) {
         this.addUndoCheckpoint();
       }
 
@@ -77,14 +77,24 @@ export default class AbstractImperialGame extends Entity {
     this.#undoStack.push([]);
   }
   undoToLastCheckpoint() {
-    if (this.#undoStack.length == 0) {
+    if (this.#undoStack.length === 0) {
       return;
     }
 
     const undoOperations = this.#undoStack.pop();
     while (undoOperations.length > 0) {
       const undoOperation = undoOperations.pop();
-      undoOperation();
+      try {
+        undoOperation();
+      } catch (error) {
+        switch (error) {
+          case TypeError:
+            throw new InvalidUndoOperationError(undoOperation);
+
+          default:
+            throw error;
+        }
+      }
     }
   }
 }
