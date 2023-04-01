@@ -1,3 +1,5 @@
+import AdjustCash from '../Players/AdjustCash';
+
 import AvailableSlots from './SlotSelection/AvailableSlots';
 import SlotDistanceCosts from './SlotSelection/SlotDistanceCosts';
 
@@ -14,10 +16,18 @@ export default class MoveToSlot {
     return InvalidMoveError;
   }
 
+  #game;
+
+  #adjustCash;
+
   #availableSlots;
   #costs;
 
   constructor(game) {
+    this.#game = game;
+
+    this.#adjustCash = new AdjustCash(game);
+
     this.#availableSlots = new AvailableSlots(game.rondel, game.availableFreeRondelSlotCount, game.availablePaidRondelSlotCount);
     this.#costs = new SlotDistanceCosts(game);
   }
@@ -37,7 +47,13 @@ export default class MoveToSlot {
     nation.residingRondelSlot = toRondelSlot;
     toRondelSlot?.residingNations.add(nation);
   }
-  tryMoveNation(governor, nation, toRondelSlot) {
+  undoableForceMoveNation(nation, toRondelSlot) {
+    const previousRondelSlot = nation.residingRondelSlot;
+    this.#game.pushUndoOperation(() => MoveToSlot.forceMoveNation(nation, previousRondelSlot));
+
+    MoveToSlot.forceMoveNation(nation, toRondelSlot);
+  }
+  tryUndoableMoveNation(governor, nation, toRondelSlot) {
     const fromRondelSlot = nation.residingRondelSlot;
     const availableFreeSlots = this.#availableSlots.nextAvailableFreeRondelSlots(fromRondelSlot);
 
@@ -55,8 +71,8 @@ export default class MoveToSlot {
     }
 
     if (isValidMove) {
-      MoveToSlot.forceMoveNation(nation, toRondelSlot);
-      governor.cash -= moveCosts;
+      this.undoableForceMoveNation(nation, toRondelSlot);
+      this.#adjustCash.undoableChangeBy(governor, -moveCosts);
     } else {
       throw new InvalidMoveError(nation.residingRondelSlot, toRondelSlot);
     }
