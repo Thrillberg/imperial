@@ -15,7 +15,9 @@
 /**
  * @type {Cypress.PluginConfig}
  */
+/* eslint-disable no-unused-vars */
 module.exports = (on, config) => {
+/* eslint-enable no-unused-vars */
   // `on` is used to hook into various events Cypress emits
   // `config` is the resolved Cypress config
-}
+};
