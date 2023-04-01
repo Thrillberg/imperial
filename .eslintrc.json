@@ -6,7 +6,8 @@
     },
     "extends": [
         "plugin:vue/vue3-recommended",
-        "airbnb-base"
+        "airbnb-base",
+        "plugin:cypress/recommended"
     ],
     "overrides": [
     ],
