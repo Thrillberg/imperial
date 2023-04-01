@@ -396,10 +396,10 @@
 
 <script>
 import { Howl } from 'howler';
+import { markRaw } from 'vue';
 import Action from '../../Domain/action';
 import Imperial from '../../Domain/ImperialGameCoordinator';
 import { apiClient } from '../router/index';
-import { markRaw } from 'vue';
 
 import Logger from '../Logger';
 
