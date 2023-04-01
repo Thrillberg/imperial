@@ -83,6 +83,20 @@ To run Ruby RSpec tests, run the following command from the project root:
 rspec
 ```
 
+This project also uses [Cypress](https://www.cypress.io/) for feature tests. **These tests have not been maintained, however.** To
+run these tests, run the following command from the project root:
+
+```
+bin/webpack
+./test_server
+```
+
+And in another terminal:
+
+```
+npm run cypress
+```
+
 ## Local debugging
 
 Production games will often present situations that are hard to reproduce locally and therefore get challening to debug. Therefore, we have implemented the ability to **export** and **import** games.
