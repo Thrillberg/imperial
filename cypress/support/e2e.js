@@ -13,12 +13,12 @@
 // https://on.cypress.io/configuration
 // ***********************************************************
 
-import './commands'
+import './commands';
 
 beforeEach(() => {
-  cy.resetDatabase()
-})
+  cy.resetDatabase();
+});
 
 after(() => {
-  cy.resetDatabase()
-})
+  cy.resetDatabase();
+});
