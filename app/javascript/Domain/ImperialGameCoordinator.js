@@ -29,7 +29,6 @@ import FactorySlotBuildPermissions from './UseCases/Rondels/FactorySlots/Build/P
 import MoveToRondelSlot from './UseCases/Rondels/MoveToSlot';
 
 import Logger from '../src/Logger';
-import AbstractImperialGame from './Entities/AbstractImperialGame';
 import UndoHistory from './Entities/UndoHistory';
 
 export default class ImperialGameCoordinator {
