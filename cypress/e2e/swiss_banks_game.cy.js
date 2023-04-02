@@ -50,27 +50,26 @@ describe('Swiss banks', () => {
     // AH
     cy.get('#investor').click();
     cy.contains('Do not buy a bond').click();
-    // TODO: Test fails here and it's a real failure that we need to fix in imperial.js
-    // cy.contains('Do not buy a bond').click();
-    // cy.get('.bg-IT').contains('4:9').click();
-    // cy.contains('Do not buy a bond').click();
-    // cy.contains('Do not buy a bond').click();
-    // // IT
-    // cy.get('#production1').click();
-    // // FR
-    // cy.get('#production1').click();
-    // // GB
-    // cy.get('#production1').click();
-    // // GE
-    // cy.get('#production1').click();
-    // // RU
-    // cy.get('#production1').click();
-    // // AH
-    // cy.get('#production2').click();
-    // // IT
-    // cy.get('#import').click();
-    // cy.contains('Undo').click();
-    // cy.get('#import').click();
+    cy.contains('Do not buy a bond').click();
+    cy.get('.bg-IT').contains('4:9').click();
+    cy.contains('Do not buy a bond').click();
+    // IT
+    cy.get('#production1').click();
+    // FR
+    cy.get('#production1').click();
+    // GB
+    cy.get('#production1').click();
+    // GE
+    cy.get('#production1').click();
+    // RU
+    cy.get('#production1').click();
+    // AH
+    cy.get('#production2').click();
+    // IT
+    cy.get('#import').click();
+    cy.contains('Undo').click();
+    cy.get('#import').click();
+    // TODO: Fix the below errors. They arise from a very unrealistic game but should be handled nonetheless.
     // cy.contains('Undo').click();
     // cy.get('#import').click();
     // cy.contains('Undo').click();
