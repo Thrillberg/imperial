@@ -30,11 +30,14 @@ import MoveToRondelSlot from './UseCases/Rondels/MoveToSlot';
 
 import Logger from '../src/Logger';
 import AbstractImperialGame from './Entities/AbstractImperialGame';
+import UndoHistory from './Entities/UndoHistory';
 
 export default class ImperialGameCoordinator {
   #logger;
 
   #game;
+  #undoHistory;
+
   #moveToRondelSlot;
 
   constructor(board, logger) {
@@ -73,6 +76,7 @@ export default class ImperialGameCoordinator {
     this.baseGame = '';
 
     this.#game = null;
+    this.#undoHistory = new UndoHistory();
   }
 
   get game() {
@@ -119,7 +123,7 @@ export default class ImperialGameCoordinator {
     }
 
     if (action.type !== 'undo') {
-      this.#game.addUndoCheckpoint();
+      this.#undoHistory.addUndoCheckpoint();
     }
 
     this.availableActions = new Set();
@@ -135,10 +139,10 @@ export default class ImperialGameCoordinator {
     switch (action.type) {
       case 'undo': {
         try {
-          this.#game.undoToLastCheckpoint();
+          this.#undoHistory.undoToLastCheckpoint();
         } catch (error) {
           switch (error.constructor) {
-            case AbstractImperialGame.InvalidUndoOperationError:
+            case UndoHistory.InvalidUndoOperationError:
               this.#logger.error(error.message, action);
               break;
 
@@ -195,7 +199,7 @@ export default class ImperialGameCoordinator {
 
         this.nations.get(this.currentNation).rondelPosition = 'investor';
         const nationEntity = this.#game.nationIdToEntity(this.currentNation.value);
-        this.#moveToRondelSlot.undoableForceMoveNation(nationEntity, this.#game.rondel.investorSlot);
+        MoveToRondelSlot.forceMoveNation(nationEntity, this.#game.rondel.investorSlot, this.#undoHistory);
 
         const investorAction = Action.rondel({
           slot: 'investor',
@@ -1319,7 +1323,7 @@ export default class ImperialGameCoordinator {
 
     try {
       currentNation.rondelPosition = action.payload.slot;
-      this.#moveToRondelSlot.tryUndoableMoveNation(currentPlayer, currentNationEntity, toRondelSlot);
+      this.#moveToRondelSlot.tryMoveNation(currentPlayer, currentNationEntity, toRondelSlot, this.#undoHistory);
     } catch (error) {
       switch (error.constructor) {
         case MoveToRondelSlot.InvalidMoveError:
