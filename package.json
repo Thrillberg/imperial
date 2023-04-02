@@ -34,9 +34,11 @@
     "@types/jest": "^29.5.0",
     "@vue/compiler-sfc": "^3.1.0",
     "babel-jest": "^26.6.3",
+    "cypress": "^12.9.0",
     "eslint": "^8.26.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-prettier": "^7.2.0",
+    "eslint-plugin-cypress": "^2.13.2",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-jest": "^24.3.2",
     "eslint-plugin-node": "^11.1.0",
@@ -55,7 +57,8 @@
   "scripts": {
     "lint": "eslint $(git diff --name-only HEAD~1 | grep -E '\\.(js|vue)$' | xargs)",
     "lint/fix": "eslint $(git diff --name-only HEAD~1 | grep -E '\\.(js|vue)$' | xargs) --fix",
-    "test": "jest"
+    "test": "jest",
+    "cypress": "cypress open"
   },
   "browserslist": [
     "defaults"
