@@ -2,19 +2,19 @@
   <div class="flex flex-col">
     <div class="flex flex-wrap justify-evenly">
       <Player
-        v-for="(player, index) of players()"
+        v-for="(player, index) of sortedPlayers"
         :key="player.name"
         :player="player"
         :current-player="controllingPlayerName"
         :game="game"
         :profile="profile"
-        :online-users="online_users"
+        :online-users="onlineUsers"
         :purchasing-bond="purchasingBond"
         :traded-in-bond-nation="tradedInBondNation"
         :traded-in-value="tradedInValue"
         :index="game.winner ? index + 1 : null"
         :turn-index="index + 1"
-        @toggleTradeIn="toggleTradeIn"
+        @toggle-trade-in="toggleTradeIn"
       />
     </div>
   </div>
@@ -28,15 +28,16 @@ export default {
   components: {
     Player,
   },
-  props: [
-    'game',
-    'controllingPlayerName',
-    'paused',
-    'profile',
-    'online_users',
-    'gameData',
-    'hostingThisGame',
-  ],
+  props: {
+    game: { type: Object, default: () => {} },
+    controllingPlayerName: { type: String, default: '' },
+    paused: { type: Boolean, default: false },
+    profile: { type: Object, default: () => {} },
+    onlineUsers: { type: Array, default: () => [] },
+    gameData: { type: Object, default: () => {} },
+    hostingThisGame: { type: Boolean, default: false },
+  },
+  emits: ['tick', 'toggleTradeIn'],
   data() {
     return {
       tradedInBondNation: '',
@@ -51,7 +52,15 @@ export default {
         && Array.from(this.game.availableActions).every(
           (action) => action.type === 'bondPurchase' || action.type === 'skipBondPurchase' || action.type === 'undo',
         );
-      return purchasingBond && (this.profile.username === this.controllingPlayerName || (this.game.soloMode && this.hostingThisGame));
+      return purchasingBond
+        && (this.profile.username === this.controllingPlayerName || (this.game.soloMode && this.hostingThisGame));
+    },
+    sortedPlayers() {
+      if (this.game.winner === '') {
+        return this.players();
+      }
+
+      return this.players().sort((a, b) => (b.rawScore + b.cash) - (a.rawScore + a.cash));
     },
   },
   methods: {
@@ -61,7 +70,6 @@ export default {
         this.gameData.players.forEach((dataPlayer) => {
           if (name === dataPlayer.name) {
             players[name] = {
-
               ...this.game.players[name],
               id: dataPlayer.id,
             };
@@ -72,9 +80,7 @@ export default {
           players[name] = this.game.players[name];
         }
       }
-      if (this.game.winner) {
-        return Object.values(players).sort((a, b) => a.cash + a.rawScore < b.cash + b.rawScore);
-      }
+
       return Object.values(players);
     },
     powerPoints() {

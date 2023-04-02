@@ -600,11 +600,8 @@ export default class ImperialGameCoordinator {
         (bank) => this.hasNotBoughtABondThisTurn(bank) === true,
       )
     ) {
-      for (const player of swissBanksToInvest) {
-        if (
-          player !== this.investorCardHolder
-          && this.hasNotBoughtABondThisTurn(player)
-        ) {
+      for (const player of swissBanksToInvest.filter((bank) => this.hasNotBoughtABondThisTurn(bank))) {
+        if (player !== this.investorCardHolder) {
           this.endOfInvestorTurn(player);
         }
 
