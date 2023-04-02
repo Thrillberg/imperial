@@ -122,10 +122,13 @@ export default {
     link.rel = 'icon';
     document.getElementsByTagName('head')[0].appendChild(link);
 
-    const itsMyTurnInThisGame = this.games.find((game) => game.currentPlayerName === this.profile.username
-        && game.id === this.$route.params.id);
+    const itsMyTurnInThisGame = this.games.find((game) => (
+      game.currentPlayerName === this.profile.username
+      && game.id === this.$route.params.id
+      && game.winner === ''
+    ));
     const itsMyTurnInAGame = this.games.some(
-      (game) => game.currentPlayerName === this.profile.username,
+      (game) => game.currentPlayerName === this.profile.username && game.winner === '',
     );
 
     if (itsMyTurnInThisGame) {
