@@ -37,14 +37,18 @@ export default class MoveToSlot {
 
   static forceMoveNation(nation, toRondelSlot, undoHistory) {
     const previousRondelSlot = nation.residingRondelSlot;
-    undoHistory?.pushUndoOperation(() => MoveToSlot.forceMoveNation(nation, previousRondelSlot));
+    if (undoHistory) {
+      undoHistory.pushUndoOperation(() => MoveToSlot.forceMoveNation(nation, previousRondelSlot));
+    }
 
-    if (nation.residingRondelSlot) {
-      nation.residingRondelSlot.residingNations.delete(nation);
+    if (previousRondelSlot) {
+      previousRondelSlot.residingNations.delete(nation);
     }
 
     nation.residingRondelSlot = toRondelSlot;
-    toRondelSlot?.residingNations.add(nation);
+    if (toRondelSlot) {
+      toRondelSlot.residingNations.add(nation);
+    }
   }
   tryMoveNation(governor, nation, toRondelSlot, undoHistory) {
     const fromRondelSlot = nation.residingRondelSlot;
