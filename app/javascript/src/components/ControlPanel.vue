@@ -211,7 +211,7 @@ export default {
           this.profile.username === this.controllingPlayerName
           || (this.game.soloMode && this.hostingThisGame)
         ) {
-          if (this.game.winner !== '') {
+          if (this.game.winner === '') {
             return true;
           }
         }
