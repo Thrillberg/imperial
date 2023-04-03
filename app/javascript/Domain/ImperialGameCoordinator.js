@@ -87,7 +87,7 @@ export default class ImperialGameCoordinator {
   }
 
   tick(action) {
-    this.setOldState(action);
+    this.#addUndoCheckpoint(action);
     // Initialize and endGame actions are always valid.
     if (action.type === 'initialize') {
       this.log.push(action);
@@ -119,10 +119,6 @@ export default class ImperialGameCoordinator {
         },
       );
       return;
-    }
-
-    if (action.type !== 'undo') {
-      this.#undoHistory.addUndoCheckpoint();
     }
 
     this.availableActions = new Set();
@@ -294,7 +290,7 @@ export default class ImperialGameCoordinator {
     }
   }
 
-  setOldState(action) {
+  #addUndoCheckpoint(action) {
     // Undo rewinds the state until the last rondel action or
     // bond purchase/skipped bond purchase
     if (
@@ -302,6 +298,8 @@ export default class ImperialGameCoordinator {
       || action.type === 'bondPurchase'
       || action.type === 'skipBondPurchase'
     ) {
+      this.#undoHistory.addUndoCheckpoint();
+
       const oldState = setOldState(this);
       this.oldState = { ...this, ...oldState };
       if (this.auction?.inAuction) {
