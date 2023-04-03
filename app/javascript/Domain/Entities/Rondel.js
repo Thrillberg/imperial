@@ -17,7 +17,7 @@ export default class Rondel {
 
   constructor() {
     this.#translator = new Map();
-    this.#translator.set(FactorySlot.classId, new FactorySlot(5));
+    this.#translator.set(FactorySlot.classId, new FactorySlot());
     this.#translator.set(Production1, new RondelSlot(Production1));
     this.#translator.set(Maneuver1, new RondelSlot(Maneuver1));
     this.#translator.set(Investor, new RondelSlot(Investor));

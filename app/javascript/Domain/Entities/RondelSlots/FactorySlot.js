@@ -5,9 +5,7 @@ export default class FactorySlot extends RondelSlot {
     return 'factory';
   }
 
-  constructor(costToBuild) {
+  constructor() {
     super(FactorySlot.classId);
-
-    this.costToBuild = costToBuild;
   }
 }

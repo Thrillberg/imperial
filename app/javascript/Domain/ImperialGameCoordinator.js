@@ -38,6 +38,8 @@ export default class ImperialGameCoordinator {
   #undoHistory;
 
   #moveToRondelSlot;
+  #buildFactoryChargeCosts;
+  #buildFactoryPermissions;
 
   constructor(board, logger) {
     this.#logger = logger || new Logger();
@@ -326,6 +328,8 @@ export default class ImperialGameCoordinator {
         break;
     }
     this.#moveToRondelSlot = new MoveToRondelSlot(this.#game);
+    this.#buildFactoryChargeCosts = new FactorySlotBuildChargeCosts(this.#game.factoryBuildCosts);
+    this.#buildFactoryPermissions = new FactorySlotBuildPermissions(this.#game.factoryBuildCosts);
     this.variant = action.payload.variant;
 
     let setup;
@@ -967,9 +971,8 @@ export default class ImperialGameCoordinator {
 
     this.provinces.get(province).factory = this.board.graph.get(province).factoryType;
 
-    const buildCostsUseCase = new FactorySlotBuildChargeCosts(this.#game.rondel.factorySlot);
-    const nationCosts = buildCostsUseCase.nationCosts(currentNation);
-    const playerCosts = buildCostsUseCase.playerCosts(currentNation, currentPlayer);
+    const nationCosts = this.#buildFactoryChargeCosts.nationCosts(currentNation);
+    const playerCosts = this.#buildFactoryChargeCosts.playerCosts(currentNation, currentPlayer);
 
     currentNation.treasury -= nationCosts;
     currentPlayer.cash -= playerCosts;
@@ -1443,13 +1446,11 @@ export default class ImperialGameCoordinator {
           homeProvinces.add(translateProvinceModel(homeProvince, this.provinces, this.units, this.board));
         }
 
-        const buildPermissionsUseCase = new FactorySlotBuildPermissions(this.#game.rondel.factorySlot);
-        if (buildPermissionsUseCase.canAffordToBuild(currentNation, currentPlayer)) {
+        if (this.#buildFactoryPermissions.canAffordToBuild(currentNation, currentPlayer)) {
           this.buildingFactory = true;
 
-          const buildCostsUseCase = new FactorySlotBuildChargeCosts(this.#game.rondel.factorySlot);
-          const nationCosts = buildCostsUseCase.nationCosts(currentNation);
-          const playerCosts = buildCostsUseCase.playerCosts(currentNation, currentPlayer);
+          const nationCosts = this.#buildFactoryChargeCosts.nationCosts(currentNation);
+          const playerCosts = this.#buildFactoryChargeCosts.playerCosts(currentNation, currentPlayer);
 
           for (const buildableProvince of FactorySlotBuildPermissions.buildableFactoriesLocations(homeProvinces)) {
             this.availableActions.add(
