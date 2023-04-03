@@ -29,11 +29,14 @@ import FactorySlotBuildPermissions from './UseCases/Rondels/FactorySlots/Build/P
 import MoveToRondelSlot from './UseCases/Rondels/MoveToSlot';
 
 import Logger from '../src/Logger';
+import UndoHistory from './Entities/UndoHistory';
 
 export default class ImperialGameCoordinator {
   #logger;
 
   #game;
+  #undoHistory;
+
   #moveToRondelSlot;
 
   constructor(board, logger) {
@@ -72,6 +75,7 @@ export default class ImperialGameCoordinator {
     this.baseGame = '';
 
     this.#game = null;
+    this.#undoHistory = new UndoHistory();
   }
 
   get game() {
@@ -83,7 +87,7 @@ export default class ImperialGameCoordinator {
   }
 
   tick(action) {
-    this.setOldState(action);
+    this.#addUndoCheckpoint(action);
     // Initialize and endGame actions are always valid.
     if (action.type === 'initialize') {
       this.log.push(action);
@@ -129,14 +133,12 @@ export default class ImperialGameCoordinator {
 
     switch (action.type) {
       case 'undo': {
+        this.#undoHistory.undoToLastCheckpoint();
+
         Object.assign(this, this.oldState);
         if (this.auction?.inAuction) {
           Object.assign(this.auction, this.oldAuctionState);
         }
-
-        const currentNation = this.nations.get(this.currentNation);
-        const lastRondelSlot = currentNation.rondelPosition ? this.#game.rondel.idToEntity(currentNation.rondelPosition) : null;
-        MoveToRondelSlot.forceMoveNation(this.#game.nationIdToEntity(this.currentNation.value), lastRondelSlot);
         return;
       }
       case 'bondPurchase': {
@@ -181,7 +183,7 @@ export default class ImperialGameCoordinator {
 
         this.nations.get(this.currentNation).rondelPosition = 'investor';
         const nationEntity = this.#game.nationIdToEntity(this.currentNation.value);
-        MoveToRondelSlot.forceMoveNation(nationEntity, this.#game.rondel.investorSlot);
+        MoveToRondelSlot.forceMoveNation(nationEntity, this.#game.rondel.investorSlot, this.#undoHistory);
 
         const investorAction = Action.rondel({
           slot: 'investor',
@@ -277,7 +279,7 @@ export default class ImperialGameCoordinator {
     }
   }
 
-  setOldState(action) {
+  #addUndoCheckpoint(action) {
     // Undo rewinds the state until the last rondel action or
     // bond purchase/skipped bond purchase
     if (
@@ -285,6 +287,8 @@ export default class ImperialGameCoordinator {
       || action.type === 'bondPurchase'
       || action.type === 'skipBondPurchase'
     ) {
+      this.#undoHistory.addUndoCheckpoint();
+
       const oldState = setOldState(this);
       this.oldState = { ...this, ...oldState };
       if (this.auction?.inAuction) {
@@ -1305,7 +1309,7 @@ export default class ImperialGameCoordinator {
 
     try {
       currentNation.rondelPosition = action.payload.slot;
-      this.#moveToRondelSlot.tryMoveNation(currentPlayer, currentNationEntity, toRondelSlot);
+      this.#moveToRondelSlot.tryMoveNation(currentPlayer, currentNationEntity, toRondelSlot, this.#undoHistory);
     } catch (error) {
       switch (error.constructor) {
         case MoveToRondelSlot.InvalidMoveError:
