@@ -1,33 +1,30 @@
 <template>
-  <div id="app">
-    <div
-      v-if="profileFetched && gamesFetched"
-      class="text-sm sm:text-base"
-    >
+  <v-app id="app">
+    <div v-if="profileFetched && gamesFetched">
       <Header
         :profile="profile"
-        @signOut="signOut"
-        @signedIn="signIn"
-        @identified="identify"
+        @sign-out="signOut"
         @anonymity_confirmed="anonymityConfirmed"
       />
-      <router-view v-slot="{ Component }">
-        <component
-          :is="Component"
-          ref="game"
-          :profile="profile"
-          :users="onlineUsers"
-          :games="games"
-          :games-fetched="gamesFetched"
-          :observers="observers"
-          :game-data="gameData"
-          :env="env"
-          @registered="register"
-          @signedIn="signIn"
-          @openGame="openGame"
-          @receiveGameData="receiveGameData"
-        />
-      </router-view>
+      <v-main>
+        <router-view v-slot="{ Component }">
+          <component
+            :is="Component"
+            ref="game"
+            :profile="profile"
+            :users="onlineUsers"
+            :games="games"
+            :games-fetched="gamesFetched"
+            :observers="observers"
+            :game-data="gameData"
+            :env="env"
+            @registered="register"
+            @signedIn="signIn"
+            @openGame="openGame"
+            @receiveGameData="receiveGameData"
+          />
+        </router-view>
+      </v-main>
     </div>
     <div
       v-else
@@ -35,7 +32,7 @@
     >
       Loading
     </div>
-  </div>
+  </v-app>
 </template>
 
 <script>

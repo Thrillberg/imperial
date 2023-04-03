@@ -54,18 +54,19 @@
             class="overflow-hidden"
             :class="mapWidth()"
           >
-            <Board
-              :config="boardConfig"
-              :game="game"
-              :game-started="gameStarted"
-              :paused="paused"
-              :profile="profile"
-              :province-with-fight="provinceWithFight"
-              :select-province="selectProvince"
-              :units-to-import="importPlacements"
-              :valid-provinces="validProvinces()"
-              @fight-resolved="resolveFight"
-            />
+            <Suspense>
+              <Board
+                :game="game"
+                :game-started="gameStarted"
+                :paused="paused"
+                :profile="profile"
+                :province-with-fight="provinceWithFight"
+                :select-province="selectProvince"
+                :units-to-import="importPlacements"
+                :valid-provinces="validProvinces()"
+                @fight-resolved="resolveFight"
+              />
+            </Suspense>
             <TaxChart
               :show-bonus="game.baseGame === 'imperial2030'"
               :taxes="taxes()"
@@ -462,7 +463,7 @@ export default {
   data: () => ({
     importProvince: '',
     board: {},
-    boardConfig: {},
+    // boardConfig: {},
     controllingPlayerName: '',
     currentPlayer: {},
     game: {},
@@ -519,7 +520,7 @@ export default {
     apiClient.userObservingGame(this.profile.username, this.$route.params.id);
   },
   updated() {
-    this.getBoardConfig();
+    // this.getBoardConfig();
     document.title = `${this.gameData.name} - Imperial`;
   },
   beforeUnmount() {
@@ -527,15 +528,15 @@ export default {
   },
 
   methods: {
-    getBoardConfig() {
-      if (this.gameData.baseGame === 'imperial') {
-        import('../boardConfigs').then((resp) => { this.boardConfig = resp.default.imperial; });
-      } else if (this.gameData.baseGame === 'imperial2030') {
-        import('../board2030Configs').then((resp) => { this.boardConfig = resp.default.imperial2030; });
-      } else if (this.gameData.baseGame === 'imperialAsia') {
-        import('../boardAsiaConfigs').then((resp) => { this.boardConfig = resp.default.imperialAsia; });
-      }
-    },
+    // getBoardConfig() {
+    //   if (this.gameData.baseGame === 'imperial') {
+    //     import('../boardConfigs').then((resp) => { this.boardConfig = resp.default.imperial; });
+    //   } else if (this.gameData.baseGame === 'imperial2030') {
+    //     import('../board2030Configs').then((resp) => { this.boardConfig = resp.default.imperial2030; });
+    //   } else if (this.gameData.baseGame === 'imperialAsia') {
+    //     import('../boardAsiaConfigs').then((resp) => { this.boardConfig = resp.default.imperialAsia; });
+    //   }
+    // },
     beforeWindowUnload() {
       apiClient.userStoppedObservingGame(this.profile.username, this.$route.params.id);
     },

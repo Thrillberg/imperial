@@ -16,10 +16,27 @@
 
 import { createApp } from 'vue';
 import VueCookies from 'vue3-cookies';
+
+import '@mdi/font/css/materialdesignicons.css';
+import { createVuetify } from 'vuetify';
+import * as directives from 'vuetify/directives';
+import { aliases, mdi } from 'vuetify/iconsets/mdi';
+import 'vuetify/styles';
 import App from '../src/App.vue';
 import router from '../src/router';
 
-const app = createApp(App, { env: process.env.NODE_ENV });
+const vuetify = createVuetify({
+  directives,
+  icons: {
+    defaultSet: 'mdi',
+    aliases,
+    sets: {
+      mdi,
+    },
+  },
+});
+
+const app = createApp(App, { env: process.env.NODE_ENV }).use(vuetify);
 
 app.use(router);
 app.use(VueCookies);

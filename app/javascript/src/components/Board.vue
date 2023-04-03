@@ -104,10 +104,6 @@ export default {
   name: 'Board',
   components: { Province },
   props: {
-    config: {
-      type: Object,
-      default: () => ({ adjustments: {}, seaProvinces: {}, landProvinces: {} }),
-    },
     game: { type: Object, default: () => {} },
     profile: { type: Object, default: () => {} },
     gameStarted: Boolean,
@@ -118,6 +114,18 @@ export default {
     validProvinces: { type: Array, default: () => [] },
   },
   emits: ['fightResolved'],
+  async setup(props) {
+    let config = {};
+    if (props.game.baseGame === 'imperial') {
+      config = await import('../boardConfigs').then((resp) => resp.default.imperial);
+    } else if (props.game.baseGame === 'imperial2030') {
+      config = await import('../board2030Configs').then((resp) => resp.default.imperial2030);
+    } else if (props.game.baseGame === 'imperialAsia') {
+      config = await import('../boardAsiaConfigs').then((resp) => resp.default.imperialAsia);
+    }
+
+    return { config };
+  },
   methods: {
     armies(province) {
       const armies = [];

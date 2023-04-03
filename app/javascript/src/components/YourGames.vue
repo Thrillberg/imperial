@@ -1,64 +1,50 @@
 <template>
-  <div class="p-4">
-    <b>Your Games</b>
-    <div class="flex border-b border-black mt-2">
-      <div class="w-1/3 sm:w-1/5 mx-2">
-        <b>Name</b>
-      </div>
-      <div class="hidden sm:w-1/5 sm:inline-block mx-2">
-        <b>Players</b>
-      </div>
-      <div class="w-1/3 sm:w-1/5 mx-2">
-        <b>Current Player</b>
-      </div>
-      <div class="w-1/3 sm:w-1/5 mx-2">
-        <b>Last Move At</b>
-      </div>
-      <div class="hidden sm:w-1/5 sm:inline-block mx-2">
-        <b>Variant</b>
-      </div>
-    </div>
-    <a
-      href="/games/new"
-      class="rounded bg-green-800 text-white cursor-pointer
-      block hover:bg-green-900 py-2 px-4 m-2 inline-block"
-    >
-      New Game
-    </a>
-    <div
-      v-for="game of orderedGames"
-      :key="game.id"
-    >
-      <router-link
-        :to="{ path: '/game/' + game.id }"
-        class="flex justify-between items-center py-2"
-        :class="game.winner ? 'bg-gray-200' : 'hover:bg-yellow-100'"
+  <span class="text-h5">Your Games</span>
+  <v-table
+    density="compact"
+    hover
+  >
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Players</th>
+        <th>Current Player</th>
+        <th>Last Move At</th>
+        <th>Variant</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr
+        v-for="game of orderedGames"
+        :key="game.id"
       >
-        <div class="w-1/3 sm:w-1/5 mx-2">
-          <Star
-            v-if="game.currentPlayerName
-              && game.currentPlayerName === profile.username
-              && !game.winner"
-          />
-          <span>{{ game.name }}</span>
-        </div>
-        <div class="hidden sm:w-1/5 sm:inline-block mx-2">
+        <td>
+          <router-link :to="{ path: '/game/' + game.id }">
+            <Star
+              v-if="game.currentPlayerName
+                && game.currentPlayerName === profile.username
+                && !game.winner"
+            />
+            <span>{{ game.name }}</span>
+          </router-link>
+        </td>
+        <td>
           {{ game.players.length }}
-        </div>
-        <div class="w-1/3 sm:w-1/5 mx-2">
+        </td>
+        <td>
           {{ currentPlayer(game) }}
-        </div>
-        <div class="w-1/3 sm:w-1/5 mx-2">
+        </td>
+        <td>
           {{ toTime(game.lastMoveAt) }}
-        </div>
-        <div class="hidden sm:w-1/5 sm:inline-block mx-2">
+        </td>
+        <td>
           {{ variant(game.baseGame) }}
-        </div>
-      </router-link>
-    </div>
-    <div v-if="games.length === 0">
-      Uh oh! You aren't in any active games.
-    </div>
+        </td>
+      </tr>
+    </tbody>
+  </v-table>
+  <div v-if="games.length === 0">
+    Uh oh! You aren't in any active games.
   </div>
 </template>
 
@@ -66,10 +52,11 @@
 import Star from './Star.vue';
 
 import toTime from '../toTime';
+import Board from './Board.vue';
 
 export default {
   name: 'YourGames',
-  components: { Star },
+  components: { Star, Board },
   props: {
     games: { type: Array, default: () => [] }, profile: { type: Object, default: () => {} },
   },

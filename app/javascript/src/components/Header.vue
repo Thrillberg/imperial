@@ -1,108 +1,146 @@
 <template>
-  <header>
-    <div>
-      <div class="bg-green-200 flex justify-center sm:justify-between flex-wrap sm:flex-nowrap text-sm sm:px-8 sm:text-base">
-        <div class="flex">
-          <router-link
-            :to="{ path: '/' }"
-            class="self-center underline px-1 sm:pr-8"
-          >
-            Home
-          </router-link>
-          <router-link
-            :to="{ path: '/about' }"
-            class="self-center underline px-1 sm:pr-8"
-          >
-            About
-          </router-link>
-          <router-link
-            :to="{ path: '/rankings' }"
-            class="self-center underline px-1 sm:pr-8"
-          >
-            Rankings
-          </router-link>
-          <div
-            v-for="(error, index) in errors"
-            :key="index"
-            class="text-red-700 px-1 sm:pr-8"
-          >
-            <b>{{ error }}</b>
-          </div>
-        </div>
-        <div class="flex">
-          <span
-            v-if="profile.anonymityConfirmedAt && !profile.registered"
-            class="self-center px-1 sm:px-8"
-          >Playing as {{ profile.username }}</span>
-          <span
-            v-if="profile.email"
-            class="self-center px-1 sm:px-8"
-          >Signed in as
-            <router-link
-              :to="{ path: '/users/' + profile.id }"
-              class="underline"
-            >
-              {{ profile.username }}
-            </router-link>
-          </span>
-          <button
-            v-if="!profile.email"
-            class="rounded py-2 px-1 sm:px-6 my-1 sm:my-4 bg-green-800 text-white cursor-pointer"
-            @click="signIn"
-          >
-            Sign In
-          </button>
-          <button
-            v-if="!profile.email"
-            class="rounded py-2 px-1 sm:px-6 my-1 sm:my-4 bg-green-800 text-white cursor-pointer ml-5"
-            @click="register"
-          >
-            Register
-          </button>
-          <button
-            v-if="profile.email"
-            class="rounded py-2 px-1 sm:px-6 my-1 sm:my-4 bg-green-800 text-white cursor-pointer"
-            @click="signOut"
-          >
-            Sign Out
-          </button>
-        </div>
-      </div>
-      <div
-        v-if="!profile.anonymityConfirmedAt && !profile.registered"
-        class="bg-yellow-100 py-2 px-1 sm:px-6"
-      >
-        You are not yet registered. You may
-        <span
-          v-if="profile.username"
-          class="underline cursor-pointer"
+  <v-app-bar :elevation="5">
+    <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
+    <v-app-bar-title />
+    <div
+      v-for="(error, index) in errors"
+      :key="index"
+    >
+      <b>{{ error }}</b>
+    </div>
+    <v-menu>
+      <template #activator="{ props }">
+        <!-- User is registered and logged in -->
+        <v-btn
+          v-if="profile.email"
+          prepend-icon="mdi-account"
+          class="text-none"
+          stacked
+          v-bind="props"
+        >
+          {{ profile.username }}
+        </v-btn>
+        <!-- User is anonymous (not registered) and logged in -->
+        <v-btn
+          v-if="profile.anonymityConfirmedAt && !profile.email"
+          prepend-icon="mdi-incognito"
+          class="text-none"
+          stacked
+          v-bind="props"
+        >
+          {{ profile.username }}
+        </v-btn>
+        <!-- User is not logged in -->
+        <v-btn
+          v-if="!profile.anonymityConfirmedAt && !profile.email"
+          icon="mdi-incognito"
+          class="text-none"
+          stacked
+          v-bind="props"
+        />
+      </template>
+      <v-list>
+        <!-- User is registered and logged in -->
+        <v-list-item
+          v-if="profile.email"
+          prepend-icon="mdi-profile"
+          title="Profile"
+        >
+          <router-link :to="{ path: '/users/' + profile.id }" />
+        </v-list-item>
+        <v-list-item
+          v-if="profile.email"
+          prepend-icon="mdi-logout"
+          title="Log out"
+          @click="signOut"
+        />
+        <!-- User is anonymous (not registered) and logged in -->
+        <v-list-item
+          v-if="profile.anonymityConfirmedAt && !profile.email"
+          prepend-icon="mdi-account-plus"
+          title="Register"
+          @click="register"
+        />
+        <v-list-item
+          v-if="profile.anonymityConfirmedAt && !profile.email"
+          prepend-icon="mdi-logout"
+          title="Permanently log out"
+          @click="signOut"
+        />
+        <!-- User is not logged in -->
+        <v-list-item
+          v-if="!profile.anonymityConfirmedAt && !profile.email"
+          prepend-icon="mdi-account-plus"
+          title="Register"
+          @click="register"
+        />
+        <v-list-item
+          v-if="!profile.anonymityConfirmedAt && !profile.email"
+          prepend-icon="mdi-incognito"
           @click="setAnonymous"
         >
-          play anonymously as {{ profile.username }}
-        </span>
-        or
-        <span
-          class="underline cursor-pointer"
-          @click="register"
-        >
-          register an account
-        </span>
-        .
-      </div>
-    </div>
-  </header>
+          Play anonymously as {{ profile.username }}
+        </v-list-item>
+      </v-list>
+    </v-menu>
+  </v-app-bar>
+  <v-navigation-drawer
+    v-model="drawer"
+  >
+    <v-list>
+      <v-list-item
+        prepend-icon="mdi-home"
+        title="Home"
+        to="/"
+      />
+      <v-list-item
+        prepend-icon="mdi-information"
+        title="About"
+        to="/about"
+      />
+      <v-list-item
+        prepend-icon="mdi-trophy"
+        title="Rankings"
+        to="/rankings"
+      />
+      <v-list-item
+        title="Join on Discord!"
+        href="https://discord.gg/VnxKwuQmg8"
+      >
+        <template #prepend>
+          <discord-icon
+            class="v-icon v-icon--size-default"
+            fill="#5865F2"
+          />
+        </template>
+      </v-list-item>
+    </v-list>
+  </v-navigation-drawer>
 </template>
 
 <script>
+import { DiscordIcon } from 'vue3-simple-icons';
+
 export default {
   name: 'Header',
-  props: ['profile'],
+  components: { DiscordIcon },
+  props: {
+    profile: { type: Object, default: () => {} },
+  },
+  emits: ['anonymity_confirmed', 'signOut'],
   data: () => ({
+    drawer: false,
     email: '',
     errors: [],
+    group: null,
     password: '',
     tempName: '',
   }),
+  watch: {
+    group() {
+      this.navDrawer = false;
+    },
+  },
   methods: {
     signIn() {
       if (this.$route.path !== '/sign_in') {
@@ -117,6 +155,7 @@ export default {
         },
       });
       this.$emit('signOut');
+      this.$cookies.set('user_id');
       e.preventDefault();
     },
     register() {
@@ -135,7 +174,7 @@ export default {
       )
         .then((response) => response.json())
         .then((data) => {
-          this.$emit('anonymity_confirmed', data.anonymityConfirmedAt);
+          this.$emit('anonymity_confirmed', data.anonymity_confirmed_at);
         });
     },
   },
