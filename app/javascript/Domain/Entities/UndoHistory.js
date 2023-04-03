@@ -7,12 +7,12 @@ const InvalidUndoOperationError = class extends Error {
 };
 
 const ModificationWhileUndoingError = class extends Error {
-  constructor(operation) {
-    super(`${operation} attempts to modify the undo stack while an undo is in progress`);
+  constructor() {
+    super(`Attempting to modify the undo stack while an undo is in progress`);
 
     this.name = 'ModificationWhileUndoingError';
   }
-}
+};
 
 export default class UndoHistory {
   static get InvalidUndoOperationError() {
@@ -31,7 +31,7 @@ export default class UndoHistory {
 
   pushUndoOperation(operation) {
     if (this.#isUndoing) {
-      throw new ModificationWhileUndoingError(operation);
+      throw new ModificationWhileUndoingError();
     }
 
     if (operation instanceof Function) {
@@ -46,7 +46,7 @@ export default class UndoHistory {
   }
   addUndoCheckpoint() {
     if (this.#isUndoing) {
-      throw new ModificationWhileUndoingError(operation);
+      throw new ModificationWhileUndoingError();
     }
 
     this.#undoStack.push([]);
