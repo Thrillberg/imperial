@@ -144,11 +144,11 @@ class APIClient {
     );
   }
 
-  tick(gameId, action) {
+  tick(gameId, action, latestState = {}) {
     return this.send(
       {
         kind: 'tick',
-        data: { gameId, action: JSON.stringify(action) },
+        data: { gameId, action: JSON.stringify(action), latestState: JSON.stringify(latestState) },
       },
       'GameChannel',
     );
