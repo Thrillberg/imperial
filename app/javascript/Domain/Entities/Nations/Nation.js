@@ -3,26 +3,7 @@ import Entity from '../Entity';
 import Bond from './Bond';
 
 export default class Nation extends Entity {
-  #allBonds;
-
-  static get #bondCostsByInterest() {
-    const bondCostsByInterest = new Map();
-
-    let marginalCost = 2;
-    const marginalCostInterestIncreaseThresholds = [4, 6, 8];
-
-    for (let interest = 1; interest <= 9; interest += 1) {
-      const previousBondCost = interest <= 1 ? 0 : bondCostsByInterest.get(interest - 1);
-
-      if (marginalCostInterestIncreaseThresholds.includes(interest)) {
-        marginalCost += 1;
-      }
-
-      bondCostsByInterest.set(interest, previousBondCost + marginalCost);
-    }
-
-    return bondCostsByInterest;
-  }
+  #allBondsByInterestValue;
 
   constructor(id) {
     super(id);
@@ -33,18 +14,20 @@ export default class Nation extends Entity {
 
     this.govenor = null;
 
-    this.#allBonds = new Map();
-    const bondCostsByInterest = Nation.#bondCostsByInterest;
-    for (let interest = 1; interest <= 9; interest += 1) {
-      const bond = new Bond(this, interest, bondCostsByInterest.get(interest));
-      this.#allBonds.set(bond.interest, bond);
+    this.#allBondsByInterestValue = new Map();
+    for (const interest of Bond.allInterestValues()) {
+      const bond = new Bond(this, interest, Bond.bondCostByInterestValue(interest));
+      this.#allBondsByInterestValue.set(bond.interest, bond);
     }
-    this.unsoldBonds = new Map(this.#allBonds);
+    this.unsoldBondsByInterestValue = new Map(this.#allBondsByInterestValue);
   }
 
   * allBonds() {
-    for (const bond in this.#allBonds.values()) {
+    for (const bond in this.#allBondsByInterestValue.values()) {
       yield bond;
     }
+  }
+  bondByInterestValue(interestValue) {
+    return this.#allBondsByInterestValue.get(interestValue);
   }
 }
