@@ -23,7 +23,7 @@ export default class UndoHistory {
   }
 
   #undoStack;
-  #isUndoing;
+  #isUndoing = false;
 
   constructor() {
     this.#undoStack = [];
