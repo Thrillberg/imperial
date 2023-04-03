@@ -8,7 +8,7 @@ const InvalidUndoOperationError = class extends Error {
 
 const ModificationWhileUndoingError = class extends Error {
   constructor() {
-    super(`Attempting to modify the undo stack while an undo is in progress`);
+    super('Attempting to modify the undo stack while an undo is in progress');
 
     this.name = 'ModificationWhileUndoingError';
   }
