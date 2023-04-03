@@ -448,7 +448,7 @@ export default {
     document.getElementsByTagName('head')[0].appendChild(link);
 
     const itsMyTurnInAGame = this.games.some(
-      (game) => game.currentPlayerName === this.profile.username && game.winner === '',
+      (game) => game.currentPlayerName === this.profile.username && !game.winner,
     );
 
     if (itsMyTurnInAGame) {

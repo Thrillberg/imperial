@@ -125,10 +125,10 @@ export default {
     const itsMyTurnInThisGame = this.games.find((game) => (
       game.currentPlayerName === this.profile.username
       && game.id === this.$route.params.id
-      && game.winner === ''
+      && !game.winner
     ));
     const itsMyTurnInAGame = this.games.some(
-      (game) => game.currentPlayerName === this.profile.username && game.winner === '',
+      (game) => game.currentPlayerName === this.profile.username && !game.winner,
     );
 
     if (itsMyTurnInThisGame) {
