@@ -133,18 +133,7 @@ export default class ImperialGameCoordinator {
 
     switch (action.type) {
       case 'undo': {
-        try {
-          this.#undoHistory.undoToLastCheckpoint();
-        } catch (error) {
-          switch (error.constructor) {
-            case UndoHistory.InvalidUndoOperationError:
-              this.#logger.error(error.message, action);
-              break;
-
-            default:
-              throw error;
-          }
-        }
+        this.#undoHistory.undoToLastCheckpoint();
 
         Object.assign(this, this.oldState);
         if (this.auction?.inAuction) {

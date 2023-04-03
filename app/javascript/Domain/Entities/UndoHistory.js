@@ -39,17 +39,7 @@ export default class UndoHistory {
     const undoOperations = this.#undoStack.pop();
     while (undoOperations.length > 0) {
       const undoOperation = undoOperations.pop();
-      try {
-        undoOperation();
-      } catch (error) {
-        switch (error) {
-          case TypeError:
-            throw new InvalidUndoOperationError(undoOperation);
-
-          default:
-            throw error;
-        }
-      }
+      undoOperation();
     }
   }
 }
