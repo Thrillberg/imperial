@@ -396,8 +396,9 @@
 
 <script>
 import { Howl } from 'howler';
-import Action from '../../Domain/action';
+import { markRaw } from 'vue';
 import Imperial from '../../Domain/ImperialGameCoordinator';
+import Action from '../../Domain/action';
 import { apiClient } from '../router/index';
 import { markRaw } from 'vue'
 
@@ -420,6 +421,7 @@ import assignNations from '../assignNations';
 import getGameLog from '../getGameLog';
 
 import favicon2 from '../assets/favicon2.ico';
+import favicon3 from '../assets/favicon3.ico';
 
 import { Nation, Nation2030 } from '../../Domain/constants';
 import notification from '../assets/notification.mp3';
@@ -440,6 +442,21 @@ export default {
   },
   beforeRouteLeave(to, from, next) {
     apiClient.userStoppedObservingGame(this.profile.username, this.$route.params.id);
+
+    // Set correct favicon
+    const link = document.createElement('link');
+    link.rel = 'icon';
+    document.getElementsByTagName('head')[0].appendChild(link);
+
+    const itsMyTurnInAGame = this.games.some(
+      (game) => game.currentPlayerName === this.profile.username && !game.winner,
+    );
+
+    if (itsMyTurnInAGame) {
+      link.href = favicon3;
+    } else {
+      link.href = '/packs/favicon.ico';
+    }
     next();
   },
   props: ['profile', 'users', 'gameData', 'games', 'observers', 'env'],
@@ -815,13 +832,11 @@ export default {
       }
       const { baseGame } = this.game;
 
-      const game = new Imperial(this.board, new Logger('replay', this.gameData.id));
+      this.game = markRaw(new Imperial(this.board, new Logger('replay', this.gameData.id)));
       if (baseGame) {
-        game.baseGame = baseGame;
+        this.game.baseGame = baseGame;
       }
-      game.tickFromLog(newLog);
-      // assigning to this.game makes the object a proxy and unable to access private fields, doing it last
-      this.game = game;
+      this.game.tickFromLog(newLog);
     },
     forwardToCurrentAction() {
       while (this.poppedTurns.length > 0) {

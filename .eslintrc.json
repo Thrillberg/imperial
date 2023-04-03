@@ -6,7 +6,8 @@
     },
     "extends": [
         "plugin:vue/vue3-recommended",
-        "airbnb-base"
+        "airbnb-base",
+        "plugin:cypress/recommended"
     ],
     "overrides": [
     ],
@@ -19,6 +20,7 @@
     ],
     "rules": {
         "guard-for-in": ["off"],
+        "import/no-extraneous-dependencies": ["error", {"devDependencies": true}],
         "lines-between-class-members": ["off"],
         "max-classes-per-file": ["off"],
         "max-len": ["error", { "code": 130 }],
