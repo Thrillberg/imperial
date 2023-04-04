@@ -12,4 +12,7 @@ module.exports = defineConfig({
     },
     baseUrl: 'http://localhost:5002',
   },
+  retries: {
+    runMode: 3,
+  },
 });
