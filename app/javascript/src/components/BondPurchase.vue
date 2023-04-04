@@ -62,7 +62,7 @@ export default {
             ) {
               canBePurchased = true;
             }
-          } else {
+          } else if (action.payload.tradeInValue === 0) {
             canBePurchased = true;
           }
         }
