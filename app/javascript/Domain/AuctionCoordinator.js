@@ -9,20 +9,19 @@ export default class AuctionCoordinator {
   // Todo: inherit from ImperialGameCoordinator
 
   #gameCoordinator;
-  #auctionOrder;
-  #initialStartingPlayer;
-
   #giveNationTurn;
 
+  #isAuctionInProgress = false;
+
+  #auctionPlayerOrder;
+  #initialStartingPlayer;
+
+  #nationsToAuctionCount = 0;
   #nationsAuctioned = 0;
   #currentNationPlayerTurnsOffered = 0;
 
-  #isAuctionInProgress = true;
-
-  constructor(gameCoordinator, auctionOrder) {
+  constructor(gameCoordinator) {
     this.#gameCoordinator = gameCoordinator;
-    this.#auctionOrder = auctionOrder;
-    this.#initialStartingPlayer = this.#auctionOrder[0];
 
     this.#giveNationTurn = new GiveNationTurn(gameCoordinator.game);
   }
@@ -31,15 +30,24 @@ export default class AuctionCoordinator {
     return this.#isAuctionInProgress;
   }
 
+  beginAuction(auctionPlayerOrder, nationsToAuctionCount) {
+    this.#isAuctionInProgress = true;
+
+    this.#auctionPlayerOrder = [...auctionPlayerOrder];
+    this.#initialStartingPlayer = this.#auctionPlayerOrder[0];
+
+    this.#nationsAuctioned = nationsToAuctionCount;
+    this.#nationsAuctioned = 0;
+    this.#currentNationPlayerTurnsOffered = 0;
+
+    this.#gameCoordinator.currentPlayerName = this.#initialStartingPlayer;
+
+    this.#offerPurchaseBondActions();
+    this.#offerSkipPurchaseAction();
+  }
+
   executeAction(action) {
     switch (action.type) {
-      case 'initialize':
-        this.#gameCoordinator.currentPlayerName = this.#auctionOrder[0];
-
-        this.#offerPurchaseBondActions();
-        this.#offerSkipPurchaseAction();
-        break;
-
       case 'bondPurchase':
         this.#gameCoordinator.undoHistory.addUndoCheckpoint();
 
@@ -114,11 +122,11 @@ export default class AuctionCoordinator {
 
     do {
       this.#currentNationPlayerTurnsOffered += 1;
-      if (this.#currentNationPlayerTurnsOffered >= this.#auctionOrder.length) {
+      if (this.#currentNationPlayerTurnsOffered >= this.#auctionPlayerOrder.length) {
         this.#auctionNextNation();
 
         if (this.#isAuctionInProgress === false) {
-          this.#prepareStartGame();
+          this.#endAuction();
           return;
         }
       }
@@ -137,7 +145,7 @@ export default class AuctionCoordinator {
     this.#currentNationPlayerTurnsOffered = 0;
     this.#nationsAuctioned += 1;
 
-    if (this.#nationsAuctioned >= this.#gameCoordinator.game.nationCount) {
+    if (this.#nationsAuctioned >= this.#nationsToAuctionCount) {
       this.#nationsAuctioned = 0;
       this.#isAuctionInProgress = this.#giveNationTurn.atLeastOneNationHasGovernor === false;
     }
@@ -149,29 +157,16 @@ export default class AuctionCoordinator {
     }
   }
   #giveTurnToNextPlayer() {
-    this.#auctionOrder.push(this.#auctionOrder.shift());
-    this.#gameCoordinator.currentPlayerName = this.#auctionOrder[0];
+    this.#auctionPlayerOrder.push(this.#auctionPlayerOrder.shift());
+    this.#gameCoordinator.currentPlayerName = this.#auctionPlayerOrder[0];
   }
 
-  #prepareStartGame() {
-    // Todo: this method don't belong here
+  #endAuction() {
     this.#giveNationTurn.giveTurnToNextGovernedNation(this.#gameCoordinator.undoHistory);
-      this.#gameCoordinator.currentPlayerName = this.#gameCoordinator.game.currentNation.governor.name;
+    this.#gameCoordinator.currentPlayerName = this.#gameCoordinator.game.currentNation.governor.name;
 
     for (const availableAction of this.#gameCoordinator.availableRondelActions(this.#gameCoordinator.currentNation)) {
       this.#gameCoordinator.availableActions.add(availableAction);
-    }
-
-    if (this.#gameCoordinator.variant !== 'withoutInvestorCard') {
-      const firstNationGovernor = this.#gameCoordinator.game.firstNation.governor;
-      if (firstNationGovernor) {
-        let playerIndexAfterFirstNationGovernor = this.#auctionOrder.indexOf(firstNationGovernor.name) + 1;
-        playerIndexAfterFirstNationGovernor %= this.#auctionOrder.length;
-
-        this.#gameCoordinator.investorCardHolder = this.#auctionOrder[playerIndexAfterFirstNationGovernor];
-      } else {
-        this.#gameCoordinator.investorCardHolder = this.#initialStartingPlayer;
-      }
     }
   }
 }

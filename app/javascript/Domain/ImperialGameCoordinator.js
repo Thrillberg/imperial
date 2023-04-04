@@ -147,6 +147,9 @@ export default class ImperialGameCoordinator {
       case 'bondPurchase': {
         if (this.auction?.isAuctionInProgress) {
           this.auction.executeAction(action);
+          if (this.auction.isAuctionInProgress === false) {
+            this.#shiftInvestorCard();
+          }
         } else {
           this.bondPurchase(action);
         }
@@ -155,6 +158,9 @@ export default class ImperialGameCoordinator {
       case 'skipBondPurchase': {
         if (this.auction?.isAuctionInProgress) {
           this.auction.executeAction(action);
+          if (this.auction.isAuctionInProgress === false) {
+            this.#shiftInvestorCard();
+          }
         } else {
           this.postBondPurchase();
         }
@@ -372,13 +378,23 @@ export default class ImperialGameCoordinator {
         this.availableActions.add(availableAction);
       }
     } else {
-      const playerOrder = action.payload.players.map((p) => p.id);
-      this.auction = new AuctionCoordinator(this, playerOrder);
-      for (const action of this.log) {
-        // Only the initialize action is pushed when this is called
-        // Will refactor later
-        this.auction.executeAction(action);
+      this.auction = new AuctionCoordinator(this);
+      this.auction.beginAuction(this.order, this.game.nationCount);
+    }
+  }
+
+  #shiftInvestorCard() {
+    if (this.#gameCoordinator.variant !== 'withoutInvestorCard') {
+      let nextInvestorCardHolderIndex = 0;
+
+      if (this.investorCardHolder || this.#game.firstNation.governor) {
+        const lastInvestorCardHolder = this.investorCardHolder ? this.investorCardHolder : this.#game.firstNation.governor.name;
+        const lastInvestorCardHolderIndex = this.order.indexOf(lastInvestorCardHolder);
+
+        nextInvestorCardHolderIndex = (lastInvestorCardHolderIndex + 1) % this.order.length;
       }
+
+      this.investorCardHolder = this.order[nextInvestorCardHolderIndex];
     }
   }
 
