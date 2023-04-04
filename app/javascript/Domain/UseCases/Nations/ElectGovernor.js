@@ -10,7 +10,7 @@ export default class ElectGovernor {
 
     let newGovernor = nation.governor;
     let newGovernorInvestedAmount = newGovernor ? bondBearers.get(newGovernor) : 0;
-    for (let [bearer, totalBondCost] of bondBearers) {
+    for (const [bearer, totalBondCost] of bondBearers) {
       if (totalBondCost > newGovernorInvestedAmount) {
         newGovernor = bearer;
         newGovernorInvestedAmount = totalBondCost;
