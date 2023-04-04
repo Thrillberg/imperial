@@ -1,5 +1,13 @@
 <template>
-  <span class="text-h5">Your Games</span>
+  <div class="text-h5">
+    Your Games
+  </div>
+  <v-btn
+    href="/games/new"
+    class="bg-primary-darken-1"
+  >
+    New Game
+  </v-btn>
   <v-table
     density="compact"
     hover

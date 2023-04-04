@@ -1,5 +1,8 @@
 <template>
-  <v-app-bar :elevation="5">
+  <v-app-bar
+    :elevation="5"
+    class="bg-primary"
+  >
     <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
     <v-app-bar-title />
     <div
@@ -43,11 +46,10 @@
         <!-- User is registered and logged in -->
         <v-list-item
           v-if="profile.email"
-          prepend-icon="mdi-profile"
+          prepend-icon="mdi-account"
           title="Profile"
-        >
-          <router-link :to="{ path: '/users/' + profile.id }" />
-        </v-list-item>
+          :to="'/users/' + profile.id"
+        />
         <v-list-item
           v-if="profile.email"
           prepend-icon="mdi-logout"
@@ -70,6 +72,12 @@
         <!-- User is not logged in -->
         <v-list-item
           v-if="!profile.anonymityConfirmedAt && !profile.email"
+          prepend-icon="mdi-account"
+          title="Log in"
+          @click="signIn"
+        />
+        <v-list-item
+          v-if="!profile.anonymityConfirmedAt && !profile.email"
           prepend-icon="mdi-account-plus"
           title="Register"
           @click="register"
@@ -89,20 +97,35 @@
   >
     <v-list>
       <v-list-item
-        prepend-icon="mdi-home"
         title="Home"
         to="/"
-      />
+      >
+        <template #prepend>
+          <v-icon color="primary-darken-1">
+            mdi-home
+          </v-icon>
+        </template>
+      </v-list-item>
       <v-list-item
-        prepend-icon="mdi-information"
         title="About"
         to="/about"
-      />
+      >
+        <template #prepend>
+          <v-icon color="primary-darken-1">
+            mdi-information
+          </v-icon>
+        </template>
+      </v-list-item>
       <v-list-item
-        prepend-icon="mdi-trophy"
         title="Rankings"
         to="/rankings"
-      />
+      >
+        <template #prepend>
+          <v-icon color="primary-darken-1">
+            mdi-trophy
+          </v-icon>
+        </template>
+      </v-list-item>
       <v-list-item
         title="Join on Discord!"
         href="https://discord.gg/VnxKwuQmg8"

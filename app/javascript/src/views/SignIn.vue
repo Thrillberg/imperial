@@ -1,69 +1,89 @@
 <template>
-  <div>
-    <div v-for="(error, index) in errors" v-bind:key="index">
+  <v-sheet
+    width="300"
+    class="mx-auto"
+  >
+    <div
+      v-for="(error, index) in errors"
+      :key="index"
+    >
       {{ error }}
     </div>
-    <form class="flex flex-col mx-auto rounded bg-green-200 sm:max-w-4xl mt-10 sm:p-20" @submit="signIn">
-      <input
-        type="text"
-        placeholder="email"
-        v-model="email"
-        class="rounded p-5 border border-green-800 my-2 sm:w-1/2 self-center"
-      />
-      <input
-        type="password"
-        placeholder="password"
-        v-model="password"
-        class="rounded p-5 border border-green-800 my-2 sm:w-1/2 self-center"
-      />
-      <input
-        type="submit"
-        value="Sign In"
-        class="rounded p-5 bg-green-800 text-white cursor-pointer my-2 text-2xl sm:w-1/2 self-center"
-      />
-      <router-link to="/forgot_password" class="self-center">
-        <p class="underline">Forgot your password?</p>
-      </router-link>
-    </form>
-  </div>
+    <v-form @submit="signIn">
+      <v-container>
+        <v-row>
+          <v-text-field
+            v-model="email"
+            label="Email"
+            required
+          />
+        </v-row>
+        <v-row>
+          <v-text-field
+            v-model="password"
+            label="Password"
+            required
+          />
+        </v-row>
+        <v-row>
+          <v-btn
+            type="submit"
+            block
+          >
+            Sign In
+          </v-btn>
+        </v-row>
+        <v-row>
+          <v-btn
+            to="/forgot_password"
+            class="mt-2"
+            block
+          >
+            Forgot your password?
+          </v-btn>
+        </v-row>
+      </v-container>
+    </v-form>
+  </v-sheet>
 </template>
 
 <script>
 export default {
-  name: "SignIn",
-  props: ["profile"],
-  data: function () {
+  name: 'SignIn',
+  props: { profile: { type: Object, default: () => {} } },
+  emits: ['signedIn'],
+  data() {
     return {
-      email: "",
+      email: '',
       errors: [],
-      password: ""
-    }
+      password: '',
+    };
   },
   created() {
-    document.title = "Sign In - Imperial";
+    document.title = 'Sign In - Imperial';
   },
   methods: {
-    signIn: function(e) {
-      fetch("/accounts/sign_in", {
-        method: "POST",
+    signIn(e) {
+      fetch('/accounts/sign_in', {
+        method: 'POST',
         headers: {
-          "X-CSRF-Token": this.$cookies.get("CSRF-TOKEN"),
-          "Content-Type": "application/json"
+          'X-CSRF-Token': this.$cookies.get('CSRF-TOKEN'),
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email: this.email, password: this.password })
+        body: JSON.stringify({ email: this.email, password: this.password }),
       })
-        .then(response => response.json())
-        .then(data => {
+        .then((response) => response.json())
+        .then((data) => {
           if (data.email) {
-            this.$emit("signedIn", { username: data.username, email: data.email });
+            this.$emit('signedIn', { username: data.username, email: data.email });
             this.errors = [];
-            this.$router.push("/");
+            this.$router.push('/');
           } else {
             this.errors = data;
           }
-        })
+        });
       e.preventDefault();
-    }
-  }
-}
+    },
+  },
+};
 </script>

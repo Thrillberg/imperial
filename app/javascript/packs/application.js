@@ -25,6 +25,14 @@ import 'vuetify/styles';
 import App from '../src/App.vue';
 import router from '../src/router';
 
+const lightTheme = {
+  dark: false,
+  colors: {
+    primary: '#A7F3D0',
+    'primary-darken-1': '#065F46',
+  },
+};
+
 const vuetify = createVuetify({
   directives,
   icons: {
@@ -32,6 +40,12 @@ const vuetify = createVuetify({
     aliases,
     sets: {
       mdi,
+    },
+  },
+  theme: {
+    defaultTheme: 'lightTheme',
+    themes: {
+      lightTheme,
     },
   },
 });
