@@ -4,7 +4,7 @@ const InsufficientTreasuryError = class extends Error {
 
     this.name = 'InsufficientTreasuryError';
   }
-}
+};
 
 export default class AdjustTreasury {
   static get InsufficientTreasuryError() {
