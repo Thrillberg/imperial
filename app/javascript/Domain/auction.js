@@ -11,20 +11,20 @@ export default class Auction {
     return auction;
   }
 
-  tick(action, game, auctionSetup) {
+  tick(action, gameCoordinator, auctionSetup) {
     if (action.type === 'initialize') {
-      this.initialize(action, game, auctionSetup);
+      this.initialize(action, gameCoordinator, auctionSetup);
       return;
     }
-    game.previousPlayerName = game.currentPlayerName;
+    gameCoordinator.previousPlayerName = gameCoordinator.currentPlayerName;
 
     switch (action.type) {
       case 'bondPurchase': {
-        this.bondPurchase(action, game);
+        this.bondPurchase(action, gameCoordinator);
         return;
       }
       case 'skipBondPurchase': {
-        this.skipBondPurchase(action, game);
+        this.skipBondPurchase(action, gameCoordinator);
         break;
       }
       default: {
@@ -33,7 +33,7 @@ export default class Auction {
     }
   }
 
-  initialize(action, game, auctionSetup) {
+  initialize(action, gameCoordinator, auctionSetup) {
     const s = auctionSetup({
       players: action.payload.players,
       provinceNames: Array.from(board.graph.keys()),
@@ -42,36 +42,36 @@ export default class Auction {
     this.order = s.order;
     this.firstPlayerIndex = 0;
     if (action.payload.baseGame === 'imperial' || !action.payload.baseGame) {
-      game.currentNation = Nation.AH;
+      gameCoordinator.currentNation = Nation.AH;
     } else if (action.payload.baseGame === 'imperial2030') {
-      game.currentNation = Nation2030.RU;
+      gameCoordinator.currentNation = Nation2030.RU;
     } else if (action.payload.baseGame === 'imperialAsia') {
-      game.currentNation = NationAsia.CN;
+      gameCoordinator.currentNation = NationAsia.CN;
     }
-    game.availableActions = Auction.availableBondPurchases({
+    gameCoordinator.availableActions = Auction.availableBondPurchases({
       availableBonds: s.availableBonds,
       players: s.players,
-      currentNation: game.currentNation,
+      currentNation: gameCoordinator.currentNation,
       currentPlayerName: this.order[0],
       previousPlayerName: this.order[0],
     });
-    game.availableActions.add(Action.skipBondPurchase({
+    gameCoordinator.availableActions.add(Action.skipBondPurchase({
       player: this.order[0],
-      nation: game.currentNation,
+      nation: gameCoordinator.currentNation,
     }));
   }
 
-  static availableBondPurchases(game) {
+  static availableBondPurchases(gameCoordinator) {
     const out = new Set();
-    const bonds = [...game.availableBonds].filter((bond) => (
-      bond.cost <= game.players[game.currentPlayerName].cash
-        && bond.nation === game.currentNation
+    const bonds = [...gameCoordinator.availableBonds].filter((bond) => (
+      bond.cost <= gameCoordinator.players[gameCoordinator.currentPlayerName].cash
+        && bond.nation === gameCoordinator.currentNation
     ));
     bonds.forEach((bond) => {
       out.add(
         Action.bondPurchase({
-          nation: game.currentNation,
-          player: game.currentPlayerName,
+          nation: gameCoordinator.currentNation,
+          player: gameCoordinator.currentPlayerName,
           cost: bond.cost,
           tradeInValue: 0,
         }),
@@ -80,7 +80,7 @@ export default class Auction {
     return out;
   }
 
-  bondPurchase(action, game) {
+  bondPurchase(action, gameCoordinator) {
     const uncost = {
       2: 1,
       4: 2,
@@ -93,35 +93,35 @@ export default class Auction {
       30: 9,
     };
 
-    game.nations.get(action.payload.nation).treasury += action.payload.cost;
-    game.players[action.payload.player].cash -= action.payload.cost;
+    gameCoordinator.nations.get(action.payload.nation).treasury += action.payload.cost;
+    gameCoordinator.players[action.payload.player].cash -= action.payload.cost;
 
     const newBond = Bond(action.payload.nation, uncost[action.payload.cost]);
-    if (!game.availableBonds.has(newBond)) {
+    if (!gameCoordinator.availableBonds.has(newBond)) {
       throw new Error(`${newBond} not available`);
     }
-    game.players[action.payload.player].bonds.add(newBond);
-    game.availableBonds.delete(newBond);
+    gameCoordinator.players[action.payload.player].bonds.add(newBond);
+    gameCoordinator.availableBonds.delete(newBond);
 
-    if (game.nations.get(action.payload.nation).controller === null) {
-      game.nations.get(action.payload.nation).controller = action.payload.player;
+    if (gameCoordinator.nations.get(action.payload.nation).controller === null) {
+      gameCoordinator.nations.get(action.payload.nation).controller = action.payload.player;
     }
 
     if (
       Auction.totalInvestmentInNation(
         action.payload.player,
         action.payload.nation,
-        game,
+        gameCoordinator,
       )
       > Auction.totalInvestmentInNation(
-        game.nations.get(action.payload.nation).controller,
+        gameCoordinator.nations.get(action.payload.nation).controller,
         action.payload.nation,
-        game,
+        gameCoordinator,
       )
     ) {
-      game.nations.get(action.payload.nation).controller = action.payload.player;
+      gameCoordinator.nations.get(action.payload.nation).controller = action.payload.player;
     }
-    this.setAvailableActions(action, game);
+    this.setAvailableActions(action, gameCoordinator);
   }
 
   skipBondPurchase(action, game) {
