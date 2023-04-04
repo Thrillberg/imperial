@@ -23,6 +23,8 @@ export default class AbstractImperialGame extends Entity {
 
     this.#nations = nations;
     this.#nationOrder = nationOrder;
+
+    this.currentNation = this.firstNation;
   }
 
   get rondel() {
@@ -42,6 +44,17 @@ export default class AbstractImperialGame extends Entity {
 
   nationIdToEntity(nationId) {
     return this.#nations.get(nationId);
+  }
+  * allNations() {
+    for (const nation of this.#nations.values()) {
+      yield nation;
+    }
+  }
+  get firstNation() {
+    return this.#nationOrder[0];
+  }
+  get lastNation() {
+    return this.#nationOrder[this.#nationOrder.length - 1];
   }
   nationTurnAfter(nation) {
     let nationIndex = this.#nationOrder.indexOf(nation);
