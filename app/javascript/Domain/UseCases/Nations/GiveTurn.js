@@ -7,7 +7,7 @@ export default class GiveTurn {
 
     get #atLeastOneNationHasGovernor() {
         for (const nation of this.#game.allNations()) {
-            if (nation.govenor) {
+            if (nation.governor) {
               return true;
             }
         }
@@ -23,7 +23,7 @@ export default class GiveTurn {
         let nextGovernedNation = this.#game.currentNation;
         do {
             nextGovernedNation = this.#game.nationTurnAfter(nextGovernedNation);
-        } while (nextGovernedNation.govenor === null);
+        } while (nextGovernedNation.governor === null);
 
         this.forceGiveTurnTo(nextGovernedNation, undoHistory);
     }

@@ -1,6 +1,7 @@
 import AbstractImperialGame from './AbstractImperialGame';
 
 import Nation from './Nations/Nation';
+import { Nation2030 as NationEnum } from '../constants';
 
 export default class Imperial2030Game extends AbstractImperialGame {
   static get classId() {
@@ -8,22 +9,22 @@ export default class Imperial2030Game extends AbstractImperialGame {
   }
 
   static get RussiaId() {
-    return 'RU';
+    return NationEnum.RU;
   }
   static get ChinaId() {
-    return 'CN';
+    return NationEnum.CN;
   }
   static get IndiaId() {
-    return 'IN';
+    return NationEnum.IN;
   }
   static get BrazilId() {
-    return 'BR';
+    return NationEnum.BR;
   }
   static get UnitedStatesId() {
-    return 'US';
+    return NationEnum.US;
   }
   static get EuropeanUnionId() {
-    return 'EU';
+    return NationEnum.EU;
   }
 
   constructor(id) {

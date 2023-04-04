@@ -5,7 +5,7 @@ import ImperialEuropeGame from './Entities/ImperialEuropeGame';
 import { translateProvinceModel } from './Entities/Board/Province';
 
 import Action from './action';
-import Auction from './auction';
+import AuctionCoordinator from './AuctionCoordinator';
 import auction2030Setup from './auction2030Setup';
 import auctionAsiaSetup from './auctionAsiaSetup';
 import auctionStandardSetup from './auctionSetup';
@@ -17,7 +17,6 @@ import {
   Nation2030,
   NationAsia,
 } from './constants';
-import setOldAuctionState from './setOldAuctionState';
 import setOldState from './setOldState';
 import standard2030Setup from './standard2030Setup';
 import standardAsiaSetup from './standardAsiaSetup';
@@ -84,6 +83,10 @@ export default class ImperialGameCoordinator {
     return this.#game;
   }
 
+  get undoHistory() {
+    return this.#undoHistory;
+  }
+
   tickFromLog(log) {
     log.forEach((entry) => this.tick(entry));
   }
@@ -116,6 +119,7 @@ export default class ImperialGameCoordinator {
       this.#logger.error(
         'Invalid action error',
         {
+          previousAction: this.log[this.log.length - 1],
           action,
           expectedAvailableActions: Object.assign([...this.availableActions]),
         },
@@ -138,22 +142,19 @@ export default class ImperialGameCoordinator {
         this.#undoHistory.undoToLastCheckpoint();
 
         Object.assign(this, this.oldState);
-        if (this.auction?.inAuction) {
-          Object.assign(this.auction, this.oldAuctionState);
-        }
         return;
       }
       case 'bondPurchase': {
-        if (this.auction?.inAuction) {
-          this.auction.tick(action, this);
+        if (this.auction?.isAuctionInProgress) {
+          this.auction.executeAction(action);
         } else {
           this.bondPurchase(action);
         }
         return;
       }
       case 'skipBondPurchase': {
-        if (this.auction?.inAuction) {
-          this.auction.tick(action, this);
+        if (this.auction?.isAuctionInProgress) {
+          this.auction.executeAction(action);
         } else {
           this.postBondPurchase();
         }
@@ -184,7 +185,7 @@ export default class ImperialGameCoordinator {
         this.passingThroughInvestor = false;
 
         this.nations.get(this.currentNation).rondelPosition = 'investor';
-        const nationEntity = this.#game.nationIdToEntity(this.currentNation.value);
+        const nationEntity = this.#game.nationIdToEntity(this.currentNation);
         MoveToRondelSlot.forceMoveNation(nationEntity, this.#game.rondel.investorSlot, this.#undoHistory);
 
         const investorAction = Action.rondel({
@@ -293,16 +294,11 @@ export default class ImperialGameCoordinator {
 
       const oldState = setOldState(this);
       this.oldState = { ...this, ...oldState };
-      if (this.auction?.inAuction) {
-        const oldAuctionState = setOldAuctionState(this.auction);
-        this.oldAuctionState = { ...this.auction, ...oldAuctionState };
-      }
     }
   }
 
   initialize(action) {
     this.baseGame = action.payload.baseGame || ImperialEuropeGame.classId;
-
     switch (this.baseGame) {
       case ImperialEuropeGame.classId:
         this.#game = new ImperialEuropeGame();
@@ -319,17 +315,17 @@ export default class ImperialGameCoordinator {
       default:
         this.#logger.error(
           'Undefined gamemode error',
-          {
-            gameMode: this.baseGame,
-          },
+          { gameMode: this.baseGame, },
         );
 
         this.#game = null;
-        break;
+        return;
     }
+
     this.#moveToRondelSlot = new MoveToRondelSlot(this.#game);
     this.#buildFactoryChargeCosts = new FactorySlotBuildChargeCosts(this.#game.factoryBuildCosts);
     this.#buildFactoryPermissions = new FactorySlotBuildPermissions(this.#game.factoryBuildCosts);
+
     this.variant = action.payload.variant;
 
     let setup;
@@ -349,7 +345,6 @@ export default class ImperialGameCoordinator {
       } else if (this.baseGame === 'imperialAsia') {
         setup = auctionAsiaSetup;
       }
-      this.auction = Auction.fromLog(this.log, this, setup);
     }
 
     if (setup) {
@@ -368,13 +363,22 @@ export default class ImperialGameCoordinator {
       this.units = this.initializeUnits(s.units);
       this.currentPlayerName = this.getStartingPlayer();
       this.previousPlayerName = this.currentPlayerName;
-      if (this.variant === 'standard') {
-        for (const availableAction of this.availableRondelActions(this.currentNation)) {
-          this.availableActions.add(availableAction);
-        }
-      }
 
       this.soloMode = action.payload.soloMode;
+    }
+
+    if (this.variant === 'standard') {
+      for (const availableAction of this.availableRondelActions(this.currentNation)) {
+        this.availableActions.add(availableAction);
+      }
+    } else {
+      const playerOrder = action.payload.players.map((p) => p.id);
+      this.auction = new AuctionCoordinator(this, playerOrder);
+      for (const action of this.log) {
+        // Only the initialize action is pushed when this is called
+        // Will refactor later
+        this.auction.executeAction(action);
+      }
     }
   }
 
@@ -1282,7 +1286,7 @@ export default class ImperialGameCoordinator {
   advanceOnRondel(action) {
     this.currentNation = action.payload.nation;
     const currentNation = this.nations.get(this.currentNation);
-    const currentNationEntity = this.#game.nationIdToEntity(this.currentNation.value);
+    const currentNationEntity = this.#game.nationIdToEntity(this.currentNation);
     const currentPlayer = this.players[this.currentPlayerName];
 
     const fromRondelSlot = currentNationEntity.residingRondelSlot;
@@ -1378,13 +1382,13 @@ export default class ImperialGameCoordinator {
         return;
       }
       case 'taxation': {
-        const nationName = action.payload.nation;
-        const nation = this.nations.get(nationName);
-        const nationEntity = this.#game.nationIdToEntity(nationName.value);
+        const nationId = action.payload.nation;
+        const nation = this.nations.get(nationId);
+        const nationEntity = this.#game.nationIdToEntity(nationId);
 
-        const taxes = this.taxRevenueOf(nationName);
-        const nationProfit = this.nationTaxationProfit(nationName, taxes);
-        const bonus = this.playerBonusAfterUnitMaintenanceCosts(nationName, taxes);
+        const taxes = this.taxRevenueOf(nationId);
+        const nationProfit = this.nationTaxationProfit(nationId, taxes);
+        const bonus = this.playerBonusAfterUnitMaintenanceCosts(nationId, taxes);
         const powerPoints = this.powerPointsGainedFrom(taxes);
 
         // 1. Tax revenue
@@ -1394,7 +1398,7 @@ export default class ImperialGameCoordinator {
 
         this.annotatedLog.push(
           Action.nationGainsTreasury({
-            nation: nationName,
+            nation: nationId,
             amount: nationProfit,
           }),
         );
@@ -1422,7 +1426,7 @@ export default class ImperialGameCoordinator {
 
         this.annotatedLog.push(
           Action.nationGainsPowerPoints({
-            nation: nationName,
+            nation: nationId,
             powerPoints,
           }),
         );
@@ -1952,8 +1956,8 @@ export default class ImperialGameCoordinator {
     );
   }
 
-  availableRondelActions(nationName) {
-    const nation = this.#game.nationIdToEntity(nationName.value);
+  availableRondelActions(nationId) {
+    const nation = this.#game.nationIdToEntity(nationId);
     const { availableSlots } = this.#moveToRondelSlot;
 
     const availableRondelSlots = new Set();
@@ -1962,7 +1966,7 @@ export default class ImperialGameCoordinator {
     for (const freeRondelSlot of nextAvailableFreeRondelSlots) {
       availableRondelSlots.add(
         Action.rondel({
-          nation: nationName,
+          nation: nationId,
           cost: 0,
           slot: freeRondelSlot.id,
         }),
@@ -1980,7 +1984,7 @@ export default class ImperialGameCoordinator {
           // Only allow rondel slots the player can afford.
           availableRondelSlots.add(
             Action.rondel({
-              nation: nationName,
+              nation: nationId,
               cost,
               slot: paidRondelSlot.id,
             }),
@@ -2162,7 +2166,7 @@ export default class ImperialGameCoordinator {
     Object.keys(this.players).forEach((player) => {
       let score = 0;
       for (const bond of this.players[player].bonds) {
-        const { powerPoints } = this.nations.get(bond.nation);
+        const { powerPoints } = bond.nation;
         score += bond.number * Math.floor(powerPoints / 5);
       }
       this.players[player].rawScore = score;
@@ -2428,26 +2432,35 @@ export default class ImperialGameCoordinator {
     if (action1.type !== action2.type) return false;
 
     if (action1.payload && action2.payload) {
-      if (action1.type === 'import' && action2.type === 'import') {
-        return ImperialGameCoordinator.arraysAreEqual(
-          action1.payload.placements,
-          action2.payload.placements,
-        );
-      }
+      switch (action1.type) {
+        case 'import':
+          return ImperialGameCoordinator.arraysAreEqual(
+            action1.payload.placements,
+            action2.payload.placements,
+          );
 
-      if (action1.type === 'buildFactory' && action2.type === 'buildFactory') {
-        // accept migrations from older designs, which previously did not allow for funding nations directly
-        return action1.payload.province === action2.payload.province;
-      }
+        case 'buildFactory':
+          // accept migrations from older designs, which previously did not allow for funding nations directly
+          return action1.payload.province === action2.payload.province;
 
-      return Object.keys(action1.payload).every((key) => (
-        // We make an exception for "tradeInValue" because that key was added after
-        // games have been running in production for awhile.
-        // We didn't want to invalidate historical games!
-        action1.payload[key] === action2.payload[key] || key === 'tradeInValue'
-      ));
+        case 'bondPurchase':
+          return Object.keys(action1.payload).every(
+            (key) => (
+              // We make an exception for "tradeInValue" because that key was added after
+              // games have been running in production for awhile.
+              // We didn't want to invalidate historical games!
+              action1.payload[key] === action2.payload[key] || key === 'tradeInValue'
+            ));
+
+        default:
+          return Object.keys(action1.payload).every(
+            (key) => (
+              action1.payload[key] === action2.payload[key]
+            ));
+        }
     }
-    return true;
+
+    return false;
   }
 
   static arraysAreEqual(array1, array2) {

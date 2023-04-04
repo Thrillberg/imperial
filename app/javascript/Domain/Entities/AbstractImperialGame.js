@@ -50,6 +50,9 @@ export default class AbstractImperialGame extends Entity {
       yield nation;
     }
   }
+  get nationCount() {
+    return this.#nations.size;
+  }
   get firstNation() {
     return this.#nationOrder[0];
   }
