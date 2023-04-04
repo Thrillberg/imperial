@@ -12,7 +12,7 @@ export default class Nation extends Entity {
     this.powerPoints = 0;
     this.treasury = 0;
 
-    this.govenor = null;
+    this.governor = null;
 
     this.#allBondsByInterestValue = new Map();
     for (const interest of Bond.allInterestValues()) {
@@ -29,5 +29,12 @@ export default class Nation extends Entity {
   }
   bondByInterestValue(interestValue) {
     return this.#allBondsByInterestValue.get(interestValue);
+  }
+  * allSoldBonds() {
+    for (const interest of Bond.allInterestValues()) {
+      if (this.unsoldBondsByInterestValue.has(interest) === false) {
+        yield this.bondByInterestValue(interest);
+      }
+    }
   }
 }

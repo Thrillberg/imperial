@@ -1,12 +1,28 @@
+const InsufficientCashError = class extends Error {
+  constructor(investor, value) {
+    super(`${investor} does cannot afford ${Math.abs(value)}`);
+
+    this.name = 'InsufficientCashError';
+  }
+};
+
 export default class AdjustCash {
-  static changeBy(player, amount, undoHistory) {
+  static get InsufficientCashError() {
+    return InsufficientCashError;
+  }
+
+  static changeBy(investor, amount, undoHistory) {
+    if (investor.cash + amount < 0) {
+      throw new InsufficientCashError(investor, amount);
+    }
+
     if (undoHistory) {
-      const originalAmount = player.cash;
-      undoHistory.pushUndoOperation(() => { player.cash = originalAmount; });
+      const originalAmount = investor.cash;
+      undoHistory.pushUndoOperation(() => { investor.cash = originalAmount; });
     }
 
     if (amount) {
-      player.cash = Math.max(0, player.cash + amount);
+      investor.cash = Math.max(0, investor.cash + amount);
     }
   }
 }

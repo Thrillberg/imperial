@@ -1,8 +1,12 @@
 export default class AssignBond {
-  static Assign(bond, newBearer, undoHistory) {
+  static assign(bond, newBearer, undoHistory) {
+    if (bond.bearer === newBearer) {
+      return;
+    }
+
     if (undoHistory) {
       const originalBearer = bond.bearer;
-      undoHistory.pushUndoOperation(() => AssignBond.Assign(bond, originalBearer));
+      undoHistory.pushUndoOperation(() => AssignBond.assign(bond, originalBearer));
     }
 
     if (bond.bearer) {
@@ -11,11 +15,14 @@ export default class AssignBond {
 
     if (newBearer) {
       newBearer.bonds.add(bond);
+      bond.nation.unsoldBondsByInterestValue.delete(bond.interest);
+    } else {
+      bond.nation.unsoldBondsByInterestValue.set(bond.interest, bond);
     }
 
     bond.bearer = newBearer;
   }
-  static Unassign(bond, undoHistory) {
-    AssignBond(bond, null, undoHistory);
+  static unassign(bond, undoHistory) {
+    AssignBond.assign(bond, null, undoHistory);
   }
 }
