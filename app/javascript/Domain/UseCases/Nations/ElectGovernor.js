@@ -2,12 +2,10 @@ export default class ElectGovernor {
   static electMostInvestedBondBearer(nation, undoHistory) {
     const bondBearers = new Map();
     for (const bond in nation.allSoldBonds()) {
-      if (bondBearers.has(bond.bearer) === false) {
-        bondBearers.set(bond.bearer, 0);
-      }
+      const alreadyBorneCost = bondBearers.has(bond.bearer) ? bondBearers.get(bond.bearer) : 0;
+      const newlyBorneCost = alreadyBorneCost + bond.cost;
 
-      const bearedCost = bondBearers.get(bond.bearer) + bond.cost;
-      bondBearers.set(bond.bearer, bearedCost);
+      bondBearers.set(bond.bearer, newlyBorneCost);
     }
 
     let newGovernor = nation.governor;
