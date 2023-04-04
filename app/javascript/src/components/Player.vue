@@ -47,7 +47,7 @@
       <div class="flex flex-wrap justify-center">
         <Bond
           v-for="bond in sortedBonds(player.bonds)"
-          :key="bond.nation.id + bond.cost"
+          :key="bond.nation.value + bond.cost"
           :bond="bond"
           :toggle-trade-in="toggleTradeIn"
           :is-being-applied-to-trade-in="isBeingAppliedToTradeIn(bond)"

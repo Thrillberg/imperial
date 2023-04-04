@@ -22,9 +22,9 @@
         <div class="my-5">
           <p class="text-2xl"><b>{{ index + 1 }}. {{ game.players[player].name }}</b></p>
           <div class="flex flex-row justify-center">
-            <div v-for="bond of game.players[player].bonds" :key="bond.nation.id+bond.number">
+            <div v-for="bond of game.players[player].bonds" :key="bond.nation+bond.number">
               <Bond :bond="bond" />
-              <div>{{ bond.number * Math.floor(bond.nation.powerPoints / 5) }} VP</div>
+              <div>{{ bond.number * Math.floor(game.nations.get(bond.nation).powerPoints / 5) }} VP</div>
             </div>
           </div>
           <p class="text-2xl">{{ game.players[player].rawScore }} raw score + {{ game.players[player].cash }} cash = <b>{{ game.players[player].rawScore + game.players[player].cash }}</b> total points</p>
