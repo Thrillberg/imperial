@@ -1,30 +1,29 @@
 <template>
   <v-container>
-    <div class="mb-5">
-      <b class="text-xl">Rankings</b>
-    </div>
-    <div
-      v-for="([name, user], index) of users"
-      :key="user + index"
-      :name="user"
-    >
-      {{ index + 1 }}.
-      <router-link
-        :to="{ path: '/users/' + user.id }"
-        class="underline"
+    <v-card>
+      <v-card-title>Rankings</v-card-title>
+      <div
+        v-for="([name, user], index) of users"
+        :key="user + index"
+        :name="user"
       >
-        {{ name }}
-      </router-link>
-      ({{ Math.floor(user.rating) }})
-    </div>
-    <p class="mt-5">
-      These rankings are determined with the help of <a
-        href="https://github.com/philihp/openskill.js"
-        class="underline"
-      >openskill</a>.
-      The numbers in parentheses above reflect the player's ordinal rating, where a higher number indicates a stronger player.
-    </p>
-    <p>Only the top 10 players who have completed at least one multi-player game are included in the rankings.</p>
+        {{ index + 1 }}.
+        <router-link :to="{ path: '/users/' + user.id }">
+          {{ name }}
+        </router-link>
+        ({{ Math.floor(user.rating) }})
+      </div>
+      <v-card-text>
+        <p>
+          These rankings are determined with the help of <a
+            href="https://github.com/philihp/openskill.js"
+            class="underline"
+          >openskill</a>.
+          The numbers in parentheses above reflect the player's ordinal rating, where a higher number indicates a stronger player.
+        </p>
+        <p>Only the top 10 players who have completed at least one multi-player game are included in the rankings.</p>
+      </v-card-text>
+    </v-card>
   </v-container>
 </template>
 

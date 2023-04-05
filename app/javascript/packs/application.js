@@ -19,9 +19,11 @@ import VueCookies from 'vue3-cookies';
 
 import '@mdi/font/css/materialdesignicons.css';
 import { createVuetify } from 'vuetify';
+/* eslint-disable import/no-unresolved */
 import * as directives from 'vuetify/directives';
 import { aliases, mdi } from 'vuetify/iconsets/mdi';
 import 'vuetify/styles';
+/* eslint-enable import/no-unresolved */
 import App from '../src/App.vue';
 import router from '../src/router';
 

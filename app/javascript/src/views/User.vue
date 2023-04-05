@@ -6,132 +6,110 @@
     >
       {{ error }}
     </div>
-    <div
+    <v-card
       v-if="$attrs.profile.id === $route.params.id"
       class="border border-gray-400 rounded p-4 my-2 inline-block w-full"
     >
-      <b>Settings</b>
-      <div class="flex justify-around">
-        <div>
-          <p>Send me turn notifications via email</p>
-          <div>
-            <input
-              v-model="turnNotificationsEnabled"
-              type="radio"
-              :value="true"
-              @change="resetTurnNotifications"
-            >
-            <label>On</label>
-          </div>
-          <div>
-            <input
-              v-model="turnNotificationsEnabled"
-              type="radio"
-              :value="false"
-              @change="resetTurnNotifications"
-            >
-            <label>Off</label>
-          </div>
-        </div>
-        <div>
-          <p>Send me turn notifications via Discord</p>
-          <p class="text-xs">
-            Leave blank if you do not want turn notifications on Discord
-          </p>
-          <div>
-            <label class="text-sm">Discord User Id</label>
-            <input
-              v-model="discordId"
-              type="text"
-              placeholder="123456789123456789"
-              class="rounded p-2 border border-green-800 my-2"
-              @input="resetTurnNotifications"
-            >
-          </div>
-        </div>
-      </div>
-      <div>
-        <button
-          v-if="successfullyUpdated"
-          class="rounded py-1 px-1 sm:px-3 bg-gray-200 cursor-default"
+      <v-card-item>
+        <v-card-title>Settings</v-card-title>
+      </v-card-item>
+      <v-card-text>
+        <v-radio-group
+          v-model="turnNotificationsEnabled"
+          prepend-icon="mdi-email-outline"
+          label="Send me turn notifications via email"
         >
-          Saved
-        </button>
-        <button
-          v-else
-          class="rounded py-1 px-1 sm:px-3 bg-green-800 text-white"
+          <v-radio
+            label="On"
+            :value="true"
+            @change="resetTurnNotifications"
+          />
+          <v-radio
+            label="Off"
+            :value="false"
+            @change="resetTurnNotifications"
+          />
+        </v-radio-group>
+      </v-card-text>
+      <v-card-text>
+        <v-text-field
+          v-model="discordId"
+          label="Discord User Id"
+          placeholder="123456789123456789"
+          hint="Leave blank if you do not want turn notifications on Discord"
+          persistent-hint
+          @input="resetTurnNotifications"
+        >
+          <template #prepend>
+            <discord-icon
+              class="v-icon v-icon--size-default"
+              fill="#5865F2"
+            />
+          </template>
+        </v-text-field>
+      </v-card-text>
+      <v-card-text>
+        <v-btn
+          color="primary-darken-1"
           @click="save"
         >
           Save
-        </button>
-      </div>
-    </div>
-    <div
-      v-if="gamesFetched"
-      class="py-4"
+        </v-btn>
+      </v-card-text>
+    </v-card>
+    <p class="pb-4">
+      {{ user.name }} has finished {{ finishedGames.length }} {{ finishedGameString }} and won
+      {{ wonGames.length }} {{ wonGameString }}.
+    </p>
+    <span class="text-h5">{{ user.name }}'s Finished Games</span>
+    <v-table
+      density="compact"
+      hover
     >
-      <p class="pb-4">
-        {{ user.name }} has finished {{ finishedGames.length }} {{ finishedGameString }} and won
-        {{ wonGames.length }} {{ wonGameString }}.
-      </p>
-      <b>{{ user.name }}'s Finished Games</b>
-      <div class="flex border-b border-black mt-2">
-        <div class="w-1/3 sm:w-1/5">
-          <b>Name</b>
-        </div>
-        <div class="hidden sm:w-1/5 sm:inline-block">
-          <b>Players</b>
-        </div>
-        <div class="w-1/3 sm:w-1/5">
-          <b>Winner</b>
-        </div>
-        <div class="hidden sm:w-1/5 sm:inline-block">
-          <b>Variant</b>
-        </div>
-        <div class="w-1/3 sm:w-1/5">
-          <b>Finished On</b>
-        </div>
-      </div>
-      <div
-        v-for="game of finishedGames"
-        :key="game.id"
-      >
-        <router-link
-          :to="{ path: '/game/' + game.id }"
-          class="flex justify-between items-center hover:bg-gray-200 py-2"
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Players</th>
+          <th>Winner</th>
+          <th>Variant</th>
+          <th>Finished On</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          v-for="game of finishedGames"
+          :key="game.id"
         >
-          <div class="w-1/3 sm:w-1/5">
-            {{ game.name }}
-          </div>
-          <div class="hidden sm:w-1/5 sm:inline-block">
+          <td>
+            <router-link :to="{ path: '/game/' + game.id }">
+              <span>{{ game.name }}</span>
+            </router-link>
+          </td>
+          <td>
             {{ game.players.length }}
-          </div>
-          <div class="w-1/3 sm:w-1/5">
+          </td>
+          <td>
             {{ truncate(game.winner_name) }}
-          </div>
-          <div class="hidden sm:w-1/5 sm:inline-block">
-            {{ variant(game.base_game) }}
-          </div>
-          <div class="w-1/3 sm:w-1/5">
+          </td>
+          <td>
+            {{ variant(game.baseGame) }}
+          </td>
+          <td>
             {{ toDate(game.last_move_at) }}
-          </div>
-        </router-link>
-      </div>
-    </div>
-    <div
-      v-else
-      class="py-4"
-    >
-      Loading...
-    </div>
+          </td>
+        </tr>
+      </tbody>
+    </v-table>
   </v-container>
 </template>
 
 <script>
 import { DateTime } from 'luxon';
+import { DiscordIcon } from 'vue3-simple-icons';
 
 export default {
   name: 'User',
+  components: { DiscordIcon },
   data() {
     return {
       errors: [],

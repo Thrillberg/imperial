@@ -60,11 +60,10 @@
 import Star from './Star.vue';
 
 import toTime from '../toTime';
-import Board from './Board.vue';
 
 export default {
   name: 'YourGames',
-  components: { Star, Board },
+  components: { Star },
   props: {
     games: { type: Array, default: () => [] }, profile: { type: Object, default: () => {} },
   },

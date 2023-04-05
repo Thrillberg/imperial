@@ -38,12 +38,10 @@ import CurrentSoloGames from '../components/CurrentSoloGames.vue';
 import UnstartedGameList from '../components/UnstartedGameList.vue';
 import YourGames from '../components/YourGames.vue';
 
-import DiscordLogo from '../assets/discord_logo.svg';
-
 export default {
   name: 'Home',
   components: {
-    CurrentGames, CurrentSoloGames, UnstartedGameList, YourGames, DiscordLogo,
+    CurrentGames, CurrentSoloGames, UnstartedGameList, YourGames,
   },
   props: {
     profile: Object, users: Array, games: Array, gamesFetched: Boolean,
