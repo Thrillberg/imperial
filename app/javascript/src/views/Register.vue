@@ -1,48 +1,50 @@
 <template>
-  <v-sheet
-    width="300"
-    class="mx-auto"
-  >
-    <div
-      v-for="(error, index) in errors"
-      :key="index"
+  <v-container>
+    <v-sheet
+      width="300"
+      class="mx-auto"
     >
-      {{ error }}
-    </div>
-    <v-form @submit="register">
-      <v-container>
-        <v-row>
-          <v-text-field
-            v-model="username"
-            label="Username"
-            required
-          />
-        </v-row>
-        <v-row>
-          <v-text-field
-            v-model="email"
-            label="Email"
-            required
-          />
-        </v-row>
-        <v-row>
-          <v-text-field
-            v-model="password"
-            label="Password"
-            required
-          />
-        </v-row>
-        <v-row>
-          <v-btn
-            type="submit"
-            block
-          >
-            Register
-          </v-btn>
-        </v-row>
-      </v-container>
-    </v-form>
-  </v-sheet>
+      <div
+        v-for="(error, index) in errors"
+        :key="index"
+      >
+        {{ error }}
+      </div>
+      <v-form @submit="register">
+        <v-container>
+          <v-row>
+            <v-text-field
+              v-model="username"
+              label="Username"
+              required
+            />
+          </v-row>
+          <v-row>
+            <v-text-field
+              v-model="email"
+              label="Email"
+              required
+            />
+          </v-row>
+          <v-row>
+            <v-text-field
+              v-model="password"
+              label="Password"
+              required
+            />
+          </v-row>
+          <v-row>
+            <v-btn
+              type="submit"
+              block
+            >
+              Register
+            </v-btn>
+          </v-row>
+        </v-container>
+      </v-form>
+    </v-sheet>
+  </v-container>
 </template>
 
 <script>

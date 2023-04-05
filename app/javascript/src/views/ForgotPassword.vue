@@ -1,34 +1,36 @@
 <template>
-  <v-sheet
-    width="300"
-    class="mx-auto"
-  >
-    <div v-if="passwordResetEmailSent">
-      Check your email (and your spam folder).
-    </div>
-    <v-form
-      v-else
-      @submit="submitForgotPassword"
+  <v-container>
+    <v-sheet
+      width="300"
+      class="mx-auto"
     >
-      <v-container>
-        <v-row>
-          <v-text-field
-            v-model="email"
-            label="Email"
-            required
-          />
-        </v-row>
-        <v-row>
-          <v-btn
-            type="submit"
-            block
-          >
-            {{ passwordResetEmailRequested ? 'Sending you an email...' : 'Get password reset link' }}
-          </v-btn>
-        </v-row>
-      </v-container>
-    </v-form>
-  </v-sheet>
+      <div v-if="passwordResetEmailSent">
+        Check your email (and your spam folder).
+      </div>
+      <v-form
+        v-else
+        @submit="submitForgotPassword"
+      >
+        <v-container>
+          <v-row>
+            <v-text-field
+              v-model="email"
+              label="Email"
+              required
+            />
+          </v-row>
+          <v-row>
+            <v-btn
+              type="submit"
+              block
+            >
+              {{ passwordResetEmailRequested ? 'Sending you an email...' : 'Get password reset link' }}
+            </v-btn>
+          </v-row>
+        </v-container>
+      </v-form>
+    </v-sheet>
+  </v-container>
 </template>
 
 <script>

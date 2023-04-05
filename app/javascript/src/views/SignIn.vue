@@ -1,50 +1,52 @@
 <template>
-  <v-sheet
-    width="300"
-    class="mx-auto"
-  >
-    <div
-      v-for="(error, index) in errors"
-      :key="index"
+  <v-container>
+    <v-sheet
+      width="300"
+      class="mx-auto"
     >
-      {{ error }}
-    </div>
-    <v-form @submit="signIn">
-      <v-container>
-        <v-row>
-          <v-text-field
-            v-model="email"
-            label="Email"
-            required
-          />
-        </v-row>
-        <v-row>
-          <v-text-field
-            v-model="password"
-            label="Password"
-            required
-          />
-        </v-row>
-        <v-row>
-          <v-btn
-            type="submit"
-            block
-          >
-            Sign In
-          </v-btn>
-        </v-row>
-        <v-row>
-          <v-btn
-            to="/forgot_password"
-            class="mt-2"
-            block
-          >
-            Forgot your password?
-          </v-btn>
-        </v-row>
-      </v-container>
-    </v-form>
-  </v-sheet>
+      <div
+        v-for="(error, index) in errors"
+        :key="index"
+      >
+        {{ error }}
+      </div>
+      <v-form @submit="signIn">
+        <v-container>
+          <v-row>
+            <v-text-field
+              v-model="email"
+              label="Email"
+              required
+            />
+          </v-row>
+          <v-row>
+            <v-text-field
+              v-model="password"
+              label="Password"
+              required
+            />
+          </v-row>
+          <v-row>
+            <v-btn
+              type="submit"
+              block
+            >
+              Sign In
+            </v-btn>
+          </v-row>
+          <v-row>
+            <v-btn
+              to="/forgot_password"
+              class="mt-2"
+              block
+            >
+              Forgot your password?
+            </v-btn>
+          </v-row>
+        </v-container>
+      </v-form>
+    </v-sheet>
+  </v-container>
 </template>
 
 <script>

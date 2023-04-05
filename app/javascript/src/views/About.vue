@@ -1,5 +1,5 @@
 <template>
-  <div class="container mx-auto sm:w-1/2">
+  <v-container>
     <b class="text-xl">About PlayImperial</b>
     <div class="mt-5">
       <p>
@@ -30,7 +30,7 @@
         ><b>Imperial Asia</b></a> expansion was designed by Greg Berry.
       </p>
     </div>
-  </div>
+  </v-container>
 </template>
 
 <script>
