@@ -302,36 +302,7 @@ export default class ImperialGameCoordinator {
 
   initialize(action) {
     this.baseGame = action.payload.baseGame || ImperialEuropeGame.classId;
-
-    switch (this.baseGame) {
-      case ImperialEuropeGame.classId:
-        this.#game = new ImperialEuropeGame();
-        break;
-
-      case Imperial2030Game.classId:
-        this.#game = new Imperial2030Game();
-        break;
-
-      case ImperialAsiaGame.classId:
-        this.#game = new ImperialAsiaGame();
-        break;
-
-      default:
-        this.#logger.error(
-          'Undefined gamemode error',
-          {
-            gameMode: this.baseGame,
-          },
-        );
-
-        this.#game = null;
-        break;
-    }
-    this.#moveToRondelSlot = new MoveToRondelSlot(this.#game);
-    this.#buildFactoryChargeCosts = new FactorySlotBuildChargeCosts(this.#game.factoryBuildCosts);
-    this.#buildFactoryPermissions = new FactorySlotBuildPermissions(this.#game.factoryBuildCosts);
     this.variant = action.payload.variant;
-
     let setup;
     if (this.variant === 'standard') {
       if (this.baseGame === 'imperial') {
@@ -368,13 +339,42 @@ export default class ImperialGameCoordinator {
       this.units = this.initializeUnits(s.units);
       this.currentPlayerName = this.getStartingPlayer();
       this.previousPlayerName = this.currentPlayerName;
-      if (this.variant === 'standard') {
-        for (const availableAction of this.availableRondelActions(this.currentNation)) {
-          this.availableActions.add(availableAction);
-        }
-      }
 
       this.soloMode = action.payload.soloMode;
+    }
+
+    switch (this.baseGame) {
+      case ImperialEuropeGame.classId:
+        this.#game = new ImperialEuropeGame([...this.order]);
+        break;
+
+      case Imperial2030Game.classId:
+        this.#game = new Imperial2030Game([...this.order]);
+        break;
+
+      case ImperialAsiaGame.classId:
+        this.#game = new ImperialAsiaGame([...this.order]);
+        break;
+
+      default:
+        this.#logger.error(
+          'Undefined gamemode error',
+          {
+            gameMode: this.baseGame,
+          },
+        );
+
+        this.#game = null;
+        break;
+    }
+    this.#moveToRondelSlot = new MoveToRondelSlot(this.#game);
+    this.#buildFactoryChargeCosts = new FactorySlotBuildChargeCosts(this.#game.factoryBuildCosts);
+    this.#buildFactoryPermissions = new FactorySlotBuildPermissions(this.#game.factoryBuildCosts);
+
+    if (this.variant === 'standard') {
+      for (const availableAction of this.availableRondelActions(this.currentNation)) {
+        this.availableActions.add(availableAction);
+      }
     }
   }
 

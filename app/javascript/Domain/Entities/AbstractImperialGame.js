@@ -21,7 +21,7 @@ export default class AbstractImperialGame extends Entity {
 
     this.#players = new Map();
     this.#playerOrder = playerOrder;
-    for (const player in this.#playerOrder) {
+    for (const player of this.#playerOrder) {
       this.#players.set(player.name, player);
     }
     this.currentPlayerIndex = 0;
@@ -30,7 +30,8 @@ export default class AbstractImperialGame extends Entity {
 
     this.#nations = new Map();
     this.#nationOrder = nationOrder;
-    for (const nation in this.#nationOrder) {
+
+    for (const nation of this.#nationOrder) {
       this.#nations.set(nation.id, nation);
     }
     this.currentNationIndex = 0;

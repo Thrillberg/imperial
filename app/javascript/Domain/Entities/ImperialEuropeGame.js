@@ -27,7 +27,7 @@ export default class ImperialEuropeGame extends AbstractImperialGame {
     return NationEnum.RU;
   }
 
-  constructor(id, playerOrder) {
+  constructor(playerOrder) {
     const nationOrder = new Array(6);
     nationOrder[0] = new Nation(ImperialEuropeGame.AustriaHungaryId);
     nationOrder[1] = new Nation(ImperialEuropeGame.ItalyId);
@@ -36,7 +36,7 @@ export default class ImperialEuropeGame extends AbstractImperialGame {
     nationOrder[4] = new Nation(ImperialEuropeGame.GermanyId);
     nationOrder[5] = new Nation(ImperialEuropeGame.RussiaId);
 
-    super(id, playerOrder, nationOrder);
+    super(ImperialEuropeGame.classId, playerOrder, nationOrder);
   }
 
   get AustriaHungary() {
