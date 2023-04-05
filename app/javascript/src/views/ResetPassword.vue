@@ -22,6 +22,7 @@
 <script>
 export default {
   name: 'ResetPassword',
+  emits: ['signedIn'],
   data() {
     return { password: '' };
   },

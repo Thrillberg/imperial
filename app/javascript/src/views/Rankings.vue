@@ -21,7 +21,8 @@
       These rankings are determined with the help of <a
         href="https://github.com/philihp/openskill.js"
         class="underline"
-      >openskill</a>. The numbers in parentheses above reflect the player's ordinal rating, where a higher number indicates a stronger player.
+      >openskill</a>.
+      The numbers in parentheses above reflect the player's ordinal rating, where a higher number indicates a stronger player.
     </p>
     <p>Only the top 10 players who have completed at least one multi-player game are included in the rankings.</p>
   </v-container>
@@ -40,12 +41,12 @@ export default {
         if (gameUsers.length > 1) {
           const scores = [];
           const ratings = [];
-          for (const { player_name, player_score } of gameUsers) {
-            scores.push(player_score);
-            if (!userRatings[player_name]) {
-              userRatings[player_name] = rating();
+          for (const { playerName, playerScore } of gameUsers) {
+            scores.push(playerScore);
+            if (!userRatings[playerName]) {
+              userRatings[playerName] = rating();
             }
-            ratings.push([userRatings[player_name]]);
+            ratings.push([userRatings[playerName]]);
           }
           const results = rate(ratings, { score: scores });
           gameUsers.forEach((user, index) => {

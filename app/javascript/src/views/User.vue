@@ -71,7 +71,8 @@
       class="py-4"
     >
       <p class="pb-4">
-        {{ user.name }} has finished {{ finishedGames.length }} {{ finishedGameString }} and won {{ wonGames.length }} {{ wonGameString }}.
+        {{ user.name }} has finished {{ finishedGames.length }} {{ finishedGameString }} and won
+        {{ wonGames.length }} {{ wonGameString }}.
       </p>
       <b>{{ user.name }}'s Finished Games</b>
       <div class="flex border-b border-black mt-2">
@@ -197,7 +198,11 @@ export default {
         return 'Imperial';
       } if (baseGame === 'imperial2030') {
         return 'Imperial 2030';
+      } if (baseGame === 'imperialAsia') {
+        return 'Imperial Asia';
       }
+
+      return 'Imperial';
     },
     truncate(string) {
       if (string.length > 10) {
