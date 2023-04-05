@@ -1,100 +1,104 @@
 <template>
-  <svg
-    xmlns:dc="http://purl.org/dc/elements/1.1/"
-    xmlns:cc="http://creativecommons.org/ns#"
-    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-    xmlns:svg="http://www.w3.org/2000/svg"
-    xmlns="http://www.w3.org/2000/svg"
-    version="1.1"
-    :viewBox="config.viewBox"
-  >
-    <filter id="brightness">
-      <feComponentTransfer>
-        <feFuncR
-          type="linear"
-          slope="2"
-        />
-        <feFuncG
-          type="linear"
-          slope="2"
-        />
-        <feFuncB
-          type="linear"
-          slope="2"
-        />
-      </feComponentTransfer>
-    </filter>
-    <clipPath id="fleetClip">
-      <circle
-        cx="750"
-        cy="500"
-        r="500"
-      />
-    </clipPath>
-    <clipPath id="fleetClipBR">
-      <circle
-        cx="325"
-        cy="250"
-        r="250"
-      />
-    </clipPath>
-    <clipPath id="fleetClipTR">
-      <circle
-        cx="500"
-        cy="400"
-        r="400"
-      />
-    </clipPath>
-    <clipPath id="fleetClipCNAsia">
-      <circle
-        cx="300"
-        cy="250"
-        r="250"
-      />
-    </clipPath>
-    <g
-      stroke="#000000"
-      stroke-width="0.5"
-    >
-      <Province
-        v-for="(province, name) in config.seaProvinces"
-        :key="name"
-        :province="province"
-        :name="name"
-        :select-province="selectProvince"
-        :fleets="fleets(name)"
-        :is-valid="isValid(name)"
-        :dot="dot(name)"
-        :province-with-fight="provinceWithFight === (name.toString().replace(/\.*\s/gm, '').toLowerCase())"
-        :adjustments="config.adjustments[name]"
-        :nation-color="config.nationColors[dot(name)]"
-        :is-impassable="isImpassable(name)"
-        :font-size="game.baseGame === 'imperialAsia' ? '13': '8'"
-        @fight-resolved="$emit('fightResolved')"
-      />
-      <Province
-        v-for="(province, name) in config.landProvinces"
-        :key="name"
-        :province="province"
-        :name="name"
-        :select-province="selectProvince"
-        :fleets="fleets(name)"
-        :armies="armies(name)"
-        :importing-units="importingUnits(name)"
-        :is-valid="isValid(name)"
-        :dot="dot(name)"
-        :building-factory="buildingFactory()"
-        :factory="factory(name)"
-        :factory-type="factoryType(name)"
-        :province-with-fight="provinceWithFight === (name.toString().replace(/\.*\s/gm, '').toLowerCase())"
-        :adjustments="config.adjustments[name]"
-        :nation-color="config.nationColors[dot(name)]"
-        :is-impassable="isImpassable(name)"
-        :font-size="game.baseGame === 'imperialAsia' ? '13': '8'"
-        @fight-resolved="$emit('fightResolved')"
-      />
-    </g>
-  </svg>
+  <v-row>
+    <v-col>
+      <svg
+        xmlns:dc="http://purl.org/dc/elements/1.1/"
+        xmlns:cc="http://creativecommons.org/ns#"
+        xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+        xmlns:svg="http://www.w3.org/2000/svg"
+        xmlns="http://www.w3.org/2000/svg"
+        version="1.1"
+        :viewBox="config.viewBox"
+      >
+        <filter id="brightness">
+          <feComponentTransfer>
+            <feFuncR
+              type="linear"
+              slope="2"
+            />
+            <feFuncG
+              type="linear"
+              slope="2"
+            />
+            <feFuncB
+              type="linear"
+              slope="2"
+            />
+          </feComponentTransfer>
+        </filter>
+        <clipPath id="fleetClip">
+          <circle
+            cx="750"
+            cy="500"
+            r="500"
+          />
+        </clipPath>
+        <clipPath id="fleetClipBR">
+          <circle
+            cx="325"
+            cy="250"
+            r="250"
+          />
+        </clipPath>
+        <clipPath id="fleetClipTR">
+          <circle
+            cx="500"
+            cy="400"
+            r="400"
+          />
+        </clipPath>
+        <clipPath id="fleetClipCNAsia">
+          <circle
+            cx="300"
+            cy="250"
+            r="250"
+          />
+        </clipPath>
+        <g
+          stroke="#000000"
+          stroke-width="0.5"
+        >
+          <Province
+            v-for="(province, name) in config.seaProvinces"
+            :key="name"
+            :province="province"
+            :name="name"
+            :select-province="selectProvince"
+            :fleets="fleets(name)"
+            :is-valid="isValid(name)"
+            :dot="dot(name)"
+            :province-with-fight="provinceWithFight === (name.toString().replace(/\.*\s/gm, '').toLowerCase())"
+            :adjustments="config.adjustments[name]"
+            :nation-color="config.nationColors[dot(name)]"
+            :is-impassable="isImpassable(name)"
+            :font-size="game.baseGame === 'imperialAsia' ? '13': '8'"
+            @fight-resolved="$emit('fightResolved')"
+          />
+          <Province
+            v-for="(province, name) in config.landProvinces"
+            :key="name"
+            :province="province"
+            :name="name"
+            :select-province="selectProvince"
+            :fleets="fleets(name)"
+            :armies="armies(name)"
+            :importing-units="importingUnits(name)"
+            :is-valid="isValid(name)"
+            :dot="dot(name)"
+            :building-factory="buildingFactory()"
+            :factory="factory(name)"
+            :factory-type="factoryType(name)"
+            :province-with-fight="provinceWithFight === (name.toString().replace(/\.*\s/gm, '').toLowerCase())"
+            :adjustments="config.adjustments[name]"
+            :nation-color="config.nationColors[dot(name)]"
+            :is-impassable="isImpassable(name)"
+            :font-size="game.baseGame === 'imperialAsia' ? '13': '8'"
+            @fight-resolved="$emit('fightResolved')"
+          />
+        </g>
+      </svg>
+    </v-col>
+  </v-row>
 </template>
 
 <script>

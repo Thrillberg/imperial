@@ -24,6 +24,7 @@ import * as directives from 'vuetify/directives';
 import { aliases, mdi } from 'vuetify/iconsets/mdi';
 import 'vuetify/styles';
 /* eslint-enable import/no-unresolved */
+import { nationColors } from '../../../nationColors';
 import App from '../src/App.vue';
 import router from '../src/router';
 
@@ -32,6 +33,8 @@ const lightTheme = {
   colors: {
     primary: '#A7F3D0',
     'primary-darken-1': '#065F46',
+    secondary: '#fef3c7',
+    ...nationColors,
   },
 };
 

@@ -42,7 +42,7 @@
             :winner="game.winner"
           />
         </v-col>
-        <v-col cols="8">
+        <v-col cols="7">
           <Board
             :config="boardConfig"
             :game="game"
@@ -69,13 +69,13 @@
             @forward-to-current-action-event="forwardToCurrentAction"
           />
         </v-col>
-        <v-col cols="3">
+        <v-col cols="4">
           <GameDetails
             :game="game"
             :game-data="gameData"
             :controlling-player-name="controllingPlayerName"
             :profile="profile"
-            :online_users="users"
+            :online-users="users"
             :paused="paused"
             :hosting-this-game="hostingThisGame"
             @tick="tickWithAction"
@@ -189,7 +189,7 @@
           :game-data="gameData"
           :controlling-player-name="controllingPlayerName"
           :profile="profile"
-          :online_users="users"
+          :online-users="users"
           :paused="paused"
           :hosting-this-game="hostingThisGame"
           @tick="tickWithAction"

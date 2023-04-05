@@ -1,15 +1,22 @@
 <template>
-  <div
-    :class="'m-1 border-2 border-' + border() +'-500 p-1 tooltip bg-' + backgroundColor()"
+  <v-card
+    :class="'d-inline-block mx-2 border-2 border-' + border() +'-500 tooltip'"
+    :color="backgroundColor()"
     :style="filter === 'grayscale' ? {filter: 'grayscale(1)'} : {}"
     @click="$emit('click', bond)"
   >
-    <Flag
-      :nation="nation"
-      width="30"
-      height="20"
-    />
-    {{ bond.number }}:{{ bond.cost }}
+    <v-card-item>
+      <v-card-title>
+        <Flag
+          :nation="nation"
+          width="30"
+          height="20"
+        />
+      </v-card-title>
+    </v-card-item>
+    <v-card-text class="text-h6">
+      {{ bond.number }}:{{ bond.cost }}
+    </v-card-text>
     <div
       v-if="canBePurchased && !isBeingAppliedToTradeIn"
       class="tooltip-text border border-green-500 p-1 rounded mt-3 bg-white"
@@ -22,7 +29,7 @@
     >
       Purchase for {{ bond.cost - tradedInValue }}m plus the {{ tradedInValue }}m bond.
     </div>
-  </div>
+  </v-card>
 </template>
 
 <script>
