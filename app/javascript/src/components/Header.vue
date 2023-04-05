@@ -91,6 +91,10 @@
         </v-list-item>
       </v-list>
     </v-menu>
+    <v-btn
+      icon="mdi-theme-light-dark"
+      @click="toggleTheme"
+    />
   </v-app-bar>
   <v-navigation-drawer
     v-model="drawer"
@@ -143,6 +147,7 @@
 
 <script>
 import { DiscordIcon } from 'vue3-simple-icons';
+import { useTheme } from 'vuetify';
 
 export default {
   name: 'Header',
@@ -151,6 +156,14 @@ export default {
     profile: { type: Object, default: () => {} },
   },
   emits: ['anonymity_confirmed', 'signOut'],
+  setup() {
+    const theme = useTheme();
+
+    return {
+      theme,
+      toggleTheme: () => { theme.global.name.value = theme.global.current.value.dark ? 'lightTheme' : 'darkTheme'; },
+    };
+  },
   data: () => ({
     drawer: false,
     email: '',
@@ -161,7 +174,7 @@ export default {
   }),
   watch: {
     group() {
-      this.navDrawer = false;
+      this.drawer = false;
     },
   },
   methods: {

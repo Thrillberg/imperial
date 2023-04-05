@@ -1,82 +1,80 @@
 <template>
-  <div>
-    <div class="flex justify-around">
-      <svg
-        width="350px"
-        height="350px"
-        viewBox="-20 -20 240 240"
-        version="1.1"
-        xmlns="http://www.w3.org/2000/svg"
-        xmlns:xlink="http://www.w3.org/1999/xlink"
-      >
-        <RondelSlot
-          v-for="(rondel_slot, index) in slots"
-          :key="rondel_slot.type"
-          :index="index"
-          :is-valid="isValid(rondel_slot.type)"
-          :nations="nationsOnSlot(rondel_slot.type)"
-          :rondel-slot="rondel_slot"
-          @circle-hovered="handleCircleHovered"
-          @slot-clicked="slotClicked(rondel_slot.type)"
-          @slot-hovered="slotHovered(rondel_slot.type)"
-          @slot-silent="slotSilent()"
-        />
-      </svg>
-    </div>
+  <v-row justify="center">
+    <svg
+      width="350px"
+      height="350px"
+      viewBox="-20 -20 240 240"
+      version="1.1"
+      xmlns="http://www.w3.org/2000/svg"
+      xmlns:xlink="http://www.w3.org/1999/xlink"
+    >
+      <RondelSlot
+        v-for="(rondel_slot, index) in slots"
+        :key="rondel_slot.type"
+        :index="index"
+        :is-valid="isValid(rondel_slot.type)"
+        :nations="nationsOnSlot(rondel_slot.type)"
+        :rondel-slot="rondel_slot"
+        @circle-hovered="handleCircleHovered"
+        @slot-clicked="slotClicked(rondel_slot.type)"
+        @slot-hovered="slotHovered(rondel_slot.type)"
+        @slot-silent="slotSilent()"
+      />
+    </svg>
+  </v-row>
+  <div
+    v-if="!!helperText"
+    class="w-1/2 mx-auto border border-gray-600 rounded m-2 p-2"
+  >
     <div
-      v-if="!!helperText"
-      class="w-1/2 mx-auto border border-gray-600 rounded m-2 p-2"
+      v-if="onInvestorSlot"
+      class="mb-2"
     >
       <div
-        v-if="onInvestorSlot"
-        class="mb-2"
+        v-for="[bearer, amount] of bondBearers"
+        :key="bearer"
       >
-        <div
-          v-for="[bearer, amount] of bondBearers"
-          :key="bearer"
-        >
-          <b>{{ bearer }}</b> would receive {{ displayMonetaryValue_InMillions(amount) }}
-        </div>
-        <div v-if="game.variant !== 'withoutInvestorCard'">
-          <b>{{ game.investorCardHolder }}</b> has the investor card
-        </div>
+        <b>{{ bearer }}</b> would receive {{ displayMonetaryValue_InMillions(amount) }}
       </div>
-      <div
-        v-if="onTaxationSlot"
-        class="mb-2"
-      >
-        <div>
-          <div v-if="game.baseGame === 'imperial'">
-            <b>Tax Revenue</b> will go from
-            {{ displayMonetaryValue_InMillions(game.nations.get(game.currentNation).taxChartPosition) }} to
-            {{ displayMonetaryValue_InMillions(nextTaxChartPosition) }}
-          </div>
-          <div>
-            <b>{{ game.currentPlayerName }}</b> would receive {{ displayMonetaryValue_InMillions(playerBonus) }}
-          </div>
-          <div>
-            <b>{{ displayNationName(game.currentNation.value) }}</b>'s treasury would change by
-            {{ displayMonetaryValue_InMillions(nationProfit) }}
-          </div>
-          <div>
-            <b>{{ displayNationName(game.currentNation.value) }}</b>'s power points would be {{ nextTaxationPowerPoints }}
-          </div>
-        </div>
+      <div v-if="game.variant !== 'withoutInvestorCard'">
+        <b>{{ game.investorCardHolder }}</b> has the investor card
       </div>
-      <div v-if="cost > 0">
-        <b>Cost: {{ displayMonetaryValue_InMillions(cost) }}</b>
-      </div>
+    </div>
+    <div
+      v-if="onTaxationSlot"
+      class="mb-2"
+    >
       <div>
-        <span v-if="displayHelperFlag">
-          <Flag
-            :nation="helperNation"
-            height="20"
-            width="30"
-            class="inline-block pr-1"
-          />
-        </span>
-        <span>{{ helperText }}</span>
+        <div v-if="game.baseGame === 'imperial'">
+          <b>Tax Revenue</b> will go from
+          {{ displayMonetaryValue_InMillions(game.nations.get(game.currentNation).taxChartPosition) }} to
+          {{ displayMonetaryValue_InMillions(nextTaxChartPosition) }}
+        </div>
+        <div>
+          <b>{{ game.currentPlayerName }}</b> would receive {{ displayMonetaryValue_InMillions(playerBonus) }}
+        </div>
+        <div>
+          <b>{{ displayNationName(game.currentNation.value) }}</b>'s treasury would change by
+          {{ displayMonetaryValue_InMillions(nationProfit) }}
+        </div>
+        <div>
+          <b>{{ displayNationName(game.currentNation.value) }}</b>'s power points would be {{ nextTaxationPowerPoints }}
+        </div>
       </div>
+    </div>
+    <div v-if="cost > 0">
+      <b>Cost: {{ displayMonetaryValue_InMillions(cost) }}</b>
+    </div>
+    <div>
+      <span v-if="displayHelperFlag">
+        <Flag
+          :nation="helperNation"
+          height="20"
+          width="30"
+          class="inline-block pr-1"
+        />
+      </span>
+      <span>{{ helperText }}</span>
     </div>
   </div>
 </template>

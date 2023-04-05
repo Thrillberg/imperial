@@ -1,19 +1,17 @@
 <template>
-  <div class="flex flex-col sm:flex-row">
-    <button
+  <v-row justify="space-evenly">
+    <v-btn
       v-if="canUndo()"
-      class="rounded py-2 px-6 m-1 sm:m-4 bg-yellow-300 cursor-pointer self-start"
+      color="secondary"
       @click="undo"
     >
       Undo
-    </button>
-    <div class="flex flex-wrap">
-      <AvailableBonds
-        v-if="!purchasingBond"
-        :game="game"
-      />
-      <TaxStatus :game="game" />
-    </div>
+    </v-btn>
+    <AvailableBonds
+      v-if="!purchasingBond"
+      :game="game"
+    />
+    <TaxStatus :game="game" />
     <div v-if="!paused">
       <div
         v-if="game.importing
@@ -138,7 +136,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </v-row>
 </template>
 
 <script>

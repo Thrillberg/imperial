@@ -28,6 +28,16 @@ import { nationColors } from '../../../nationColors';
 import App from '../src/App.vue';
 import router from '../src/router';
 
+const darkTheme = {
+  dark: true,
+  colors: {
+    primary: '#517564',
+    'primary-darken-1': '#3e594c',
+    secondary: '#bab291',
+    ...nationColors,
+  },
+};
+
 const lightTheme = {
   dark: false,
   colors: {
@@ -50,6 +60,7 @@ const vuetify = createVuetify({
   theme: {
     defaultTheme: 'lightTheme',
     themes: {
+      darkTheme,
       lightTheme,
     },
   },

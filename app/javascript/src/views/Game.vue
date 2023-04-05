@@ -99,15 +99,14 @@
             @skip-build-factory="skipBuildFactory"
             @purchase-bond="purchaseBond"
           />
-          <div v-if="!game.winner">
-            <Rondel
-              :game="game"
-              :name="profile.username"
-              :paused="paused"
-              :hosting-this-game="hostingThisGame"
-              @tick-with-action="tickWithAction"
-            />
-          </div>
+          <Rondel
+            v-if="!game.winner"
+            :game="game"
+            :name="profile.username"
+            :paused="paused"
+            :hosting-this-game="hostingThisGame"
+            @tick-with-action="tickWithAction"
+          />
         </v-col>
       </v-row>
     </div>
@@ -208,17 +207,6 @@
     </div>
     <div v-if="game.winner">
       <!-- <NationControlChart :game="game" /> -->
-    </div>
-    <div class="m-2">
-      Observers:
-      <ul>
-        <li
-          v-for="observer in observers"
-          :key="observer"
-        >
-          {{ observer }}
-        </li>
-      </ul>
     </div>
     <GameLog
       :log="game.annotatedLog"

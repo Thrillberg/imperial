@@ -1,36 +1,40 @@
 <template>
-  <div>
-    <button
-      class="rounded py-2 px-6 m-1 sm:m-4 bg-green-200 cursor-pointer"
-      v-if="!showBonds"
-      @click="showBonds = true"
+  <v-btn
+    v-if="!showBonds"
+    color="primary"
+    @click="showBonds = true"
+  >
+    Show available bonds
+  </v-btn>
+  <v-btn
+    v-if="showBonds"
+    color="primary"
+    @click="showBonds = false"
+  >
+    Hide available bonds
+  </v-btn>
+  <div
+    v-if="showBonds"
+    class="flex flex-wrap"
+  >
+    <div
+      v-for="bond of game.availableBonds"
+      :key="bond.nation+bond.cost"
     >
-      Show available bonds
-    </button>
-    <button
-      class="rounded py-2 px-6 m-1 sm:m-4 bg-green-200 cursor-pointer"
-      v-if="showBonds"
-      @click="showBonds = false"
-    >
-      Hide available bonds
-    </button>
-    <div class="flex flex-wrap" v-if="showBonds">
-      <div v-for="bond of game.availableBonds" :key="bond.nation+bond.cost">
-        <Bond
-          :bond="bond"
-        />
-      </div>
+      <Bond
+        :bond="bond"
+      />
     </div>
   </div>
 </template>
 
 <script>
-import Bond from "../components/Bond.vue";
+import Bond from './Bond.vue';
 
 export default {
-  name: "AvailableBonds",
+  name: 'AvailableBonds',
   components: { Bond },
   props: { game: Object },
-  data: () => ({ showBonds: false })
-}
+  data: () => ({ showBonds: false }),
+};
 </script>
