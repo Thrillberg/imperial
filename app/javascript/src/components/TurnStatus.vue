@@ -1,76 +1,78 @@
 <template>
-  <div
+  <v-row
     v-if="game.winner && !paused"
-    class="border border-gray-500 rounded p-2 m-1 text-center bg-green-200"
+    class="border border-gray-500 rounded text-center bg-green-200"
   >
-    <b>Game over!</b> {{ game.winner }} won the game.
-  </div>
-  <div
+    <v-col>
+      <b>Game over!</b> {{ game.winner }} won the game.
+    </v-col>
+  </v-row>
+  <v-row
     v-else
-    class="border border-gray-500 rounded p-2 m-1 text-center"
+    class="border border-gray-500 rounded text-center"
     :class="extraClasses"
   >
-    <span v-html="playerIs"></span>
-    {{ stringify(Array.from(game.availableActions)) }}.
-  </div>
+    <v-col>
+      <span v-html="playerIs" />
+      {{ stringify(Array.from(game.availableActions)) }}.
+    </v-col>
+  </v-row>
 </template>
 
 <script>
 export default {
-  name: "TurnStatus",
-  props: ["game", "profile", "controllingPlayerName", "paused"],
+  name: 'TurnStatus',
+  props: ['game', 'profile', 'controllingPlayerName', 'paused'],
   computed: {
     extraClasses() {
       if (this.paused) {
-        return "bg-yellow-100";
+        return 'bg-yellow-100';
       }
       if (this.game.currentPlayerName === this.profile.username) {
         return `bg-${this.game.currentNation.value}`;
       }
-      return "";
+      return '';
     },
     playerIs() {
-      if (this.controllingPlayerName === "") {
-        return "<b>Swiss Banks</b> are "
-      } else if (this.game.currentPlayerName === this.profile.username) {
-        return "<b>You</b> are "
-      } else {
-        return `<b>${this.game.currentPlayerName}</b> is `
+      if (this.controllingPlayerName === '') {
+        return '<b>Swiss Banks</b> are ';
+      } if (this.game.currentPlayerName === this.profile.username) {
+        return '<b>You</b> are ';
       }
-    }
+      return `<b>${this.game.currentPlayerName}</b> is `;
+    },
   },
   methods: {
     stringify(actions) {
       const actionsWithoutUndo = [];
       for (const action of actions) {
-        if (action.type !== "undo") {
-          actionsWithoutUndo.push(action)
+        if (action.type !== 'undo') {
+          actionsWithoutUndo.push(action);
         }
       }
-      if (actionsWithoutUndo.every(action => action.type === "rondel")) {
-        return "choosing a rondel slot"
-      } else if (actionsWithoutUndo.every(action => action.type === "buildFactory" || action.type === "skipBuildFactory")) {
-        return "choosing where to build a factory"
-      } else if (actionsWithoutUndo.every(action => action.type === "maneuver" || action.type === "endManeuver")) {
-        return "choosing where to maneuver their military units. Fleets move first, then armies"
-      } else if (actionsWithoutUndo.every(action => action.type === "bondPurchase" || action.type === "skipBondPurchase")) {
-        return "choosing a bond to purchase"
-      } else if (actionsWithoutUndo.every(action => action.type === "import")) {
-        return "choosing where to import additional military units"
-      } else if (actionsWithoutUndo.every(action => action.type === "fight" || action.type === "coexist")) {
-        return "choosing whether to fight or coexist"
-      } else if (actionsWithoutUndo.every(action => action.type === "forceInvestor" || action.type === "skipForceInvestor")) {
-        return "choosing whether to force the current nation to stop on the Investor rondel slot"
-      } else if (actionsWithoutUndo.every(action => action.type === "destroyFactory" || action.type === "skipDestroyFactory")) {
-        return "choosing whether to destroy a factory"
-      } else if (actionsWithoutUndo.every(action => action.type === "unfriendlyEntrance" || action.type === "friendlyEntrance")) {
-        return "choosing whether to enter peacefully or not"
-      } else if (actionsWithoutUndo.every(action => action.type === "blockCanal" || action.type === "unblockCanal")) {
-        return "choosing whether or not to block a canal"
-      } else {
-        return "doing something mysterious"
+      if (actionsWithoutUndo.every((action) => action.type === 'rondel')) {
+        return 'choosing a rondel slot';
+      } if (actionsWithoutUndo.every((action) => action.type === 'buildFactory' || action.type === 'skipBuildFactory')) {
+        return 'choosing where to build a factory';
+      } if (actionsWithoutUndo.every((action) => action.type === 'maneuver' || action.type === 'endManeuver')) {
+        return 'choosing where to maneuver their military units. Fleets move first, then armies';
+      } if (actionsWithoutUndo.every((action) => action.type === 'bondPurchase' || action.type === 'skipBondPurchase')) {
+        return 'choosing a bond to purchase';
+      } if (actionsWithoutUndo.every((action) => action.type === 'import')) {
+        return 'choosing where to import additional military units';
+      } if (actionsWithoutUndo.every((action) => action.type === 'fight' || action.type === 'coexist')) {
+        return 'choosing whether to fight or coexist';
+      } if (actionsWithoutUndo.every((action) => action.type === 'forceInvestor' || action.type === 'skipForceInvestor')) {
+        return 'choosing whether to force the current nation to stop on the Investor rondel slot';
+      } if (actionsWithoutUndo.every((action) => action.type === 'destroyFactory' || action.type === 'skipDestroyFactory')) {
+        return 'choosing whether to destroy a factory';
+      } if (actionsWithoutUndo.every((action) => action.type === 'unfriendlyEntrance' || action.type === 'friendlyEntrance')) {
+        return 'choosing whether to enter peacefully or not';
+      } if (actionsWithoutUndo.every((action) => action.type === 'blockCanal' || action.type === 'unblockCanal')) {
+        return 'choosing whether or not to block a canal';
       }
-    }
-  }
-}
+      return 'doing something mysterious';
+    },
+  },
+};
 </script>
