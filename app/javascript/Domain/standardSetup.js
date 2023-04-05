@@ -1,5 +1,7 @@
 import { AllBonds, Bond, Nation } from './constants';
 
+import Player from './Entities/Player';
+
 const error = (want) => (x) => {
   throw new Error(`got=${x.value}, want=${want}`);
 };
@@ -57,12 +59,10 @@ export default ({ players, provinceNames }) => {
     .flat()
     .forEach(({ id, nation }) => {
       if (out.players[id] === undefined) {
-        out.players[id] = {
-          name: id,
-          cash: 2,
-          bonds: new Set(),
-          rawScore: 0,
-        };
+        const player = new Player(id);
+        player.cash = 2;
+
+        out.players[id] = player;
       }
 
       const smallerBondNation = nation.when({

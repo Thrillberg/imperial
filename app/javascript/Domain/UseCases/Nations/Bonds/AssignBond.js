@@ -1,5 +1,11 @@
 export default class AssignBond {
-  static assign(bond, newBearer, undoHistory) {
+  #game;
+
+  constructor(game) {
+    this.#game = game;
+  }
+
+  assign(bond, newBearer, undoHistory) {
     if (bond.bearer === newBearer) {
       return;
     }
@@ -17,6 +23,8 @@ export default class AssignBond {
     if (newBearer) {
       newBearer.bonds.add(bond);
       bond.nation.unsoldBondsByInterestValue.delete(bond.interest);
+
+      this.#game.swissBanker.delete(newBearer);
     } else {
       bond.nation.unsoldBondsByInterestValue.set(bond.interest, bond);
     }
