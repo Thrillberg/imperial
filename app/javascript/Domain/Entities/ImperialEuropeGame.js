@@ -27,24 +27,16 @@ export default class ImperialEuropeGame extends AbstractImperialGame {
     return NationEnum.RU;
   }
 
-  constructor(id) {
-    const nations = new Map();
-    nations.set(ImperialEuropeGame.AustriaHungaryId, new Nation(ImperialEuropeGame.AustriaHungaryId));
-    nations.set(ImperialEuropeGame.ItalyId, new Nation(ImperialEuropeGame.ItalyId));
-    nations.set(ImperialEuropeGame.FranceId, new Nation(ImperialEuropeGame.FranceId));
-    nations.set(ImperialEuropeGame.GreatBritainId, new Nation(ImperialEuropeGame.GreatBritainId));
-    nations.set(ImperialEuropeGame.GermanyId, new Nation(ImperialEuropeGame.GermanyId));
-    nations.set(ImperialEuropeGame.RussiaId, new Nation(ImperialEuropeGame.RussiaId));
-
+  constructor(id, playerOrder) {
     const nationOrder = new Array(6);
-    nationOrder[0] = nations.get(ImperialEuropeGame.AustriaHungaryId);
-    nationOrder[1] = nations.get(ImperialEuropeGame.ItalyId);
-    nationOrder[2] = nations.get(ImperialEuropeGame.FranceId);
-    nationOrder[3] = nations.get(ImperialEuropeGame.GreatBritainId);
-    nationOrder[4] = nations.get(ImperialEuropeGame.GermanyId);
-    nationOrder[5] = nations.get(ImperialEuropeGame.RussiaId);
+    nationOrder[0] = new Nation(ImperialEuropeGame.AustriaHungaryId);
+    nationOrder[1] = new Nation(ImperialEuropeGame.ItalyId);
+    nationOrder[2] = new Nation(ImperialEuropeGame.FranceId);
+    nationOrder[3] = new Nation(ImperialEuropeGame.GreatBritainId);
+    nationOrder[4] = new Nation(ImperialEuropeGame.GermanyId);
+    nationOrder[5] = new Nation(ImperialEuropeGame.RussiaId);
 
-    super(id, nations, nationOrder);
+    super(id, playerOrder, nationOrder);
   }
 
   get AustriaHungary() {
