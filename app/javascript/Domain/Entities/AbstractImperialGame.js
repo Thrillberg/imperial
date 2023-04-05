@@ -3,10 +3,6 @@ import Entity from './Entity';
 import Rondel from './Rondel';
 
 export default class AbstractImperialGame extends Entity {
-  static get classId() {
-    return 'AbstractImperialGame';
-  }
-
   #rondel;
   #availableFreeRondelSlotCount = 3;
   #availablePaidRondelSlotCount = 3;
