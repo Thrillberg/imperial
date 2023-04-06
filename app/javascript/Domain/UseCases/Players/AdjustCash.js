@@ -1,6 +1,6 @@
 const InsufficientCashError = class extends Error {
   constructor(investor, value) {
-    super(`${investor} does cannot afford ${Math.abs(value)}`);
+    super(`${investor} cannot afford ${Math.abs(value)}`);
 
     this.name = 'InsufficientCashError';
   }

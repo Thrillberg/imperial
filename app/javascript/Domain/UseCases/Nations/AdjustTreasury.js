@@ -1,6 +1,6 @@
 const InsufficientTreasuryError = class extends Error {
   constructor(nation, value) {
-    super(`${nation} does cannot afford ${Math.abs(value)}`);
+    super(`${nation} cannot afford ${Math.abs(value)}`);
 
     this.name = 'InsufficientTreasuryError';
   }
