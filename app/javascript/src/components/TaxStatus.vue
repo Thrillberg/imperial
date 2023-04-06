@@ -1,43 +1,76 @@
 <template>
-  <v-btn
-    v-if="!showTaxStatus"
-    color="primary"
-    @click="showTaxStatus = true"
+  <v-dialog
+    v-model="dialog"
+    width="auto"
   >
-    Show tax status
-  </v-btn>
-  <button
-    v-if="showTaxStatus"
-    class="rounded py-2 px-6 m-1 sm:m-4 bg-green-200 cursor-pointer"
-    @click="showTaxStatus = false"
-  >
-    Hide tax status
-  </button>
-  <div v-if="showTaxStatus">
-    <div class="flex justify-between">
-      <span class="w-1/3" />
-      <span class="w-1/6">Flags</span>
-      <span class="w-1/6">Tax Revenue</span>
-      <span class="w-1/6">Nation Profit</span>
-      <span class="w-1/6">Power Points</span>
-    </div>
-    <div
-      v-for="[nation,] of game.nations"
-      :key="nation.value"
-      class="flex justify-between"
-    >
-      <span class="w-1/3">
-        <strong>{{ displayNationName(nation.value) }}</strong>
-      </span>
-      <span class="w-1/6"> {{ flagsPlaced(nation) }} </span>
-      <span class="w-1/6"> {{ displayMonetaryValue_InMillions(nextTaxRevenue(nation)) }} </span>
-      <span class="w-1/6"> {{ displayMonetaryValue_InMillions(nextNationProfit(nation)) }} </span>
-      <span class="w-1/6"> {{ nextTaxationPowerPoints(nation) }} </span>
-    </div>
-    <p class="text-sm">
-      This shows the power points and tax chart positions of each nation if they were to tax <i>right now</i>.
-    </p>
-  </div>
+    <template #activator="{ props }">
+      <v-btn
+        color="primary"
+        v-bind="props"
+      >
+        Tax status
+      </v-btn>
+    </template>
+
+    <v-card>
+      <v-card-title>Tax Status</v-card-title>
+      <v-card-subtitle>
+        This shows the power points and tax chart positions of each nation if they were to tax <i>right now</i>.
+      </v-card-subtitle>
+      <v-card-text>
+        <v-table>
+          <thead>
+            <tr>
+              <th />
+              <th>
+                Flags
+              </th>
+              <th>
+                Tax Revenue
+              </th>
+              <th>
+                Nation Profit
+              </th>
+              <th>
+                Power Points
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="[nation,] of game.nations"
+              :key="nation.value"
+            >
+              <td>
+                <strong>{{ displayNationName(nation.value) }}</strong>
+              </td>
+              <td>
+                {{ flagsPlaced(nation) }}
+              </td>
+              <td>
+                {{ displayMonetaryValue_InMillions(nextTaxRevenue(nation)) }}
+              </td>
+              <td>
+                {{ displayMonetaryValue_InMillions(nextNationProfit(nation)) }}
+              </td>
+              <td>
+                {{ nextTaxationPowerPoints(nation) }}
+              </td>
+            </tr>
+          </tbody>
+        </v-table>
+      </v-card-text>
+      <v-card-actions>
+        <v-btn
+          color="primary-darken-1"
+          block
+          @click="dialog = false"
+        >
+          Close
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script>
@@ -47,7 +80,7 @@ import { nextTaxationPowerPoints } from '../taxChartHelpers';
 export default {
   name: 'TaxStatus',
   props: { game: { type: Object, default: () => {} } },
-  data: () => ({ showTaxStatus: false }),
+  data: () => ({ dialog: false }),
   methods: {
     displayNationName(nation) {
       return displayNationName(nation);

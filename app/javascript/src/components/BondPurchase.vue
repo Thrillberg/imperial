@@ -1,36 +1,44 @@
 <template>
-  <div>
-    <div class="text-lg m-2">
-      Purchase a bond - You have {{ game.players[currentPlayer].cash }}m in cash.
-    </div>
-    <div class="flex flex-wrap">
-      <div
-        v-for="bond of game.availableBonds"
-        :key="bond.nation+bond.cost"
-      >
-        <Bond
-          v-if="canBePurchased(bond)"
-          :bond="bond"
-          :can-be-purchased="true"
-          class="cursor-pointer"
-          :is-being-applied-to-trade-in="tradedInValue > 0"
-          :traded-in-value="tradedInValue"
-          @click="purchase(bond)"
-        />
-        <Bond
-          v-else
-          :bond="bond"
-          :filter="'grayscale'"
-        />
-      </div>
-    </div>
-    <div
-      class="rounded m-2 p-2 bg-green-800 text-white cursor-pointer inline-block mt-8"
-      @click="skipBondPurchase"
-    >
-      Do not buy a bond
-    </div>
-  </div>
+  <v-dialog
+    v-model="dialog"
+    width="50%"
+  >
+    <v-card>
+      <v-card-title>Purchase a bond - You have {{ game.players[currentPlayer].cash }}m in cash.</v-card-title>
+      <v-card-text>
+        <v-row>
+          <v-col
+            v-for="bond of game.availableBonds"
+            :key="bond.nation+bond.cost"
+          >
+            <Bond
+              v-if="canBePurchased(bond)"
+              :bond="bond"
+              :can-be-purchased="true"
+              class="cursor-pointer"
+              :is-being-applied-to-trade-in="tradedInValue > 0"
+              :traded-in-value="tradedInValue"
+              @click="purchase(bond)"
+            />
+            <Bond
+              v-else
+              :bond="bond"
+              :filter="'grayscale'"
+            />
+          </v-col>
+        </v-row>
+      </v-card-text>
+      <v-card-actions>
+        <v-btn
+          color="primary-darken-1"
+          block
+          @click="skipBondPurchase"
+        >
+          Do not buy a bond
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script>
@@ -47,6 +55,7 @@ export default {
     tradedInValue: { type: Number, default: 0 },
   },
   emits: ['purchaseBond', 'skip'],
+  data() { return { dialog: true }; },
   methods: {
     canBePurchased(bond) {
       let canBePurchased = false;

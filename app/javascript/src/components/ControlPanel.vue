@@ -1,38 +1,35 @@
 <template>
   <v-row justify="space-evenly">
-    <v-col>
-      <v-btn
-        v-if="canUndo()"
-        color="secondary"
-        @click="undo"
-      >
-        Undo
-      </v-btn>
-      <AvailableBonds
-        v-if="!purchasingBond"
-        :game="game"
-      />
-      <TaxStatus :game="game" />
-    </v-col>
+    <v-btn
+      v-if="canUndo()"
+      color="secondary"
+      @click="undo"
+    >
+      Undo
+    </v-btn>
+    <AvailableBonds
+      v-if="!purchasingBond"
+      :game="game"
+    />
+    <TaxStatus :game="game" />
   </v-row>
-  <v-row v-if="!paused">
-    <div
+  <v-container v-if="!paused">
+    <v-col
       v-if="game.importing
         && !chooseImportType
         && (profile.username === controllingPlayerName || (game.soloMode && hostingThisGame))"
-      class="text-center inline-flex flex-col"
     >
-      <button
-        class="rounded py-2 px-6 m-1 sm:m-4 bg-red-500 text-white cursor-pointer"
+      <v-btn
+        color="error"
         @click="$emit('runImport')"
       >
         End import
-      </button>
+      </v-btn>
       <div class="m-2">
         You have
         <b>{{ game.maxImports - importPlacements.length }}</b> imports left.
       </div>
-    </div>
+    </v-col>
     <v-col
       v-if="game.importing
         && !!chooseImportType
@@ -58,13 +55,13 @@
       </v-row>
       Please choose if you want to import an <b>army</b> or a <b>fleet</b>.
     </v-col>
-    <button
+    <v-btn
       v-if="canEndManeuver"
-      class="rounded py-2 px-6 m-1 sm:m-4 bg-red-500 text-white cursor-pointer self-start"
+      color="error"
       @click="endManeuver"
     >
       End maneuver
-    </button>
+    </v-btn>
     <ConflictHandler
       :game="game"
       :profile="profile"
@@ -106,14 +103,14 @@
         Do not block canal
       </button>
     </div>
-    <button
+    <v-btn
       v-if="game.buildingFactory
         && (profile.username === controllingPlayerName || (game.soloMode && hostingThisGame))"
-      class="rounded py-2 px-6 m-1 sm:m-4 bg-green-800 text-white cursor-pointer"
+      color="primary-darken-1"
       @click="$emit('skipBuildFactory')"
     >
       Skip building a factory
-    </button>
+    </v-btn>
     <BondPurchase
       v-if="purchasingBond"
       :game="game"
@@ -143,7 +140,7 @@
         </button>
       </div>
     </div>
-  </v-row>
+  </v-container>
 </template>
 
 <script>

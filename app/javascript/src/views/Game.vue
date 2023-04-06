@@ -18,7 +18,7 @@
       </v-btn>
     </v-col>
   </v-row>
-  <v-row v-if="gameStarted">
+  <v-sheet v-if="gameStarted">
     <TurnStatus
       :game="game"
       :profile="profile"
@@ -207,7 +207,7 @@
       :log-timestamps="logTimestamps"
       :board="board"
     />
-  </v-row>
+  </v-sheet>
   <div v-else-if="gameCancelled()">
     This game was cancelled by the host
   </div>

@@ -3,10 +3,10 @@
     v-for="({action, timestamp}, i) in event"
     :key="i"
   >
-    <v-divider />
     <div v-if="action.type === 'initialize'">
+      <v-divider />
       <div class="d-flex justify-space-between">
-        <p>{{ action.payload.soloMode ? "Solo game started!" : "Game started!" }}</p>
+        <p><b>{{ action.payload.soloMode ? "Solo game started!" : "Game started!" }}</b></p>
         <p>{{ timestampToString(timestamp) }}</p>
       </div>
       Variant: {{ action.payload.variant || "standard" }}
@@ -30,6 +30,7 @@
       </v-list>
     </div>
     <div v-else-if="action.type === 'rondel'">
+      <v-divider />
       <b>Turn {{ index }}: </b>
       <Flag
         :nation="getNation(action.payload.nation)"
@@ -43,13 +44,13 @@
         <p>{{ timestampToString(timestamp) }}</p>
       </div>
     </div>
-    <v-list-item
+    <div
       v-else
-      class="flex justify-between"
+      class="d-flex justify-space-between"
     >
       <p>- {{ renderAction(action) }}</p>
       <p>{{ timestampToString(timestamp) }}</p>
-    </v-list-item>
+    </div>
   </v-list-item>
 </template>
 
