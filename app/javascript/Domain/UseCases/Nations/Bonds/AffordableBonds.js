@@ -7,13 +7,7 @@ export default class AffordableBonds {
     }
   }
   static* allAffordableBonds(nation, investor) {
-    // TODO: refactor player entity to allow quick filtering of bonds by nation
-    const sameNationBonds = [];
-    for (const bond of investor.bonds) {
-      if (bond.nation === nation) {
-        sameNationBonds.push(bond);
-      }
-    }
+    const sameNationBonds = [...investor.bondsOfNation(nation)];
 
     for (const bond of nation.unsoldBondsByInterestValue.values()) {
       if (investor.cash >= bond.cost) {
