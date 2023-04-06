@@ -21,6 +21,9 @@ export default class Player extends Entity {
     return this.#bonds;
   }
 
+  get isSwissBanker() {
+    return this.#governingNations.size === 0;
+  }
   get governingNations() {
     return this.#governingNations;
   }

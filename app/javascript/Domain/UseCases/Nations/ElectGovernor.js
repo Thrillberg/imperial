@@ -41,7 +41,7 @@ export default class ElectGovernor {
 
     if (previousGovernor) {
       previousGovernor.governingNations.delete(nation);
-      if (previousGovernor.governingNations.size === 0) {
+      if (previousGovernor.isSwissBanker) {
         this.#game.swissBanker.add(previousGovernor);
       }
     }
