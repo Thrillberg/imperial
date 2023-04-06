@@ -22,44 +22,45 @@ describe('Imperial', () => {
       });
 
       test('bond assignments', () => {
-        expect(actual.players).toEqual({
-          a: {
-            name: 'a',
-            cash: 2,
-            bonds: new Set([Bond(Nation.RU, 4), Bond(Nation.FR, 1)]),
-            rawScore: 0,
-          },
-          b: {
-            name: 'b',
-            cash: 2,
-            bonds: new Set([Bond(Nation.FR, 4), Bond(Nation.AH, 1)]),
-            rawScore: 0,
-          },
-          c: {
-            name: 'c',
-            cash: 2,
-            bonds: new Set([Bond(Nation.GB, 4), Bond(Nation.RU, 1)]),
-            rawScore: 0,
-          },
-          d: {
-            name: 'd',
-            cash: 2,
-            bonds: new Set([Bond(Nation.AH, 4), Bond(Nation.GE, 1)]),
-            rawScore: 0,
-          },
-          e: {
-            name: 'e',
-            cash: 2,
-            bonds: new Set([Bond(Nation.IT, 4), Bond(Nation.GB, 1)]),
-            rawScore: 0,
-          },
-          f: {
-            name: 'f',
-            cash: 2,
-            bonds: new Set([Bond(Nation.GE, 4), Bond(Nation.IT, 1)]),
-            rawScore: 0,
-          },
-        });
+        expect(actual.players.size === 6);
+
+        for (const player of actual.players.values()) {
+          expect(player.cash).toEqual(2);
+          expect(player.score).toEqual(0);
+          expect(player.bonds.size).toEqual(2);
+
+          switch (player.id) {
+            case 'a':
+              expect(player.bonds.has(Bond(Nation.RU, 4))).toEqual(true);
+              expect(player.bonds.has(Bond(Nation.FR, 1))).toEqual(true);
+              break;
+
+            case 'b':
+              expect(player.bonds.has(Bond(Nation.FR, 4))).toEqual(true);
+              expect(player.bonds.has(Bond(Nation.AH, 1))).toEqual(true);
+              break;
+
+            case 'c':
+              expect(player.bonds.has(Bond(Nation.GB, 4))).toEqual(true);
+              expect(player.bonds.has(Bond(Nation.RU, 1))).toEqual(true);
+              break;
+
+            case 'd':
+              expect(player.bonds.has(Bond(Nation.AH, 4))).toEqual(true);
+              expect(player.bonds.has(Bond(Nation.GE, 1))).toEqual(true);
+              break;
+
+            case 'e':
+              expect(player.bonds.has(Bond(Nation.IT, 4))).toEqual(true);
+              expect(player.bonds.has(Bond(Nation.GB, 1))).toEqual(true);
+              break;
+
+            case 'f':
+              expect(player.bonds.has(Bond(Nation.GE, 4))).toEqual(true);
+              expect(player.bonds.has(Bond(Nation.IT, 1))).toEqual(true);
+              break;
+          }
+        }
       });
 
       test('nations', () => {
@@ -142,38 +143,40 @@ describe('Imperial', () => {
       });
 
       test('bond assignments', () => {
-        expect(actual.players).toEqual({
-          a: {
-            name: 'a',
-            cash: 2,
-            bonds: new Set([Bond(Nation.RU, 4), Bond(Nation.FR, 1)]),
-            rawScore: 0,
-          },
-          b: {
-            name: 'b',
-            cash: 2,
-            bonds: new Set([Bond(Nation.FR, 4), Bond(Nation.AH, 1)]),
-            rawScore: 0,
-          },
-          c: {
-            name: 'c',
-            cash: 2,
-            bonds: new Set([Bond(Nation.GB, 4), Bond(Nation.RU, 1)]),
-            rawScore: 0,
-          },
-          d: {
-            name: 'd',
-            cash: 2,
-            bonds: new Set([Bond(Nation.GE, 4), Bond(Nation.IT, 1)]),
-            rawScore: 0,
-          },
-          e: {
-            name: 'e',
-            cash: 2,
-            bonds: new Set([Bond(Nation.IT, 4), Bond(Nation.GB, 1)]),
-            rawScore: 0,
-          },
-        });
+        expect(actual.players.size === 5);
+
+        for (const player of actual.players.values()) {
+          expect(player.cash).toEqual(2);
+          expect(player.score).toEqual(0);
+          expect(player.bonds.size).toEqual(2);
+
+          switch (player.id) {
+            case 'a':
+              expect(player.bonds.has(Bond(Nation.RU, 4))).toEqual(true);
+              expect(player.bonds.has(Bond(Nation.FR, 1))).toEqual(true);
+              break;
+
+            case 'b':
+              expect(player.bonds.has(Bond(Nation.FR, 4))).toEqual(true);
+              expect(player.bonds.has(Bond(Nation.AH, 1))).toEqual(true);
+              break;
+
+            case 'c':
+              expect(player.bonds.has(Bond(Nation.GB, 4))).toEqual(true);
+              expect(player.bonds.has(Bond(Nation.RU, 1))).toEqual(true);
+              break;
+
+            case 'd':
+              expect(player.bonds.has(Bond(Nation.AH, 4))).toEqual(true);
+              expect(player.bonds.has(Bond(Nation.GE, 1))).toEqual(true);
+              break;
+
+            case 'e':
+              expect(player.bonds.has(Bond(Nation.IT, 4))).toEqual(true);
+              expect(player.bonds.has(Bond(Nation.GB, 1))).toEqual(true);
+              break;
+          }
+        }
       });
 
       test('nations', () => {
@@ -255,32 +258,35 @@ describe('Imperial', () => {
       });
 
       test('bond assignments', () => {
-        expect(actual.players).toEqual({
-          a: {
-            name: 'a',
-            cash: 2,
-            bonds: new Set([Bond(Nation.IT, 4), Bond(Nation.GB, 1)]),
-            rawScore: 0,
-          },
-          b: {
-            name: 'b',
-            cash: 2,
-            bonds: new Set([Bond(Nation.FR, 4), Bond(Nation.AH, 1)]),
-            rawScore: 0,
-          },
-          c: {
-            name: 'c',
-            cash: 2,
-            bonds: new Set([Bond(Nation.AH, 4), Bond(Nation.GE, 1)]),
-            rawScore: 0,
-          },
-          d: {
-            name: 'd',
-            cash: 2,
-            bonds: new Set([Bond(Nation.GE, 4), Bond(Nation.IT, 1)]),
-            rawScore: 0,
-          },
-        });
+        expect(actual.players.size === 4);
+
+        for (const player of actual.players.values()) {
+          expect(player.cash).toEqual(2);
+          expect(player.score).toEqual(0);
+          expect(player.bonds.size).toEqual(2);
+
+          switch (player.id) {
+            case 'a':
+              expect(player.bonds.has(Bond(Nation.RU, 4))).toEqual(true);
+              expect(player.bonds.has(Bond(Nation.FR, 1))).toEqual(true);
+              break;
+
+            case 'b':
+              expect(player.bonds.has(Bond(Nation.FR, 4))).toEqual(true);
+              expect(player.bonds.has(Bond(Nation.AH, 1))).toEqual(true);
+              break;
+
+            case 'c':
+              expect(player.bonds.has(Bond(Nation.GB, 4))).toEqual(true);
+              expect(player.bonds.has(Bond(Nation.RU, 1))).toEqual(true);
+              break;
+
+            case 'd':
+              expect(player.bonds.has(Bond(Nation.AH, 4))).toEqual(true);
+              expect(player.bonds.has(Bond(Nation.GE, 1))).toEqual(true);
+              break;
+          }
+        }
       });
 
       test('nations', () => {
@@ -361,41 +367,36 @@ describe('Imperial', () => {
       });
 
       test('bond assignments', () => {
-        expect(actual.players).toEqual({
-          a: {
-            name: 'a',
-            cash: 2,
-            bonds: new Set([
-              Bond(Nation.IT, 4),
-              Bond(Nation.GB, 1),
-              Bond(Nation.RU, 4),
-              Bond(Nation.FR, 1),
-            ]),
-            rawScore: 0,
-          },
-          b: {
-            name: 'b',
-            cash: 2,
-            bonds: new Set([
-              Bond(Nation.FR, 4),
-              Bond(Nation.AH, 1),
-              Bond(Nation.GE, 4),
-              Bond(Nation.IT, 1),
-            ]),
-            rawScore: 0,
-          },
-          c: {
-            name: 'c',
-            cash: 2,
-            bonds: new Set([
-              Bond(Nation.AH, 4),
-              Bond(Nation.GE, 1),
-              Bond(Nation.GB, 4),
-              Bond(Nation.RU, 1),
-            ]),
-            rawScore: 0,
-          },
-        });
+        expect(actual.players.size === 3);
+
+        for (const player of actual.players.values()) {
+          expect(player.cash).toEqual(2);
+          expect(player.score).toEqual(0);
+          expect(player.bonds.size).toEqual(2);
+
+          switch (player.id) {
+            case 'a':
+              expect(player.bonds.has(Bond(Nation.IT, 4))).toEqual(true);
+              expect(player.bonds.has(Bond(Nation.GB, 1))).toEqual(true);
+              expect(player.bonds.has(Bond(Nation.RU, 4))).toEqual(true);
+              expect(player.bonds.has(Bond(Nation.FR, 1))).toEqual(true);
+              break;
+
+            case 'b':
+              expect(player.bonds.has(Bond(Nation.FR, 4))).toEqual(true);
+              expect(player.bonds.has(Bond(Nation.AH, 1))).toEqual(true);
+              expect(player.bonds.has(Bond(Nation.GE, 4))).toEqual(true);
+              expect(player.bonds.has(Bond(Nation.IT, 1))).toEqual(true);
+              break;
+
+            case 'c':
+              expect(player.bonds.has(Bond(Nation.GB, 4))).toEqual(true);
+              expect(player.bonds.has(Bond(Nation.RU, 1))).toEqual(true);
+              expect(player.bonds.has(Bond(Nation.AH, 4))).toEqual(true);
+              expect(player.bonds.has(Bond(Nation.GE, 1))).toEqual(true);
+              break;
+          }
+        }
       });
 
       // Great Britain to Austria-Hungary
@@ -478,34 +479,33 @@ describe('Imperial', () => {
       });
 
       test('bond assignments', () => {
-        expect(actual.players).toEqual({
-          a: {
-            name: 'a',
-            cash: 2,
-            bonds: new Set([
-              Bond(Nation.IT, 4),
-              Bond(Nation.GB, 1),
-              Bond(Nation.RU, 4),
-              Bond(Nation.FR, 1),
-              Bond(Nation.GB, 4),
-              Bond(Nation.RU, 1),
-            ]),
-            rawScore: 0,
-          },
-          b: {
-            name: 'b',
-            cash: 2,
-            bonds: new Set([
-              Bond(Nation.AH, 4),
-              Bond(Nation.GE, 1),
-              Bond(Nation.FR, 4),
-              Bond(Nation.AH, 1),
-              Bond(Nation.GE, 4),
-              Bond(Nation.IT, 1),
-            ]),
-            rawScore: 0,
-          },
-        });
+        expect(actual.players.size === 2);
+
+        for (const player of actual.players.values()) {
+          expect(player.cash).toEqual(2);
+          expect(player.score).toEqual(0);
+          expect(player.bonds.size).toEqual(2);
+
+          switch (player.id) {
+            case 'a':
+              expect(player.bonds.has(Bond(Nation.IT, 4))).toEqual(true);
+              expect(player.bonds.has(Bond(Nation.GB, 1))).toEqual(true);
+              expect(player.bonds.has(Bond(Nation.RU, 4))).toEqual(true);
+              expect(player.bonds.has(Bond(Nation.FR, 1))).toEqual(true);
+              expect(player.bonds.has(Bond(Nation.GB, 4))).toEqual(true);
+              expect(player.bonds.has(Bond(Nation.RU, 1))).toEqual(true);
+              break;
+
+            case 'b':
+              expect(player.bonds.has(Bond(Nation.FR, 4))).toEqual(true);
+              expect(player.bonds.has(Bond(Nation.AH, 1))).toEqual(true);
+              expect(player.bonds.has(Bond(Nation.GE, 4))).toEqual(true);
+              expect(player.bonds.has(Bond(Nation.IT, 1))).toEqual(true);
+              expect(player.bonds.has(Bond(Nation.AH, 4))).toEqual(true);
+              expect(player.bonds.has(Bond(Nation.GE, 1))).toEqual(true);
+              break;
+          }
+        }
       });
 
       // France and Germany to Austria-Hungary

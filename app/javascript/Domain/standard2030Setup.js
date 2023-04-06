@@ -50,7 +50,7 @@ export default ({ players, provinceNames }) => {
     availableBonds: AllBonds2030(),
     nations: new Map(),
     order: players.map((p) => p.id),
-    players: {},
+    players: new Map(),
   };
 
   /* From the initial nation assignments, distribute bonds to the players. */

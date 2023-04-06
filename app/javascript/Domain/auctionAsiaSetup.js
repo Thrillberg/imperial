@@ -7,7 +7,7 @@ export default ({ players, provinceNames }) => {
     availableBonds: AllBondsAsia(),
     nations: new Map(),
     order: players.map((p) => p.id),
-    players: {},
+    players: new Map(),
   };
 
   let cash;

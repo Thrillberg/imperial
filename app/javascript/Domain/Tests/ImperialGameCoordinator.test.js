@@ -54,7 +54,7 @@ describe('imperial', () => {
       test('player purchases a bond outright', () => {
         const game = newGame();
         // Empty out player's bonds
-        game.players.player1.bonds = new Set();
+        game.players.player1.bonds.clear();
         // Give player enough cash to afford a bond
         game.players.player1.cash = 4;
         game.investorCardHolder = 'player1';
@@ -93,7 +93,8 @@ describe('imperial', () => {
       test('player purchases a bond by trading one in', () => {
         const game = newGame();
         // Give player one bond to trade in
-        game.players.player1.bonds = new Set([Bond(Nation.AH, 1)]);
+        game.players.player1.bonds.clear();
+        game.players.player1.bonds.add(Bond(Nation.AH, 1));
         game.availableActions = new Set([
           Action.bondPurchase({
             player: 'player1',
@@ -119,10 +120,10 @@ describe('imperial', () => {
 
       test('player trades in the highest-value bond', () => {
         const game = newGame();
-        game.players.player1.bonds = new Set([
-          Bond(Nation.AH, 3),
-          Bond(Nation.AH, 5),
-        ]);
+        game.players.player1.bonds.clear();
+        game.players.player1.bonds.add(Bond(Nation.AH, 3));
+        game.players.player1.bonds.add(Bond(Nation.AH, 5));
+
         game.players.player1.cash = 12;
         game.availableActions = new Set([
           Action.bondPurchase({
@@ -150,7 +151,7 @@ describe('imperial', () => {
 
       test('purchasing a bond can grant control of the nation', () => {
         const game = newGame();
-        game.players.player1.bonds = new Set();
+        game.players.player1.bonds.clear();
         game.players.player1.cash = 4;
         // Nobody controls Italy
         game.nations.get(Nation.IT).controller = null;
@@ -276,14 +277,13 @@ describe('imperial', () => {
         gameCoordinator.game.AustriaHungary.powerPoints = 25;
         gameCoordinator.game.Italy.powerPoints = 15;
 
-        gameCoordinator.players.player1.bonds = new Set([
-          Bond(Nation.AH, 5),
-          Bond(Nation.IT, 2),
-        ]);
-        gameCoordinator.players.player2.bonds = new Set([
-          Bond(Nation.AH, 2),
-          Bond(Nation.IT, 5),
-        ]);
+        gameCoordinator.players.player1.bonds.clear();
+        gameCoordinator.players.player1.bonds.add(Bond(Nation.AH, 5));
+        gameCoordinator.players.player1.bonds.add(Bond(Nation.IT, 2));
+
+        gameCoordinator.players.player2.bonds.clear();
+        gameCoordinator.players.player2.bonds.add(Bond(Nation.AH, 2));
+        gameCoordinator.players.player2.bonds.add(Bond(Nation.IT, 5));
         gameCoordinator.players.player1.cash = 2;
         gameCoordinator.players.player2.cash = 10;
 
@@ -303,14 +303,14 @@ describe('imperial', () => {
         gameCoordinator.game.AustriaHungary.powerPoints = 25;
         gameCoordinator.game.Italy.powerPoints = 15;
 
-        gameCoordinator.players.player2.bonds = new Set([
-          Bond(Nation.AH, 5),
-          Bond(Nation.IT, 2),
-        ]);
-        gameCoordinator.players.player1.bonds = new Set([
-          Bond(Nation.AH, 2),
-          Bond(Nation.IT, 5),
-        ]);
+        gameCoordinator.players.player2.bonds.clear();
+        gameCoordinator.players.player2.bonds.add(Bond(Nation.AH, 5));
+        gameCoordinator.players.player2.bonds.add(Bond(Nation.IT, 2));
+
+        gameCoordinator.players.player1.bonds.clear();
+        gameCoordinator.players.player1.bonds.add(Bond(Nation.AH, 2));
+        gameCoordinator.players.player1.bonds.add(Bond(Nation.IT, 5));
+
         gameCoordinator.players.player2.cash = 4;
         gameCoordinator.players.player1.cash = 10;
         gameCoordinator.updateRawScores();
@@ -1773,6 +1773,7 @@ describe('imperial', () => {
         describe('1. Nation pays bond-holders interest', () => {
           test('nation pays interest to both players', () => {
             const game = newGame();
+            game.players.player2.bonds.clear();
             game.players.player2.bonds.add(Bond(Nation.AH, 2));
 
             expect(game.players.player1.cash).toEqual(2);
@@ -1791,6 +1792,7 @@ describe('imperial', () => {
 
           test('nation pays non-controlling players first when nation does not have enough money', () => {
             const game = newGame();
+            game.players.player2.bonds.clear();
             game.players.player2.bonds.add(Bond(Nation.AH, 2));
             game.nations.get(Nation.AH).treasury = 2;
 
@@ -1810,6 +1812,7 @@ describe('imperial', () => {
 
           test("controlling player must make up shortfall from nation when nation can't pay other investors", () => {
             const game = newGame();
+            game.players.player2.bonds.clear();
             game.players.player2.bonds.add(Bond(Nation.AH, 2));
             game.nations.get(Nation.AH).treasury = 0;
 
@@ -1829,6 +1832,7 @@ describe('imperial', () => {
 
           test('controlling player cannot go into negative cash if they cannot afford to pay other investors', () => {
             const game = newGame();
+            game.players.player2.bonds.clear();
             game.players.player2.bonds.add(Bond(Nation.AH, 2));
             game.nations.get(Nation.AH).treasury = 0;
 
@@ -1853,7 +1857,7 @@ describe('imperial', () => {
             // Make player1 the investor card holder
             game.investorCardHolder = 'player1';
             // Empty out their bonds so that they don't impact player1's cash
-            game.players.player1.bonds = new Set();
+            game.players.player1.bonds.clear();
 
             expect(game.players.player1.cash).toEqual(2);
 
@@ -1867,7 +1871,7 @@ describe('imperial', () => {
           test('available bonds for sale outright', () => {
             const game = newGame();
             // Empty out their bonds so they can't trade any in (that's tested below)
-            game.players.player2.bonds = new Set();
+            game.players.player2.bonds.clear();
 
             expect(game.players.player2.cash).toEqual(2);
 
@@ -1920,26 +1924,26 @@ describe('imperial', () => {
           });
 
           test('available bonds that can be traded up for', () => {
-            const game = newGame();
-            game.investorCardHolder = 'player2';
+            const gameCoordinator = newGame();
+            gameCoordinator.investorCardHolder = 'player2';
 
             // Give the AH, 1 and the AH, 3 bonds to player2
-            game.availableBonds.delete(Bond(Nation.AH, 1));
-            game.availableBonds.delete(Bond(Nation.AH, 3));
-            game.availableBonds.add(Bond(Nation.AH, 4));
-            game.players.player2.bonds = new Set([
-              Bond(Nation.AH, 1),
-              Bond(Nation.AH, 3),
-            ]);
-            game.players.player2.cash = 0;
+            gameCoordinator.availableBonds.delete(Bond(Nation.AH, 1));
+            gameCoordinator.availableBonds.delete(Bond(Nation.AH, 3));
+            gameCoordinator.availableBonds.add(Bond(Nation.AH, 4));
 
-            game.tick(
+            gameCoordinator.players.player2.bonds.clear();
+            gameCoordinator.players.player2.bonds.add(Bond(Nation.AH, 1));
+            gameCoordinator.players.player2.bonds.add(Bond(Nation.AH, 3));
+            gameCoordinator.players.player2.cash = 0;
+
+            gameCoordinator.tick(
               Action.rondel({ slot: 'investor', nation: Nation.AH, cost: 0 }),
             );
 
             // player2 can use their own 6m plus the trade-in value of 2m or 6m
             // from their AH, 1 and AH, 3 bonds
-            expect(game.availableActions).toEqual(
+            expect(gameCoordinator.availableActions).toEqual(
               new Set([
                 Action.bondPurchase({
                   nation: Nation.AH,
@@ -2064,7 +2068,7 @@ describe('imperial', () => {
             // Make player2 the investor card holder
             gameCoordinator.investorCardHolder = 'player2';
             // Empty out their bonds so that they don't impact player2's cash
-            gameCoordinator.players.player2.bonds = new Set();
+            gameCoordinator.players.player2.bonds.clear();
 
             // Set AH's rondel position to be something *before* investor
             gameCoordinator.nations.get(Nation.AH).rondelPosition = 'maneuver1';
@@ -2094,7 +2098,7 @@ describe('imperial', () => {
             gameCoordinator.nations.get(Nation.AH).rondelPosition = 'maneuver1';
             MoveToRondelSlot.forceMoveNation(game.AustriaHungary, game.rondel.maneuver1Slot);
             // Clear out player1's bonds so they can't trade any in
-            gameCoordinator.players.player1.bonds = new Set();
+            gameCoordinator.players.player1.bonds.clear();
 
             expect(gameCoordinator.players.player1.cash).toEqual(2);
 
@@ -2163,7 +2167,8 @@ describe('imperial', () => {
 
             // Give the AH, 2 bond to player2
             gameCoordinator.availableBonds.delete(Bond(Nation.AH, 2));
-            gameCoordinator.players.player2.bonds = new Set([Bond(Nation.AH, 2)]);
+            gameCoordinator.players.player2.bonds.clear();
+            gameCoordinator.players.player2.bonds.add(Bond(Nation.AH, 2));
 
             expect(gameCoordinator.players.player2.cash).toEqual(2);
 
@@ -2242,7 +2247,7 @@ describe('imperial', () => {
             gameCoordinator.nations.get(Nation.GB).controller = 'player1';
             gameCoordinator.nations.get(Nation.GE).controller = 'player1';
             gameCoordinator.nations.get(Nation.RU).controller = 'player1';
-            gameCoordinator.players.player2.bonds = new Set();
+            gameCoordinator.players.player2.bonds.clear();
             gameCoordinator.swissBanks = ['player2'];
             // Set AH's rondel position to be something *before* investor
             gameCoordinator.nations.get(Nation.AH).rondelPosition = 'maneuver1';
@@ -2294,7 +2299,7 @@ describe('imperial', () => {
             gameCoordinator.nations.get(Nation.GB).controller = 'player3';
             gameCoordinator.nations.get(Nation.GE).controller = 'player3';
             gameCoordinator.nations.get(Nation.RU).controller = 'player3';
-            gameCoordinator.players.player2.bonds = new Set();
+            gameCoordinator.players.player2.bonds.clear();
             // Set AH's rondel position to be something *before* investor
             gameCoordinator.nations.get(Nation.AH).rondelPosition = 'maneuver1';
             MoveToRondelSlot.forceMoveNation(game.AustriaHungary, game.rondel.maneuver1Slot);
@@ -2336,7 +2341,7 @@ describe('imperial', () => {
             gameCoordinator.nations.get(Nation.GB).controller = 'player1';
             gameCoordinator.nations.get(Nation.GE).controller = 'player1';
             gameCoordinator.nations.get(Nation.RU).controller = 'player1';
-            gameCoordinator.players.player2.bonds = new Set();
+            gameCoordinator.players.player2.bonds.clear();
             // Set AH's rondel position to be something *before* investor
             gameCoordinator.nations.get(Nation.AH).rondelPosition = 'maneuver1';
             MoveToRondelSlot.forceMoveNation(game.AustriaHungary, game.rondel.maneuver1Slot);
@@ -2375,8 +2380,8 @@ describe('imperial', () => {
             gameCoordinator.nations.get(Nation.GB).controller = 'player2';
             gameCoordinator.nations.get(Nation.GE).controller = 'player2';
             gameCoordinator.nations.get(Nation.RU).controller = 'player2';
-            gameCoordinator.players.player1.bonds = new Set();
-            gameCoordinator.players.player3.bonds = new Set();
+            gameCoordinator.players.player1.bonds.clear();
+            gameCoordinator.players.player3.bonds.clear();
             gameCoordinator.players.player1.cash = 30;
             gameCoordinator.players.player3.cash = 30;
             gameCoordinator.swissBanks = ['player3', 'player1'];
@@ -2469,7 +2474,7 @@ describe('imperial', () => {
             gameCoordinator.nations.get(Nation.GB).controller = 'player1';
             gameCoordinator.nations.get(Nation.GE).controller = 'player1';
             gameCoordinator.nations.get(Nation.RU).controller = 'player1';
-            gameCoordinator.players.player2.bonds = new Set();
+            gameCoordinator.players.player2.bonds.clear();
             // Set AH's rondel position to be something *before* investor
             gameCoordinator.nations.get(Nation.AH).rondelPosition = 'maneuver1';
             MoveToRondelSlot.forceMoveNation(game.AustriaHungary, game.rondel.maneuver1Slot);
@@ -2654,7 +2659,7 @@ describe('imperial', () => {
             gameCoordinator.nations.get(Nation.GB).controller = 'player1';
             gameCoordinator.nations.get(Nation.GE).controller = 'player1';
             gameCoordinator.nations.get(Nation.RU).controller = 'player1';
-            gameCoordinator.players.player2.bonds = new Set();
+            gameCoordinator.players.player2.bonds.clear();
 
             // Set AH's rondel position to be something *before* investor
             gameCoordinator.nations.get(Nation.AH).rondelPosition = 'maneuver1';
@@ -2786,7 +2791,7 @@ describe('imperial', () => {
           MoveToRondelSlot.forceMoveNation(game.AustriaHungary, game.rondel.production1Slot);
 
           // Clear out player1's bonds so they can't trade any in
-          gameCoordinator.players.player1.bonds = new Set();
+          gameCoordinator.players.player1.bonds.clear();
           gameCoordinator.units.get(Nation.AH).get('a').armies = 1;
           gameCoordinator.units.get(Nation.IT).get('b').armies = 1;
 
