@@ -59,6 +59,10 @@ describe('Imperial Asia', () => {
               expect(player.bonds.has(Bond(NationAsia.RU, 4))).toEqual(true);
               expect(player.bonds.has(Bond(NationAsia.FR, 1))).toEqual(true);
               break;
+
+            default:
+              expect(false).toEqual(true);
+              break;
           }
         }
       });

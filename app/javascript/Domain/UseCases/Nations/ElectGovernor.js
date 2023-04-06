@@ -1,5 +1,11 @@
 export default class ElectGovernor {
-  static electMostInvestedBondBearer(nation, undoHistory) {
+  #game;
+
+  constructor(game) {
+    this.#game = game;
+  }
+
+  electMostInvestedBondBearer(nation, undoHistory) {
     const bondBearers = new Map();
     for (const bond of nation.allSoldBonds()) {
       const alreadyBorneCost = bondBearers.has(bond.bearer) ? bondBearers.get(bond.bearer) : 0;
@@ -17,19 +23,32 @@ export default class ElectGovernor {
       }
     }
 
-    ElectGovernor.forceElect(nation, newGovernor, undoHistory);
+    this.forceElect(nation, newGovernor, undoHistory);
   }
 
-  static forceElect(nation, governor, undoHistory) {
+  forceElect(nation, governor, undoHistory) {
     if (nation.governor === governor) {
       return;
     }
 
+    const previousGovernor = nation.governor;
+
     if (undoHistory) {
-      const previousgovernor = nation.governor;
-      undoHistory.pushUndoOperation(() => ElectGovernor.forceElect(nation, previousgovernor));
+      undoHistory.pushUndoOperation(() => this.forceElect(nation, previousGovernor));
     }
 
     nation.governor = governor;
+
+    if (previousGovernor) {
+      previousGovernor.governingNations.delete(nation);
+      if (previousGovernor.governingNations.size === 0) {
+        this.#game.swissBanker.add(previousGovernor);
+      }
+    }
+
+    if (governor) {
+      governor.governingNations.add(nation);
+      this.#game.swissBanker.delete(governor);
+    }
   }
 }

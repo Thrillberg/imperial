@@ -3,6 +3,8 @@ import Entity from './Entity';
 export default class Player extends Entity {
   #bonds;
 
+  #governingNations;
+
   constructor(id) {
     super(id);
 
@@ -11,10 +13,16 @@ export default class Player extends Entity {
     // Todo: rework with Map<nation, bond> for easier querying
     this.#bonds = new Set();
     this.score = 0;
+
+    this.#governingNations = new Set();
   }
 
   get bonds() {
     return this.#bonds;
+  }
+
+  get governingNations() {
+    return this.#governingNations;
   }
 
   // temporary only for migration

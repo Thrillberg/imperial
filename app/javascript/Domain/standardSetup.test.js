@@ -59,6 +59,10 @@ describe('Imperial', () => {
               expect(player.bonds.has(Bond(Nation.GE, 4))).toEqual(true);
               expect(player.bonds.has(Bond(Nation.IT, 1))).toEqual(true);
               break;
+
+            default:
+              expect(false).toEqual(true);
+              break;
           }
         }
       });
@@ -175,6 +179,10 @@ describe('Imperial', () => {
               expect(player.bonds.has(Bond(Nation.IT, 4))).toEqual(true);
               expect(player.bonds.has(Bond(Nation.GB, 1))).toEqual(true);
               break;
+
+            default:
+              expect(false).toEqual(true);
+              break;
           }
         }
       });
@@ -284,6 +292,10 @@ describe('Imperial', () => {
             case 'd':
               expect(player.bonds.has(Bond(Nation.AH, 4))).toEqual(true);
               expect(player.bonds.has(Bond(Nation.GE, 1))).toEqual(true);
+              break;
+
+            default:
+              expect(false).toEqual(true);
               break;
           }
         }
@@ -395,6 +407,10 @@ describe('Imperial', () => {
               expect(player.bonds.has(Bond(Nation.AH, 4))).toEqual(true);
               expect(player.bonds.has(Bond(Nation.GE, 1))).toEqual(true);
               break;
+
+            default:
+              expect(false).toEqual(true);
+              break;
           }
         }
       });
@@ -503,6 +519,10 @@ describe('Imperial', () => {
               expect(player.bonds.has(Bond(Nation.IT, 1))).toEqual(true);
               expect(player.bonds.has(Bond(Nation.AH, 4))).toEqual(true);
               expect(player.bonds.has(Bond(Nation.GE, 1))).toEqual(true);
+              break;
+
+            default:
+              expect(false).toEqual(true);
               break;
           }
         }

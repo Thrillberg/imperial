@@ -59,6 +59,10 @@ describe('Imperial 2030', () => {
               expect(player.bonds.has(Bond(Nation2030.EU, 4))).toEqual(true);
               expect(player.bonds.has(Bond(Nation2030.IN, 1))).toEqual(true);
               break;
+
+            default:
+              expect(false).toEqual(true);
+              break;
           }
         }
       });
@@ -175,6 +179,10 @@ describe('Imperial 2030', () => {
               expect(player.bonds.has(Bond(Nation2030.RU, 4))).toEqual(true);
               expect(player.bonds.has(Bond(Nation2030.EU, 1))).toEqual(true);
               break;
+
+            default:
+              expect(false).toEqual(true);
+              break;
           }
         }
       });
@@ -284,6 +292,10 @@ describe('Imperial 2030', () => {
             case 'd':
               expect(player.bonds.has(Bond(Nation2030.CN, 4))).toEqual(true);
               expect(player.bonds.has(Bond(Nation2030.US, 1))).toEqual(true);
+              break;
+
+            default:
+              expect(false).toEqual(true);
               break;
           }
         }
@@ -395,6 +407,10 @@ describe('Imperial 2030', () => {
               expect(player.bonds.has(Bond(Nation2030.US, 4))).toEqual(true);
               expect(player.bonds.has(Bond(Nation2030.RU, 1))).toEqual(true);
               break;
+
+            default:
+              expect(false).toEqual(true);
+              break;
           }
         }
       });
@@ -500,6 +516,10 @@ describe('Imperial 2030', () => {
               expect(player.bonds.has(Bond(Nation2030.BR, 1))).toEqual(true);
               expect(player.bonds.has(Bond(Nation2030.US, 4))).toEqual(true);
               expect(player.bonds.has(Bond(Nation2030.RU, 1))).toEqual(true);
+              break;
+
+            default:
+              expect(false).toEqual(true);
               break;
           }
         }
