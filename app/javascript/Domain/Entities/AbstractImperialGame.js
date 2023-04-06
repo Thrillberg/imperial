@@ -11,6 +11,8 @@ export default class AbstractImperialGame extends Entity {
   #availableFreeRondelSlotCount = 3;
   #availablePaidRondelSlotCount = 3;
 
+  #factoryBuildCosts = 5;
+
   #nations;
   #nationOrder;
 
@@ -32,6 +34,10 @@ export default class AbstractImperialGame extends Entity {
   }
   get availablePaidRondelSlotCount() {
     return this.#availablePaidRondelSlotCount;
+  }
+
+  get factoryBuildCosts() {
+    return this.#factoryBuildCosts;
   }
 
   nationIdToEntity(nationId) {

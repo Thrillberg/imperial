@@ -43,6 +43,7 @@ export default (game) => {
     players[player].cash = game.players[player].cash;
     players[player].name = game.players[player].name;
     players[player].rawScore = game.players[player].rawScore;
+
     const bonds = new Set();
     for (const bond of game.players[player].bonds) {
       bonds.add(bond);
