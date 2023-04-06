@@ -1,22 +1,23 @@
 <template>
-  <v-card
-    :class="'d-inline-block mx-2 border-2 border-' + border() +'-500 tooltip'"
+  <v-sheet
+    class="d-inline-block mx-2 px-2 py-2"
     :color="backgroundColor()"
+    rounded
     :style="filter === 'grayscale' ? {filter: 'grayscale(1)'} : {}"
     @click="$emit('click', bond)"
   >
-    <v-card-item>
-      <v-card-title>
+    <v-row>
+      <v-col>
         <Flag
           :nation="nation"
           width="30"
           height="20"
         />
-      </v-card-title>
-    </v-card-item>
-    <v-card-text class="text-h6">
+      </v-col>
+    </v-row>
+    <div class="d-flex justify-center">
       {{ bond.number }}:{{ bond.cost }}
-    </v-card-text>
+    </div>
     <div
       v-if="canBePurchased && !isBeingAppliedToTradeIn"
       class="tooltip-text border border-green-500 p-1 rounded mt-3 bg-white"
@@ -29,7 +30,7 @@
     >
       Purchase for {{ bond.cost - tradedInValue }}m plus the {{ tradedInValue }}m bond.
     </div>
-  </v-card>
+  </v-sheet>
 </template>
 
 <script>

@@ -1,5 +1,5 @@
 <template>
-  <v-col cols="4">
+  <v-col cols="6">
     <v-card :color="player.name === currentPlayer ? 'primary' : ''">
       <v-card-item>
         <v-card-title class="d-flex">
