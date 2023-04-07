@@ -184,7 +184,7 @@ export default class ImperialGameCoordinator {
         this.passingThroughInvestor = false;
 
         this.nations.get(this.currentNation).rondelPosition = 'investor';
-        const nationEntity = this.#game.nationIdToEntity(this.currentNation.value);
+        const nationEntity = this.#game.nationIdToEntity(this.currentNation);
         MoveToRondelSlot.forceMoveNation(nationEntity, this.#game.rondel.investorSlot, this.#undoHistory);
 
         const investorAction = Action.rondel({
@@ -1282,7 +1282,7 @@ export default class ImperialGameCoordinator {
   advanceOnRondel(action) {
     this.currentNation = action.payload.nation;
     const currentNation = this.nations.get(this.currentNation);
-    const currentNationEntity = this.#game.nationIdToEntity(this.currentNation.value);
+    const currentNationEntity = this.#game.nationIdToEntity(this.currentNation);
     const currentPlayer = this.players[this.currentPlayerName];
 
     const fromRondelSlot = currentNationEntity.residingRondelSlot;
@@ -1378,13 +1378,13 @@ export default class ImperialGameCoordinator {
         return;
       }
       case 'taxation': {
-        const nationName = action.payload.nation;
-        const nation = this.nations.get(nationName);
-        const nationEntity = this.#game.nationIdToEntity(nationName.value);
+        const nationId = action.payload.nation;
+        const nation = this.nations.get(nationId);
+        const nationEntity = this.#game.nationIdToEntity(nationId);
 
-        const taxes = this.taxRevenueOf(nationName);
-        const nationProfit = this.nationTaxationProfit(nationName, taxes);
-        const bonus = this.playerBonusAfterUnitMaintenanceCosts(nationName, taxes);
+        const taxes = this.taxRevenueOf(nationId);
+        const nationProfit = this.nationTaxationProfit(nationId, taxes);
+        const bonus = this.playerBonusAfterUnitMaintenanceCosts(nationId, taxes);
         const powerPoints = this.powerPointsGainedFrom(taxes);
 
         // 1. Tax revenue
@@ -1394,7 +1394,7 @@ export default class ImperialGameCoordinator {
 
         this.annotatedLog.push(
           Action.nationGainsTreasury({
-            nation: nationName,
+            nation: nationId,
             amount: nationProfit,
           }),
         );
@@ -1422,7 +1422,7 @@ export default class ImperialGameCoordinator {
 
         this.annotatedLog.push(
           Action.nationGainsPowerPoints({
-            nation: nationName,
+            nation: nationId,
             powerPoints,
           }),
         );
@@ -1952,8 +1952,8 @@ export default class ImperialGameCoordinator {
     );
   }
 
-  availableRondelActions(nationName) {
-    const nation = this.#game.nationIdToEntity(nationName.value);
+  availableRondelActions(nationId) {
+    const nation = this.#game.nationIdToEntity(nationId);
     const { availableSlots } = this.#moveToRondelSlot;
 
     const availableRondelSlots = new Set();
@@ -1962,7 +1962,7 @@ export default class ImperialGameCoordinator {
     for (const freeRondelSlot of nextAvailableFreeRondelSlots) {
       availableRondelSlots.add(
         Action.rondel({
-          nation: nationName,
+          nation: nationId,
           cost: 0,
           slot: freeRondelSlot.id,
         }),
@@ -1980,7 +1980,7 @@ export default class ImperialGameCoordinator {
           // Only allow rondel slots the player can afford.
           availableRondelSlots.add(
             Action.rondel({
-              nation: nationName,
+              nation: nationId,
               cost,
               slot: paidRondelSlot.id,
             }),

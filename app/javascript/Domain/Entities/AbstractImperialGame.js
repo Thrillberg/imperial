@@ -16,6 +16,8 @@ export default class AbstractImperialGame extends Entity {
   #nations;
   #nationOrder;
 
+  #swissBankers;
+
   constructor(id, nations, nationOrder) {
     super(id);
 
@@ -23,6 +25,10 @@ export default class AbstractImperialGame extends Entity {
 
     this.#nations = nations;
     this.#nationOrder = nationOrder;
+
+    this.currentNation = this.firstNation;
+
+    this.#swissBankers = new Set();
   }
 
   get rondel() {
@@ -43,6 +49,20 @@ export default class AbstractImperialGame extends Entity {
   nationIdToEntity(nationId) {
     return this.#nations.get(nationId);
   }
+  * allNations() {
+    for (const nation of this.#nations.values()) {
+      yield nation;
+    }
+  }
+  get nationCount() {
+    return this.#nations.size;
+  }
+  get firstNation() {
+    return this.#nationOrder[0];
+  }
+  get lastNation() {
+    return this.#nationOrder[this.#nationOrder.length - 1];
+  }
   nationTurnAfter(nation) {
     let nationIndex = this.#nationOrder.indexOf(nation);
 
@@ -50,5 +70,9 @@ export default class AbstractImperialGame extends Entity {
     nationIndex %= this.#nationOrder.length;
 
     return this.#nationOrder[nationIndex];
+  }
+
+  get swissBankers() {
+    return this.#swissBankers;
   }
 }

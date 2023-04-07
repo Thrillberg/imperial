@@ -12,6 +12,7 @@ export default class AssignBond {
     if (bond.bearer) {
       bond.bearer.bonds.delete(bond);
     }
+    bond.bearer = newBearer;
 
     if (newBearer) {
       newBearer.bonds.add(bond);
@@ -19,8 +20,6 @@ export default class AssignBond {
     } else {
       bond.nation.unsoldBondsByInterestValue.set(bond.interest, bond);
     }
-
-    bond.bearer = newBearer;
   }
   static unassign(bond, undoHistory) {
     AssignBond.assign(bond, null, undoHistory);

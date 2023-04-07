@@ -1,7 +1,7 @@
 export default class ElectGovernor {
   static electMostInvestedBondBearer(nation, undoHistory) {
     const bondBearers = new Map();
-    for (const bond in nation.allSoldBonds()) {
+    for (const bond of nation.allSoldBonds()) {
       const alreadyBorneCost = bondBearers.has(bond.bearer) ? bondBearers.get(bond.bearer) : 0;
       const newlyBorneCost = alreadyBorneCost + bond.cost;
 
@@ -10,7 +10,7 @@ export default class ElectGovernor {
 
     let newGovernor = nation.governor;
     let newGovernorInvestedAmount = newGovernor ? bondBearers.get(newGovernor) : 0;
-    for (const [bearer, totalBondCost] in bondBearers) {
+    for (const [bearer, totalBondCost] of bondBearers) {
       if (totalBondCost > newGovernorInvestedAmount) {
         newGovernor = bearer;
         newGovernorInvestedAmount = totalBondCost;
