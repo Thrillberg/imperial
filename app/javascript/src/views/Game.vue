@@ -26,24 +26,23 @@
         :controlling-player-name="controllingPlayerName"
         :paused="paused"
       />
-      <v-row
-        v-if="game.baseGame === 'imperial' || game.baseGame === 'imperialAsia'"
-        dense
-      >
+      <v-row v-if="game.baseGame === 'imperial' || game.baseGame === 'imperialAsia'">
         <v-col cols="1">
-          <NationComponent
-            v-for="[nation] of game.nations"
-            :key="nation.value"
-            :current-nation="game.currentNation.value"
-            :nation="nation.value"
-            :treasury="game.nations.get(nation).treasury"
-            :can-pay-out="canPayOut(nation)"
-            :power-points="game.nations.get(nation).powerPoints"
-            :controller="game.nations.get(nation).controller"
-            :current-player="profile.username"
-            :base-game="game.baseGame"
-            :winner="game.winner"
-          />
+          <v-row>
+            <NationComponent
+              v-for="[nation] of game.nations"
+              :key="nation.value"
+              :current-nation="game.currentNation.value"
+              :nation="nation.value"
+              :treasury="game.nations.get(nation).treasury"
+              :can-pay-out="canPayOut(nation)"
+              :power-points="game.nations.get(nation).powerPoints"
+              :controller="game.nations.get(nation).controller"
+              :current-player="profile.username"
+              :base-game="game.baseGame"
+              :winner="game.winner"
+            />
+          </v-row>
         </v-col>
         <v-col cols="7">
           <Board
@@ -69,17 +68,19 @@
           />
         </v-col>
         <v-col cols="4">
-          <GameDetails
-            :game="game"
-            :game-data="gameData"
-            :controlling-player-name="controllingPlayerName"
-            :profile="profile"
-            :online-users="users"
-            :paused="paused"
-            :hosting-this-game="hostingThisGame"
-            @tick="tickWithAction"
-            @toggle-trade-in="toggleTradeIn"
-          />
+          <v-row justify="space-evenly">
+            <GameDetails
+              :game="game"
+              :game-data="gameData"
+              :controlling-player-name="controllingPlayerName"
+              :profile="profile"
+              :online-users="users"
+              :paused="paused"
+              :hosting-this-game="hostingThisGame"
+              @tick="tickWithAction"
+              @toggle-trade-in="toggleTradeIn"
+            />
+          </v-row>
           <ControlPanel
             :game="game"
             :choose-import-type="importProvince"
@@ -177,17 +178,19 @@
                 :winner="game.winner"
               />
             </v-row>
-            <GameDetails
-              :game="game"
-              :game-data="gameData"
-              :controlling-player-name="controllingPlayerName"
-              :profile="profile"
-              :online-users="users"
-              :paused="paused"
-              :hosting-this-game="hostingThisGame"
-              @tick="tickWithAction"
-              @toggle-trade-in="toggleTradeIn"
-            />
+            <v-row justify="space-evenly">
+              <GameDetails
+                :game="game"
+                :game-data="gameData"
+                :controlling-player-name="controllingPlayerName"
+                :profile="profile"
+                :online-users="users"
+                :paused="paused"
+                :hosting-this-game="hostingThisGame"
+                @tick="tickWithAction"
+                @toggle-trade-in="toggleTradeIn"
+              />
+            </v-row>
             <div v-if="!game.winner">
               <Rondel
                 :game="game"

@@ -1,29 +1,28 @@
 <template>
-  <v-card
-    :class="currentNationClass()"
-    class="text-right"
-  >
-    <v-card-text>
-      <div><b>{{ displayNationName(nation) }}</b></div>
-      <Flag
-        :nation="nation"
-        :filter="controller === currentPlayer ? '' : 'grayscale'"
-        height="20"
-        width="30"
-      />
-      <div :class="canPayOut ? '' : 'text-red-500 font-bold'">
-        ${{ treasury }}mil
-      </div>
-      <div>{{ powerPoints }} power</div>
-      <div
-        v-if="winner"
-        class="text-center font-bold text-xl"
-      >
-        x{{ Math.floor(powerPoints / 5) }}
-      </div>
-      {{ truncate(controller) }}
-    </v-card-text>
-  </v-card>
+  <v-col>
+    <v-card :class="currentNationClass()">
+      <v-card-text>
+        <div><b>{{ displayNationName(nation) }}</b></div>
+        <Flag
+          :nation="nation"
+          :filter="controller === currentPlayer ? '' : 'grayscale'"
+          height="20"
+          width="30"
+        />
+        <div :class="canPayOut ? '' : 'text-red-500 font-bold'">
+          ${{ treasury }}mil
+        </div>
+        <div>{{ powerPoints }} power</div>
+        <div
+          v-if="winner"
+          class="text-center font-bold text-xl"
+        >
+          x{{ Math.floor(powerPoints / 5) }}
+        </div>
+        {{ truncate(controller) }}
+      </v-card-text>
+    </v-card>
+  </v-col>
 </template>
 
 <script>

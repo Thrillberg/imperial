@@ -1,21 +1,19 @@
 <template>
-  <v-row justify="center">
-    <Player
-      v-for="(player, index) of sortedPlayers"
-      :key="player.name"
-      :player="player"
-      :current-player="controllingPlayerName"
-      :game="game"
-      :profile="profile"
-      :online-users="onlineUsers"
-      :purchasing-bond="purchasingBond"
-      :traded-in-bond-nation="tradedInBondNation"
-      :traded-in-value="tradedInValue"
-      :index="game.winner ? index + 1 : null"
-      :turn-index="index + 1"
-      @toggle-trade-in="toggleTradeIn"
-    />
-  </v-row>
+  <Player
+    v-for="(player, index) of sortedPlayers"
+    :key="player.name"
+    :player="player"
+    :current-player="controllingPlayerName"
+    :game="game"
+    :profile="profile"
+    :online-users="onlineUsers"
+    :purchasing-bond="purchasingBond"
+    :traded-in-bond-nation="tradedInBondNation"
+    :traded-in-value="tradedInValue"
+    :index="game.winner ? index + 1 : null"
+    :turn-index="index + 1"
+    @toggle-trade-in="toggleTradeIn"
+  />
 </template>
 
 <script>

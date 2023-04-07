@@ -4,18 +4,22 @@
     width="50%"
   >
     <template #activator="{ props }">
-      <v-btn
-        color="primary"
-        v-bind="props"
-      >
-        Buy a bond
-      </v-btn>
-      <v-btn
-        color="error"
-        @click="skipBondPurchase"
-      >
-        Do not buy a bond
-      </v-btn>
+      <v-col>
+        <v-btn
+          color="primary"
+          v-bind="props"
+        >
+          Buy a bond
+        </v-btn>
+      </v-col>
+      <v-col>
+        <v-btn
+          color="error"
+          @click="skipBondPurchase"
+        >
+          Do not buy a bond
+        </v-btn>
+      </v-col>
     </template>
 
     <v-card>

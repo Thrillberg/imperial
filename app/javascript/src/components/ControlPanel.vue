@@ -1,154 +1,161 @@
 <template>
-  <v-row justify="space-evenly">
-    <v-btn
-      v-if="canUndo()"
-      color="secondary"
-      @click="undo"
-    >
-      Undo
-    </v-btn>
-    <AvailableBonds
-      v-if="!purchasingBond"
-      :game="game"
-    />
-    <TaxStatus :game="game" />
-    <TaxChart
-      :show-bonus="game.baseGame === 'imperial2030'"
-      :taxes="taxes()"
-    />
-  </v-row>
-  <v-row
-    v-if="!paused"
-    justify="space-evenly"
+  <v-sheet
+    border
+    rounded
+    class="pa-2 ma-2"
   >
-    <v-col
-      v-if="game.importing
-        && !chooseImportType
-        && (profile.username === controllingPlayerName || (game.soloMode && hostingThisGame))"
-    >
-      <v-btn
-        color="error"
-        @click="$emit('runImport')"
+    <v-row justify="center">
+      <v-col
+        v-if="canUndo()"
       >
-        End import
-      </v-btn>
-      <div class="m-2">
-        You have
-        <b>{{ game.maxImports - importPlacements.length }}</b> imports left.
-      </div>
-    </v-col>
-    <v-col
-      v-if="game.importing
-        && !!chooseImportType
-        && (profile.username === controllingPlayerName || (game.soloMode && hostingThisGame))"
-    >
-      <v-row justify="space-evenly">
-        <v-col class="text-center">
+        <v-btn
+          color="secondary"
+          @click="undo"
+        >
+          Undo
+        </v-btn>
+      </v-col>
+      <v-col
+        v-if="!purchasingBond"
+      >
+        <AvailableBonds :game="game" />
+      </v-col>
+      <v-col>
+        <TaxStatus :game="game" />
+      </v-col>
+      <v-col>
+        <TaxChart
+          :show-bonus="game.baseGame === 'imperial2030'"
+          :taxes="taxes()"
+        />
+      </v-col>
+      <BondPurchase
+        v-if="!paused && purchasingBond"
+        :game="game"
+        :current-player="controllingPlayerName"
+        :profile="profile"
+        :traded-in-value="tradedInValue"
+        :traded-in-bond-nation="tradedInBondNation"
+        @purchase-bond="purchaseBond"
+        @skip="skipPurchaseBond"
+        @toggle-trade-in="(bond) => $emit('toggleTradeIn', bond)"
+      />
+      <v-col v-if="!paused && canEndManeuver">
+        <v-btn
+          color="error"
+          @click="endManeuver"
+        >
+          End maneuver
+        </v-btn>
+      </v-col>
+      <v-col
+        v-if="!paused && game.importing
+          && !chooseImportType
+          && (profile.username === controllingPlayerName || (game.soloMode && hostingThisGame))"
+      >
+        <v-btn
+          color="error"
+          @click="$emit('runImport')"
+        >
+          End import
+        </v-btn>
+        <div class="m-2">
+          You have
+          <b>{{ game.maxImports - importPlacements.length }}</b> imports left.
+        </div>
+      </v-col>
+      <v-col
+        v-if="!paused && game.importing
+          && !!chooseImportType
+          && (profile.username === controllingPlayerName || (game.soloMode && hostingThisGame))"
+      >
+        <v-row justify="space-evenly">
+          <v-col class="text-center">
+            <v-btn
+              color="primary-darken-1"
+              @click="$emit('chooseImportType', 'army')"
+            >
+              Army
+            </v-btn>
+          </v-col>
+          <v-col class="text-center">
+            <v-btn
+              color="primary-darken-1"
+              @click="$emit('chooseImportType', 'fleet')"
+            >
+              Fleet
+            </v-btn>
+          </v-col>
+        </v-row>
+        Please choose if you want to import an <b>army</b> or a <b>fleet</b>.
+      </v-col>
+      <ConflictHandler
+        v-if="!paused"
+        :game="game"
+        :profile="profile"
+        :controlling-player-name="controllingPlayerName"
+        :hosting-this-game="hostingThisGame"
+        @tick-with-action="tickWithAction"
+      />
+      <v-col v-if="!paused && canForceInvestor">
+        <v-btn
+          color="primary-darken-1"
+          @click="forceInvestor"
+        >
+          Force investor
+        </v-btn>
+        <v-btn
+          color="primary-darken-1"
+          @click="skipForceInvestor"
+        >
+          Do not force investor
+        </v-btn>
+      </v-col>
+      <v-col v-if="!paused && canBlockCanal">
+        <v-btn
+          color="primary-darken-1"
+          @click="blockCanal"
+        >
+          Block canal
+        </v-btn>
+        <v-btn
+          color="primary-darken-1"
+          @click="unblockCanal"
+        >
+          Do not block canal
+        </v-btn>
+      </v-col>
+      <v-col>
+        <v-btn
+          v-if="!paused && game.buildingFactory
+            && (profile.username === controllingPlayerName || (game.soloMode && hostingThisGame))"
+          color="primary-darken-1"
+          @click="$emit('skipBuildFactory')"
+        >
+          Skip building a factory
+        </v-btn>
+      </v-col>
+      <v-col v-if="!paused && destroyingFactory()">
+        <div class="text-lg">
+          Do you want to destroy the factory at <b>{{ factoryToDestroy }}</b>?
+        </div>
+        <div class="flex flex-wrap justify-evenly">
           <v-btn
             color="primary-darken-1"
-            @click="$emit('chooseImportType', 'army')"
+            @click="destroyFactory"
           >
-            Army
+            Yes
           </v-btn>
-        </v-col>
-        <v-col class="text-center">
           <v-btn
             color="primary-darken-1"
-            @click="$emit('chooseImportType', 'fleet')"
+            @click="skipDestroyFactory"
           >
-            Fleet
+            No
           </v-btn>
-        </v-col>
-      </v-row>
-      Please choose if you want to import an <b>army</b> or a <b>fleet</b>.
-    </v-col>
-    <v-btn
-      v-if="canEndManeuver"
-      color="error"
-      @click="endManeuver"
-    >
-      End maneuver
-    </v-btn>
-    <ConflictHandler
-      :game="game"
-      :profile="profile"
-      :controlling-player-name="controllingPlayerName"
-      :hosting-this-game="hostingThisGame"
-      @tick-with-action="tickWithAction"
-    />
-    <div
-      v-if="canForceInvestor"
-      class="text-center"
-    >
-      <button
-        class="rounded p-2 m-1 sm:m-4 bg-green-800 text-white cursor-pointer"
-        @click="forceInvestor"
-      >
-        Force investor
-      </button>
-      <button
-        class="rounded p-2 m-1 sm:m-4 bg-green-800 text-white cursor-pointer"
-        @click="skipForceInvestor"
-      >
-        Do not force investor
-      </button>
-    </div>
-    <div
-      v-if="canBlockCanal"
-      class="text-center"
-    >
-      <button
-        class="rounded p-2 m-1 sm:m-4 bg-green-800 text-white cursor-pointer"
-        @click="blockCanal"
-      >
-        Block canal
-      </button>
-      <button
-        class="rounded p-2 m-1 sm:m-4 bg-green-800 text-white cursor-pointer"
-        @click="unblockCanal"
-      >
-        Do not block canal
-      </button>
-    </div>
-    <v-btn
-      v-if="game.buildingFactory
-        && (profile.username === controllingPlayerName || (game.soloMode && hostingThisGame))"
-      color="primary-darken-1"
-      @click="$emit('skipBuildFactory')"
-    >
-      Skip building a factory
-    </v-btn>
-    <BondPurchase
-      v-if="purchasingBond"
-      :game="game"
-      :current-player="controllingPlayerName"
-      :profile="profile"
-      :traded-in-value="tradedInValue"
-      :traded-in-bond-nation="tradedInBondNation"
-      @purchase-bond="purchaseBond"
-      @skip="skipPurchaseBond"
-      @toggle-trade-in="(bond) => $emit('toggleTradeIn', bond)"
-    />
-    <div v-if="destroyingFactory()">
-      <div class="text-lg">
-        Do you want to destroy the factory at <b>{{ factoryToDestroy }}</b>?
-      </div>
-      <div class="flex flex-wrap justify-evenly">
-        <button
-          class="rounded p-2 m-1 sm:m-4 bg-green-800 text-white cursor-pointer inline-block mt-8"
-          @click="destroyFactory"
-        >
-          Yes
-        </button>
-        <button
-          class="rounded p-2 m-1 sm:m-4 bg-green-800 text-white cursor-pointer inline-block mt-8"
-          @click="skipDestroyFactory"
-        >
-          No
-        </button>
-      </div>
-    </div>
-  </v-row>
+        </div>
+      </v-col>
+    </v-row>
+  </v-sheet>
 </template>
 
 <script>

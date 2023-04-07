@@ -1,20 +1,14 @@
 <template>
-  <v-row
-    v-if="game.winner && !paused"
-    dense
-    color="primary"
-  >
-    <v-col>
+  <v-row v-if="game.winner && !paused">
+    <v-col color="primary">
       <b>Game over!</b> {{ game.winner }} won the game.
     </v-col>
   </v-row>
-  <v-row
-    v-else
-    dense
-    class="border border-gray-500 text-center"
-    :class="extraClasses"
-  >
-    <v-col>
+  <v-row v-else>
+    <v-col
+      class="border border-gray-500 text-center"
+      :class="extraClasses"
+    >
       <span v-html="playerIs" />
       {{ stringify(Array.from(game.availableActions)) }}.
     </v-col>
