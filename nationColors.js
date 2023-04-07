@@ -13,7 +13,7 @@ module.exports = {
     EU: '#54bff9',
     TR: '#C0C0C0',
     JP: '#6E8D4E',
-    GEAsia: '#000000',
+    GEAsia: '#f5f2f2',
     CNAsia: '#ebe084',
   },
 };

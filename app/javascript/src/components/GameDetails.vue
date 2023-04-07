@@ -1,5 +1,5 @@
 <template>
-  <v-row>
+  <v-row justify="center">
     <Player
       v-for="(player, index) of sortedPlayers"
       :key="player.name"

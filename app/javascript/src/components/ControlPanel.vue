@@ -12,6 +12,10 @@
       :game="game"
     />
     <TaxStatus :game="game" />
+    <TaxChart
+      :show-bonus="game.baseGame === 'imperial2030'"
+      :taxes="taxes()"
+    />
   </v-row>
   <v-row
     v-if="!paused"
@@ -153,12 +157,13 @@ import Action from '../../Domain/action';
 import AvailableBonds from './AvailableBonds.vue';
 import BondPurchase from './BondPurchase.vue';
 import ConflictHandler from './ConflictHandler.vue';
+import TaxChart from './TaxChart.vue';
 import TaxStatus from './TaxStatus.vue';
 
 export default {
   name: 'ControlPanel',
   components: {
-    AvailableBonds, BondPurchase, ConflictHandler, TaxStatus,
+    AvailableBonds, BondPurchase, ConflictHandler, TaxStatus, TaxChart,
   },
   props: {
     game: { type: Object, default: () => {} },
@@ -315,6 +320,87 @@ export default {
       }
 
       return canUndo;
+    },
+    taxes() {
+      if (this.game.baseGame === 'imperial') {
+        return [15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5].map((slot) => {
+          const nations = [];
+          for (const [nation, data] of this.game.nations) {
+            if (data.taxChartPosition === slot) {
+              nations.push(nation.value);
+            }
+          }
+          const powerPointIncrease = slot - 5;
+          return { slot, nations, powerPointIncrease };
+        });
+      } if (this.game.baseGame === 'imperial2030' || this.game.baseGame === 'imperialAsia') {
+        const taxes = [18, 16, 15, 14, 13, 12, 11, 10, 8, 6, 5];
+        return taxes.map((slot, index) => {
+          const nations = [];
+          for (const [nation, data] of this.game.nations) {
+            if (data.taxChartPosition >= slot) {
+              nations.push(nation.value);
+            }
+          }
+          const powerPointIncrease = taxes.length - index - 1;
+          let bonus;
+          switch (slot) {
+            case 5: {
+              bonus = 0;
+              break;
+            }
+            case 6: {
+              bonus = 1;
+              break;
+            }
+            case 8: {
+              bonus = 1;
+              break;
+            }
+            case 10: {
+              bonus = 2;
+              break;
+            }
+            case 11: {
+              bonus = 2;
+              break;
+            }
+            case 12: {
+              bonus = 3;
+              break;
+            }
+            case 13: {
+              bonus = 3;
+              break;
+            }
+            case 14: {
+              bonus = 4;
+              break;
+            }
+            case 15: {
+              bonus = 4;
+              break;
+            }
+            case 16: {
+              bonus = 5;
+              break;
+            }
+            case 18: {
+              bonus = 5;
+              break;
+            }
+            default: {
+              bonus = 0;
+              break;
+            }
+          }
+          return {
+            slot, nations, powerPointIncrease, bonus,
+          };
+        });
+      }
+
+      return {};
     },
     undo() {
       for (const action of this.game.availableActions) {

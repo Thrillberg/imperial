@@ -115,6 +115,7 @@ export default {
   methods: {
     canBePurchased(bond) {
       let canBePurchased = false;
+
       for (const action of this.game.availableActions) {
         if (
           action.payload.cost === bond.cost
@@ -127,7 +128,7 @@ export default {
             ) {
               canBePurchased = true;
             }
-          } else {
+          } else if (action.payload.tradeInValue === 0) {
             canBePurchased = true;
           }
         }

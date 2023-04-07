@@ -1,66 +1,64 @@
 <template>
-  <v-col cols="6">
-    <v-card :color="player.name === currentPlayer ? 'primary' : ''">
-      <v-card-item>
-        <v-card-title class="d-flex">
-          <span
-            v-if="index"
-            class="text-5xl"
-          >
-            {{ index }}
-          </span>
-          <span
-            v-else
-            class="text-caption mr-2"
-          >
-            {{ turnIndex }}
-          </span>
-          <v-chip
-            :to="player.id ? '/users/' + player.id : ''"
-            class="mr-2"
-          >
-            <template #prepend>
-              <v-icon
-                v-if="onlineUsers.includes(player.name)"
-                color="blue"
-              >
-                mdi-circle-medium
-              </v-icon>
-            </template>
-            {{ player.name }}
-          </v-chip>
-          <Flag
-            v-for="controlledNation in controlledNations(player.name)"
-            :key="controlledNation"
-            :nation="controlledNation"
-            width="45"
-            height="30"
-          />
-        </v-card-title>
-        <v-card-subtitle>
-          <div>${{ player.cash }}mil</div>
-          <div>{{ player.rawScore + player.cash }} VP</div>
-        </v-card-subtitle>
-      </v-card-item>
-      <v-card-text>
-        <Bond
-          v-for="bond in sortedBonds(player.bonds)"
-          :key="bond.nation.value + bond.cost"
-          :bond="bond"
-          :toggle-trade-in="toggleTradeIn"
-          :is-being-applied-to-trade-in="isBeingAppliedToTradeIn(bond)"
-          :class="{ 'cursor-pointer': canTradeIn(bond) }"
-          @click="applyToTradeIn(bond)"
+  <v-card :color="player.name === currentPlayer ? 'primary' : ''">
+    <v-card-item>
+      <v-card-title>
+        <span
+          v-if="index"
+          class="text-5xl"
+        >
+          {{ index }}
+        </span>
+        <span
+          v-else
+          class="text-caption mr-2"
+        >
+          {{ turnIndex }}
+        </span>
+        <v-chip
+          :to="player.id ? '/users/' + player.id : ''"
+          class="mr-2"
+        >
+          <template #prepend>
+            <v-icon
+              v-if="onlineUsers.includes(player.name)"
+              color="blue"
+            >
+              mdi-circle-medium
+            </v-icon>
+          </template>
+          {{ player.name }}
+        </v-chip>
+        <Flag
+          v-for="controlledNation in controlledNations(player.name)"
+          :key="controlledNation"
+          :nation="controlledNation"
+          width="45"
+          height="30"
         />
-        <div v-if="player.name === game.investorCardHolder">
-          Investor Card
-        </div>
-        <div v-if="game.swissBanks.includes(player.name)">
-          Swiss Bank
-        </div>
-      </v-card-text>
-    </v-card>
-  </v-col>
+      </v-card-title>
+      <v-card-subtitle>
+        <div>${{ player.cash }}mil</div>
+        <div>{{ player.rawScore + player.cash }} VP</div>
+      </v-card-subtitle>
+    </v-card-item>
+    <v-card-text>
+      <Bond
+        v-for="bond in sortedBonds(player.bonds)"
+        :key="bond.nation.value + bond.cost"
+        :bond="bond"
+        :toggle-trade-in="toggleTradeIn"
+        :is-being-applied-to-trade-in="isBeingAppliedToTradeIn(bond)"
+        :class="{ 'cursor-pointer': canTradeIn(bond) }"
+        @click="applyToTradeIn(bond)"
+      />
+      <div v-if="player.name === game.investorCardHolder">
+        Investor Card
+      </div>
+      <div v-if="game.swissBanks.includes(player.name)">
+        Swiss Bank
+      </div>
+    </v-card-text>
+  </v-card>
 </template>
 
 <script>
