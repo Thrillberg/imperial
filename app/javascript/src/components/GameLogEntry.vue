@@ -1,9 +1,9 @@
 <template>
-  <v-list-item
+  <v-list-tile
     v-for="({action, timestamp}, i) in event"
     :key="i"
   >
-    <div v-if="action.type === 'initialize'">
+    <div class="pt-2" v-if="action.type === 'initialize'">
       <v-divider />
       <div class="d-flex justify-space-between">
         <p><b>{{ action.payload.soloMode ? "Solo game started!" : "Game started!" }}</b></p>
@@ -29,7 +29,7 @@
         </v-list-item>
       </v-list>
     </div>
-    <div v-else-if="action.type === 'rondel'">
+    <div class="pt-2" v-else-if="action.type === 'rondel'">
       <v-divider />
       <b>Turn {{ index }}: </b>
       <Flag
@@ -44,14 +44,13 @@
         <p>{{ timestampToString(timestamp) }}</p>
       </div>
     </div>
-    <div
+    <div class="pt-1 d-flex justify-space-between"
       v-else
-      class="d-flex justify-space-between"
     >
       <p>- {{ renderAction(action) }}</p>
       <p>{{ timestampToString(timestamp) }}</p>
     </div>
-  </v-list-item>
+  </v-list-tile>
 </template>
 
 <script>
