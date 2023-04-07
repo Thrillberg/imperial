@@ -55,13 +55,17 @@
 </template>
 
 <script>
-import { displayNationName } from '../stringify.js';
+import { displayNationName } from '../stringify';
 
 export default {
   name: 'ConflictHandler',
   props: {
-    game: Object, profile: Object, controllingPlayerName: String, hostingThisGame: Boolean,
+    controllingPlayerName: { type: String, default: '' },
+    game: { type: Object, default: () => {} },
+    hostingThisGame: { type: Boolean, default: false },
+    profile: { type: Object, default: () => {} },
   },
+  emits: ['tick-with-action'],
   methods: {
     fighting() {
       let fighting = false;

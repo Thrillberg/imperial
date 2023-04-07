@@ -41,11 +41,11 @@
 export default {
   name: 'TaxChartSlot',
   props: {
-    bonus: Number,
-    taxSlot: Number,
-    nations: Array,
-    powerPointIncrease: Number,
-    showBonus: Boolean,
+    bonus: { type: Number, default: 0 },
+    taxSlot: { type: Number, default: 0 },
+    nations: { type: Array, default: () => [] },
+    powerPointIncrease: { type: Number, default: 0 },
+    showBonus: { type: Boolean, default: false },
   },
   methods: {
     fill(nation) {
@@ -72,6 +72,8 @@ export default {
           return '#EF7F72';
         case 'EU':
           return '#54bff9';
+        default:
+          return '#FFFFFF';
       }
     },
   },

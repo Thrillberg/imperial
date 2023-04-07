@@ -18,7 +18,11 @@ import GameLogEntry from './GameLogEntry.vue';
 export default {
   name: 'GameLog',
   components: { GameLogEntry },
-  props: { log: Array, logTimestamps: Array, board: Object },
+  props: {
+    board: { type: Object, default: () => {} },
+    log: { type: Array, default: () => [] },
+    logTimestamps: { type: Array, default: () => [] },
+  },
   computed: {
     processedLog() {
       // TODO: Pull these and their analogoues in action.js out into constants somewhere else
@@ -42,7 +46,7 @@ export default {
         let timestamp = '';
         if (!annotatedActions.includes(action.type)) {
           timestamp = timestamps[index];
-          index++;
+          index += 1;
         }
         if (action.type === 'initialize' || action.type === 'rondel') {
           entries.push({ event: [{ action, timestamp }] });

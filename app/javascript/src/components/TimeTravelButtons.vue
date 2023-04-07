@@ -84,7 +84,10 @@
 
 export default {
   name: 'TimeTravelButtons',
-  props: ['game', 'poppedTurns'],
+  props: {
+    game: { type: Object, default: () => {} },
+    poppedTurns: { type: Array, default: () => [] },
+  },
   emits: ['forwardToCurrentActionEvent',
     'forwardEvent',
     'backToGameStartEvent',

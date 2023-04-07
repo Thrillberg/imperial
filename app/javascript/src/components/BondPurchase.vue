@@ -8,18 +8,29 @@
         color="primary"
         v-bind="props"
       >
-        Buy a Bond
+        Buy a bond
       </v-btn>
       <v-btn
         color="error"
         @click="skipBondPurchase"
       >
-        Do not buy a Bond
+        Do not buy a bond
       </v-btn>
     </template>
 
     <v-card>
-      <v-card-title>Purchase a bond - You have {{ game.players[currentPlayer].cash }}m in cash.</v-card-title>
+      <v-card-title>
+        <v-toolbar color="#FFFFFF">
+          Purchase a bond - You have {{ game.players[currentPlayer].cash }}m in cash.
+
+          <template #append>
+            <v-btn
+              icon="mdi-close"
+              @click="dialog = false"
+            />
+          </template>
+        </v-toolbar>
+      </v-card-title>
       <v-card-text>
         <v-row>
           <v-col cols="9">

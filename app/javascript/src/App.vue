@@ -19,9 +19,9 @@
             :game-data="gameData"
             :env="env"
             @registered="register"
-            @signedIn="signIn"
-            @openGame="openGame"
-            @receiveGameData="receiveGameData"
+            @signed-in="signIn"
+            @open-game="openGame"
+            @receive-game-data="receiveGameData"
           />
         </router-view>
       </v-main>

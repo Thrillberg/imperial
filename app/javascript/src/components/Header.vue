@@ -13,7 +13,7 @@
     </div>
     <v-menu>
       <template #activator="{ props }">
-        <!-- User is registered and logged in -->
+        <!-- User is registered and signed in -->
         <v-btn
           v-if="profile.email"
           prepend-icon="mdi-account"
@@ -23,7 +23,7 @@
         >
           {{ profile.username }}
         </v-btn>
-        <!-- User is anonymous (not registered) and logged in -->
+        <!-- User is anonymous (not registered) and signed in -->
         <v-btn
           v-if="profile.anonymityConfirmedAt && !profile.email"
           prepend-icon="mdi-incognito"
@@ -33,7 +33,7 @@
         >
           {{ profile.username }}
         </v-btn>
-        <!-- User is not logged in -->
+        <!-- User is not signed in -->
         <v-btn
           v-if="!profile.anonymityConfirmedAt && !profile.email"
           icon="mdi-incognito"
@@ -43,7 +43,7 @@
         />
       </template>
       <v-list>
-        <!-- User is registered and logged in -->
+        <!-- User is registered and signed in -->
         <v-list-item
           v-if="profile.email"
           prepend-icon="mdi-account"
@@ -53,10 +53,10 @@
         <v-list-item
           v-if="profile.email"
           prepend-icon="mdi-logout"
-          title="Log out"
+          title="Sign out"
           @click="signOut"
         />
-        <!-- User is anonymous (not registered) and logged in -->
+        <!-- User is anonymous (not registered) and signed in -->
         <v-list-item
           v-if="profile.anonymityConfirmedAt && !profile.email"
           prepend-icon="mdi-account-plus"
@@ -66,14 +66,14 @@
         <v-list-item
           v-if="profile.anonymityConfirmedAt && !profile.email"
           prepend-icon="mdi-logout"
-          title="Permanently log out"
+          title="Permanently sign out"
           @click="signOut"
         />
-        <!-- User is not logged in -->
+        <!-- User is not signed in -->
         <v-list-item
           v-if="!profile.anonymityConfirmedAt && !profile.email"
           prepend-icon="mdi-account"
-          title="Log in"
+          title="Sign In"
           @click="signIn"
         />
         <v-list-item

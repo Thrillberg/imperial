@@ -24,7 +24,12 @@
 <script>
 export default {
   name: 'TurnStatus',
-  props: ['game', 'profile', 'controllingPlayerName', 'paused'],
+  props: {
+    game: { type: Object, default: () => {} },
+    profile: { type: Object, default: () => {} },
+    controllingPlayerName: { type: String, default: '' },
+    paused: { type: Boolean, default: false },
+  },
   computed: {
     extraClasses() {
       if (this.paused) {

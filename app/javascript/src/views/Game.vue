@@ -390,7 +390,15 @@ export default {
     }
     next();
   },
-  props: ['profile', 'users', 'gameData', 'games', 'observers', 'env'],
+  props: {
+    env: { type: String, default: '' },
+    games: { type: Array, default: () => [] },
+    gameData: { type: Object, default: () => {} },
+    observers: { type: Array, default: () => [] },
+    profile: { type: Object, default: () => {} },
+    users: { type: Array, default: () => [] },
+  },
+  emits: ['receiveGameData'],
   data: () => ({
     importProvince: '',
     board: {},

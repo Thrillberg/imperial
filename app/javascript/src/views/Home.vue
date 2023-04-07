@@ -44,7 +44,10 @@ export default {
     CurrentGames, CurrentSoloGames, UnstartedGameList, YourGames,
   },
   props: {
-    profile: Object, users: Array, games: Array, gamesFetched: Boolean,
+    games: { type: Array, default: () => [] },
+    gamesFetched: { type: Boolean, default: false },
+    profile: { type: Object, default: () => {} },
+    users: { type: Array, default: () => [] },
   },
   computed: {
     yourGames() {
