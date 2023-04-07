@@ -100,6 +100,7 @@
           @run-import="runImport"
           @skip-build-factory="skipBuildFactory"
           @purchase-bond="purchaseBond"
+          @toggle-trade-in="toggleTradeIn"
         />
         <Rondel
           v-if="!game.winner"

@@ -3,28 +3,61 @@
     v-model="dialog"
     width="50%"
   >
+    <template #activator="{ props }">
+      <v-btn
+        color="primary"
+        v-bind="props"
+      >
+        Buy a Bond
+      </v-btn>
+      <v-btn
+        color="error"
+        @click="skipBondPurchase"
+      >
+        Do not buy a Bond
+      </v-btn>
+    </template>
+
     <v-card>
       <v-card-title>Purchase a bond - You have {{ game.players[currentPlayer].cash }}m in cash.</v-card-title>
       <v-card-text>
         <v-row>
-          <v-col
-            v-for="bond of game.availableBonds"
-            :key="bond.nation+bond.cost"
-          >
-            <Bond
-              v-if="canBePurchased(bond)"
-              :bond="bond"
-              :can-be-purchased="true"
-              class="cursor-pointer"
-              :is-being-applied-to-trade-in="tradedInValue > 0"
-              :traded-in-value="tradedInValue"
-              @click="purchase(bond)"
-            />
-            <Bond
-              v-else
-              :bond="bond"
-              :filter="'grayscale'"
-            />
+          <v-col cols="9">
+            <v-sheet
+              v-for="bond of game.availableBonds"
+              :key="bond.nation+bond.cost"
+              class="ma-2 d-inline-block"
+            >
+              <Bond
+                v-if="canBePurchased(bond)"
+                :bond="bond"
+                :can-be-purchased="true"
+                :is-being-applied-to-trade-in="tradedInValue > 0"
+                :traded-in-value="tradedInValue"
+                @click="purchase(bond)"
+              />
+              <Bond
+                v-else
+                :bond="bond"
+                :filter="'grayscale'"
+              />
+            </v-sheet>
+          </v-col>
+          <v-divider vertical />
+          <v-col cols="3">
+            Your bonds that can be upgraded
+            <v-sheet
+              v-for="bond of upgradeableBonds"
+              :key="bond.nation+bond.cost"
+              class="ma-2 d-inline-block"
+            >
+              <Bond
+                :bond="bond"
+                :is-being-applied-to-trade-in="tradedInValue > 0"
+                :traded-in-value="tradedInValue"
+                @click="$emit('toggleTradeIn', bond)"
+              />
+            </v-sheet>
           </v-col>
         </v-row>
       </v-card-text>
@@ -54,8 +87,31 @@ export default {
     tradedInBondNation: { type: String, default: '' },
     tradedInValue: { type: Number, default: 0 },
   },
-  emits: ['purchaseBond', 'skip'],
+  emits: ['purchaseBond', 'skip', 'toggleTradeIn'],
   data() { return { dialog: true }; },
+  computed: {
+    upgradeableBonds() {
+      const upgradeableBonds = [];
+
+      for (const playerBond of this.game.players[this.currentPlayer].bonds) {
+        let availableBondsMatchNation = false;
+        for (const availableBond of this.game.availableActions) {
+          if (availableBond.payload?.nation === playerBond.nation) {
+            availableBondsMatchNation = true;
+          }
+        }
+
+        if (
+          this.game.players[this.currentPlayer].bonds.has(playerBond)
+          && availableBondsMatchNation
+        ) {
+          upgradeableBonds.push(playerBond);
+        }
+      }
+
+      return upgradeableBonds;
+    },
+  },
   methods: {
     canBePurchased(bond) {
       let canBePurchased = false;

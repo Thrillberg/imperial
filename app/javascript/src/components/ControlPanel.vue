@@ -13,7 +13,10 @@
     />
     <TaxStatus :game="game" />
   </v-row>
-  <v-container v-if="!paused">
+  <v-row
+    v-if="!paused"
+    justify="space-evenly"
+  >
     <v-col
       v-if="game.importing
         && !chooseImportType
@@ -120,6 +123,7 @@
       :traded-in-bond-nation="tradedInBondNation"
       @purchase-bond="purchaseBond"
       @skip="skipPurchaseBond"
+      @toggle-trade-in="(bond) => $emit('toggleTradeIn', bond)"
     />
     <div v-if="destroyingFactory()">
       <div class="text-lg">
@@ -140,7 +144,7 @@
         </button>
       </div>
     </div>
-  </v-container>
+  </v-row>
 </template>
 
 <script>
@@ -167,8 +171,9 @@ export default {
     tradedInBondNation: { type: String, default: '' },
     tradedInValue: { type: Number, default: 0 },
     hostingThisGame: { type: Boolean },
+    upgradeableBonds: { type: Array, default: () => [] },
   },
-  emits: ['runImport', 'chooseImportType', 'skipBuildFactory', 'purchaseBond', 'endManeuver', 'tick'],
+  emits: ['runImport', 'chooseImportType', 'skipBuildFactory', 'purchaseBond', 'toggleTradeIn', 'endManeuver', 'tick'],
   data() {
     return { factoryToDestroy: '' };
   },

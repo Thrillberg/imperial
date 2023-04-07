@@ -7,6 +7,7 @@
       <v-sheet
         class="d-inline-block mx-2 px-2 py-2"
         :color="backgroundColor()"
+        :elevation="isBeingAppliedToTradeIn ? 10 : 0"
         rounded
         :style="filter === 'grayscale' ? {filter: 'grayscale(1)'} : {}"
         v-bind="props"
@@ -69,12 +70,6 @@ export default {
         return 'GEAsia';
       }
       return this.bond.nation.value;
-    },
-    border() {
-      if (this.isBeingAppliedToTradeIn) {
-        return 'yellow';
-      }
-      return 'green';
     },
   },
 };
