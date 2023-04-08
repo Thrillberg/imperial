@@ -58,24 +58,6 @@
       </v-card-actions>
     </v-card>
   </v-dialog>
-
-  <v-row
-    v-if="taxChartVisible"
-    class="flex-row-reverse justify-space-evenly"
-  >
-    <div class="flex flex-col justify-between">
-      <div>Tax</div>
-      <div v-if="showBonus">
-        Bonus
-      </div>
-      <div>Points</div>
-    </div>
-    <v-btn
-      icon="mdi-help"
-      color="primary"
-      @click="toggleTaxChart"
-    />
-  </v-row>
 </template>
 
 <script>

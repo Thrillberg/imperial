@@ -2,7 +2,7 @@
   <v-row>
     <v-col
       cols="3"
-      offset="4"
+      offset-sm="4"
     >
       <svg
         width="350px"

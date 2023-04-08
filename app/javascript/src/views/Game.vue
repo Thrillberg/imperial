@@ -25,6 +25,7 @@
           <v-navigation-drawer
             expand-on-hover
             rail
+            :permanent="$vuetify.display.mobile"
           >
             <v-list density="compact">
               <v-dialog
