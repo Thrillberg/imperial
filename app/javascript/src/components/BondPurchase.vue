@@ -24,7 +24,7 @@
 
     <v-card>
       <v-card-title>
-        <v-toolbar color="#FFFFFF">
+        <v-toolbar color="surface">
           Purchase a bond - You have {{ game.players[currentPlayer].cash }}m in cash.
 
           <template #append>

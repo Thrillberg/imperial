@@ -6,51 +6,59 @@
       v-if="fighting()"
       justify="space-evenly"
     >
-      <v-btn
-        color="primary-darken-1"
-        @click="coexist"
-      >
-        Coexist
-      </v-btn>
-      <v-btn
-        v-for="fightAction in fightActions()"
-        :key="fightAction.payload.incumbent.value + fightAction.payload.targetType"
-        color="primary-darken-1"
-        @click="$emit('tick-with-action', fightAction)"
-      >
-        Fight {{ displayNationName(fightAction.payload.incumbent.value) }} ({{ fightAction.payload.targetType }})
-      </v-btn>
+      <v-col>
+        <v-btn
+          color="primary-darken-1"
+          @click="coexist"
+        >
+          Coexist
+        </v-btn>
+      </v-col>
+      <v-col>
+        <v-btn
+          v-for="fightAction in fightActions()"
+          :key="fightAction.payload.incumbent.value + fightAction.payload.targetType"
+          color="primary-darken-1"
+          @click="$emit('tick-with-action', fightAction)"
+        >
+          Fight {{ displayNationName(fightAction.payload.incumbent.value) }} ({{ fightAction.payload.targetType }})
+        </v-btn>
+      </v-col>
     </v-row>
     <v-row
       v-if="occupying()"
       justify="space-evenly"
     >
-      <v-btn
-        color="primary-darken-1"
-        @click="friendlyEntrance"
-      >
-        Enter friendly
-      </v-btn>
-      <v-btn
-        color="primary-darken-1"
-        @click="unfriendlyEntrance"
-      >
-        Enter unfriendly
-      </v-btn>
+      <v-col>
+        <v-btn
+          color="primary-darken-1"
+          @click="friendlyEntrance"
+        >
+          Enter friendly
+        </v-btn>
+      </v-col>
+      <v-col>
+        <v-btn
+          color="primary-darken-1"
+          @click="unfriendlyEntrance"
+        >
+          Enter unfriendly
+        </v-btn>
+      </v-col>
     </v-row>
   </v-col>
   <v-col
     v-else-if="fighting() && (profile.username === controllingPlayerName || (game.soloMode && hostingThisGame))"
     class="text-center"
   >
-    <button
+    <v-btn
       v-for="fightAction in fightActions()"
       :key="fightAction.payload.province + fightAction.payload.challenger"
-      class="rounded p-2 m-1 sm:m-4 bg-green-800 text-white cursor-pointer"
+      color="primary-darken-1"
       @click="$emit('tick-with-action', fightAction)"
     >
       Fight {{ displayNationName(fightAction.payload.challenger.value) }} in {{ fightAction.payload.province }}
-    </button>
+    </v-btn>
   </v-col>
 </template>
 

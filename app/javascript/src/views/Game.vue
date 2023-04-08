@@ -20,197 +20,228 @@
       </v-col>
     </v-row>
     <v-sheet v-if="gameStarted">
-      <TurnStatus
-        :game="game"
-        :profile="profile"
-        :controlling-player-name="controllingPlayerName"
-        :paused="paused"
-      />
-      <v-row v-if="game.baseGame === 'imperial' || game.baseGame === 'imperialAsia'">
-        <v-col cols="1">
-          <v-row>
-            <NationComponent
-              v-for="[nation] of game.nations"
-              :key="nation.value"
-              :current-nation="game.currentNation.value"
-              :nation="nation.value"
-              :treasury="game.nations.get(nation).treasury"
-              :can-pay-out="canPayOut(nation)"
-              :power-points="game.nations.get(nation).powerPoints"
-              :controller="game.nations.get(nation).controller"
-              :current-player="profile.username"
-              :base-game="game.baseGame"
-              :winner="game.winner"
-            />
-          </v-row>
-        </v-col>
-        <v-col cols="7">
-          <Board
-            :config="boardConfig"
-            :game="game"
-            :game-started="gameStarted"
-            :paused="paused"
-            :profile="profile"
-            :province-with-fight="provinceWithFight"
-            :select-province="selectProvince"
-            :units-to-import="importPlacements"
-            :valid-provinces="validProvinces()"
-            @fight-resolved="resolveFight"
-          />
-          <TimeTravelButtons
-            :game="game"
-            :popped-turns="poppedTurns"
-            @back-to-game-start-event="backToGameStart"
-            @back-to-round-start-event="backToRoundStart"
-            @back-event="back"
-            @forward-event="forward"
-            @forward-to-current-action-event="forwardToCurrentAction"
-          />
-        </v-col>
-        <v-col cols="4">
-          <v-row justify="space-evenly">
-            <GameDetails
-              :game="game"
-              :game-data="gameData"
-              :controlling-player-name="controllingPlayerName"
-              :profile="profile"
-              :online-users="users"
-              :paused="paused"
-              :hosting-this-game="hostingThisGame"
-              @tick="tickWithAction"
-              @toggle-trade-in="toggleTradeIn"
-            />
-          </v-row>
-          <ControlPanel
-            :game="game"
-            :choose-import-type="importProvince"
-            :controlling-player-name="controllingPlayerName"
-            :profile="profile"
-            :import-placements="importPlacements"
-            :game-data="gameData"
-            :traded-in-bond-nation="tradedInBondNation"
-            :traded-in-value="tradedInValue"
-            :paused="paused"
-            :hosting-this-game="hostingThisGame"
-            @tick="tickWithAction"
-            @end-maneuver="endManeuver"
-            @choose-import-type="makeImportTypeChoice"
-            @run-import="runImport"
-            @skip-build-factory="skipBuildFactory"
-            @purchase-bond="purchaseBond"
-            @toggle-trade-in="toggleTradeIn"
-          />
-          <Rondel
-            v-if="!game.winner"
-            :game="game"
-            :name="profile.username"
-            :paused="paused"
-            :hosting-this-game="hostingThisGame"
-            @tick-with-action="tickWithAction"
-          />
-        </v-col>
-      </v-row>
-      <v-sheet v-if="game.baseGame === 'imperial2030'">
-        <v-row>
-          <v-col>
-            <Board
-              :config="boardConfig"
-              :game="game"
-              :game-started="gameStarted"
-              :paused="paused"
-              :profile="profile"
-              :province-with-fight="provinceWithFight"
-              :select-province="selectProvince"
-              :units-to-import="importPlacements"
-              :valid-provinces="validProvinces()"
-              @fight-resolved="resolveFight"
-            />
-            <TimeTravelButtons
-              :game="game"
-              :popped-turns="poppedTurns"
-              @back-to-game-start-event="backToGameStart"
-              @back-to-round-start-event="backToRoundStart"
-              @back-event="back"
-              @forward-event="forward"
-              @forward-to-current-action-event="forwardToCurrentAction"
-            />
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col>
-            <ControlPanel
-              :game="game"
-              :choose-import-type="importProvince"
-              :controlling-player-name="controllingPlayerName"
-              :profile="profile"
-              :import-placements="importPlacements"
-              :game-data="gameData"
-              :traded-in-bond-nation="tradedInBondNation"
-              :traded-in-value="tradedInValue"
-              :paused="paused"
-              :hosting-this-game="hostingThisGame"
-              @tick="tickWithAction"
-              @end-maneuver="endManeuver"
-              @choose-import-type="makeImportTypeChoice"
-              @run-import="runImport"
-              @skip-build-factory="skipBuildFactory"
-              @purchase-bond="purchaseBond"
-              @toggle-trade-in="toggleTradeIn"
-            />
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col>
-            <v-row justify="space-evenly">
-              <NationComponent
-                v-for="[nation] of game.nations"
-                :key="nation.value"
-                :current-nation="game.baseGame === 'imperialAsia'
-                  && game.currentNation.value === 'CN' ? 'CNAsia' : game.currentNation.value"
-                :nation="game.baseGame === 'imperialAsia'
-                  && nation.value === 'CN' ? 'CNAsia' : nation.value"
-                :treasury="game.nations.get(nation).treasury"
-                :can-pay-out="canPayOut(nation)"
-                :power-points="game.nations.get(nation).powerPoints"
-                :controller="game.nations.get(nation).controller"
-                :current-player="profile.username"
-                :base-game="game.baseGame"
-                :winner="game.winner"
-              />
-            </v-row>
-            <v-row justify="space-evenly">
-              <GameDetails
+      <v-card>
+        <v-layout>
+          <v-navigation-drawer
+            expand-on-hover
+            rail
+          >
+            <v-list density="compact">
+              <v-dialog
+                v-model="nationDialog"
+                width="75%"
+              >
+                <template #activator="{ props }">
+                  <v-list-item
+                    title="Nations"
+                    v-bind="props"
+                  >
+                    <template #prepend>
+                      <v-icon color="primary-darken-1">
+                        mdi-flag
+                      </v-icon>
+                    </template>
+                  </v-list-item>
+                </template>
+
+                <v-card>
+                  <v-card-title>
+                    <v-toolbar color="surface">
+                      Nations
+                      <template #append>
+                        <v-btn
+                          icon="mdi-close"
+                          @click="nationDialog = false"
+                        />
+                      </template>
+                    </v-toolbar>
+                  </v-card-title>
+                  <v-card-text>
+                    <v-row>
+                      <NationComponent
+                        v-for="[nation] of game.nations"
+                        :key="nation.value"
+                        :current-nation="game.currentNation.value"
+                        :nation="nation.value"
+                        :treasury="game.nations.get(nation).treasury"
+                        :can-pay-out="canPayOut(nation)"
+                        :power-points="game.nations.get(nation).powerPoints"
+                        :controller="game.nations.get(nation).controller"
+                        :current-player="profile.username"
+                        :base-game="game.baseGame"
+                        :winner="game.winner"
+                      />
+                    </v-row>
+                  </v-card-text>
+                </v-card>
+              </v-dialog>
+              <v-dialog v-model="playerDialog">
+                <template #activator="{ props }">
+                  <v-list-item
+                    title="Players"
+                    v-bind="props"
+                  >
+                    <template #prepend>
+                      <v-icon color="primary-darken-1">
+                        mdi-account-group
+                      </v-icon>
+                    </template>
+                  </v-list-item>
+                </template>
+
+                <v-card>
+                  <v-card-title>
+                    <v-toolbar color="surface">
+                      Players
+                      <template #append>
+                        <v-btn
+                          icon="mdi-close"
+                          @click="playerDialog = false"
+                        />
+                      </template>
+                    </v-toolbar>
+                  </v-card-title>
+                  <v-card-text>
+                    <v-row>
+                      <GameDetails
+                        :game="game"
+                        :game-data="gameData"
+                        :controlling-player-name="controllingPlayerName"
+                        :profile="profile"
+                        :online-users="users"
+                        :paused="paused"
+                        :hosting-this-game="hostingThisGame"
+                        @tick="tickWithAction"
+                        @toggle-trade-in="toggleTradeIn"
+                      />
+                    </v-row>
+                  </v-card-text>
+                </v-card>
+              </v-dialog>
+              <v-dialog v-model="gameLogDialog">
+                <template #activator="{ props }">
+                  <v-list-item
+                    title="Game Log"
+                    v-bind="props"
+                  >
+                    <template #prepend>
+                      <v-icon color="primary-darken-1">
+                        mdi-script-text-outline
+                      </v-icon>
+                    </template>
+                  </v-list-item>
+                </template>
+
+                <v-card>
+                  <v-card-title>
+                    <v-toolbar color="surface">
+                      Game Log
+                      <template #append>
+                        <v-btn
+                          icon="mdi-close"
+                          @click="gameLogDialog = false"
+                        />
+                      </template>
+                    </v-toolbar>
+                  </v-card-title>
+                  <v-card-text>
+                    <v-row>
+                      <GameLog
+                        :log="game.annotatedLog"
+                        :log-timestamps="logTimestamps"
+                        :board="board"
+                      />
+                    </v-row>
+                  </v-card-text>
+                </v-card>
+              </v-dialog>
+            </v-list>
+          </v-navigation-drawer>
+
+          <v-main>
+            <v-sheet>
+              <TurnStatus
                 :game="game"
-                :game-data="gameData"
-                :controlling-player-name="controllingPlayerName"
                 :profile="profile"
-                :online-users="users"
+                :controlling-player-name="controllingPlayerName"
                 :paused="paused"
-                :hosting-this-game="hostingThisGame"
-                @tick="tickWithAction"
-                @toggle-trade-in="toggleTradeIn"
               />
-            </v-row>
-            <div v-if="!game.winner">
-              <Rondel
-                :game="game"
-                :name="profile.username"
-                :paused="paused"
-                :hosting-this-game="hostingThisGame"
-                @tick-with-action="tickWithAction"
-              />
+
+              <v-row>
+                <v-col
+                  cols="11"
+                  class="mx-auto"
+                >
+                  <Board
+                    :config="boardConfig"
+                    :game="game"
+                    :game-started="gameStarted"
+                    :paused="paused"
+                    :profile="profile"
+                    :province-with-fight="provinceWithFight"
+                    :select-province="selectProvince"
+                    :units-to-import="importPlacements"
+                    :valid-provinces="validProvinces()"
+                    @fight-resolved="resolveFight"
+                  />
+                  <TimeTravelButtons
+                    :game="game"
+                    :popped-turns="poppedTurns"
+                    @back-to-game-start-event="backToGameStart"
+                    @back-to-round-start-event="backToRoundStart"
+                    @back-event="back"
+                    @forward-event="forward"
+                    @forward-to-current-action-event="forwardToCurrentAction"
+                  />
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col
+                  cols="11"
+                  class="mx-auto"
+                >
+                  <ControlPanel
+                    :game="game"
+                    :choose-import-type="importProvince"
+                    :controlling-player-name="controllingPlayerName"
+                    :profile="profile"
+                    :import-placements="importPlacements"
+                    :game-data="gameData"
+                    :traded-in-bond-nation="tradedInBondNation"
+                    :traded-in-value="tradedInValue"
+                    :paused="paused"
+                    :hosting-this-game="hostingThisGame"
+                    @tick="tickWithAction"
+                    @end-maneuver="endManeuver"
+                    @choose-import-type="makeImportTypeChoice"
+                    @run-import="runImport"
+                    @skip-build-factory="skipBuildFactory"
+                    @purchase-bond="purchaseBond"
+                    @toggle-trade-in="toggleTradeIn"
+                  />
+                </v-col>
+              </v-row>
+              <v-row
+                v-if="!game.winner"
+                style="margin-bottom: 50px"
+              >
+                <v-col>
+                  <Rondel
+                    :game="game"
+                    :name="profile.username"
+                    :paused="paused"
+                    :hosting-this-game="hostingThisGame"
+                    @tick-with-action="tickWithAction"
+                  />
+                </v-col>
+              </v-row>
+            </v-sheet>
+            <div v-if="game.winner">
+              <!-- <NationControlChart :game="game" /> -->
             </div>
-          </v-col>
-        </v-row>
-      </v-sheet>
-      <div v-if="game.winner">
-      <!-- <NationControlChart :game="game" /> -->
-      </div>
-      <GameLog
-        :log="game.annotatedLog"
-        :log-timestamps="logTimestamps"
-        :board="board"
-      />
+          </v-main>
+        </v-layout>
+      </v-card>
     </v-sheet>
     <div v-else-if="gameCancelled()">
       This game was cancelled by the host
@@ -409,11 +440,14 @@ export default {
     controllingPlayerName: '',
     currentPlayer: {},
     game: {},
+    gameLogDialog: false,
     gameStarted: false,
     importPlacements: [],
     joinedGame: false,
     logTimestamps: [],
     maneuverOrigin: '',
+    nationDialog: false,
+    playerDialog: false,
     poppedTurns: [],
     provinceWithFight: '',
     silenceAudio: true,

@@ -2,9 +2,9 @@
   <v-sheet
     border
     rounded
-    class="pa-2 ma-2"
+    class="pa-2"
   >
-    <v-row justify="center">
+    <v-row>
       <v-col
         v-if="canUndo()"
       >
@@ -125,10 +125,11 @@
           Do not block canal
         </v-btn>
       </v-col>
-      <v-col>
+      <v-col
+        v-if="!paused && game.buildingFactory
+          && (profile.username === controllingPlayerName || (game.soloMode && hostingThisGame))"
+      >
         <v-btn
-          v-if="!paused && game.buildingFactory
-            && (profile.username === controllingPlayerName || (game.soloMode && hostingThisGame))"
           color="primary-darken-1"
           @click="$emit('skipBuildFactory')"
         >
