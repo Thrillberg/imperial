@@ -1,7 +1,7 @@
 <template>
   <v-row>
     <v-col
-      cols="3"
+      cols="4"
       offset-sm="4"
     >
       <svg
@@ -27,11 +27,11 @@
       </svg>
     </v-col>
 
-    <v-col cols="3">
-      <v-card
-        v-if="!!helperText"
-        color="secondary"
-      >
+    <v-col
+      v-if="!!helperText"
+      cols="3"
+    >
+      <v-card color="secondary">
         <v-card-text v-if="onInvestorSlot">
           <div
             v-for="[bearer, amount] of bondBearers"
