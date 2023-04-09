@@ -1,24 +1,25 @@
-process.env.NODE_ENV = process.env.NODE_ENV || 'production'
+process.env.NODE_ENV = process.env.NODE_ENV || 'production';
 
-const HtmlWebpackPlugin = require('html-webpack-plugin')
-const webpackConfig = require('./base')
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const webpackConfig = require('./base');
+
 webpackConfig.plugins.push(
   new HtmlWebpackPlugin({
     alwaysWriteToDisk: true,
-    appMountId: "app",
-    favicon: "favicon.ico",
-    inject: "body",
+    appMountId: 'app',
+    favicon: 'favicon.ico',
+    inject: 'body',
     lang: 'en-US',
     meta: {
-      charset: "UTF-8",
-      description: "Play Imperial online",
-      keywords: "imperial, board game, game, online, play",
-      viewport: "width=device-width, initial-scale=1"
+      charset: 'UTF-8',
+      description: 'Play Imperial online',
+      keywords: 'imperial, board game, game, online, play',
+      viewport: 'width=device-width, initial-scale=1',
     },
-    title: "Imperial",
+    title: 'Imperial',
     googleAnalytics: {
-      trackingId: "G-HETMN2G3GE",
-      pageViewOnLoad: true
+      trackingId: 'G-HETMN2G3GE',
+      pageViewOnLoad: true,
     },
     headHtmlSnippet: `
       <!-- Google Tag Manager -->
@@ -28,14 +29,15 @@ webpackConfig.plugins.push(
         'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
         })(window,document,'script','dataLayer','GTM-TPLXHT2');</script>
       <!-- End Google Tag Manager -->
+      <link href="https://cdn.jsdelivr.net/npm/@mdi/font@5.x/css/materialdesignicons.min.css" rel="stylesheet">
     `,
     bodyHtmlSnippet: `
       <!-- Google Tag Manager (noscript) -->
         <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TPLXHT2"
         height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <!-- End Google Tag Manager (noscript) -->
-    `
-  })
+    `,
+  }),
 );
 
-module.exports = webpackConfig
+module.exports = webpackConfig;

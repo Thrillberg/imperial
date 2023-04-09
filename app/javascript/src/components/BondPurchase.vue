@@ -1,36 +1,92 @@
 <template>
-  <div>
-    <div class="text-lg m-2">
-      Purchase a bond - You have {{ game.players[currentPlayer].cash }}m in cash.
-    </div>
-    <div class="flex flex-wrap">
-      <div
-        v-for="bond of game.availableBonds"
-        :key="bond.nation+bond.cost"
-      >
-        <Bond
-          v-if="canBePurchased(bond)"
-          :bond="bond"
-          :can-be-purchased="true"
-          class="cursor-pointer"
-          :is-being-applied-to-trade-in="tradedInValue > 0"
-          :traded-in-value="tradedInValue"
-          @click="purchase(bond)"
-        />
-        <Bond
-          v-else
-          :bond="bond"
-          :filter="'grayscale'"
-        />
-      </div>
-    </div>
-    <div
-      class="rounded m-2 p-2 bg-green-800 text-white cursor-pointer inline-block mt-8"
-      @click="skipBondPurchase"
-    >
-      Do not buy a bond
-    </div>
-  </div>
+  <v-dialog
+    v-model="dialog"
+    width="50%"
+  >
+    <template #activator="{ props }">
+      <v-col>
+        <v-btn
+          color="primary"
+          v-bind="props"
+        >
+          Buy a bond
+        </v-btn>
+      </v-col>
+      <v-col>
+        <v-btn
+          color="error"
+          @click="skipBondPurchase"
+        >
+          Do not buy a bond
+        </v-btn>
+      </v-col>
+    </template>
+
+    <v-card>
+      <v-card-title>
+        <v-toolbar color="surface">
+          Purchase a bond - You have {{ game.players[currentPlayer].cash }}m in cash.
+
+          <template #append>
+            <v-btn
+              icon="mdi-close"
+              @click="dialog = false"
+            />
+          </template>
+        </v-toolbar>
+      </v-card-title>
+      <v-card-text>
+        <v-row>
+          <v-col cols="9">
+            <v-sheet
+              v-for="bond of game.availableBonds"
+              :key="bond.nation+bond.cost"
+              class="ma-2 d-inline-block"
+            >
+              <Bond
+                v-if="canBePurchased(bond)"
+                :bond="bond"
+                :can-be-purchased="true"
+                :is-being-applied-to-trade-in="tradedInValue > 0"
+                :traded-in-value="tradedInValue"
+                @click="purchase(bond)"
+              />
+              <Bond
+                v-else
+                :bond="bond"
+                :filter="'grayscale'"
+              />
+            </v-sheet>
+          </v-col>
+          <v-divider vertical />
+          <v-col cols="3">
+            Your bonds that can be upgraded
+            <v-sheet
+              v-for="bond of upgradeableBonds"
+              :key="bond.nation+bond.cost"
+              class="ma-2 d-inline-block"
+            >
+              <Bond
+                :bond="bond"
+                :is-being-applied-to-trade-in="tradedInValue > 0"
+                :traded-in-value="tradedInValue"
+                @click="$emit('toggleTradeIn', bond)"
+              />
+            </v-sheet>
+          </v-col>
+        </v-row>
+      </v-card-text>
+      <v-card-actions>
+        <v-btn
+          color="primary-darken-1"
+          block
+          @click="skipBondPurchase"
+        >
+          Do not buy a bond
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script>
@@ -46,10 +102,35 @@ export default {
     tradedInBondNation: { type: String, default: '' },
     tradedInValue: { type: Number, default: 0 },
   },
-  emits: ['purchaseBond', 'skip'],
+  emits: ['purchaseBond', 'skip', 'toggleTradeIn'],
+  data() { return { dialog: true }; },
+  computed: {
+    upgradeableBonds() {
+      const upgradeableBonds = [];
+
+      for (const playerBond of this.game.players[this.currentPlayer].bonds) {
+        let availableBondsMatchNation = false;
+        for (const availableBond of this.game.availableActions) {
+          if (availableBond.payload?.nation === playerBond.nation) {
+            availableBondsMatchNation = true;
+          }
+        }
+
+        if (
+          this.game.players[this.currentPlayer].bonds.has(playerBond)
+          && availableBondsMatchNation
+        ) {
+          upgradeableBonds.push(playerBond);
+        }
+      }
+
+      return upgradeableBonds;
+    },
+  },
   methods: {
     canBePurchased(bond) {
       let canBePurchased = false;
+
       for (const action of this.game.availableActions) {
         if (
           action.payload.cost === bond.cost

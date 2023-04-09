@@ -1,62 +1,35 @@
 <template>
-  <div class="container mx-auto">
-    <div class="mt-10">
-      <div class="flex justify-around items-start">
-        <div
-          v-if="gamesFetched"
-          class="sm:w-3/4"
-        >
-          <div class="bg-green-200 p-4 my-2 flex">
-            <a href="http://discord.gg/VnxKwuQmg8">
-              <DiscordLogo
-                height="50"
-                fill="#7289DA"
-                class="mr-2"
-              />
-            </a>
-            <p>
-              Please join us <b><a
-                href="https://discord.gg/VnxKwuQmg8"
-                class="underline"
-              >on Discord</a></b> if you want to find others to play a live or asynchronous game!
-            </p>
-          </div>
-          <YourGames
-            v-if="profile.registered || profile.anonymityConfirmedAt"
-            :games="yourGames"
-            :profile="profile"
-          />
-          <UnstartedGameList
-            :games="unstartedGames"
-            :profile="profile"
-          />
-          <CurrentGames :games="currentGames" />
-          <CurrentSoloGames :games="currentSoloGames" />
-          <div class="px-4">
-            <router-link to="/cloned_games">
-              <b class="underline">Your Cloned Games</b>
-            </router-link>
-          </div>
-          <div class="px-4">
-            <router-link to="/games">
-              <b class="underline">All Games</b>
-            </router-link>
-          </div>
-          <div class="px-4">
-            <router-link to="/finished_games">
-              <b class="underline">All Finished Games</b>
-            </router-link>
-          </div>
-        </div>
-        <div
-          v-else
-          class="sm:w-3/4 text-center text-2xl mt-8"
-        >
-          Loading games
-        </div>
-      </div>
+  <v-container v-if="gamesFetched">
+    <YourGames
+      v-if="profile.registered || profile.anonymityConfirmedAt"
+      :games="yourGames"
+      :profile="profile"
+    />
+    <UnstartedGameList
+      :games="unstartedGames"
+      :profile="profile"
+    />
+    <CurrentGames :games="currentGames" />
+    <CurrentSoloGames :games="currentSoloGames" />
+    <div class="px-4">
+      <router-link to="/cloned_games">
+        <b class="underline">Your Cloned Games</b>
+      </router-link>
     </div>
-  </div>
+    <div class="px-4">
+      <router-link to="/games">
+        <b class="underline">All Games</b>
+      </router-link>
+    </div>
+    <div class="px-4">
+      <router-link to="/finished_games">
+        <b class="underline">All Finished Games</b>
+      </router-link>
+    </div>
+  </v-container>
+  <v-container v-else>
+    Loading games
+  </v-container>
 </template>
 
 <script>
@@ -65,15 +38,16 @@ import CurrentSoloGames from '../components/CurrentSoloGames.vue';
 import UnstartedGameList from '../components/UnstartedGameList.vue';
 import YourGames from '../components/YourGames.vue';
 
-import DiscordLogo from '../assets/discord_logo.svg';
-
 export default {
   name: 'Home',
   components: {
-    CurrentGames, CurrentSoloGames, UnstartedGameList, YourGames, DiscordLogo,
+    CurrentGames, CurrentSoloGames, UnstartedGameList, YourGames,
   },
   props: {
-    profile: Object, users: Array, games: Array, gamesFetched: Boolean,
+    games: { type: Array, default: () => [] },
+    gamesFetched: { type: Boolean, default: false },
+    profile: { type: Object, default: () => {} },
+    users: { type: Array, default: () => [] },
   },
   computed: {
     yourGames() {
