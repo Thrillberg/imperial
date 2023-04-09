@@ -1,194 +1,270 @@
 <template>
-  <v-sheet>
-    <v-row align="center">
-      <v-col>
-        <span class="text-h5 mr-2">{{ gameData.name }} <span v-if="gameData.clonedFromGame">(clone)</span></span>
-        <v-btn
+  <div>
+    <div v-if="gameLoaded">
+      <div class="p-2">
+        <b>{{ gameData.name }} <span v-if="gameData.clonedFromGame">(clone)</span></b>
+        <span
           v-if="gameData.clonedFromGame && gameStarted"
-          size="x-small"
+          class="cursor-pointer underline text-xs"
           @click="goToSourceGame"
         >
           Back to source game
-        </v-btn>
-        <v-btn
+        </span>
+        <span
           v-else-if="gameStarted"
-          size="x-small"
+          class="cursor-pointer underline text-xs"
           @click="cloneGame"
         >
           Clone game
-        </v-btn>
-      </v-col>
-    </v-row>
-    <v-sheet v-if="gameStarted">
-      <TurnStatus
-        :game="game"
-        :profile="profile"
-        :controlling-player-name="controllingPlayerName"
-        :paused="paused"
-      />
-
-      <v-row>
-        <v-col>
-          <v-card>
-            <v-layout>
-              <v-sheet>
-                <div class="d-flex">
-                  <v-tabs
-                    v-model="tab"
-                    optional
-                    direction="vertical"
-                    color="primary-darken-1"
-                  >
-                    <v-tab>
-                      <v-icon size="x-large">
-                        mdi-fullscreen
-                      </v-icon>
-                    </v-tab>
-                    <v-tab value="nations">
-                      <v-icon size="x-large">
-                        mdi-flag
-                      </v-icon>
-                    </v-tab>
-                    <v-tab value="players">
-                      <v-icon size="x-large">
-                        mdi-account-group
-                      </v-icon>
-                    </v-tab>
-                    <v-tab value="gameLog">
-                      <v-icon size="x-large">
-                        mdi-script-text-outline
-                      </v-icon>
-                    </v-tab>
-                  </v-tabs>
-
-                  <v-window v-model="tab">
-                    <v-window-item />
-                    <v-window-item value="nations">
-                      <NationComponent
-                        v-for="[nation] of game.nations"
-                        :key="nation.value"
-                        :current-nation="game.currentNation.value"
-                        :nation="nation.value"
-                        :treasury="game.nations.get(nation).treasury"
-                        :can-pay-out="canPayOut(nation)"
-                        :power-points="game.nations.get(nation).powerPoints"
-                        :controller="game.nations.get(nation).controller"
-                        :current-player="profile.username"
-                        :base-game="game.baseGame"
-                        :winner="game.winner"
-                      />
-                    </v-window-item>
-
-                    <v-window-item value="players">
-                      <GameDetails
-                        :game="game"
-                        :game-data="gameData"
-                        :controlling-player-name="controllingPlayerName"
-                        :profile="profile"
-                        :online-users="users"
-                        :paused="paused"
-                        :hosting-this-game="hostingThisGame"
-                        @tick="tickWithAction"
-                        @toggle-trade-in="toggleTradeIn"
-                      />
-                    </v-window-item>
-
-                    <v-window-item value="gameLog">
-                      <GameLog
-                        :log="game.annotatedLog"
-                        :log-timestamps="logTimestamps"
-                        :board="board"
-                      />
-                    </v-window-item>
-                  </v-window>
-                </div>
-              </v-sheet>
-              <v-main>
-                <v-sheet>
-                  <v-row>
-                    <v-col
-                      cols="12"
-                      class="mx-auto"
-                    >
-                      <Board
-                        :config="boardConfig"
-                        :game="game"
-                        :game-started="gameStarted"
-                        :paused="paused"
-                        :profile="profile"
-                        :province-with-fight="provinceWithFight"
-                        :select-province="selectProvince"
-                        :units-to-import="importPlacements"
-                        :valid-provinces="validProvinces()"
-                        @fight-resolved="resolveFight"
-                      />
-                      <TimeTravelButtons
-                        :game="game"
-                        :popped-turns="poppedTurns"
-                        @back-to-game-start-event="backToGameStart"
-                        @back-to-round-start-event="backToRoundStart"
-                        @back-event="back"
-                        @forward-event="forward"
-                        @forward-to-current-action-event="forwardToCurrentAction"
-                      />
-                    </v-col>
-                  </v-row>
-                  <v-row>
-                    <v-col
-                      cols="11"
-                      class="mx-auto"
-                    >
-                      <ControlPanel
-                        :game="game"
-                        :choose-import-type="importProvince"
-                        :controlling-player-name="controllingPlayerName"
-                        :profile="profile"
-                        :import-placements="importPlacements"
-                        :game-data="gameData"
-                        :traded-in-bond-nation="tradedInBondNation"
-                        :traded-in-value="tradedInValue"
-                        :paused="paused"
-                        :hosting-this-game="hostingThisGame"
-                        @tick="tickWithAction"
-                        @end-maneuver="endManeuver"
-                        @choose-import-type="makeImportTypeChoice"
-                        @run-import="runImport"
-                        @skip-build-factory="skipBuildFactory"
-                        @purchase-bond="purchaseBond"
-                        @toggle-trade-in="toggleTradeIn"
-                      />
-                    </v-col>
-                  </v-row>
-                  <v-row
-                    v-if="!game.winner"
-                    style="margin-bottom: 50px"
-                  >
-                    <v-col>
-                      <Rondel
-                        :game="game"
-                        :name="profile.username"
-                        :paused="paused"
-                        :hosting-this-game="hostingThisGame"
-                        @tick-with-action="tickWithAction"
-                      />
-                    </v-col>
-                  </v-row>
-                </v-sheet>
-                <div v-if="game.winner">
-                  <!-- <NationControlChart :game="game" /> -->
-                </div>
-              </v-main>
-            </v-layout>
-          </v-card>
-        </v-col>
-      </v-row>
-    </v-sheet>
-    <div v-else-if="gameCancelled()">
-      This game was cancelled by the host
-    </div>
-    <div v-else>
-      <v-row>
-        <v-col cols="8">
+        </span>
+      </div>
+      <div
+        v-if="gameStarted"
+        class="flex flex-col"
+      >
+        <TurnStatus
+          :game="game"
+          :profile="profile"
+          :controlling-player-name="controllingPlayerName"
+          :paused="paused"
+        />
+        <div
+          v-if="game.baseGame === 'imperial' || game.baseGame === 'imperialAsia'"
+          class="flex flex-wrap items-start"
+        >
+          <div
+            class="flex flex-wrap w-1/12 divide-y divide-gray-500 hidden \
+              md:inline-block lg:inline-block xl:inline-block 2xl:inline-block"
+          >
+            <NationComponent
+              v-for="[nation] of game.nations"
+              :key="nation.value"
+              :current-nation="game.currentNation.value"
+              :nation="nation.value"
+              :treasury="game.nations.get(nation).treasury"
+              :can-pay-out="canPayOut(nation)"
+              :power-points="game.nations.get(nation).powerPoints"
+              :controller="game.nations.get(nation).controller"
+              :current-player="profile.username"
+              :base-game="game.baseGame"
+              :winner="game.winner"
+            />
+          </div>
+          <div
+            class="overflow-hidden"
+            :class="mapWidth()"
+          >
+            <Board
+              :config="boardConfig"
+              :game="game"
+              :game-started="gameStarted"
+              :paused="paused"
+              :profile="profile"
+              :province-with-fight="provinceWithFight"
+              :select-province="selectProvince"
+              :units-to-import="importPlacements"
+              :valid-provinces="validProvinces()"
+              @fight-resolved="resolveFight"
+            />
+            <TaxChart
+              :show-bonus="game.baseGame === 'imperial2030'"
+              :taxes="taxes()"
+            />
+            <TimeTravelButtons
+              :game="game"
+              :popped-turns="poppedTurns"
+              @back-to-game-start-event="backToGameStart"
+              @back-to-round-start-event="backToRoundStart"
+              @back-event="back"
+              @forward-event="forward"
+              @forward-to-current-action-event="forwardToCurrentAction"
+            />
+          </div>
+          <div
+            class="text-sm"
+            :class="gameDetailsWidth()"
+          >
+            <div
+              class="flex flex-wrap divide-y divide-gray-500 \
+              md:hidden lg:hidden xl:hidden 2xl:hidden"
+            >
+              <NationComponent
+                v-for="[nation] of game.nations"
+                :key="nation.value"
+                :current-nation="game.currentNation.value"
+                :nation="nation.value"
+                :treasury="game.nations.get(nation).treasury"
+                :can-pay-out="canPayOut(nation)"
+                :power-points="game.nations.get(nation).powerPoints"
+                :controller="game.nations.get(nation).controller"
+                :current-player="profile.username"
+                :base-game="game.baseGame"
+                :winner="game.winner"
+              />
+            </div>
+            <GameDetails
+              :game="game"
+              :game-data="gameData"
+              :controlling-player-name="controllingPlayerName"
+              :profile="profile"
+              :online_users="users"
+              :paused="paused"
+              :hosting-this-game="hostingThisGame"
+              @tick="tickWithAction"
+              @toggle-trade-in="toggleTradeIn"
+            />
+            <ControlPanel
+              :game="game"
+              :choose-import-type="importProvince"
+              :controlling-player-name="controllingPlayerName"
+              :profile="profile"
+              :import-placements="importPlacements"
+              :game-data="gameData"
+              :traded-in-bond-nation="tradedInBondNation"
+              :traded-in-value="tradedInValue"
+              :paused="paused"
+              :hosting-this-game="hostingThisGame"
+              @tick="tickWithAction"
+              @end-maneuver="endManeuver"
+              @choose-import-type="makeImportTypeChoice"
+              @run-import="runImport"
+              @skip-build-factory="skipBuildFactory"
+              @purchase-bond="purchaseBond"
+            />
+            <div v-if="!game.winner">
+              <Rondel
+                :game="game"
+                :name="profile.username"
+                :paused="paused"
+                :hosting-this-game="hostingThisGame"
+                @tick-with-action="tickWithAction"
+              />
+            </div>
+          </div>
+        </div>
+        <div
+          v-if="game.baseGame === 'imperial2030'"
+          class="flex flex-wrap items-start"
+        >
+          <div
+            class="border border-gray-500 rounded overflow-hidden"
+            :class="mapWidth()"
+          >
+            <Board
+              :config="boardConfig"
+              :game="game"
+              :game-started="gameStarted"
+              :paused="paused"
+              :profile="profile"
+              :province-with-fight="provinceWithFight"
+              :select-province="selectProvince"
+              :units-to-import="importPlacements"
+              :valid-provinces="validProvinces()"
+              @fight-resolved="resolveFight"
+            />
+            <TimeTravelButtons
+              :game="game"
+              :popped-turns="poppedTurns"
+              @back-to-game-start-event="backToGameStart"
+              @back-to-round-start-event="backToRoundStart"
+              @back-event="back"
+              @forward-event="forward"
+              @forward-to-current-action-event="forwardToCurrentAction"
+            />
+            <ControlPanel
+              :game="game"
+              :choose-import-type="importProvince"
+              :controlling-player-name="controllingPlayerName"
+              :profile="profile"
+              :import-placements="importPlacements"
+              :game-data="gameData"
+              :traded-in-bond-nation="tradedInBondNation"
+              :traded-in-value="tradedInValue"
+              :paused="paused"
+              :hosting-this-game="hostingThisGame"
+              @tick="tickWithAction"
+              @end-maneuver="endManeuver"
+              @choose-import-type="makeImportTypeChoice"
+              @run-import="runImport"
+              @skip-build-factory="skipBuildFactory"
+              @purchase-bond="purchaseBond"
+            />
+          </div>
+          <div
+            class="border border-gray-500 rounded text-sm"
+            :class="gameDetailsWidth()"
+          >
+            <div class="flex flex-wrap justify-between">
+              <NationComponent
+                v-for="[nation] of game.nations"
+                :key="nation.value"
+                :current-nation="game.baseGame === 'imperialAsia'
+                  && game.currentNation.value === 'CN' ? 'CNAsia' : game.currentNation.value"
+                :nation="game.baseGame === 'imperialAsia'
+                  && nation.value === 'CN' ? 'CNAsia' : nation.value"
+                :treasury="game.nations.get(nation).treasury"
+                :can-pay-out="canPayOut(nation)"
+                :power-points="game.nations.get(nation).powerPoints"
+                :controller="game.nations.get(nation).controller"
+                :current-player="profile.username"
+                :base-game="game.baseGame"
+                :winner="game.winner"
+              />
+            </div>
+            <TaxChart
+              :show-bonus="game.baseGame === 'imperial2030'"
+              :taxes="taxes()"
+            />
+            <GameDetails
+              :game="game"
+              :game-data="gameData"
+              :controlling-player-name="controllingPlayerName"
+              :profile="profile"
+              :online_users="users"
+              :paused="paused"
+              :hosting-this-game="hostingThisGame"
+              @tick="tickWithAction"
+              @toggle-trade-in="toggleTradeIn"
+            />
+            <div v-if="!game.winner">
+              <Rondel
+                :game="game"
+                :name="profile.username"
+                :paused="paused"
+                :hosting-this-game="hostingThisGame"
+                @tick-with-action="tickWithAction"
+              />
+            </div>
+          </div>
+        </div>
+        <div v-if="game.winner">
+          <!-- <NationControlChart :game="game" /> -->
+        </div>
+        <div class="m-2">
+          Observers:
+          <ul>
+            <li
+              v-for="observer in observers"
+              :key="observer"
+            >
+              {{ observer }}
+            </li>
+          </ul>
+        </div>
+        <GameLog
+          :log="game.annotatedLog"
+          :log-timestamps="logTimestamps"
+          :board="board"
+        />
+      </div>
+      <div v-else-if="gameCancelled()">
+        This game was cancelled by the host
+      </div>
+      <div
+        v-else
+        class="flex flex-wrap justify-between"
+      >
+        <div class="w-full sm:w-2/3 border border-gray-500 rounded overflow-hidden">
           <Board
             :config="boardConfig"
             :game="game"
@@ -201,105 +277,121 @@
             :valid-provinces="validProvinces()"
             @fight-resolved="resolveFight"
           />
-        </v-col>
-        <div v-if="hostingThisGame">
-          <p>
-            <b>Players:</b>
-            <span>{{ playersInGame.join(", ") }}</span>
-          </p>
-          <p>
-            <b>Base game:</b>
-            <span>{{ baseGameString(gameData.baseGame) }}</span>
-          </p>
-          <p>
-            <b>Variant:</b>
-            <span>{{ variant(gameData.variant) }}</span>
-          </p>
-          <v-btn
-            v-if="playersInGame.length === 1"
-            color="primary-darken-1"
-            class="mt-2"
-            block
-            @click="startGame"
-          >
-            Start Solo Game (sandbox mode)
-          </v-btn>
-          <v-btn
-            v-else
-            color="primary-darken-1"
-            block
-            @click="startGame"
-          >
-            Start Game
-          </v-btn>
-          <v-btn
-            color="error"
-            class="mt-2"
-            block
-            @click="cancelGame"
-          >
-            Cancel Game
-          </v-btn>
-          <v-btn
-            v-for="player in otherPlayersInGame()"
-            :key="player"
-            color="error"
-            block
-            @click="boot(player)"
-          >
-            Boot {{ player }}
-          </v-btn>
         </div>
-        <div v-else-if="playingInThisGame">
-          <p>
-            <b>Players:</b>
-            <span>{{ playersInGame.join(", ") }}</span>
-          </p>
-          <p>
-            <b>Base game:</b>
-            <span>{{ baseGameString(gameData.baseGame) }}</span>
-          </p>
-          <p>
-            <b>Variant:</b>
-            <span>{{ variant(gameData.variant) }}</span>
-          </p>
-          <div class="text-2xl m-2">
-            Game not yet started!
-          </div>
-          <button
-            class="rounded bg-red-500 text-white cursor-pointer \
-              block text-2xl hover:bg-red-600 p-5 m-5 mx-auto"
-            @click="leaveGame(profile.username)"
-          >
-            Leave game
-          </button>
-        </div>
-        <div v-else-if="!joinedGame">
-          <div class="mx-auto p-2 text-center">
-            <p>
-              <b>Players:</b>
-              <span>{{ playersInGame.join(", ") }}</span>
-            </p>
-            <p>
-              <b>Base game:</b>
-              <span>{{ baseGameString(gameData.baseGame) }}</span>
-            </p>
-            <p>
-              <b>Variant:</b>
-              <span>{{ variant(gameData.variant) }}</span>
-            </p>
-          </div>
-          <button
-            class="rounded bg-green-800 text-white cursor-pointer \
+        <div class="w-full sm:w-1/3 border border-gray-500 rounded">
+          <div v-if="hostingThisGame">
+            <div class="mx-auto p-2 text-center">
+              <p>
+                <b>Players:</b>
+                <span>{{ playersInGame.join(", ") }}</span>
+              </p>
+              <p>
+                <b>Base game:</b>
+                <span>{{ baseGameString(gameData.baseGame) }}</span>
+              </p>
+              <p>
+                <b>Variant:</b>
+                <span>{{ variant(gameData.variant) }}</span>
+              </p>
+            </div>
+            <button
+              v-if="playersInGame.length === 1"
+              class="rounded bg-green-800 text-white cursor-pointer \
               block text-2xl hover:bg-green-900 p-10 m-10 mx-auto"
-            @click="joinGame"
-          >
-            Join This Game
-          </button>
+              @click="startGame"
+            >
+              Start Solo Game
+              <div class="text-xl">
+                (sandbox mode)
+              </div>
+            </button>
+            <button
+              v-else
+              class="rounded bg-green-800 text-white cursor-pointer \
+              block text-2xl hover:bg-green-900 p-10 m-10 mx-auto"
+              @click="startGame"
+            >
+              Start Game
+            </button>
+            <button
+              class="rounded bg-red-500 text-white cursor-pointer \
+              block text-2xl hover:bg-red-600 p-5 m-5 mx-auto"
+              @click="cancelGame"
+            >
+              Cancel Game
+            </button>
+            <div
+              v-for="player in otherPlayersInGame(game.id)"
+              :key="player"
+            >
+              <button
+                class="rounded bg-red-500 text-white cursor-pointer \
+                block text-2xl hover:bg-red-600 p-5 m-5 mx-auto"
+                @click="boot(player)"
+              >
+                Boot {{ player }}
+              </button>
+            </div>
+          </div>
+          <div v-else-if="playingInThisGame">
+            <div class="mx-auto p-2 text-center">
+              <p>
+                <b>Players:</b>
+                <span>{{ playersInGame.join(", ") }}</span>
+              </p>
+              <p>
+                <b>Base game:</b>
+                <span>{{ baseGameString(gameData.baseGame) }}</span>
+              </p>
+              <p>
+                <b>Variant:</b>
+                <span>{{ variant(gameData.variant) }}</span>
+              </p>
+            </div>
+            <div class="text-2xl m-2">
+              Game not yet started!
+            </div>
+            <button
+              class="rounded bg-red-500 text-white cursor-pointer \
+              block text-2xl hover:bg-red-600 p-5 m-5 mx-auto"
+              @click="leaveGame(profile.username)"
+            >
+              Leave game
+            </button>
+          </div>
+          <div v-else-if="!joinedGame">
+            <div class="mx-auto p-2 text-center">
+              <p>
+                <b>Players:</b>
+                <span>{{ playersInGame.join(", ") }}</span>
+              </p>
+              <p>
+                <b>Base game:</b>
+                <span>{{ baseGameString(gameData.baseGame) }}</span>
+              </p>
+              <p>
+                <b>Variant:</b>
+                <span>{{ variant(gameData.variant) }}</span>
+              </p>
+            </div>
+            <button
+              class="rounded bg-green-800 text-white cursor-pointer \
+              block text-2xl hover:bg-green-900 p-10 m-10 mx-auto"
+              @click="joinGame"
+            >
+              Join This Game
+            </button>
+          </div>
         </div>
-      </v-row>
+      </div>
     </div>
-  </v-sheet>
+    <div
+      v-else
+      class="text-center text-2xl mt-8"
+    >
+      Loading game
+    </div>
+  </div>
 </template>
 
 <script>
@@ -317,6 +409,7 @@ import GameDetails from '../components/GameDetails.vue';
 import GameLog from '../components/GameLog.vue';
 import NationComponent from '../components/NationComponent.vue';
 import Rondel from '../components/Rondel.vue';
+import TaxChart from '../components/TaxChart.vue';
 import TimeTravelButtons from '../components/TimeTravelButtons.vue';
 import TurnStatus from '../components/TurnStatus.vue';
 
@@ -342,6 +435,7 @@ export default {
     NationComponent,
     // NationControlChart,
     Rondel,
+    TaxChart,
     TimeTravelButtons,
     TurnStatus,
   },
@@ -364,15 +458,7 @@ export default {
     }
     next();
   },
-  props: {
-    env: { type: String, default: '' },
-    games: { type: Array, default: () => [] },
-    gameData: { type: Object, default: () => {} },
-    observers: { type: Array, default: () => [] },
-    profile: { type: Object, default: () => {} },
-    users: { type: Array, default: () => [] },
-  },
-  emits: ['receiveGameData'],
+  props: ['profile', 'users', 'gameData', 'games', 'observers', 'env'],
   data: () => ({
     importProvince: '',
     board: {},
@@ -380,18 +466,15 @@ export default {
     controllingPlayerName: '',
     currentPlayer: {},
     game: {},
-    gameLogDialog: false,
+    gameLoaded: false,
     gameStarted: false,
     importPlacements: [],
     joinedGame: false,
     logTimestamps: [],
     maneuverOrigin: '',
-    nationsCard: false,
-    playerDialog: false,
     poppedTurns: [],
     provinceWithFight: '',
     silenceAudio: true,
-    tab: null,
     tradedInBondNation: '',
     tradedInValue: 0,
   }),
@@ -574,6 +657,7 @@ export default {
         }
         apiClient.updateWinner(this.$route.params.id, this.game.winner, scores);
       }
+      this.gameLoaded = true;
       this.silenceAudio = false;
     },
     validProvinces() {
@@ -776,24 +860,24 @@ export default {
         new Howl({ src: [notification] }).play();
       }
     },
-    // mapWidth() {
-    //   if (this.game.baseGame === 'imperial' || this.game.baseGame === 'imperialAsia') {
-    //     return 'w-full sm:w-7/12';
-    //   } if (this.game.baseGame === 'imperial2030') {
-    //     return 'w-full';
-    //   }
+    mapWidth() {
+      if (this.game.baseGame === 'imperial' || this.game.baseGame === 'imperialAsia') {
+        return 'w-full sm:w-7/12';
+      } if (this.game.baseGame === 'imperial2030') {
+        return 'w-full';
+      }
 
-    //   return '';
-    // },
-    // gameDetailsWidth() {
-    //   if (this.game.baseGame === 'imperial' || this.game.baseGame === 'imperialAsia') {
-    //     return 'w-full sm:w-1/3';
-    //   } if (this.game.baseGame === 'imperial2030') {
-    //     return 'w-full';
-    //   }
+      return '';
+    },
+    gameDetailsWidth() {
+      if (this.game.baseGame === 'imperial' || this.game.baseGame === 'imperialAsia') {
+        return 'w-full sm:w-1/3';
+      } if (this.game.baseGame === 'imperial2030') {
+        return 'w-full';
+      }
 
-    //   return '';
-    // },
+      return '';
+    },
     baseGameString(baseGame) {
       switch (baseGame) {
         case 'imperial': return 'Original Imperial';
@@ -870,6 +954,87 @@ export default {
           this.tradedInValue = 0;
         }
       }
+    },
+    taxes() {
+      if (this.game.baseGame === 'imperial') {
+        return [15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5].map((slot) => {
+          const nations = [];
+          for (const [nation, data] of this.game.nations) {
+            if (data.taxChartPosition === slot) {
+              nations.push(nation.value);
+            }
+          }
+          const powerPointIncrease = slot - 5;
+          return { slot, nations, powerPointIncrease };
+        });
+      } if (this.game.baseGame === 'imperial2030' || this.game.baseGame === 'imperialAsia') {
+        const taxes = [18, 16, 15, 14, 13, 12, 11, 10, 8, 6, 5];
+        return taxes.map((slot, index) => {
+          const nations = [];
+          for (const [nation, data] of this.game.nations) {
+            if (data.taxChartPosition >= slot) {
+              nations.push(nation.value);
+            }
+          }
+          const powerPointIncrease = taxes.length - index - 1;
+          let bonus;
+          switch (slot) {
+            case 5: {
+              bonus = 0;
+              break;
+            }
+            case 6: {
+              bonus = 1;
+              break;
+            }
+            case 8: {
+              bonus = 1;
+              break;
+            }
+            case 10: {
+              bonus = 2;
+              break;
+            }
+            case 11: {
+              bonus = 2;
+              break;
+            }
+            case 12: {
+              bonus = 3;
+              break;
+            }
+            case 13: {
+              bonus = 3;
+              break;
+            }
+            case 14: {
+              bonus = 4;
+              break;
+            }
+            case 15: {
+              bonus = 4;
+              break;
+            }
+            case 16: {
+              bonus = 5;
+              break;
+            }
+            case 18: {
+              bonus = 5;
+              break;
+            }
+            default: {
+              bonus = 0;
+              break;
+            }
+          }
+          return {
+            slot, nations, powerPointIncrease, bonus,
+          };
+        });
+      }
+
+      return {};
     },
   },
 };

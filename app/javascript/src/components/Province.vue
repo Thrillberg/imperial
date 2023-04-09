@@ -9,7 +9,6 @@
     <text
       v-if="mounted && !isImpassable"
       :font-size="fontSize"
-      font-weight="100"
       stroke="#303030"
       text-align="center"
       :x="flagX(0) + (adjustments?.labelX || 0)"

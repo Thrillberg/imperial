@@ -1,93 +1,78 @@
 <template>
-  <v-row class="justify-center">
-    <v-btn-group>
-      <v-btn
-        v-if="game.log.length > 1"
-        size="small"
-        color="secondary"
-        @click="$emit('backToGameStartEvent')"
-      >
-        |◀
-      </v-btn>
-      <v-btn
-        v-else
-        size="small"
-        disabled
-      >
-        |◀
-      </v-btn>
-      <v-btn
-        v-if="game.log.length > 1"
-        size="small"
-        color="secondary"
-        @click="$emit('backToRoundStartEvent')"
-      >
-        ◀◀
-      </v-btn>
-      <v-btn
-        v-else
-        size="small"
-        disabled
-      >
-        ◀◀
-      </v-btn>
-      <v-btn
-        v-if="game.log.length > 1"
-        size="small"
-        color="secondary"
-        @click="$emit('backEvent')"
-      >
-        ◀
-      </v-btn>
-      <v-btn
-        v-else
-        size="small"
-        disabled
-      >
-        ◀
-      </v-btn>
-      <v-btn
-        v-if="poppedTurns.length > 0"
-        size="small"
-        color="secondary"
-        @click="$emit('forwardEvent')"
-      >
-        ▶
-      </v-btn>
-      <v-btn
-        v-else
-        size="small"
-        disabled
-      >
-        ▶
-      </v-btn>
-      <v-btn
-        v-if="poppedTurns.length > 0"
-        size="small"
-        color="secondary"
-        @click="$emit('forwardToCurrentActionEvent')"
-      >
-        ▶|
-      </v-btn>
-      <v-btn
-        v-else
-        size="small"
-        disabled
-      >
-        ▶|
-      </v-btn>
-    </v-btn-group>
-  </v-row>
+  <div class="flex justify-center my-2">
+    <div
+      v-if="game.log.length > 1"
+      class="rounded p-2 mx-2 bg-yellow-100 cursor-pointer"
+      @click="$emit('backToGameStartEvent')"
+    >
+      |◀
+    </div>
+    <div
+      v-else
+      class="rounded p-2 mx-2 bg-gray-600 text-white cursor-not-allowed"
+    >
+      |◀
+    </div>
+    <div
+      v-if="game.log.length > 1"
+      class="rounded p-2 mx-2 bg-yellow-100 cursor-pointer"
+      @click="$emit('backToRoundStartEvent')"
+    >
+      ◀◀
+    </div>
+    <div
+      v-else
+      class="rounded p-2 mx-2 bg-gray-600 text-white cursor-not-allowed"
+    >
+      ◀◀
+    </div>
+    <div
+      v-if="game.log.length > 1"
+      class="rounded p-2 mx-2 bg-yellow-100 cursor-pointer"
+      @click="$emit('backEvent')"
+    >
+      ◀
+    </div>
+    <div
+      v-else
+      class="rounded p-2 mx-2 bg-gray-600 text-white cursor-not-allowed"
+    >
+      ◀
+    </div>
+    <div
+      v-if="poppedTurns.length > 0"
+      class="rounded p-2 mx-2 bg-yellow-100 cursor-pointer"
+      @click="$emit('forwardEvent')"
+    >
+      ▶
+    </div>
+    <div
+      v-else
+      class="rounded p-2 mx-2 bg-gray-600 text-white cursor-not-allowed"
+    >
+      ▶
+    </div>
+    <div
+      v-if="poppedTurns.length > 0"
+      class="rounded p-2 mx-2 bg-yellow-100 cursor-pointer"
+      @click="$emit('forwardToCurrentActionEvent')"
+    >
+      ▶|
+    </div>
+    <div
+      v-else
+      class="rounded p-2 mx-2 bg-gray-600 text-white cursor-not-allowed"
+    >
+      ▶|
+    </div>
+  </div>
 </template>
 
 <script>
 
 export default {
   name: 'TimeTravelButtons',
-  props: {
-    game: { type: Object, default: () => {} },
-    poppedTurns: { type: Array, default: () => [] },
-  },
+  props: ['game', 'poppedTurns'],
   emits: ['forwardToCurrentActionEvent',
     'forwardEvent',
     'backToGameStartEvent',

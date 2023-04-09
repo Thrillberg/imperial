@@ -1,17 +1,16 @@
 <template>
-  <v-list-tile
-    v-for="({action, timestamp}, i) in event"
-    :key="i"
-  >
-    <div class="pt-2" v-if="action.type === 'initialize'">
-      <v-divider />
-      <div class="d-flex justify-space-between">
-        <p><b>{{ action.payload.soloMode ? "Solo game started!" : "Game started!" }}</b></p>
-        <p>{{ timestampToString(timestamp) }}</p>
-      </div>
-      Variant: {{ action.payload.variant || "standard" }}
-      <v-list density="compact">
-        <v-list-item
+  <div class="border border-black bg-gray-100 rounded p-2 m-2 rondel">
+    <div
+      v-for="({action, timestamp}, i) in event"
+      :key="i"
+    >
+      <div v-if="action.type === 'initialize'">
+        <div class="flex justify-between">
+          <p>{{ action.payload.soloMode ? "Solo game started!" : "Game started!" }}</p>
+          <p>{{ timestampToString(timestamp) }}</p>
+        </div>
+        <p>Variant: {{ action.payload.variant || "standard" }}</p>
+        <p
           v-for="(player, innerIndex) in action.payload.players"
           :key="innerIndex"
         >
@@ -26,31 +25,31 @@
             v-if="!action.payload.variant || action.payload.variant === 'standard'"
             v-html="initializeAction(player)"
           />
-        </v-list-item>
-      </v-list>
-    </div>
-    <div class="pt-2" v-else-if="action.type === 'rondel'">
-      <v-divider />
-      <b>Turn {{ index }}: </b>
-      <Flag
-        :nation="getNation(action.payload.nation)"
-        class="inline-block mr-1"
-        width="30"
-        height="20"
-      />
-      <b>{{ action.playerName }}</b>
-      <div class="d-flex justify-space-between">
-        <p>{{ renderAction(action) }}</p>
+        </p>
+      </div>
+      <div v-else-if="action.type === 'rondel'">
+        <b>Turn {{ index }}: </b>
+        <Flag
+          :nation="getNation(action.payload.nation)"
+          class="inline-block mr-1"
+          width="30"
+          height="20"
+        />
+        <b>{{ action.playerName }}</b>
+        <div class="flex justify-between">
+          <p>{{ renderAction(action) }}</p>
+          <p>{{ timestampToString(timestamp) }}</p>
+        </div>
+      </div>
+      <div
+        v-else
+        class="flex justify-between"
+      >
+        <p>- {{ renderAction(action) }}</p>
         <p>{{ timestampToString(timestamp) }}</p>
       </div>
     </div>
-    <div class="pt-1 d-flex justify-space-between"
-      v-else
-    >
-      <p>- {{ renderAction(action) }}</p>
-      <p>{{ timestampToString(timestamp) }}</p>
-    </div>
-  </v-list-tile>
+  </div>
 </template>
 
 <script>
@@ -58,11 +57,8 @@ import { DateTime } from 'luxon';
 
 import {
   capitalize,
-  displayLocationName,
-  displayMonetaryValueInMillions,
-  displayNationName,
-  unitTypeByDestinationPlural,
-  unitTypeByDestinationSingular,
+  displayLocationName, displayNationName, displayMonetaryValueInMillions,
+  unitTypeByDestinationSingular, unitTypeByDestinationPlural,
 } from '../stringify';
 import Flag from './flags/Flag.vue';
 

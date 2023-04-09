@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <div class="p-4">
     <b>All Finished Games</b>
     <div class="flex border-b border-black mt-2">
       <div class="w-1/2">
@@ -25,7 +25,7 @@
         </div>
       </router-link>
     </div>
-  </v-container>
+  </div>
 </template>
 
 <script>

@@ -1,36 +1,115 @@
 <template>
-  <v-sheet
-    border
-    rounded
-    class="pa-2"
-  >
-    <v-row>
-      <v-col
-        v-if="canUndo()"
-      >
-        <v-btn
-          color="secondary"
-          @click="undo"
-        >
-          Undo
-        </v-btn>
-      </v-col>
-      <v-col
+  <div class="flex flex-col sm:flex-row">
+    <button
+      v-if="canUndo()"
+      class="rounded py-2 px-6 m-1 sm:m-4 bg-yellow-300 cursor-pointer self-start"
+      @click="undo"
+    >
+      Undo
+    </button>
+    <div class="flex flex-wrap">
+      <AvailableBonds
         v-if="!purchasingBond"
+        :game="game"
+      />
+      <TaxStatus :game="game" />
+    </div>
+    <div v-if="!paused">
+      <div
+        v-if="game.importing
+          && !chooseImportType
+          && (profile.username === controllingPlayerName || (game.soloMode && hostingThisGame))"
+        class="text-center inline-flex flex-col"
       >
-        <AvailableBonds :game="game" />
-      </v-col>
-      <v-col>
-        <TaxStatus :game="game" />
-      </v-col>
-      <v-col>
-        <TaxChart
-          :show-bonus="game.baseGame === 'imperial2030'"
-          :taxes="taxes()"
-        />
-      </v-col>
+        <button
+          class="rounded py-2 px-6 m-1 sm:m-4 bg-red-500 text-white cursor-pointer"
+          @click="$emit('runImport')"
+        >
+          End import
+        </button>
+        <div class="m-2">
+          You have
+          <b>{{ game.maxImports - importPlacements.length }}</b> imports left.
+        </div>
+      </div>
+      <div
+        v-if="game.importing
+          && !!chooseImportType
+          && (profile.username === controllingPlayerName || (game.soloMode && hostingThisGame))"
+        class="text-center text-lg"
+      >
+        <button
+          class="rounded p-2 m-1 sm:m-4 bg-green-800 text-white cursor-pointer"
+          @click="$emit('chooseImportType', 'army')"
+        >
+          Army
+        </button>
+        <button
+          class="rounded p-2 m-1 sm:m-4 bg-green-800 text-white cursor-pointer"
+          @click="$emit('chooseImportType', 'fleet')"
+        >
+          Fleet
+        </button>
+        <div>Please choose if you want to import an <b>army</b> or a <b>fleet</b>.</div>
+      </div>
+      <button
+        v-if="canEndManeuver"
+        class="rounded py-2 px-6 m-1 sm:m-4 bg-red-500 text-white cursor-pointer self-start"
+        @click="endManeuver"
+      >
+        End maneuver
+      </button>
+      <ConflictHandler
+        :game="game"
+        :profile="profile"
+        :controlling-player-name="controllingPlayerName"
+        :hosting-this-game="hostingThisGame"
+        @tick-with-action="tickWithAction"
+      />
+      <div
+        v-if="canForceInvestor"
+        class="text-center"
+      >
+        <button
+          class="rounded p-2 m-1 sm:m-4 bg-green-800 text-white cursor-pointer"
+          @click="forceInvestor"
+        >
+          Force investor
+        </button>
+        <button
+          class="rounded p-2 m-1 sm:m-4 bg-green-800 text-white cursor-pointer"
+          @click="skipForceInvestor"
+        >
+          Do not force investor
+        </button>
+      </div>
+      <div
+        v-if="canBlockCanal"
+        class="text-center"
+      >
+        <button
+          class="rounded p-2 m-1 sm:m-4 bg-green-800 text-white cursor-pointer"
+          @click="blockCanal"
+        >
+          Block canal
+        </button>
+        <button
+          class="rounded p-2 m-1 sm:m-4 bg-green-800 text-white cursor-pointer"
+          @click="unblockCanal"
+        >
+          Do not block canal
+        </button>
+      </div>
+      <button
+        v-if="game.buildingFactory
+          && (profile.username === controllingPlayerName || (game.soloMode && hostingThisGame))"
+        class="rounded py-2 px-6 m-1 sm:m-4 bg-green-800 text-white cursor-pointer"
+        @click="$emit('skipBuildFactory')"
+      >
+        Skip building a factory
+      </button>
       <BondPurchase
-        v-if="!paused && purchasingBond"
+        v-if="purchasingBond"
         :game="game"
         :current-player="controllingPlayerName"
         :profile="profile"
@@ -38,125 +117,28 @@
         :traded-in-bond-nation="tradedInBondNation"
         @purchase-bond="purchaseBond"
         @skip="skipPurchaseBond"
-        @toggle-trade-in="(bond) => $emit('toggleTradeIn', bond)"
       />
-      <v-col v-if="!paused && canEndManeuver">
-        <v-btn
-          color="error"
-          @click="endManeuver"
-        >
-          End maneuver
-        </v-btn>
-      </v-col>
-      <v-col
-        v-if="!paused && game.importing
-          && !chooseImportType
-          && (profile.username === controllingPlayerName || (game.soloMode && hostingThisGame))"
-      >
-        <v-btn
-          color="error"
-          @click="$emit('runImport')"
-        >
-          End import
-        </v-btn>
-        <div class="m-2">
-          You have
-          <b>{{ game.maxImports - importPlacements.length }}</b> imports left.
-        </div>
-      </v-col>
-      <v-col
-        v-if="!paused && game.importing
-          && !!chooseImportType
-          && (profile.username === controllingPlayerName || (game.soloMode && hostingThisGame))"
-      >
-        <v-row justify="space-evenly">
-          <v-col class="text-center">
-            <v-btn
-              color="primary-darken-1"
-              @click="$emit('chooseImportType', 'army')"
-            >
-              Army
-            </v-btn>
-          </v-col>
-          <v-col class="text-center">
-            <v-btn
-              color="primary-darken-1"
-              @click="$emit('chooseImportType', 'fleet')"
-            >
-              Fleet
-            </v-btn>
-          </v-col>
-        </v-row>
-        Please choose if you want to import an <b>army</b> or a <b>fleet</b>.
-      </v-col>
-      <ConflictHandler
-        v-if="!paused"
-        :game="game"
-        :profile="profile"
-        :controlling-player-name="controllingPlayerName"
-        :hosting-this-game="hostingThisGame"
-        @tick-with-action="tickWithAction"
-      />
-      <v-col v-if="!paused && canForceInvestor">
-        <v-btn
-          color="primary-darken-1"
-          @click="forceInvestor"
-        >
-          Force investor
-        </v-btn>
-        <v-btn
-          color="primary-darken-1"
-          @click="skipForceInvestor"
-        >
-          Do not force investor
-        </v-btn>
-      </v-col>
-      <v-col v-if="!paused && canBlockCanal">
-        <v-btn
-          color="primary-darken-1"
-          @click="blockCanal"
-        >
-          Block canal
-        </v-btn>
-        <v-btn
-          color="primary-darken-1"
-          @click="unblockCanal"
-        >
-          Do not block canal
-        </v-btn>
-      </v-col>
-      <v-col
-        v-if="!paused && game.buildingFactory
-          && (profile.username === controllingPlayerName || (game.soloMode && hostingThisGame))"
-      >
-        <v-btn
-          color="primary-darken-1"
-          @click="$emit('skipBuildFactory')"
-        >
-          Skip building a factory
-        </v-btn>
-      </v-col>
-      <v-col v-if="!paused && destroyingFactory()">
+      <div v-if="destroyingFactory()">
         <div class="text-lg">
           Do you want to destroy the factory at <b>{{ factoryToDestroy }}</b>?
         </div>
         <div class="flex flex-wrap justify-evenly">
-          <v-btn
-            color="primary-darken-1"
+          <button
+            class="rounded p-2 m-1 sm:m-4 bg-green-800 text-white cursor-pointer inline-block mt-8"
             @click="destroyFactory"
           >
             Yes
-          </v-btn>
-          <v-btn
-            color="primary-darken-1"
+          </button>
+          <button
+            class="rounded p-2 m-1 sm:m-4 bg-green-800 text-white cursor-pointer inline-block mt-8"
             @click="skipDestroyFactory"
           >
             No
-          </v-btn>
+          </button>
         </div>
-      </v-col>
-    </v-row>
-  </v-sheet>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -165,13 +147,12 @@ import Action from '../../Domain/action';
 import AvailableBonds from './AvailableBonds.vue';
 import BondPurchase from './BondPurchase.vue';
 import ConflictHandler from './ConflictHandler.vue';
-import TaxChart from './TaxChart.vue';
 import TaxStatus from './TaxStatus.vue';
 
 export default {
   name: 'ControlPanel',
   components: {
-    AvailableBonds, BondPurchase, ConflictHandler, TaxStatus, TaxChart,
+    AvailableBonds, BondPurchase, ConflictHandler, TaxStatus,
   },
   props: {
     game: { type: Object, default: () => {} },
@@ -184,9 +165,8 @@ export default {
     tradedInBondNation: { type: String, default: '' },
     tradedInValue: { type: Number, default: 0 },
     hostingThisGame: { type: Boolean },
-    upgradeableBonds: { type: Array, default: () => [] },
   },
-  emits: ['runImport', 'chooseImportType', 'skipBuildFactory', 'purchaseBond', 'toggleTradeIn', 'endManeuver', 'tick'],
+  emits: ['runImport', 'chooseImportType', 'skipBuildFactory', 'purchaseBond', 'endManeuver', 'tick'],
   data() {
     return { factoryToDestroy: '' };
   },
@@ -328,87 +308,6 @@ export default {
       }
 
       return canUndo;
-    },
-    taxes() {
-      if (this.game.baseGame === 'imperial') {
-        return [15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5].map((slot) => {
-          const nations = [];
-          for (const [nation, data] of this.game.nations) {
-            if (data.taxChartPosition === slot) {
-              nations.push(nation.value);
-            }
-          }
-          const powerPointIncrease = slot - 5;
-          return { slot, nations, powerPointIncrease };
-        });
-      } if (this.game.baseGame === 'imperial2030' || this.game.baseGame === 'imperialAsia') {
-        const taxes = [18, 16, 15, 14, 13, 12, 11, 10, 8, 6, 5];
-        return taxes.map((slot, index) => {
-          const nations = [];
-          for (const [nation, data] of this.game.nations) {
-            if (data.taxChartPosition >= slot) {
-              nations.push(nation.value);
-            }
-          }
-          const powerPointIncrease = taxes.length - index - 1;
-          let bonus;
-          switch (slot) {
-            case 5: {
-              bonus = 0;
-              break;
-            }
-            case 6: {
-              bonus = 1;
-              break;
-            }
-            case 8: {
-              bonus = 1;
-              break;
-            }
-            case 10: {
-              bonus = 2;
-              break;
-            }
-            case 11: {
-              bonus = 2;
-              break;
-            }
-            case 12: {
-              bonus = 3;
-              break;
-            }
-            case 13: {
-              bonus = 3;
-              break;
-            }
-            case 14: {
-              bonus = 4;
-              break;
-            }
-            case 15: {
-              bonus = 4;
-              break;
-            }
-            case 16: {
-              bonus = 5;
-              break;
-            }
-            case 18: {
-              bonus = 5;
-              break;
-            }
-            default: {
-              bonus = 0;
-              break;
-            }
-          }
-          return {
-            slot, nations, powerPointIncrease, bonus,
-          };
-        });
-      }
-
-      return {};
     },
     undo() {
       for (const action of this.game.availableActions) {

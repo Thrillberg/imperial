@@ -1,58 +1,64 @@
 <template>
-  <div class="text-h5">
-    Your Games
-  </div>
-  <v-btn
-    href="/games/new"
-    class="bg-primary-darken-1"
-  >
-    New Game
-  </v-btn>
-  <v-table
-    density="compact"
-    hover
-  >
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Players</th>
-        <th>Current Player</th>
-        <th>Last Move At</th>
-        <th>Variant</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr
-        v-for="game of orderedGames"
-        :key="game.id"
+  <div class="p-4">
+    <b>Your Games</b>
+    <div class="flex border-b border-black mt-2">
+      <div class="w-1/3 sm:w-1/5 mx-2">
+        <b>Name</b>
+      </div>
+      <div class="hidden sm:w-1/5 sm:inline-block mx-2">
+        <b>Players</b>
+      </div>
+      <div class="w-1/3 sm:w-1/5 mx-2">
+        <b>Current Player</b>
+      </div>
+      <div class="w-1/3 sm:w-1/5 mx-2">
+        <b>Last Move At</b>
+      </div>
+      <div class="hidden sm:w-1/5 sm:inline-block mx-2">
+        <b>Variant</b>
+      </div>
+    </div>
+    <a
+      href="/games/new"
+      class="rounded bg-green-800 text-white cursor-pointer
+      block hover:bg-green-900 py-2 px-4 m-2 inline-block"
+    >
+      New Game
+    </a>
+    <div
+      v-for="game of orderedGames"
+      :key="game.id"
+    >
+      <router-link
+        :to="{ path: '/game/' + game.id }"
+        class="flex justify-between items-center py-2"
+        :class="game.winner ? 'bg-gray-200' : 'hover:bg-yellow-100'"
       >
-        <td>
-          <router-link :to="{ path: '/game/' + game.id }">
-            <Star
-              v-if="game.currentPlayerName
-                && game.currentPlayerName === profile.username
-                && !game.winner"
-            />
-            <span>{{ game.name }}</span>
-          </router-link>
-        </td>
-        <td>
+        <div class="w-1/3 sm:w-1/5 mx-2">
+          <Star
+            v-if="game.currentPlayerName
+              && game.currentPlayerName === profile.username
+              && !game.winner"
+          />
+          <span>{{ game.name }}</span>
+        </div>
+        <div class="hidden sm:w-1/5 sm:inline-block mx-2">
           {{ game.players.length }}
-        </td>
-        <td>
+        </div>
+        <div class="w-1/3 sm:w-1/5 mx-2">
           {{ currentPlayer(game) }}
-        </td>
-        <td>
+        </div>
+        <div class="w-1/3 sm:w-1/5 mx-2">
           {{ toTime(game.lastMoveAt) }}
-        </td>
-        <td>
+        </div>
+        <div class="hidden sm:w-1/5 sm:inline-block mx-2">
           {{ variant(game.baseGame) }}
-        </td>
-      </tr>
-    </tbody>
-  </v-table>
-  <div v-if="games.length === 0">
-    Uh oh! You aren't in any active games.
+        </div>
+      </router-link>
+    </div>
+    <div v-if="games.length === 0">
+      Uh oh! You aren't in any active games.
+    </div>
   </div>
 </template>
 

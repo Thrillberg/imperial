@@ -1,33 +1,28 @@
 <template>
-  <v-tooltip
-    :disabled="!canBePurchased"
-    :text="tooltipText"
+  <div
+    :class="'m-1 border-2 border-' + border() +'-500 p-1 tooltip bg-' + backgroundColor()"
+    :style="filter === 'grayscale' ? {filter: 'grayscale(1)'} : {}"
+    @click="$emit('click', bond)"
   >
-    <template #activator="{ props }">
-      <v-sheet
-        class="d-inline-block mx-2 px-2 py-2"
-        :color="backgroundColor()"
-        :elevation="isBeingAppliedToTradeIn ? 10 : 0"
-        rounded
-        :style="filter === 'grayscale' ? {filter: 'grayscale(1)'} : {}"
-        v-bind="props"
-        @click="$emit('click', bond)"
-      >
-        <v-row>
-          <v-col>
-            <Flag
-              :nation="nation"
-              width="30"
-              height="20"
-            />
-          </v-col>
-        </v-row>
-        <div class="d-flex justify-center">
-          {{ bond.number }}:{{ bond.cost }}
-        </div>
-      </v-sheet>
-    </template>
-  </v-tooltip>
+    <Flag
+      :nation="nation"
+      width="30"
+      height="20"
+    />
+    {{ bond.number }}:{{ bond.cost }}
+    <div
+      v-if="canBePurchased && !isBeingAppliedToTradeIn"
+      class="tooltip-text border border-green-500 p-1 rounded mt-3 bg-white"
+    >
+      Purchase for {{ bond.cost }}m.
+    </div>
+    <div
+      v-if="canBePurchased && isBeingAppliedToTradeIn"
+      class="tooltip-text border border-green-500 p-1 rounded mt-3 bg-white"
+    >
+      Purchase for {{ bond.cost - tradedInValue }}m plus the {{ tradedInValue }}m bond.
+    </div>
+  </div>
 </template>
 
 <script>
@@ -52,17 +47,6 @@ export default {
       }
       return this.bond.nation.value;
     },
-    tooltipText() {
-      if (this.canBePurchased && !this.isBeingAppliedToTradeIn) {
-        return `Purchase for ${this.bond.cost}m.`;
-      }
-
-      if (this.canBePurchased && this.isBeingAppliedToTradeIn) {
-        return `Purchase for ${this.bond.cost - this.tradedInValue} m plus the ${this.tradedInValue}m bond.`;
-      }
-
-      return '';
-    },
   },
   methods: {
     backgroundColor() {
@@ -70,6 +54,12 @@ export default {
         return 'GEAsia';
       }
       return this.bond.nation.value;
+    },
+    border() {
+      if (this.isBeingAppliedToTradeIn) {
+        return 'yellow';
+      }
+      return 'green';
     },
   },
 };

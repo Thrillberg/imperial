@@ -1,51 +1,50 @@
 <template>
-  <v-col>
-    <v-card
-      :color="player.name === currentPlayer ? 'primary' : ''"
-      style="width: max-content"
+  <div class="flex items-center">
+    <div
+      v-if="index"
+      class="text-5xl"
     >
-      <v-card-item>
-        <v-card-title>
+      {{ index }}
+    </div>
+    <div
+      class="p-2 m-1 border border-gray-500"
+      :class="player.name === currentPlayer ? 'bg-green-300' : ''"
+    >
+      <div class="flex">
+        <div
+          v-if="!index"
+          class="text-xs -mt-2 -ml-2 h-5 mr-0.5 p-0.5 bg-gray-600 text-white"
+        >
+          {{ turnIndex }}
+        </div>
+        <span class="mx-0.5">
           <span
-            v-if="index"
-            class="text-5xl"
+            v-if="onlineUsers.includes(player.name)"
+            class="h-2 w-2 bg-blue-700 border-blue-700 border-2 rounded-full inline-block"
+          />
+          <router-link
+            v-if="player.id"
+            :to="{ path: '/users/' + player.id }"
+            class="underline"
           >
-            {{ index }}
+            <b>{{ player.name }}</b>
+          </router-link>
+          <span v-else>
+            <b>{{ player.name }}</b>
           </span>
-          <span
-            v-else
-            class="text-caption mr-2"
-          >
-            {{ turnIndex }}
-          </span>
-          <v-chip
-            :to="player.id ? '/users/' + player.id : ''"
-            class="mr-2"
-          >
-            <template #prepend>
-              <v-icon
-                v-if="onlineUsers.includes(player.name)"
-                color="blue"
-              >
-                mdi-circle-medium
-              </v-icon>
-            </template>
-            {{ player.name }}
-          </v-chip>
           <Flag
             v-for="controlledNation in controlledNations(player.name)"
             :key="controlledNation"
             :nation="controlledNation"
-            width="45"
-            height="30"
+            width="30"
+            height="20"
+            class="inline-block mx-0.5"
           />
-        </v-card-title>
-        <v-card-subtitle>
-          <div>${{ player.cash }}mil</div>
-          <div>{{ player.rawScore + player.cash }} VP</div>
-        </v-card-subtitle>
-      </v-card-item>
-      <v-card-text>
+        </span>
+      </div>
+      <div>${{ player.cash }}mil</div>
+      <div>{{ player.rawScore + player.cash }} VP</div>
+      <div class="flex flex-wrap justify-center">
         <Bond
           v-for="bond in sortedBonds(player.bonds)"
           :key="bond.nation.value + bond.cost"
@@ -55,15 +54,15 @@
           :class="{ 'cursor-pointer': canTradeIn(bond) }"
           @click="applyToTradeIn(bond)"
         />
-        <div v-if="player.name === game.investorCardHolder">
-          Investor Card
-        </div>
-        <div v-if="game.swissBanks.includes(player.name)">
-          Swiss Bank
-        </div>
-      </v-card-text>
-    </v-card>
-  </v-col>
+      </div>
+      <div v-if="player.name === game.investorCardHolder">
+        Investor Card
+      </div>
+      <div v-if="game.swissBanks.includes(player.name)">
+        Swiss Bank
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>

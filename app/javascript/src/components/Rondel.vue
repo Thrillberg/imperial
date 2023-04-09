@@ -1,9 +1,6 @@
 <template>
-  <v-row>
-    <v-col
-      cols="4"
-      offset-sm="4"
-    >
+  <div>
+    <div class="flex justify-around">
       <svg
         width="350px"
         height="350px"
@@ -25,60 +22,63 @@
           @slot-silent="slotSilent()"
         />
       </svg>
-    </v-col>
-
-    <v-col
+    </div>
+    <div
       v-if="!!helperText"
-      cols="3"
+      class="w-1/2 mx-auto border border-gray-600 rounded m-2 p-2"
     >
-      <v-card color="secondary">
-        <v-card-text v-if="onInvestorSlot">
-          <div
-            v-for="[bearer, amount] of bondBearers"
-            :key="bearer"
-          >
-            <b>{{ bearer }}</b> would receive {{ displayMonetaryValue_InMillions(amount) }}
+      <div
+        v-if="onInvestorSlot"
+        class="mb-2"
+      >
+        <div
+          v-for="[bearer, amount] of bondBearers"
+          :key="bearer"
+        >
+          <b>{{ bearer }}</b> would receive {{ displayMonetaryValue_InMillions(amount) }}
+        </div>
+        <div v-if="game.variant !== 'withoutInvestorCard'">
+          <b>{{ game.investorCardHolder }}</b> has the investor card
+        </div>
+      </div>
+      <div
+        v-if="onTaxationSlot"
+        class="mb-2"
+      >
+        <div>
+          <div v-if="game.baseGame === 'imperial'">
+            <b>Tax Revenue</b> will go from
+            {{ displayMonetaryValue_InMillions(game.nations.get(game.currentNation).taxChartPosition) }} to
+            {{ displayMonetaryValue_InMillions(nextTaxChartPosition) }}
           </div>
-          <div v-if="game.variant !== 'withoutInvestorCard'">
-            <b>{{ game.investorCardHolder }}</b> has the investor card
-          </div>
-        </v-card-text>
-        <v-card-text v-if="onTaxationSlot">
           <div>
-            <div v-if="game.baseGame === 'imperial'">
-              <b>Tax Revenue</b> will go from
-              {{ displayMonetaryValue_InMillions(game.nations.get(game.currentNation).taxChartPosition) }} to
-              {{ displayMonetaryValue_InMillions(nextTaxChartPosition) }}
-            </div>
-            <div>
-              <b>{{ game.currentPlayerName }}</b> would receive {{ displayMonetaryValue_InMillions(playerBonus) }}
-            </div>
-            <div>
-              <b>{{ displayNationName(game.currentNation.value) }}</b>'s treasury would change by
-              {{ displayMonetaryValue_InMillions(nationProfit) }}
-            </div>
-            <div>
-              <b>{{ displayNationName(game.currentNation.value) }}</b>'s power points would be {{ nextTaxationPowerPoints }}
-            </div>
+            <b>{{ game.currentPlayerName }}</b> would receive {{ displayMonetaryValue_InMillions(playerBonus) }}
           </div>
-        </v-card-text>
-        <v-card-text v-if="cost > 0">
-          <b>Cost: {{ displayMonetaryValue_InMillions(cost) }}</b>
-        </v-card-text>
-        <v-card-text>
-          <span v-if="displayHelperFlag">
-            <Flag
-              :nation="helperNation"
-              height="20"
-              width="30"
-              class="inline-block pr-1"
-            />
-          </span>
-          <span>{{ helperText }}</span>
-        </v-card-text>
-      </v-card>
-    </v-col>
-  </v-row>
+          <div>
+            <b>{{ displayNationName(game.currentNation.value) }}</b>'s treasury would change by
+            {{ displayMonetaryValue_InMillions(nationProfit) }}
+          </div>
+          <div>
+            <b>{{ displayNationName(game.currentNation.value) }}</b>'s power points would be {{ nextTaxationPowerPoints }}
+          </div>
+        </div>
+      </div>
+      <div v-if="cost > 0">
+        <b>Cost: {{ displayMonetaryValue_InMillions(cost) }}</b>
+      </div>
+      <div>
+        <span v-if="displayHelperFlag">
+          <Flag
+            :nation="helperNation"
+            height="20"
+            width="30"
+            class="inline-block pr-1"
+          />
+        </span>
+        <span>{{ helperText }}</span>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -103,7 +103,7 @@ export default {
   emits: ['tick-with-action'],
   data() {
     return {
-      cost: 0,
+      cost: '',
       displayHelperFlag: false,
       helperNation: '',
       helperText: '',

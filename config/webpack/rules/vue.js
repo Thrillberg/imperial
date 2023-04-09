@@ -1,6 +1,5 @@
 const { VueLoaderPlugin } = require('vue-loader');
 const HtmlWebpackHarddiskPlugin = require('html-webpack-harddisk-plugin');
-const { VuetifyPlugin } = require('webpack-plugin-vuetify');
 const path = require('path');
 const webpack = require('webpack');
 
@@ -37,6 +36,5 @@ module.exports = {
       outputPath: path.resolve(__dirname, '../../../public/packs'),
     }),
     new VueLoaderPlugin(),
-    new VuetifyPlugin({ autoImport: true }),
   ],
 };

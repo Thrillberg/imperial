@@ -5,54 +5,52 @@ describe('Auction game', () => {
 
     cy.visit('/');
     cy.contains('New Game').click();
-    cy.get('input[value="auction"]').check();
+    cy.get('#auction').check();
     cy.contains('New Game').click();
     cy.contains('Start Solo Game').click();
 
     // AH
     cy.get('.bg-AH').contains('2:4').click();
     cy.get('.bg-AH').contains('3:6').click();
-    cy.get('.v-card-actions').contains('Do not buy a bond').click();
-    cy.get('.v-card-actions').contains('Do not buy a bond').click();
-    cy.get('.v-card-actions').contains('Do not buy a bond').click();
-    cy.get('.v-card-actions').contains('Do not buy a bond').click();
+    cy.contains('Do not buy a bond').click();
+    cy.contains('Do not buy a bond').click();
+    cy.contains('Do not buy a bond').click();
+    cy.contains('Do not buy a bond').click();
     // IT
-    cy.get('.v-card-actions').contains('Do not buy a bond').click();
-    cy.get('.v-card-actions').contains('Do not buy a bond').click();
-    cy.get('.mdi-close').click();
+    cy.contains('Do not buy a bond').click();
+    cy.contains('Do not buy a bond').click();
     cy.contains('Undo').click();
-    cy.contains('Buy a bond').click();
     cy.get('.bg-IT').contains('2:4').click();
     cy.get('.bg-IT').contains('3:6').click();
-    cy.get('.v-card-actions').contains('Do not buy a bond').click();
-    cy.get('.v-card-actions').contains('Do not buy a bond').click();
-    cy.get('.v-card-actions').contains('Do not buy a bond').click();
+    cy.contains('Do not buy a bond').click();
+    cy.contains('Do not buy a bond').click();
+    cy.contains('Do not buy a bond').click();
     // FR
-    cy.get('.v-card-actions').contains('Do not buy a bond').click();
+    cy.contains('Do not buy a bond').click();
     cy.get('.bg-FR').contains('2:4').click();
     cy.get('.bg-FR').contains('3:6').click();
-    cy.get('.v-card-actions').contains('Do not buy a bond').click();
-    cy.get('.v-card-actions').contains('Do not buy a bond').click();
-    cy.get('.v-card-actions').contains('Do not buy a bond').click();
+    cy.contains('Do not buy a bond').click();
+    cy.contains('Do not buy a bond').click();
+    cy.contains('Do not buy a bond').click();
     // GB
-    cy.get('.v-card-actions').contains('Do not buy a bond').click();
-    cy.get('.v-card-actions').contains('Do not buy a bond').click();
+    cy.contains('Do not buy a bond').click();
+    cy.contains('Do not buy a bond').click();
     cy.get('.bg-GB').contains('2:4').click();
     cy.get('.bg-GB').contains('3:6').click();
-    cy.get('.v-card-actions').contains('Do not buy a bond').click();
-    cy.get('.v-card-actions').contains('Do not buy a bond').click();
+    cy.contains('Do not buy a bond').click();
+    cy.contains('Do not buy a bond').click();
     // GE
-    cy.get('.v-card-actions').contains('Do not buy a bond').click();
-    cy.get('.v-card-actions').contains('Do not buy a bond').click();
-    cy.get('.v-card-actions').contains('Do not buy a bond').click();
+    cy.contains('Do not buy a bond').click();
+    cy.contains('Do not buy a bond').click();
+    cy.contains('Do not buy a bond').click();
     cy.get('.bg-GE').contains('2:4').click();
     cy.get('.bg-GE').contains('3:6').click();
-    cy.get('.v-card-actions').contains('Do not buy a bond').click();
+    cy.contains('Do not buy a bond').click();
     // RU
-    cy.get('.v-card-actions').contains('Do not buy a bond').click();
-    cy.get('.v-card-actions').contains('Do not buy a bond').click();
-    cy.get('.v-card-actions').contains('Do not buy a bond').click();
-    cy.get('.v-card-actions').contains('Do not buy a bond').click();
+    cy.contains('Do not buy a bond').click();
+    cy.contains('Do not buy a bond').click();
+    cy.contains('Do not buy a bond').click();
+    cy.contains('Do not buy a bond').click();
     cy.get('.bg-RU').contains('2:4').click();
     cy.get('.bg-RU').contains('3:6').click();
     // Game starts

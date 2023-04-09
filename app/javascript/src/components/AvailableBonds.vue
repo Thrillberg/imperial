@@ -1,55 +1,36 @@
 <template>
-  <v-dialog
-    v-model="dialog"
-    width="50%"
-  >
-    <template #activator="{ props }">
-      <v-btn
-        color="primary"
-        v-bind="props"
-      >
-        Available bonds
-      </v-btn>
-    </template>
-
-    <v-card>
-      <v-card-title>Available Bonds</v-card-title>
-      <v-card-text>
-        <v-row>
-          <v-col
-            v-for="bond of game.availableBonds"
-            :key="bond.nation+bond.cost"
-          >
-            <Bond
-              :bond="bond"
-            />
-          </v-col>
-        </v-row>
-      </v-card-text>
-      <v-card-actions>
-        <v-btn
-          color="primary-darken-1"
-          block
-          @click="dialog = false"
-        >
-          Close
-        </v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
+  <div>
+    <button
+      class="rounded py-2 px-6 m-1 sm:m-4 bg-green-200 cursor-pointer"
+      v-if="!showBonds"
+      @click="showBonds = true"
+    >
+      Show available bonds
+    </button>
+    <button
+      class="rounded py-2 px-6 m-1 sm:m-4 bg-green-200 cursor-pointer"
+      v-if="showBonds"
+      @click="showBonds = false"
+    >
+      Hide available bonds
+    </button>
+    <div class="flex flex-wrap" v-if="showBonds">
+      <div v-for="bond of game.availableBonds" :key="bond.nation+bond.cost">
+        <Bond
+          :bond="bond"
+        />
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
-import Bond from './Bond.vue';
+import Bond from "../components/Bond.vue";
 
 export default {
-  name: 'AvailableBonds',
+  name: "AvailableBonds",
   components: { Bond },
-  props: { game: { type: Object, default: () => {} } },
-  data() {
-    return {
-      dialog: false,
-    };
-  },
-};
+  props: { game: Object },
+  data: () => ({ showBonds: false })
+}
 </script>
