@@ -1,3 +1,4 @@
+import { markRaw } from 'vue';
 import { AllBondsAsia, Bond, NationAsia } from './constants';
 
 import Player from './Entities/Player';
@@ -46,12 +47,12 @@ export default ({ players, provinceNames }) => {
     6: (x) => [x],
   };
 
-  const out = {
+  const out = markRaw({
     availableBonds: AllBondsAsia(),
     nations: new Map(),
     order: players.map((p) => p.id),
     players: new Map(),
-  };
+  });
 
   /* From the initial nation assignments, distribute bonds to the players. */
   players

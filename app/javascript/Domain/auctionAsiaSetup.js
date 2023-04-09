@@ -1,14 +1,16 @@
+import { markRaw } from 'vue';
+
 import { AllBondsAsia, NationAsia } from './constants';
 
 import Player from './Entities/Player';
 
 export default ({ players, provinceNames }) => {
-  const out = {
+  const out = markRaw({
     availableBonds: AllBondsAsia(),
     nations: new Map(),
     order: players.map((p) => p.id),
     players: new Map(),
-  };
+  });
 
   let cash;
   switch (players.length) {
