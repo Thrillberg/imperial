@@ -50,7 +50,7 @@ export default {
   methods: {
     submitForgotPassword(e) {
       this.passwordResetEmailRequested = true;
-      fetch('accounts/password', {
+      fetch(`${import.meta.env.VITE_API_URL}/accounts/password`, {
         method: 'POST',
         headers: {
           'X-CSRF-Token': this.$cookies.get('CSRF-TOKEN'),

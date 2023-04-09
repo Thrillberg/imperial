@@ -815,7 +815,7 @@ export default {
     },
     cloneGame() {
       fetch(
-        '/clone_games',
+        `${import.meta.env.VITE_API_URL}/clone_games`,
         {
           method: 'POST',
           body: JSON.stringify({

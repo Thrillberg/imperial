@@ -46,7 +46,7 @@ jobs:
       run: |
         npm ci
         bin/rails db:setup
-        bin/webpack
+        npm run dev
     - name: Cypress run
       uses: cypress-io/github-action@v5
       env:

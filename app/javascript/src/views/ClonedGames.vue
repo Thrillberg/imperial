@@ -31,7 +31,7 @@ export default {
   }),
   created() {
     document.title = 'Your Cloned Games - Imperial';
-    fetch(`/api/games?filter=your_cloned&host_id=${this.profile.id}`, { method: 'GET' })
+    fetch(`${import.meta.env.VITE_API_URL}/api/games?filter=your_cloned&host_id=${this.profile.id}`, { method: 'GET' })
       .then((response) => response.json())
       .then((data) => { this.games = data; });
   },

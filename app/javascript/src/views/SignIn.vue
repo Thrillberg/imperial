@@ -66,7 +66,7 @@ export default {
   },
   methods: {
     signIn(e) {
-      fetch('/accounts/sign_in', {
+      fetch(`${import.meta.env.VITE_API_URL}/accounts/sign_in`, {
         method: 'POST',
         headers: {
           'X-CSRF-Token': this.$cookies.get('CSRF-TOKEN'),

@@ -94,7 +94,7 @@ export default {
     });
     if (this.$cookies.get('user_id')) {
       // Fetch user profile
-      fetch(`/profiles/${this.$cookies.get('user_id')}`, { method: 'GET' })
+      fetch(`${import.meta.env.VITE_API_URL}/profiles/${this.$cookies.get('user_id')}`, { method: 'GET' })
         .then((response) => response.json())
         .then(({
           name, email, registered, anonymityConfirmedAt, id,
@@ -138,7 +138,7 @@ export default {
   },
   methods: {
     createUserProfile() {
-      fetch('/api/users', { method: 'POST', credentials: 'include' })
+      fetch(`${import.meta.env.VITE_API_URL}/api/users`, { method: 'POST', credentials: 'include' })
         .then((response) => response.json())
         .then(({ name, id }) => {
           this.profile = { username: name, id };

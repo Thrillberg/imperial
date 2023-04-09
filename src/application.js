@@ -1,31 +1,17 @@
-/* eslint no-console:0 */
-// This file is automatically compiled by Webpack, along with any other files
-// present in this directory. You're encouraged to place your actual application logic in
-// a relevant structure within app/javascript and only use these pack files to reference
-// that code so it'll be compiled.
-//
-// To reference this file, add <%= javascript_pack_tag 'application' %> to the appropriate
-// layout file, like app/views/layouts/application.html.erb
-
-// Uncomment to copy all static images under ../images to the output folder and reference
-// them with the image_pack_tag helper in views (e.g <%= image_pack_tag 'rails.png' %>)
-// or the `imagePath` JavaScript helper below.
-//
-// const images = require.context('../images', true)
-// const imagePath = (name) => images(name, true)
-
 import { createApp } from 'vue';
 import VueCookies from 'vue3-cookies';
 
+import '@mdi/font/css/materialdesignicons.css';
 import { createVuetify } from 'vuetify';
 /* eslint-disable import/no-unresolved */
+import * as components from 'vuetify/components';
 import * as directives from 'vuetify/directives';
 import { aliases, mdi } from 'vuetify/iconsets/mdi';
 import 'vuetify/styles';
 /* eslint-enable import/no-unresolved */
-import { nationColors } from '../../../nationColors';
-import App from '../src/App.vue';
-import router from '../src/router';
+import App from '../app/javascript/src/App.vue';
+import router from '../app/javascript/src/router';
+import nationColors from '../nationColors';
 
 const darkTheme = {
   dark: true,
@@ -48,6 +34,7 @@ const lightTheme = {
 };
 
 const vuetify = createVuetify({
+  components,
   directives,
   icons: {
     defaultSet: 'mdi',
@@ -88,9 +75,5 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   googleTagManagerBody.appendChild(iFrame);
   document.body.appendChild(googleTagManagerBody);
 }
-
-const appElement = document.createElement('div');
-appElement.setAttribute('id', 'app');
-document.body.appendChild(appElement);
 
 app.mount('#app');

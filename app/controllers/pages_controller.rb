@@ -1,5 +1,5 @@
 class PagesController < ActionController::Base
   def index
-    render file: "public/packs/index.html"
+    render file: "index.html"
   end
 end

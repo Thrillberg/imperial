@@ -39,7 +39,7 @@ export default {
   }),
   created() {
     document.title = 'Games - Imperial';
-    fetch('/api/games', { method: 'GET' })
+    fetch(`${import.meta.env.VITE_API_URL}/api/games`, { method: 'GET' })
       .then((response) => response.json())
       .then((data) => { this.games = data; });
   },

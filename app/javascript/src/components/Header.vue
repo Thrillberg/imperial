@@ -184,7 +184,7 @@ export default {
       }
     },
     signOut(e) {
-      fetch('/accounts/sign_out', {
+      fetch(`${import.meta.env.VITE_API_URL}/accounts/sign_out`, {
         method: 'DELETE',
         headers: {
           'X-CSRF-Token': this.$cookies.get('CSRF-TOKEN'),
@@ -201,7 +201,7 @@ export default {
     },
     setAnonymous() {
       fetch(
-        '/anonymity_confirmations',
+        `${import.meta.env.VITE_API_URL}/anonymity_confirmations`,
         {
           method: 'POST',
           body: JSON.stringify({ id: this.$cookies.get('user_id') }),

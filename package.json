@@ -1,39 +1,26 @@
 {
   "dependencies": {
     "@logtail/browser": "^0.3.0",
-    "@rails/webpacker": "git+https://github.com/rails/webpacker.git",
-    "@webpack-cli/serve": "^1.3.0",
     "actioncable": "^5.2.4-5",
     "autoprefixer": "^10.2.4",
-    "css-loader": "^5.0.2",
-    "cssnano": "^5.1.13",
-    "file-loader": "^6.2.0",
     "howler": "^2.2.1",
-    "html-webpack-harddisk-plugin": "^2.0.0",
-    "html-webpack-plugin": "^5.1.0",
     "luxon": "^1.28.1",
-    "mini-css-extract-plugin": "^1.3.7",
     "openskill": "^1.4.1",
-    "postcss": "^8.2.10",
-    "postcss-loader": "^4.2.0",
     "vue": "^3.1.0",
     "vue-cookies": "^1.8.2",
     "vue-google-charts": "1.1.0",
     "vue-loader": "^16.0.0",
     "vue-router": "^4.1.6",
-    "vue-svg-loader": "^0.17.0-beta.2",
     "vue3-cookies": "^1.0.6",
     "vue3-simple-icons": "^7.18.0",
-    "vuetify": "^3.1.12",
-    "webpack": "^5.76.0",
-    "webpack-cli": "^4.8.0",
-    "webpack-plugin-vuetify": "^2.0.1"
+    "vuetify": "^3.1.12"
   },
   "devDependencies": {
     "@babel/core": "^7.12.16",
     "@babel/preset-env": "^7.12.16",
     "@mdi/font": "^7.2.96",
     "@types/jest": "^29.5.0",
+    "@vitejs/plugin-vue": "^4.1.0",
     "@vue/compiler-sfc": "^3.1.0",
     "babel-jest": "^26.6.3",
     "cypress": "^12.9.0",
@@ -48,8 +35,9 @@
     "eslint-plugin-vue": "^9.6.0",
     "jest": "^26.6.3",
     "prettier": "2.2.1",
-    "style-loader": "^3.3.1",
-    "webpack-dev-server": "^4.7.4"
+    "vite": "^4.2.1",
+    "vite-plugin-vuetify": "^1.0.2",
+    "vite-svg-loader": "^4.0.0"
   },
   "jest": {
     "modulePathIgnorePatterns": [
@@ -57,6 +45,7 @@
     ]
   },
   "scripts": {
+    "dev": "vite",
     "lint": "eslint $(git diff --name-only HEAD~1 | grep -E '\\.(js|vue)$' | xargs)",
     "lint/fix": "eslint $(git diff --name-only HEAD~1 | grep -E '\\.(js|vue)$' | xargs) --fix",
     "test": "jest",

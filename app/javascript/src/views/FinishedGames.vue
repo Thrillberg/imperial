@@ -37,7 +37,7 @@ export default {
   }),
   created() {
     document.title = 'Finished Games - Imperial';
-    fetch('/api/games?filter=finished', { method: 'GET' })
+    fetch(`${import.meta.env.VITE_API_URL}/api/games?filter=finished`, { method: 'GET' })
       .then((response) => response.json())
       .then((data) => { this.games = data; });
   },

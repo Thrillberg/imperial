@@ -68,7 +68,7 @@ export default {
   },
   created() {
     document.title = 'Rankings - Imperial';
-    fetch('/api/ranked_games')
+    fetch(`${import.meta.env.VITE_API_URL}/api/ranked_games`)
       .then((response) => response.json())
       .then((games) => { this.games = games; });
   },

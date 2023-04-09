@@ -19,7 +19,6 @@ gem "redis", "~> 4.0"
 gem "sentry-rails"
 gem "sentry-ruby"
 gem "sidekiq"
-gem "webpacker", "~> 5.x"
 
 group :development, :test do
   gem "factory_bot_rails"

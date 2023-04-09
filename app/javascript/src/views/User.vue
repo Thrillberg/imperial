@@ -131,7 +131,7 @@ export default {
     },
   },
   created() {
-    fetch(`/api/users/${this.$route.params.id}`)
+    fetch(`${import.meta.env.VITE_API_URL}/api/users/${this.$route.params.id}`)
       .then((response) => response.json())
       .then((data) => {
         this.user = data.user;
@@ -149,7 +149,7 @@ export default {
   },
   methods: {
     save() {
-      fetch('/api/users/update', {
+      fetch(`${import.meta.env.VITE_API_URL}/api/users/update`, {
         method: 'PUT',
         body: JSON.stringify({
           id: this.$cookies.get('user_id'),

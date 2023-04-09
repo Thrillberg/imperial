@@ -33,7 +33,7 @@ export default {
   },
   methods: {
     importGame(e) {
-      fetch('/imports', {
+      fetch(`${import.meta.env.VITE_API_URL}/imports`, {
         method: 'POST',
         headers: {
           'X-CSRF-Token': this.$cookies.get('CSRF-TOKEN'),

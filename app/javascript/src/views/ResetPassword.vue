@@ -31,7 +31,7 @@ export default {
   },
   methods: {
     submitResetPassword(e) {
-      fetch('accounts/password', {
+      fetch(`${import.meta.env.VITE_API_URL}/accounts/password`, {
         method: 'PUT',
         headers: {
           'X-CSRF-Token': this.$cookies.get('CSRF-TOKEN'),

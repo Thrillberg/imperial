@@ -12,7 +12,7 @@ class APIClient {
   }
 
   initws() {
-    const ws = ActionCable.createConsumer('/ws');
+    const ws = ActionCable.createConsumer(`${import.meta.env.VITE_API_URL}/ws`);
     ws.subscriptions.create('GameChannel', {
       connected: () => {
         this.messageQueue.forEach((data) => this.send(data, 'GameChannel'));
@@ -100,7 +100,7 @@ class APIClient {
   }
 
   openGame(id, baseGame, variant, createDiscordChannel, isGamePublic) {
-    return fetch('/api/games', {
+    return fetch(`${import.meta.env.VITE_API_URL}/api/games`, {
       method: 'POST',
       body: JSON.stringify({
         id, base_game: baseGame, variant, create_discord_channel: createDiscordChannel, is_game_public: isGamePublic,
