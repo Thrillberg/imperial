@@ -19,6 +19,7 @@ gem "redis", "~> 4.0"
 gem "sentry-rails"
 gem "sentry-ruby"
 gem "sidekiq"
+gem "vite_rails"
 
 group :development, :test do
   gem "factory_bot_rails"
