@@ -1,0 +1,7 @@
+{
+  "editor.codeActionsOnSave": ["source.organizeImports", "source.fixAll.eslint"],
+  "eslint.validate": [
+    "javascript"
+  ],
+  "javascript.validate.enable": false
+}

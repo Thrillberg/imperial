@@ -1,0 +1,4 @@
+import{_ as i,o,b as l,f as t}from"./index-dfdf83d7.js";const s={name:"AHFlag",props:{activeFilter:String,fleet:Boolean,width:String,height:String,transform:String}},n=["width","height"],a=t("filter",{id:"grayscale"},[t("feColorMatrix",{type:"matrix",values:`0.3333 0.3333 0.3333 0 0
+                                           0.3333 0.3333 0.3333 0 0
+                                           0.3333 0.3333 0.3333 0 0
+                                           0      0      0      1 0`})],-1),r=["clip-path","filter"],h=t("path",{fill:"#fd1",d:"M0 0h1500v1000H0z"},null,-1),c=t("path",{fill:"#000",d:"M0 0h15000v500H0z"},null,-1),_=[h,c];function d(f,g,e,p,w,m){return o(),l("svg",{xmlns:"http://www.w3.org/2000/svg",viewBox:"0 0 1500 1000",width:e.width,height:e.height},[a,t("g",{"clip-path":this.fleet?"url(#fleetClip)":"",filter:e.activeFilter},_,8,r)],8,n)}const v=i(s,[["render",d]]);export{v as default};
