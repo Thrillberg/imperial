@@ -9,9 +9,9 @@ import * as directives from 'vuetify/directives';
 import { aliases, mdi } from 'vuetify/iconsets/mdi';
 import 'vuetify/styles';
 /* eslint-enable import/no-unresolved */
-import App from '../app/javascript/src/App.vue';
 import router from '../app/javascript/src/router';
 import nationColors from '../nationColors';
+import App from './App.vue';
 
 const darkTheme = {
   dark: true,
