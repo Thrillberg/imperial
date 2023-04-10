@@ -26,7 +26,7 @@ Rails.application.routes.draw do
   resources :profiles, only: [:show]
 
   root "pages#index", as: :pages_index
-  get "*path", to: "pages#index", format: false
+  get "*path", to: "pages#index"
 
   if Rails.env.test?
     namespace :cypress do
