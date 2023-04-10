@@ -46,7 +46,7 @@
       <div>{{ player.rawScore + player.cash }} VP</div>
       <div class="flex flex-wrap justify-center">
         <Bond
-          v-for="bond in sortedBonds(player.bonds)"
+          v-for="bond of sortedBonds(player.bonds)"
           :key="bond.nation.value + bond.cost"
           :bond="bond"
           :toggle-trade-in="toggleTradeIn"
@@ -68,6 +68,7 @@
 <script>
 import Bond from './Bond.vue';
 import Flag from './flags/Flag.vue';
+import Player from '../../Domain/Entities/Player';
 
 import { Nation, Nation2030, NationAsia } from '../../Domain/constants';
 
@@ -80,7 +81,7 @@ export default {
   props: {
     currentPlayer: { type: String, default: '' },
     onlineUsers: { type: Array, default: () => [] },
-    player: { type: Object, default: () => {} },
+    player: { type: Player, default: () => {} },
     profile: { type: Object, default: () => {} },
     game: { type: Object, default: () => {} },
     index: { type: Number, default: 0 },
@@ -115,6 +116,7 @@ export default {
       return false;
     },
     sortedBonds(bonds) {
+      if (bonds) {
       const nations = [
         Nation.AH,
         Nation.IT,
@@ -149,6 +151,9 @@ export default {
         return -1;
       });
       return sortedBonds;
+    } else {
+      return [];
+    }
     },
     toggleTradeIn(bond) {
       this.$emit('toggleTradeIn', bond);
