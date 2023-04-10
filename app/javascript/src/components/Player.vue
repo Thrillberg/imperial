@@ -117,43 +117,42 @@ export default {
     },
     sortedBonds(bonds) {
       if (bonds) {
-      const nations = [
-        Nation.AH,
-        Nation.IT,
-        Nation.FR,
-        Nation.GB,
-        Nation.GE,
-        Nation.RU,
-        Nation2030.RU,
-        Nation2030.CN,
-        Nation2030.IN,
-        Nation2030.BR,
-        Nation2030.US,
-        Nation2030.EU,
-        NationAsia.CN,
-        NationAsia.JP,
-        NationAsia.FR,
-        NationAsia.GB,
-        NationAsia.TR,
-        NationAsia.RU,
-        NationAsia.GE,
-      ];
-      const sortedByNation = [...bonds].sort((bond1, bond2) => {
-        if (nations.indexOf(bond1.nation) > nations.indexOf(bond2.nation)) {
-          return 1;
-        }
-        return -1;
-      });
-      const sortedBonds = sortedByNation.sort((bond1, bond2) => {
-        if (bond1.nation === bond2.nation && bond1.cost > bond2.cost) {
-          return 1;
-        }
-        return -1;
-      });
-      return sortedBonds;
-    } else {
+        const nations = [
+          Nation.AH,
+          Nation.IT,
+          Nation.FR,
+          Nation.GB,
+          Nation.GE,
+          Nation.RU,
+          Nation2030.RU,
+          Nation2030.CN,
+          Nation2030.IN,
+          Nation2030.BR,
+          Nation2030.US,
+          Nation2030.EU,
+          NationAsia.CN,
+          NationAsia.JP,
+          NationAsia.FR,
+          NationAsia.GB,
+          NationAsia.TR,
+          NationAsia.RU,
+          NationAsia.GE,
+        ];
+        const sortedByNation = [...bonds].sort((bond1, bond2) => {
+          if (nations.indexOf(bond1.nation) > nations.indexOf(bond2.nation)) {
+            return 1;
+          }
+          return -1;
+        });
+        const sortedBonds = sortedByNation.sort((bond1, bond2) => {
+          if (bond1.nation === bond2.nation && bond1.cost > bond2.cost) {
+            return 1;
+          }
+          return -1;
+        });
+        return sortedBonds;
+      }
       return [];
-    }
     },
     toggleTradeIn(bond) {
       this.$emit('toggleTradeIn', bond);

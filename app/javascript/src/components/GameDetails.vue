@@ -67,7 +67,7 @@ export default {
     players() {
       const players = {};
       for (const name in this.game.players) {
-          players[name] = this.game.players[name];
+        players[name] = this.game.players[name];
       }
 
       return Object.values(players);
