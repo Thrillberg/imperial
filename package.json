@@ -46,6 +46,8 @@
   },
   "scripts": {
     "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
     "lint": "eslint $(git diff --name-only HEAD~1 | grep -E '\\.(js|vue)$' | xargs)",
     "lint/fix": "eslint $(git diff --name-only HEAD~1 | grep -E '\\.(js|vue)$' | xargs) --fix",
     "test": "jest",
