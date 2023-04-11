@@ -271,7 +271,7 @@
             block
             @click="leaveGame(profile.username)"
           >
-          Leave Game
+            Leave Game
           </v-btn>
         </div>
         <div v-else-if="!joinedGame">
@@ -294,7 +294,7 @@
             block
             @click="joinGame"
           >
-          Join This Game
+            Join This Game
           </v-btn>
         </div>
       </v-row>
