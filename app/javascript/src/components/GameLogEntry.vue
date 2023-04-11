@@ -10,7 +10,7 @@
         <p>{{ timestampToString(timestamp) }}</p>
       </div>
       Variant: {{ action.payload.variant || "standard" }}
-      <v-list density="compact">
+      <v-list v-if="!action.payload.variant || action.payload.variant === 'standard'" density="compact">
         <v-list-item
           v-for="(player, innerIndex) in action.payload.players"
           :key="innerIndex"
