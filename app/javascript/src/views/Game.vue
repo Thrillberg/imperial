@@ -266,13 +266,13 @@
           <div class="text-2xl m-2">
             Game not yet started!
           </div>
-          <button
-            class="rounded bg-red-500 text-white cursor-pointer \
-              block text-2xl hover:bg-red-600 p-5 m-5 mx-auto"
+          <v-btn
+            color="error"
+            block
             @click="leaveGame(profile.username)"
           >
-            Leave game
-          </button>
+            Leave Game
+          </v-btn>
         </div>
         <div v-else-if="!joinedGame">
           <div class="mx-auto p-2 text-center">
@@ -289,13 +289,13 @@
               <span>{{ variant(gameData.variant) }}</span>
             </p>
           </div>
-          <button
-            class="rounded bg-green-800 text-white cursor-pointer \
-              block text-2xl hover:bg-green-900 p-10 m-10 mx-auto"
+          <v-btn
+            color="primary-darken-1"
+            block
             @click="joinGame"
           >
             Join This Game
-          </button>
+          </v-btn>
         </div>
       </v-row>
     </div>
