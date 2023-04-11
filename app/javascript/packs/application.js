@@ -14,11 +14,13 @@
 // const images = require.context('../images', true)
 // const imagePath = (name) => images(name, true)
 
+import '@mdi/font/css/materialdesignicons.css';
 import { createApp } from 'vue';
 import VueCookies from 'vue3-cookies';
 
 import { createVuetify } from 'vuetify';
 /* eslint-disable import/no-unresolved */
+import * as components from 'vuetify/components';
 import * as directives from 'vuetify/directives';
 import { aliases, mdi } from 'vuetify/iconsets/mdi';
 import 'vuetify/styles';
@@ -48,6 +50,7 @@ const lightTheme = {
 };
 
 const vuetify = createVuetify({
+  components,
   directives,
   icons: {
     defaultSet: 'mdi',
