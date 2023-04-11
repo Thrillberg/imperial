@@ -17,9 +17,6 @@ webpackConfig.plugins.push(
       viewport: 'width=device-width, initial-scale=1',
     },
     title: 'Imperial',
-    headHtmlSnippet: `
-      <link href="https://cdn.jsdelivr.net/npm/@mdi/font@5.x/css/materialdesignicons.min.css" rel="stylesheet">
-    `,
   }),
 );
 module.exports = webpackConfig;
