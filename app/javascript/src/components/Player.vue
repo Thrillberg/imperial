@@ -46,7 +46,7 @@
       <div>{{ player.rawScore + player.cash }} VP</div>
       <div class="flex flex-wrap justify-center">
         <Bond
-          v-for="bond in sortedBonds(player.bonds)"
+          v-for="bond of sortedBonds(player.bonds)"
           :key="bond.nation.value + bond.cost"
           :bond="bond"
           :toggle-trade-in="toggleTradeIn"
@@ -68,6 +68,7 @@
 <script>
 import Bond from './Bond.vue';
 import Flag from './flags/Flag.vue';
+import Player from '../../Domain/Entities/Player';
 
 import { Nation, Nation2030, NationAsia } from '../../Domain/constants';
 
@@ -80,7 +81,7 @@ export default {
   props: {
     currentPlayer: { type: String, default: '' },
     onlineUsers: { type: Array, default: () => [] },
-    player: { type: Object, default: () => {} },
+    player: { type: Player, default: () => {} },
     profile: { type: Object, default: () => {} },
     game: { type: Object, default: () => {} },
     index: { type: Number, default: 0 },
@@ -115,40 +116,43 @@ export default {
       return false;
     },
     sortedBonds(bonds) {
-      const nations = [
-        Nation.AH,
-        Nation.IT,
-        Nation.FR,
-        Nation.GB,
-        Nation.GE,
-        Nation.RU,
-        Nation2030.RU,
-        Nation2030.CN,
-        Nation2030.IN,
-        Nation2030.BR,
-        Nation2030.US,
-        Nation2030.EU,
-        NationAsia.CN,
-        NationAsia.JP,
-        NationAsia.FR,
-        NationAsia.GB,
-        NationAsia.TR,
-        NationAsia.RU,
-        NationAsia.GE,
-      ];
-      const sortedByNation = [...bonds].sort((bond1, bond2) => {
-        if (nations.indexOf(bond1.nation) > nations.indexOf(bond2.nation)) {
-          return 1;
-        }
-        return -1;
-      });
-      const sortedBonds = sortedByNation.sort((bond1, bond2) => {
-        if (bond1.nation === bond2.nation && bond1.cost > bond2.cost) {
-          return 1;
-        }
-        return -1;
-      });
-      return sortedBonds;
+      if (bonds) {
+        const nations = [
+          Nation.AH,
+          Nation.IT,
+          Nation.FR,
+          Nation.GB,
+          Nation.GE,
+          Nation.RU,
+          Nation2030.RU,
+          Nation2030.CN,
+          Nation2030.IN,
+          Nation2030.BR,
+          Nation2030.US,
+          Nation2030.EU,
+          NationAsia.CN,
+          NationAsia.JP,
+          NationAsia.FR,
+          NationAsia.GB,
+          NationAsia.TR,
+          NationAsia.RU,
+          NationAsia.GE,
+        ];
+        const sortedByNation = [...bonds].sort((bond1, bond2) => {
+          if (nations.indexOf(bond1.nation) > nations.indexOf(bond2.nation)) {
+            return 1;
+          }
+          return -1;
+        });
+        const sortedBonds = sortedByNation.sort((bond1, bond2) => {
+          if (bond1.nation === bond2.nation && bond1.cost > bond2.cost) {
+            return 1;
+          }
+          return -1;
+        });
+        return sortedBonds;
+      }
+      return [];
     },
     toggleTradeIn(bond) {
       this.$emit('toggleTradeIn', bond);
