@@ -3,14 +3,20 @@
     v-for="({action, timestamp}, i) in event"
     :key="i"
   >
-    <div class="pt-2" v-if="action.type === 'initialize'">
+    <div
+      v-if="action.type === 'initialize'"
+      class="pt-2"
+    >
       <v-divider />
       <div class="d-flex justify-space-between">
         <p><b>{{ action.payload.soloMode ? "Solo game started!" : "Game started!" }}</b></p>
         <p>{{ timestampToString(timestamp) }}</p>
       </div>
       Variant: {{ action.payload.variant || "standard" }}
-      <v-list density="compact">
+      <v-list
+        v-if="!action.payload.variant || action.payload.variant === 'standard'"
+        density="compact"
+      >
         <v-list-item
           v-for="(player, innerIndex) in action.payload.players"
           :key="innerIndex"
@@ -29,7 +35,10 @@
         </v-list-item>
       </v-list>
     </div>
-    <div class="pt-2" v-else-if="action.type === 'rondel'">
+    <div
+      v-else-if="action.type === 'rondel'"
+      class="pt-2"
+    >
       <v-divider />
       <b>Turn {{ index }}: </b>
       <Flag
@@ -44,8 +53,9 @@
         <p>{{ timestampToString(timestamp) }}</p>
       </div>
     </div>
-    <div class="pt-1 d-flex justify-space-between"
+    <div
       v-else
+      class="pt-1 d-flex justify-space-between"
     >
       <p>- {{ renderAction(action) }}</p>
       <p>{{ timestampToString(timestamp) }}</p>
