@@ -90,38 +90,70 @@ export default class ImperialGameCoordinator {
     const { baseGame } = stateAsJSON;
     let board;
     let currentNation;
+    let nationEntity;
     const nations = new Set();
+    const players = {};
+    const provinces = new Map();
+    const units = new Map();
 
     switch (baseGame) {
       case 'imperial':
         board = standardGameBoard;
-        currentNation = Nation[stateAsJSON.currentNation];
-
-        stateAsJSON.nations.forEach((nation) => {
-          const nationName = Object.keys(nation)[0];
-          const nationData = Object.values(nation)[0];
-          const nationAsMap = new Map().set(Nation[nationName], nationData);
-          nations.add(nationAsMap);
-        });
+        nationEntity = Nation;
 
         break;
       case 'imperial2030':
         board = gameBoard2030;
-        currentNation = Nation2030[stateAsJSON.currentNation];
+        nationEntity = Nation2030;
+
         break;
       case 'imperialAsia':
         board = gameBoardAsia;
         currentNation = NationAsia[stateAsJSON.currentNation];
+
         break;
       default:
         board = standardGameBoard;
         currentNation = Nation.AH;
     }
 
+    currentNation = nationEntity[stateAsJSON.currentNation];
+
+    stateAsJSON.nations.forEach((nation) => {
+      const nationName = Object.keys(nation)[0];
+      const nationData = Object.values(nation)[0];
+      const nationAsMap = new Map().set(nationEntity[nationName], nationData);
+      nations.add(nationAsMap);
+    });
+
+    for (const player in stateAsJSON.players) {
+      const bonds = new Set();
+      stateAsJSON.players[player].bonds.forEach((bond) => {
+        bonds.add({ ...bond, nation: nationEntity[bond.nation] });
+      });
+      players[player] = {
+        ...stateAsJSON.players[player],
+        bonds,
+      };
+    }
+
+    for (const province in stateAsJSON.provinces) {
+      provinces.set(province, stateAsJSON.provinces[province]);
+    }
+
+    for (const nation in stateAsJSON.units) {
+      units.set(nationEntity[nation], stateAsJSON.units[nation]);
+    }
+
     const game = new ImperialGameCoordinator(board);
     game.baseGame = baseGame;
     game.currentNation = currentNation;
     game.nations = nations;
+    game.players = players;
+    game.provinces = provinces;
+    game.units = units;
+    game.variant = stateAsJSON.variant;
+    game.winner = stateAsJSON.winner;
 
     return game;
   }

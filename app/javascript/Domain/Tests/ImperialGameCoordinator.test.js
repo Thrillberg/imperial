@@ -5137,12 +5137,100 @@ describe('imperial', () => {
           treasury: 11,
         }));
       });
+      const expectedPlayers = {
+        player1: {
+          bonds: new Set([
+            {
+              cost: 9,
+              nation: Nation.AH,
+              number: 4,
+            },
+            {
+              cost: 2,
+              nation: Nation.GE,
+              number: 1,
+            },
+            {
+              cost: 9,
+              nation: Nation.FR,
+              number: 4,
+            },
+            {
+              cost: 2,
+              nation: Nation.AH,
+              number: 1,
+            },
+            {
+              cost: 9,
+              nation: Nation.GE,
+              number: 4,
+            },
+            {
+              cost: 2,
+              nation: Nation.IT,
+              number: 1,
+            },
+          ]),
+          cash: 2,
+          name: 'player1',
+          rawScore: 0,
+        },
+        player2: {
+          bonds: new Set([
+            {
+              cost: 9,
+              nation: Nation.IT,
+              number: 4,
+            },
+            {
+              cost: 2,
+              nation: Nation.GB,
+              number: 1,
+            },
+            {
+              cost: 9,
+              nation: Nation.RU,
+              number: 4,
+            },
+            {
+              cost: 2,
+              nation: Nation.FR,
+              number: 1,
+            },
+            {
+              cost: 9,
+              nation: Nation.GB,
+              number: 4,
+            },
+            {
+              cost: 2,
+              nation: Nation.RU,
+              number: 1,
+            },
+          ]),
+          cash: 2,
+          name: 'player2',
+          rawScore: 0,
+        },
+      };
+      const expectedProvinces = new Map();
+      expectedProvinces.set('a', { factory: null });
+      expectedProvinces.set('b', { factory: null });
+      const expectedUnits = new Map();
+      for (const nation in units) {
+        expectedUnits.set(Nation[nation], units[nation]);
+      }
 
       const game = Imperial.loadFromJSON(stateAsJSON);
 
       expect(game.baseGame).toEqual('imperial');
       expect(game.currentNation).toEqual(Nation.AH);
       expect(game.nations).toEqual(expectedNations);
+      expect(game.players).toEqual(expectedPlayers);
+      expect(game.provinces).toEqual(expectedProvinces);
+      expect(game.units).toEqual(expectedUnits);
+      expect(game.variant).toEqual('standard');
+      expect(game.winner).toEqual('');
     });
   });
 });
