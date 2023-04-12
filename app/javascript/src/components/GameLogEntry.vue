@@ -1,16 +1,23 @@
 <template>
-  <div class="border border-black bg-gray-100 rounded p-2 m-2 rondel">
+  <v-list-tile
+    v-for="({action, timestamp}, i) in event"
+    :key="i"
+  >
     <div
-      v-for="({action, timestamp}, i) in event"
-      :key="i"
+      v-if="action.type === 'initialize'"
+      class="pt-2"
     >
-      <div v-if="action.type === 'initialize'">
-        <div class="flex justify-between">
-          <p>{{ action.payload.soloMode ? "Solo game started!" : "Game started!" }}</p>
-          <p>{{ timestampToString(timestamp) }}</p>
-        </div>
-        <p>Variant: {{ action.payload.variant || "standard" }}</p>
-        <p
+      <v-divider />
+      <div class="d-flex justify-space-between">
+        <p><b>{{ action.payload.soloMode ? "Solo game started!" : "Game started!" }}</b></p>
+        <p>{{ timestampToString(timestamp) }}</p>
+      </div>
+      Variant: {{ action.payload.variant || "standard" }}
+      <v-list
+        v-if="!action.payload.variant || action.payload.variant === 'standard'"
+        density="compact"
+      >
+        <v-list-item
           v-for="(player, innerIndex) in action.payload.players"
           :key="innerIndex"
         >
@@ -25,31 +32,35 @@
             v-if="!action.payload.variant || action.payload.variant === 'standard'"
             v-html="initializeAction(player)"
           />
-        </p>
-      </div>
-      <div v-else-if="action.type === 'rondel'">
-        <b>Turn {{ index }}: </b>
-        <Flag
-          :nation="getNation(action.payload.nation)"
-          class="inline-block mr-1"
-          width="30"
-          height="20"
-        />
-        <b>{{ action.playerName }}</b>
-        <div class="flex justify-between">
-          <p>{{ renderAction(action) }}</p>
-          <p>{{ timestampToString(timestamp) }}</p>
-        </div>
-      </div>
-      <div
-        v-else
-        class="flex justify-between"
-      >
-        <p>- {{ renderAction(action) }}</p>
+        </v-list-item>
+      </v-list>
+    </div>
+    <div
+      v-else-if="action.type === 'rondel'"
+      class="pt-2"
+    >
+      <v-divider />
+      <b>Turn {{ index }}: </b>
+      <Flag
+        :nation="getNation(action.payload.nation)"
+        class="inline-block mr-1"
+        width="30"
+        height="20"
+      />
+      <b>{{ action.playerName }}</b>
+      <div class="d-flex justify-space-between">
+        <p>{{ renderAction(action) }}</p>
         <p>{{ timestampToString(timestamp) }}</p>
       </div>
     </div>
-  </div>
+    <div
+      v-else
+      class="pt-1 d-flex justify-space-between"
+    >
+      <p>- {{ renderAction(action) }}</p>
+      <p>{{ timestampToString(timestamp) }}</p>
+    </div>
+  </v-list-tile>
 </template>
 
 <script>

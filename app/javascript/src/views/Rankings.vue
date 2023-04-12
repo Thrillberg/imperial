@@ -32,12 +32,21 @@ export default {
       let userRatings = {};
       for (const gameUsers of this.games) {
         if (gameUsers.length > 1) {
+<<<<<<< HEAD
           let scores = [];
           let ratings = [];
           for (const {player_name, player_score} of gameUsers) {
             scores.push(player_score);
             if (!userRatings[player_name]) {
               userRatings[player_name] = rating();
+=======
+          const scores = [];
+          const ratings = [];
+          for (const { player_name: playerName, player_score: playerScore } of gameUsers) {
+            scores.push(playerScore);
+            if (!userRatings[playerName]) {
+              userRatings[playerName] = rating();
+>>>>>>> origin/main
             }
             ratings.push([userRatings[player_name]]);
           }
