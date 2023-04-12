@@ -1,31 +1,28 @@
 <template>
-  <div
-    class="p-0.5"
-    :class="currentNationClass() + width()"
-  >
-    <p><b>{{ displayNationName(nation) }}</b></p>
-    <Flag
-      :nation="nation"
-      :filter="controller === currentPlayer ? '' : 'grayscale'"
-      height="30"
-      width="45"
-    />
-    <div class="flex flex-col justify-center">
-      <div :class="canPayOut ? '' : 'text-red-500 font-bold'">
-        ${{ treasury }}mil
-      </div>
-      <div>{{ powerPoints }} power</div>
-      <div
-        v-if="winner"
-        class="text-center font-bold text-xl"
-      >
-        x{{ Math.floor(powerPoints / 5) }}
-      </div>
-    </div>
-    <p class="pt-2 text-base">
-      {{ truncate(controller) }}
-    </p>
-  </div>
+  <v-col>
+    <v-card :class="currentNationClass()">
+      <v-card-text>
+        <div><b>{{ displayNationName(nation) }}</b></div>
+        <Flag
+          :nation="nation"
+          :filter="controller === currentPlayer ? '' : 'grayscale'"
+          height="20"
+          width="30"
+        />
+        <div :class="canPayOut ? '' : 'text-red-500 font-bold'">
+          ${{ treasury }}mil
+        </div>
+        <div>{{ powerPoints }} power</div>
+        <div
+          v-if="winner"
+          class="text-center font-bold text-xl"
+        >
+          x{{ Math.floor(powerPoints / 5) }}
+        </div>
+        {{ truncate(controller) }}
+      </v-card-text>
+    </v-card>
+  </v-col>
 </template>
 
 <script>
@@ -78,7 +75,7 @@ export default {
 
       return string;
     },
-    
+
     displayNationName(nation) {
       return displayNationName(nation);
     },

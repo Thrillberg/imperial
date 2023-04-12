@@ -68,8 +68,11 @@ import { DateTime } from 'luxon';
 
 import {
   capitalize,
-  displayLocationName, displayNationName, displayMonetaryValueInMillions,
-  unitTypeByDestinationSingular, unitTypeByDestinationPlural,
+  displayLocationName,
+  displayMonetaryValueInMillions,
+  displayNationName,
+  unitTypeByDestinationPlural,
+  unitTypeByDestinationSingular,
 } from '../stringify';
 import Flag from './flags/Flag.vue';
 
