@@ -40,7 +40,7 @@ export default {
         if (gameUsers.length > 1) {
           const scores = [];
           const ratings = [];
-          for (const { playerName, playerScore } of gameUsers) {
+          for (const { player_name: playerName, player_score: playerScore } of gameUsers) {
             scores.push(playerScore);
             if (!userRatings[playerName]) {
               userRatings[playerName] = rating();
