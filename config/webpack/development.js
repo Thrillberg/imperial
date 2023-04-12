@@ -1,21 +1,22 @@
-process.env.NODE_ENV = process.env.NODE_ENV || 'development'
+process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 
-const HtmlWebpackPlugin = require('html-webpack-plugin')
-const webpackConfig = require('./base')
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const webpackConfig = require('./base');
+
 webpackConfig.plugins.push(
   new HtmlWebpackPlugin({
     alwaysWriteToDisk: true,
-    appMountId: "app",
-    favicon: "favicon.ico",
-    inject: "body",
+    appMountId: 'app',
+    favicon: 'favicon.ico',
+    inject: 'body',
     lang: 'en-US',
     meta: {
-      charset: "UTF-8",
-      description: "Play Imperial online",
-      keywords: "imperial, board game, game, online, play",
-      viewport: "width=device-width, initial-scale=1"
+      charset: 'UTF-8',
+      description: 'Play Imperial online',
+      keywords: 'imperial, board game, game, online, play',
+      viewport: 'width=device-width, initial-scale=1',
     },
-    title: "Imperial",
-  })
+    title: 'Imperial',
+  }),
 );
-module.exports = webpackConfig
+module.exports = webpackConfig;

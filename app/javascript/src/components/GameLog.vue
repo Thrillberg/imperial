@@ -1,53 +1,61 @@
 <template>
-  <div class="border border-black rounded p-2 m-2">
-    <GameLogEntry
-      v-for="(entry, index) in processedLog"
+  <v-container>
+    <v-list>
+      <GameLogEntry
+        v-for="(entry, index) in processedLog"
+        :key="index"
         :events="entry"
         :board="board"
         :index="processedLog.length - index - 1"
-    ></GameLogEntry>
-  </div>
+      />
+    </v-list>
+  </v-container>
 </template>
 
 <script>
-import GameLogEntry from "./GameLogEntry.vue";
+import GameLogEntry from './GameLogEntry.vue';
+
 export default {
-  name: "GameLog",
-  props: { log: Array, logTimestamps: Array, board: Object },
+  name: 'GameLog',
   components: { GameLogEntry },
+  props: {
+    board: { type: Object, default: () => {} },
+    log: { type: Array, default: () => [] },
+    logTimestamps: { type: Array, default: () => [] },
+  },
   computed: {
     processedLog() {
       // TODO: Pull these and their analogoues in action.js out into constants somewhere else
       const annotatedActions = [
-        "playerGainsCash",
-        "playerTradedInForABond",
-        "playerAutoSkipsBondPurchase",
-        "playerPaysForRondel",
-        "playerInvests",
-        "nationGainsTreasury",
-        "nationGainsPowerPoints",
-        "nationPaysPlayer",
-        "investorCardHolderChanged",
-        "nationControllerChanged",
+        'playerGainsCash',
+        'playerTradedInForABond',
+        'playerAutoSkipsBondPurchase',
+        'playerPaysForRondel',
+        'playerInvests',
+        'nationGainsTreasury',
+        'nationGainsPowerPoints',
+        'nationPaysPlayer',
+        'investorCardHolderChanged',
+        'nationControllerChanged',
       ];
-      let rawlog = this.log || [];
-      let timestamps = this.logTimestamps || [];
-      let entries = [];
+      const rawlog = this.log || [];
+      const timestamps = this.logTimestamps || [];
+      const entries = [];
       let index = 0;
       rawlog.forEach((action) => {
-        let timestamp = "";
+        let timestamp = '';
         if (!annotatedActions.includes(action.type)) {
           timestamp = timestamps[index];
-          index++
+          index += 1;
         }
-        if (action.type === "initialize" || action.type === "rondel") {
-          entries.push({event: [{ action, timestamp }]});
+        if (action.type === 'initialize' || action.type === 'rondel') {
+          entries.push({ event: [{ action, timestamp }] });
         } else {
           entries[entries.length - 1].event.push({ action, timestamp });
         }
       });
       return entries.reverse();
-    }
-  }
-}
+    },
+  },
+};
 </script>

@@ -1,50 +1,51 @@
 <template>
-  <div class="flex items-center">
-    <div
-      v-if="index"
-      class="text-5xl"
+  <v-col>
+    <v-card
+      :color="player.name === currentPlayer ? 'primary' : ''"
+      style="width: max-content"
     >
-      {{ index }}
-    </div>
-    <div
-      class="p-2 m-1 border border-gray-500"
-      :class="player.name === currentPlayer ? 'bg-green-300' : ''"
-    >
-      <div class="flex">
-        <div
-          v-if="!index"
-          class="text-xs -mt-2 -ml-2 h-5 mr-0.5 p-0.5 bg-gray-600 text-white"
-        >
-          {{ turnIndex }}
-        </div>
-        <span class="mx-0.5">
+      <v-card-item>
+        <v-card-title>
           <span
-            v-if="onlineUsers.includes(player.name)"
-            class="h-2 w-2 bg-blue-700 border-blue-700 border-2 rounded-full inline-block"
-          />
-          <router-link
-            v-if="player.id"
-            :to="{ path: '/users/' + player.id }"
-            class="underline"
+            v-if="index"
+            class="text-5xl"
           >
-            <b>{{ player.name }}</b>
-          </router-link>
-          <span v-else>
-            <b>{{ player.name }}</b>
+            {{ index }}
           </span>
+          <span
+            v-else
+            class="text-caption mr-2"
+          >
+            {{ turnIndex }}
+          </span>
+          <v-chip
+            :to="player.id ? '/users/' + player.id : ''"
+            class="mr-2"
+          >
+            <template #prepend>
+              <v-icon
+                v-if="onlineUsers.includes(player.name)"
+                color="blue"
+              >
+                mdi-circle-medium
+              </v-icon>
+            </template>
+            {{ player.name }}
+          </v-chip>
           <Flag
             v-for="controlledNation in controlledNations(player.name)"
             :key="controlledNation"
             :nation="controlledNation"
-            width="30"
-            height="20"
-            class="inline-block mx-0.5"
+            width="45"
+            height="30"
           />
-        </span>
-      </div>
-      <div>${{ player.cash }}mil</div>
-      <div>{{ player.rawScore + player.cash }} VP</div>
-      <div class="flex flex-wrap justify-center">
+        </v-card-title>
+        <v-card-subtitle>
+          <div>${{ player.cash }}mil</div>
+          <div>{{ player.rawScore + player.cash }} VP</div>
+        </v-card-subtitle>
+      </v-card-item>
+      <v-card-text>
         <Bond
           v-for="bond of sortedBonds(player.bonds)"
           :key="bond.nation.value + bond.cost"
@@ -54,21 +55,20 @@
           :class="{ 'cursor-pointer': canTradeIn(bond) }"
           @click="applyToTradeIn(bond)"
         />
-      </div>
-      <div v-if="player.name === game.investorCardHolder">
-        Investor Card
-      </div>
-      <div v-if="game.swissBanks.includes(player.name)">
-        Swiss Bank
-      </div>
-    </div>
-  </div>
+        <div v-if="player.name === game.investorCardHolder">
+          Investor Card
+        </div>
+        <div v-if="game.swissBanks.includes(player.name)">
+          Swiss Bank
+        </div>
+      </v-card-text>
+    </v-card>
+  </v-col>
 </template>
 
 <script>
 import Bond from './Bond.vue';
 import Flag from './flags/Flag.vue';
-import Player from '../../Domain/Entities/Player';
 
 import { Nation, Nation2030, NationAsia } from '../../Domain/constants';
 
@@ -81,7 +81,7 @@ export default {
   props: {
     currentPlayer: { type: String, default: '' },
     onlineUsers: { type: Array, default: () => [] },
-    player: { type: Player, default: () => {} },
+    player: { type: Object, default: () => {} },
     profile: { type: Object, default: () => {} },
     game: { type: Object, default: () => {} },
     index: { type: Number, default: 0 },
@@ -116,43 +116,40 @@ export default {
       return false;
     },
     sortedBonds(bonds) {
-      if (bonds) {
-        const nations = [
-          Nation.AH,
-          Nation.IT,
-          Nation.FR,
-          Nation.GB,
-          Nation.GE,
-          Nation.RU,
-          Nation2030.RU,
-          Nation2030.CN,
-          Nation2030.IN,
-          Nation2030.BR,
-          Nation2030.US,
-          Nation2030.EU,
-          NationAsia.CN,
-          NationAsia.JP,
-          NationAsia.FR,
-          NationAsia.GB,
-          NationAsia.TR,
-          NationAsia.RU,
-          NationAsia.GE,
-        ];
-        const sortedByNation = [...bonds].sort((bond1, bond2) => {
-          if (nations.indexOf(bond1.nation) > nations.indexOf(bond2.nation)) {
-            return 1;
-          }
-          return -1;
-        });
-        const sortedBonds = sortedByNation.sort((bond1, bond2) => {
-          if (bond1.nation === bond2.nation && bond1.cost > bond2.cost) {
-            return 1;
-          }
-          return -1;
-        });
-        return sortedBonds;
-      }
-      return [];
+      const nations = [
+        Nation.AH,
+        Nation.IT,
+        Nation.FR,
+        Nation.GB,
+        Nation.GE,
+        Nation.RU,
+        Nation2030.RU,
+        Nation2030.CN,
+        Nation2030.IN,
+        Nation2030.BR,
+        Nation2030.US,
+        Nation2030.EU,
+        NationAsia.CN,
+        NationAsia.JP,
+        NationAsia.FR,
+        NationAsia.GB,
+        NationAsia.TR,
+        NationAsia.RU,
+        NationAsia.GE,
+      ];
+      const sortedByNation = [...bonds].sort((bond1, bond2) => {
+        if (nations.indexOf(bond1.nation) > nations.indexOf(bond2.nation)) {
+          return 1;
+        }
+        return -1;
+      });
+      const sortedBonds = sortedByNation.sort((bond1, bond2) => {
+        if (bond1.nation === bond2.nation && bond1.cost > bond2.cost) {
+          return 1;
+        }
+        return -1;
+      });
+      return sortedBonds;
     },
     toggleTradeIn(bond) {
       this.$emit('toggleTradeIn', bond);

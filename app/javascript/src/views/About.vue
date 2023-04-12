@@ -1,8 +1,7 @@
 <template>
-  <div class="container mx-auto sm:w-1/2">
-    <b class="text-xl">About PlayImperial</b>
-    <div class="mt-5">
-      <p>
+  <v-container>
+    <v-card>
+      <v-card-text>
         <b>PlayImperial</b> is a web implementation of the board game, <b><a
           href="https://en.wikipedia.org/wiki/Imperial_(board_game)"
           class="underline"
@@ -10,27 +9,27 @@
           href="https://www.pd-verlag.de/epages/es719366.sf/en_GB/?ObjectPath=/Shops/es719366/Products/9703"
           class="underline"
         >here</a>.
-      </p>
-      <p>
+      </v-card-text>
+      <v-card-text>
         PlayImperial in an open-source project, the code for which can be found <a
           href="https://www.github.com/thrillberg/imperial"
           class="underline"
         >on GitHub</a>. We always welcome new contributors!
-      </p>
-      <p>
+      </v-card-text>
+      <v-card-text>
         Feel free to say hi <a
           href="https://discord.gg/VnxKwuQmg8"
           class="underline"
         >on Discord</a>!
-      </p>
-      <p>
+      </v-card-text>
+      <v-card-text>
         The <a
           href="https://boardgamegeek.com/filepage/29449/imperial-asia-expansion-map-and-rules"
           class="underline"
         ><b>Imperial Asia</b></a> expansion was designed by Greg Berry.
-      </p>
-    </div>
-  </div>
+      </v-card-text>
+    </v-card>
+  </v-container>
 </template>
 
 <script>

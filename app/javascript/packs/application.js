@@ -14,12 +14,61 @@
 // const images = require.context('../images', true)
 // const imagePath = (name) => images(name, true)
 
+import '@mdi/font/css/materialdesignicons.css';
 import { createApp } from 'vue';
 import VueCookies from 'vue3-cookies';
+
+import { createVuetify } from 'vuetify';
+/* eslint-disable import/no-unresolved */
+import * as components from 'vuetify/components';
+import * as directives from 'vuetify/directives';
+import { aliases, mdi } from 'vuetify/iconsets/mdi';
+import 'vuetify/styles';
+/* eslint-enable import/no-unresolved */
+import { nationColors } from '../../../nationColors';
 import App from '../src/App.vue';
 import router from '../src/router';
 
-const app = createApp(App, { env: process.env.NODE_ENV });
+const darkTheme = {
+  dark: true,
+  colors: {
+    primary: '#517564',
+    'primary-darken-1': '#3e594c',
+    secondary: '#bab291',
+    ...nationColors,
+  },
+};
+
+const lightTheme = {
+  dark: false,
+  colors: {
+    primary: '#A7F3D0',
+    'primary-darken-1': '#065F46',
+    secondary: '#fef3c7',
+    ...nationColors,
+  },
+};
+
+const vuetify = createVuetify({
+  components,
+  directives,
+  icons: {
+    defaultSet: 'mdi',
+    aliases,
+    sets: {
+      mdi,
+    },
+  },
+  theme: {
+    defaultTheme: 'lightTheme',
+    themes: {
+      darkTheme,
+      lightTheme,
+    },
+  },
+});
+
+const app = createApp(App, { env: process.env.NODE_ENV }).use(vuetify);
 
 app.use(router);
 app.use(VueCookies);
