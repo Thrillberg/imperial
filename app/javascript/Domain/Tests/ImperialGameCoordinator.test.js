@@ -5084,8 +5084,8 @@ describe('imperial', () => {
       };
       const units = {
         AH: {
-          a: { armies: 0, fleets: 0, friendly: true },
-          b: { armies: 0, fleets: 0, friendly: true },
+          a: { armies: 0, fleets: 0, friendly: false },
+          b: { armies: 0, fleets: 0, friendly: false },
         },
         FR: {
           a: { armies: 0, fleets: 0, friendly: false },
@@ -5216,9 +5216,14 @@ describe('imperial', () => {
       const expectedProvinces = new Map();
       expectedProvinces.set('a', { factory: null });
       expectedProvinces.set('b', { factory: null });
+
+      const expectedUnitsByProvince = new Map();
+      expectedUnitsByProvince.set('a', { armies: 0, fleets: 0, friendly: false });
+      expectedUnitsByProvince.set('b', { armies: 0, fleets: 0, friendly: false });
+
       const expectedUnits = new Map();
       for (const nation in units) {
-        expectedUnits.set(Nation[nation], units[nation]);
+        expectedUnits.set(Nation[nation], expectedUnitsByProvince);
       }
 
       const game = Imperial.loadFromJSON(stateAsJSON);

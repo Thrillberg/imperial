@@ -142,7 +142,7 @@ export default class ImperialGameCoordinator {
     }
 
     for (const nation in stateAsJSON.units) {
-      units.set(nationEntity[nation], stateAsJSON.units[nation]);
+      units.set(nationEntity[nation], new Map(Object.entries(stateAsJSON.units[nation])));
     }
 
     const game = new ImperialGameCoordinator(board);
