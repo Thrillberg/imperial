@@ -47,7 +47,7 @@
       </v-card-item>
       <v-card-text>
         <Bond
-          v-for="bond in sortedBonds(player.bonds)"
+          v-for="bond of sortedBonds(player.bonds)"
           :key="bond.nation.value + bond.cost"
           :bond="bond"
           :toggle-trade-in="toggleTradeIn"

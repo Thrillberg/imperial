@@ -22,44 +22,49 @@ describe('Imperial Asia', () => {
       });
 
       test('bond assignments', () => {
-        expect(actual.players).toEqual({
-          a: {
-            name: 'a',
-            cash: 2,
-            bonds: new Set([Bond(NationAsia.CN, 4), Bond(NationAsia.GE, 1)]),
-            rawScore: 0,
-          },
-          b: {
-            name: 'b',
-            cash: 2,
-            bonds: new Set([Bond(NationAsia.JP, 4), Bond(NationAsia.CN, 1)]),
-            rawScore: 0,
-          },
-          c: {
-            name: 'c',
-            cash: 2,
-            bonds: new Set([Bond(NationAsia.FR, 4), Bond(NationAsia.TR, 1)]),
-            rawScore: 0,
-          },
-          d: {
-            name: 'd',
-            cash: 2,
-            bonds: new Set([Bond(NationAsia.GB, 4), Bond(NationAsia.RU, 1)]),
-            rawScore: 0,
-          },
-          e: {
-            name: 'e',
-            cash: 2,
-            bonds: new Set([Bond(NationAsia.TR, 4), Bond(NationAsia.JP, 1)]),
-            rawScore: 0,
-          },
-          f: {
-            name: 'f',
-            cash: 2,
-            bonds: new Set([Bond(NationAsia.RU, 4), Bond(NationAsia.FR, 1)]),
-            rawScore: 0,
-          },
-        });
+        expect(actual.players.size === 6);
+
+        for (const player of actual.players.values()) {
+          expect(player.cash).toEqual(2);
+          expect(player.score).toEqual(0);
+          expect(player.bonds.size).toEqual(2);
+
+          switch (player.id) {
+            case 'a':
+              expect(player.bonds.has(Bond(NationAsia.CN, 4))).toEqual(true);
+              expect(player.bonds.has(Bond(NationAsia.GE, 1))).toEqual(true);
+              break;
+
+            case 'b':
+              expect(player.bonds.has(Bond(NationAsia.JP, 4))).toEqual(true);
+              expect(player.bonds.has(Bond(NationAsia.CN, 1))).toEqual(true);
+              break;
+
+            case 'c':
+              expect(player.bonds.has(Bond(NationAsia.FR, 4))).toEqual(true);
+              expect(player.bonds.has(Bond(NationAsia.TR, 1))).toEqual(true);
+              break;
+
+            case 'd':
+              expect(player.bonds.has(Bond(NationAsia.GB, 4))).toEqual(true);
+              expect(player.bonds.has(Bond(NationAsia.RU, 1))).toEqual(true);
+              break;
+
+            case 'e':
+              expect(player.bonds.has(Bond(NationAsia.TR, 4))).toEqual(true);
+              expect(player.bonds.has(Bond(NationAsia.JP, 1))).toEqual(true);
+              break;
+
+            case 'f':
+              expect(player.bonds.has(Bond(NationAsia.RU, 4))).toEqual(true);
+              expect(player.bonds.has(Bond(NationAsia.FR, 1))).toEqual(true);
+              break;
+
+            default:
+              expect(false).toEqual(true);
+              break;
+          }
+        }
       });
 
       test('nations', () => {

@@ -1,5 +1,7 @@
 import { AllBonds2030, Bond, Nation2030 } from './constants';
 
+import Player from './Entities/Player';
+
 const error = (want) => (x) => {
   throw new Error(`got=${x.value}, want=${want}`);
 };
@@ -48,7 +50,7 @@ export default ({ players, provinceNames }) => {
     availableBonds: AllBonds2030(),
     nations: new Map(),
     order: players.map((p) => p.id),
-    players: {},
+    players: new Map(),
   };
 
   /* From the initial nation assignments, distribute bonds to the players. */
@@ -57,12 +59,10 @@ export default ({ players, provinceNames }) => {
     .flat()
     .forEach(({ id, nation }) => {
       if (out.players[id] === undefined) {
-        out.players[id] = {
-          name: id,
-          cash: 2,
-          bonds: new Set(),
-          rawScore: 0,
-        };
+        const player = new Player(id);
+        player.cash = 2;
+
+        out.players[id] = player;
       }
 
       const smallerBondNation = nation.when({

@@ -18,15 +18,21 @@ export default class PurchaseBond {
     return InvalidBondUpgradeError;
   }
 
-  static purchase(investor, bond, undoHistory) {
+  #electGovernor;
+
+  constructor(game) {
+    this.#electGovernor = new ElectGovernor(game);
+  }
+
+  purchase(investor, bond, undoHistory) {
     AdjustTreasury.changeBy(bond.nation, bond.cost, undoHistory);
 
     AdjustCash.changeBy(investor, -bond.cost, undoHistory);
     AssignBond.assign(bond, investor, undoHistory);
 
-    ElectGovernor.electMostInvestedBondBearer(bond.nation, undoHistory);
+    this.#electGovernor.electMostInvestedBondBearer(bond.nation, undoHistory);
   }
-  static upgrade(investor, returnBond, purchaseBond, undoHistory) {
+  upgrade(investor, returnBond, purchaseBond, undoHistory) {
     if (returnBond.nation !== purchaseBond.nation || returnBond.cost >= purchaseBond.cost) {
       throw new InvalidBondUpgradeError(returnBond, purchaseBond);
     }
@@ -39,6 +45,6 @@ export default class PurchaseBond {
     AssignBond.unassign(returnBond, undoHistory);
     AssignBond.assign(purchaseBond, investor, undoHistory);
 
-    ElectGovernor.electMostInvestedBondBearer(purchaseBond.nation, undoHistory);
+    this.#electGovernor.electMostInvestedBondBearer(purchaseBond.nation, undoHistory);
   }
 }

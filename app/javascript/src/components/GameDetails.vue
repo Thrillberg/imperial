@@ -63,18 +63,7 @@ export default {
     players() {
       const players = {};
       for (const name in this.game.players) {
-        this.gameData.players.forEach((dataPlayer) => {
-          if (name === dataPlayer.name) {
-            players[name] = {
-              ...this.game.players[name],
-              id: dataPlayer.id,
-            };
-          }
-        });
-        if (!players[name]) {
-          // Computer player
-          players[name] = this.game.players[name];
-        }
+        players[name] = this.game.players[name];
       }
 
       return Object.values(players);

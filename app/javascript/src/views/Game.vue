@@ -553,7 +553,7 @@ export default {
 
       if (Object.keys(this.game.players).length > 0) {
         this.gameStarted = true;
-        this.currentPlayer = this.game.players[this.profile.username] || {};
+        this.currentPlayer = markRaw(this.game.players[this.profile.username]) || {};
         this.controllingPlayerName = this.game.currentPlayerName;
         this.updateFavicon();
         this.audioNotification();

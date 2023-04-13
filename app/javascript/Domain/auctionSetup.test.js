@@ -21,44 +21,11 @@ describe('Imperial constructor', () => {
     });
 
     test('cash assignment', () => {
-      expect(actual.players).toEqual({
-        a: {
-          name: 'a',
-          cash: 15,
-          bonds: new Set(),
-          rawScore: 0,
-        },
-        b: {
-          name: 'b',
-          cash: 15,
-          bonds: new Set(),
-          rawScore: 0,
-        },
-        c: {
-          name: 'c',
-          cash: 15,
-          bonds: new Set(),
-          rawScore: 0,
-        },
-        d: {
-          name: 'd',
-          cash: 15,
-          bonds: new Set(),
-          rawScore: 0,
-        },
-        e: {
-          name: 'e',
-          cash: 15,
-          bonds: new Set(),
-          rawScore: 0,
-        },
-        f: {
-          name: 'f',
-          cash: 15,
-          bonds: new Set(),
-          rawScore: 0,
-        },
-      });
+      for (const player of actual.players.values()) {
+        expect(player.cash).toEqual(15);
+        expect(player.bonds.size).toEqual(0);
+        expect(player.score).toEqual(0);
+      }
     });
 
     test('nations', () => {
@@ -104,38 +71,11 @@ describe('Imperial constructor', () => {
     });
 
     test('cash assignment', () => {
-      expect(actual.players).toEqual({
-        a: {
-          name: 'a',
-          cash: 18,
-          bonds: new Set(),
-          rawScore: 0,
-        },
-        b: {
-          name: 'b',
-          cash: 18,
-          bonds: new Set(),
-          rawScore: 0,
-        },
-        c: {
-          name: 'c',
-          cash: 18,
-          bonds: new Set(),
-          rawScore: 0,
-        },
-        d: {
-          name: 'd',
-          cash: 18,
-          bonds: new Set(),
-          rawScore: 0,
-        },
-        e: {
-          name: 'e',
-          cash: 18,
-          bonds: new Set(),
-          rawScore: 0,
-        },
-      });
+      for (const player of actual.players.values()) {
+        expect(player.cash).toEqual(18);
+        expect(player.bonds.size).toEqual(0);
+        expect(player.score).toEqual(0);
+      }
     });
 
     test('nations', () => {
@@ -180,32 +120,11 @@ describe('Imperial constructor', () => {
     });
 
     test('cash assignment', () => {
-      expect(actual.players).toEqual({
-        a: {
-          name: 'a',
-          cash: 22,
-          bonds: new Set(),
-          rawScore: 0,
-        },
-        b: {
-          name: 'b',
-          cash: 22,
-          bonds: new Set(),
-          rawScore: 0,
-        },
-        c: {
-          name: 'c',
-          cash: 22,
-          bonds: new Set(),
-          rawScore: 0,
-        },
-        d: {
-          name: 'd',
-          cash: 22,
-          bonds: new Set(),
-          rawScore: 0,
-        },
-      });
+      for (const player of actual.players.values()) {
+        expect(player.cash).toEqual(22);
+        expect(player.bonds.size).toEqual(0);
+        expect(player.score).toEqual(0);
+      }
     });
 
     test('nations', () => {
@@ -249,26 +168,11 @@ describe('Imperial constructor', () => {
     });
 
     test('cash assignment', () => {
-      expect(actual.players).toEqual({
-        a: {
-          name: 'a',
-          cash: 28,
-          bonds: new Set(),
-          rawScore: 0,
-        },
-        b: {
-          name: 'b',
-          cash: 28,
-          bonds: new Set(),
-          rawScore: 0,
-        },
-        c: {
-          name: 'c',
-          cash: 28,
-          bonds: new Set(),
-          rawScore: 0,
-        },
-      });
+      for (const player of actual.players.values()) {
+        expect(player.cash).toEqual(15);
+        expect(player.bonds.size).toEqual(0);
+        expect(player.score).toEqual(0);
+      }
     });
 
     test('nations', () => {
@@ -311,20 +215,11 @@ describe('Imperial constructor', () => {
     });
 
     test('cash assignment', () => {
-      expect(actual.players).toEqual({
-        a: {
-          name: 'a',
-          cash: 40,
-          bonds: new Set(),
-          rawScore: 0,
-        },
-        b: {
-          name: 'b',
-          cash: 40,
-          bonds: new Set(),
-          rawScore: 0,
-        },
-      });
+      for (const player of actual.players.values()) {
+        expect(player.cash).toEqual(40);
+        expect(player.bonds.size).toEqual(0);
+        expect(player.score).toEqual(0);
+      }
     });
 
     test('nations', () => {

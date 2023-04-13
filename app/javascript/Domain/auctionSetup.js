@@ -1,11 +1,13 @@
 import { AllBonds, Nation } from './constants';
 
+import Player from './Entities/Player';
+
 export default ({ players, provinceNames }) => {
   const out = {
     availableBonds: AllBonds(),
     nations: new Map(),
     order: players.map((p) => p.id),
-    players: {},
+    players: new Map(),
   };
 
   let cash;
@@ -29,12 +31,10 @@ export default ({ players, provinceNames }) => {
   }
 
   players.forEach(({ id }) => {
-    out.players[id] = {
-      name: id,
-      cash,
-      bonds: new Set(),
-      rawScore: 0,
-    };
+    const player = new Player(id);
+    player.cash = cash;
+
+    out.players[id] = player;
   });
 
   for (const n of Nation) {
