@@ -2,12 +2,6 @@
   <div class="text-h5">
     Your Games
   </div>
-  <v-btn
-    href="/games/new"
-    class="bg-primary-darken-1 mb-2"
-  >
-    New Game
-  </v-btn>
   <v-row>
     <v-col
       v-for="game of orderedGames"
