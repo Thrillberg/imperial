@@ -4,6 +4,21 @@
     class="bg-primary"
   >
     <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
+    <v-btn
+      v-if="$route.path !== '/'"
+      to="/"
+      prepend-icon="mdi-home"
+      stacked
+    >
+      Home
+    </v-btn>
+    <v-btn
+      v-if="(profile.registered || profile.anonymityConfirmedAt) && $route.path !== '/games/new'"
+      href="/games/new"
+      class="bg-primary-darken-1"
+    >
+      New Game
+    </v-btn>
     <v-app-bar-title />
     <div
       v-for="(error, index) in errors"
@@ -83,7 +98,7 @@
           @click="register"
         />
         <v-list-item
-          v-if="!profile.anonymityConfirmedAt && !profile.email"
+          v-if="!profile.anonymityConfirmedAt && !profile.email && Object.keys(profile).length > 0"
           prepend-icon="mdi-incognito"
           @click="setAnonymous"
         >
@@ -100,16 +115,6 @@
     v-model="drawer"
   >
     <v-list>
-      <v-list-item
-        title="Home"
-        to="/"
-      >
-        <template #prepend>
-          <v-icon color="primary-darken-1">
-            mdi-home
-          </v-icon>
-        </template>
-      </v-list-item>
       <v-list-item
         title="About"
         to="/about"
