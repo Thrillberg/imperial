@@ -24,7 +24,7 @@ export default class AbstractImperialGame extends Entity {
     for (const player of this.#playerOrder) {
       this.#players.set(player.name, player);
     }
-    this.currentPlayerIndex = 0;
+    this.currentPlayer = null;
 
     this.#nations = new Map();
     this.#nationOrder = nationOrder;
@@ -55,9 +55,6 @@ export default class AbstractImperialGame extends Entity {
   }
   playerByOrder(index) {
     return this.#playerOrder[index];
-  }
-  get currentPlayer() {
-    return this.#playerOrder[this.currentPlayerIndex];
   }
   get investorCardHolder() {
     if (this.investorCardHolderPlayerIndex) {

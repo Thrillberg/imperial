@@ -1,30 +1,15 @@
 export default class AffordableBonds {
-  static* bondsPurchasableInFull(nation, investor) {
+  static* bondsPurchasableInFull(nation, cash) {
     for (const bond of nation.unsoldBondsByInterestValue.values()) {
-      if (investor.cash >= bond.cost) {
+      if (cash >= bond.cost) {
         yield bond;
       }
     }
   }
-  static* allAffordableBonds(nation, investor) {
-    const sameNationBonds = [...investor.bondsOfNation(nation)];
-
-    for (const bond of nation.unsoldBondsByInterestValue.values()) {
-      if (investor.cash >= bond.cost) {
+  static* bondsUpgradableFrom(bond, cash) {
+    for (const unsoldBond of bond.nation.unsoldBondsByInterestValue.values()) {
+      if (bond.cost < unsoldBond.cost && cash < unsoldBond.cost && bond.cost + cash >= unsoldBond.cost) {
         yield bond;
-      } else {
-        let canUpgrade = false;
-
-        for (const alreadyOwnedBond of sameNationBonds) {
-          if (alreadyOwnedBond.cost < bond.cost && investor.cash + alreadyOwnedBond.cost >= bond.cost) {
-            canUpgrade = true;
-            break;
-          }
-        }
-
-        if (canUpgrade) {
-          yield bond;
-        }
       }
     }
   }
