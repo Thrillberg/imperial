@@ -656,17 +656,7 @@ export default {
     tickWithAction(action) {
       this.controllingPlayerName = this.game.currentPlayerName;
       if (!this.paused) {
-        const latestState = {
-          baseGame: this.game.baseGame,
-          currentNation: this.game.currentNation,
-          nations: Object.fromEntries(this.game.nations),
-          players: this.game.players,
-          provinces: Object.fromEntries(this.game.provinces),
-          units: Object.fromEntries(this.game.units),
-          variant: this.game.variant,
-          winner: this.game.winner,
-        };
-        apiClient.tick(this.$route.params.id, action, latestState);
+        apiClient.tick(this.$route.params.id, action, this.game.toJSONWithLatestAction(action));
         this.displayFight(action);
       }
     },

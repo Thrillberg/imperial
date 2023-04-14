@@ -2,53 +2,94 @@
   <div class="text-h5">
     Current Games
   </div>
-  <v-table
-    density="compact"
-    hover
-  >
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Players</th>
-        <th>Started At</th>
-        <th>Last Move At</th>
-        <th>Variant</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr
-        v-for="game of games"
-        :key="game.id"
+  <v-row>
+    <v-col
+      v-for="game of games"
+      :key="game.id"
+      cols="6"
+    >
+      <router-link
+        :to="{ path: '/game/' + game.id }"
+        style="text-decoration: none"
       >
-        <td>
-          <router-link :to="{ path: '/game/' + game.id }">
-            <span>{{ game.name }}</span>
-          </router-link>
-        </td>
-        <td>
-          {{ game.players.length }}
-        </td>
-        <td>
-          {{ toTime(game.startedAt) }}
-        </td>
-        <td>
-          {{ toTime(game.lastMoveAt) }}
-        </td>
-        <td>
-          {{ variant(game.baseGame) }}
-        </td>
-      </tr>
-    </tbody>
-  </v-table>
+        <v-hover>
+          <template #default="{ isHovering, props }">
+            <v-card
+              :title="game.name + (game.players.length === 1 ? ' (solo)' : '')"
+              :subtitle="currentPlayer(game) ? currentPlayer(game) + '\'s turn' : ''"
+              :color="backgroundColor(isHovering, nationColors(JSON.parse(game.latestState).currentNation))"
+              v-bind="props"
+            >
+              <v-card-text>
+                <Board
+                  :config="boardConfigs[game.baseGame]"
+                  :game="Imperial.loadFromJSON(JSON.parse(game.latestState))"
+                  :game-started="true"
+                />
+                <v-row>
+                  <v-col
+                    v-for="nation of JSON.parse(game.latestState).nations"
+                    :key="Object.keys(nation)[0]"
+                    cols="auto"
+                  >
+                    <Flag
+                      :nation="Object.keys(nation)[0]"
+                      width="30"
+                      height="20"
+                    />
+                    {{ nation[Object.keys(nation)[0]].controller }}
+                  </v-col>
+                </v-row>
+              </v-card-text>
+            </v-card>
+          </template>
+        </v-hover>
+      </router-link>
+    </v-col>
+  </v-row>
 </template>
 
 <script>
+import nationColors from '../../../../nationColors';
 import toTime from '../toTime';
+import Board from './Board.vue';
+import Flag from './flags/Flag.vue';
+
+import Imperial from '../../Domain/ImperialGameCoordinator';
 
 export default {
   name: 'CurrentGames',
+  components: { Board, Flag },
   props: { games: { type: Array, default: () => [] } },
+  async setup() {
+    const boardConfigs = {};
+    await import('../boardConfigs').then((resp) => { boardConfigs.imperial = resp.default.imperial; });
+    await import('../board2030Configs').then((resp) => { boardConfigs.imperial2030 = resp.default.imperial2030; });
+    await import('../boardAsiaConfigs').then((resp) => { boardConfigs.imperialAsia = resp.default.imperialAsia; });
+    return { boardConfigs };
+  },
+  computed: {
+    Imperial() {
+      return Imperial;
+    },
+  },
   methods: {
+    backgroundColor(isHovering, color) {
+      return isHovering ? color : `${color}88`;
+    },
+    currentPlayer(game) {
+      if (game.winner) {
+        return `${game.winner} won!`;
+      } if (game.currentPlayerName) {
+        return game.currentPlayerName;
+      } if (game.startedAt) {
+        return 'Computer player';
+      }
+      return '';
+    },
+    nationColors(nation) {
+      return nationColors.nationColors[nation];
+    },
     toTime(date) {
       return toTime(date);
     },

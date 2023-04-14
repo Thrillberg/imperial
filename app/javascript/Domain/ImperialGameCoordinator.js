@@ -109,12 +109,13 @@ export default class ImperialGameCoordinator {
         break;
       case 'imperialAsia':
         board = gameBoardAsia;
-        currentNation = NationAsia[stateAsJSON.currentNation];
+        nationEntity = NationAsia;
 
         break;
       default:
         board = standardGameBoard;
         currentNation = Nation.AH;
+        nationEntity = Nation;
     }
 
     currentNation = nationEntity[stateAsJSON.currentNation];
@@ -355,9 +356,11 @@ export default class ImperialGameCoordinator {
     }
   }
 
-  toJSON() {
+  toJSONWithLatestAction(action) {
     // We probably want to move to bulk of this function off to the this.#game object.
     // But state is currently split between this coordinator and the this.#game.object, so we'll keep this here for now.
+    this.tick(action);
+
     const nations = [];
     for (const [nationName, nation] of this.nations) {
       nations.push({ [nationName.value]: nation });

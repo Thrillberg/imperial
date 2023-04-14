@@ -4,68 +4,92 @@
   </div>
   <v-btn
     href="/games/new"
-    class="bg-primary-darken-1"
+    class="bg-primary-darken-1 mb-2"
   >
     New Game
   </v-btn>
-  <v-table
-    density="compact"
-    hover
-  >
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Players</th>
-        <th>Current Player</th>
-        <th>Last Move At</th>
-        <th>Variant</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr
-        v-for="game of orderedGames"
-        :key="game.id"
+  <v-row>
+    <v-col
+      v-for="game of orderedGames"
+      :key="game.id"
+      cols="6"
+    >
+      <router-link
+        :to="{ path: '/game/' + game.id }"
+        style="text-decoration: none"
       >
-        <td>
-          <router-link :to="{ path: '/game/' + game.id }">
-            <Star
-              v-if="game.currentPlayerName
-                && game.currentPlayerName === profile.username
-                && !game.winner"
-            />
-            <span>{{ game.name }}</span>
-          </router-link>
-        </td>
-        <td>
-          {{ game.players.length }}
-        </td>
-        <td>
-          {{ currentPlayer(game) }}
-        </td>
-        <td>
-          {{ toTime(game.lastMoveAt) }}
-        </td>
-        <td>
-          {{ variant(game.baseGame) }}
-        </td>
-      </tr>
-    </tbody>
-  </v-table>
+        <v-hover>
+          <template #default="{ isHovering, props }">
+            <v-card
+              :title="game.name + (game.players.length === 1 ? ' (solo)' : '')"
+              :subtitle="currentPlayer(game) ? currentPlayer(game) + '\'s turn' : ''"
+              :color="backgroundColor(isHovering, nationColors(JSON.parse(game.latestState).currentNation))"
+              v-bind="props"
+            >
+              <template
+                v-if="game.currentPlayerName
+                  && game.currentPlayerName === profile.username
+                  && !game.winner"
+                #prepend
+              >
+                <v-btn
+                  icon="mdi-star"
+                  color="yellow"
+                />
+              </template>
+              <v-card-text>
+                <Board
+                  :config="boardConfigs[game.baseGame]"
+                  :game="Imperial.loadFromJSON(JSON.parse(game.latestState))"
+                  :game-started="true"
+                />
+                <v-row>
+                  <v-col
+                    v-for="nation of JSON.parse(game.latestState).nations"
+                    :key="Object.keys(nation)[0]"
+                    cols="auto"
+                  >
+                    <Flag
+                      :nation="Object.keys(nation)[0]"
+                      width="30"
+                      height="20"
+                    />
+                    {{ nation[Object.keys(nation)[0]].controller }}
+                  </v-col>
+                </v-row>
+              </v-card-text>
+            </v-card>
+          </template>
+        </v-hover>
+      </router-link>
+    </v-col>
+  </v-row>
   <div v-if="games.length === 0">
     Uh oh! You aren't in any active games.
   </div>
 </template>
 
 <script>
-import Star from './Star.vue';
+import Board from './Board.vue';
+
+import nationColors from '../../../../nationColors';
+import Imperial from '../../Domain/ImperialGameCoordinator';
+import Flag from './flags/Flag.vue';
 
 import toTime from '../toTime';
 
 export default {
   name: 'YourGames',
-  components: { Star },
+  components: { Board, Flag },
   props: {
     games: { type: Array, default: () => [] }, profile: { type: Object, default: () => {} },
+  },
+  async setup() {
+    const boardConfigs = {};
+    await import('../boardConfigs').then((resp) => { boardConfigs.imperial = resp.default.imperial; });
+    await import('../board2030Configs').then((resp) => { boardConfigs.imperial2030 = resp.default.imperial2030; });
+    await import('../boardAsiaConfigs').then((resp) => { boardConfigs.imperialAsia = resp.default.imperialAsia; });
+    return { boardConfigs };
   },
   computed: {
     orderedGames() {
@@ -80,8 +104,14 @@ export default {
         return 0;
       });
     },
+    Imperial() {
+      return Imperial;
+    },
   },
   methods: {
+    backgroundColor(isHovering, color) {
+      return isHovering ? color : `${color}88`;
+    },
     currentPlayer(game) {
       if (game.winner) {
         return `${game.winner} won!`;
@@ -104,6 +134,9 @@ export default {
         return 'Imperial Asia';
       }
       return '';
+    },
+    nationColors(nation) {
+      return nationColors.nationColors[nation];
     },
   },
 };
