@@ -4752,7 +4752,7 @@ describe('imperial', () => {
     });
   });
 
-  describe('#toJSON', () => {
+  describe('#toJSONWithLatestAction', () => {
     const newGame = () => {
       const board = new GameBoard({
         nodes: [
@@ -4775,7 +4775,7 @@ describe('imperial', () => {
             controller: 'player1',
             flagCount: 0,
             powerPoints: 0,
-            rondelPosition: null,
+            rondelPosition: 'production1',
             taxChartPosition: 5,
             treasury: 11,
           },
@@ -4931,11 +4931,11 @@ describe('imperial', () => {
         },
       };
 
-      const json = gameCoordinator.toJSON();
+      const json = gameCoordinator.toJSONWithLatestAction(Action.rondel({ nation: Nation.AH, slot: 'production1', cost: 0 }));
 
       expect(json).toEqual({
         baseGame: 'imperial',
-        currentNation: 'AH',
+        currentNation: 'IT',
         nations: expectedNations,
         players: expectedPlayers,
         provinces: expectedProvinces,

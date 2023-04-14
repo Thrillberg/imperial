@@ -1,15 +1,19 @@
 <template>
   <v-container v-if="gamesFetched">
-    <YourGames
-      v-if="profile.registered || profile.anonymityConfirmedAt"
-      :games="yourGames"
-      :profile="profile"
-    />
+    <Suspense>
+      <YourGames
+        v-if="profile.registered || profile.anonymityConfirmedAt"
+        :games="yourGames"
+        :profile="profile"
+      />
+    </Suspense>
     <UnstartedGameList
       :games="unstartedGames"
       :profile="profile"
     />
-    <CurrentGames :games="currentGames" />
+    <Suspense>
+      <CurrentGames :games="currentGames" />
+    </Suspense>
     <CurrentSoloGames :games="currentSoloGames" />
     <div class="px-4">
       <router-link to="/cloned_games">
