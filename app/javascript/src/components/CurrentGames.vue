@@ -2,10 +2,15 @@
   <div class="text-h5">
     Current Games
   </div>
-  <v-row>
+  <v-row
+    v-masonry
+    item-selector=".game"
+  >
     <v-col
       v-for="game of games"
       :key="game.id"
+      v-masonry-tile
+      class="game"
       cols="6"
     >
       <router-link
