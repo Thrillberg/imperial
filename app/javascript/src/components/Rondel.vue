@@ -65,15 +65,13 @@
         <v-card-text v-if="cost > 0">
           <b>Cost: {{ displayMonetaryValue_InMillions(cost) }}</b>
         </v-card-text>
-        <v-card-text>
-          <span v-if="displayHelperFlag">
-            <Flag
-              :nation="helperNation"
-              height="20"
-              width="30"
-              class="inline-block pr-1"
-            />
-          </span>
+        <v-card-text v-if="displayHelperFlag">
+          <Flag
+            :nation="helperNation"
+            height="20"
+            width="30"
+            class="inline-block pr-1"
+          />
           <span>{{ helperText }}</span>
         </v-card-text>
       </v-card>

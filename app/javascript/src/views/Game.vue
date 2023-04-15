@@ -35,29 +35,54 @@
                 <div class="d-flex">
                   <v-tabs
                     v-model="tab"
-                    optional
                     direction="vertical"
                     color="primary-darken-1"
+                    :mandatory="false"
                   >
-                    <v-tab>
-                      <v-icon size="x-large">
-                        mdi-fullscreen
-                      </v-icon>
-                    </v-tab>
                     <v-tab value="nations">
-                      <v-icon size="x-large">
-                        mdi-flag
-                      </v-icon>
+                      <v-tooltip
+                        text="Nations"
+                        location="bottom"
+                      >
+                        <template #activator="{ props }">
+                          <v-icon
+                            v-bind="props"
+                            size="x-large"
+                          >
+                            mdi-flag
+                          </v-icon>
+                        </template>
+                      </v-tooltip>
                     </v-tab>
                     <v-tab value="players">
-                      <v-icon size="x-large">
-                        mdi-account-group
-                      </v-icon>
+                      <v-tooltip
+                        text="Players"
+                        location="bottom"
+                      >
+                        <template #activator="{ props }">
+                          <v-icon
+                            v-bind="props"
+                            size="x-large"
+                          >
+                            mdi-account-group
+                          </v-icon>
+                        </template>
+                      </v-tooltip>
                     </v-tab>
                     <v-tab value="gameLog">
-                      <v-icon size="x-large">
-                        mdi-script-text-outline
-                      </v-icon>
+                      <v-tooltip
+                        text="Game Log"
+                        location="bottom"
+                      >
+                        <template #activator="{ props }">
+                          <v-icon
+                            v-bind="props"
+                            size="x-large"
+                          >
+                            mdi-script-text-outline
+                          </v-icon>
+                        </template>
+                      </v-tooltip>
                     </v-tab>
                   </v-tabs>
 
