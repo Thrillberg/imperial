@@ -25,6 +25,7 @@ import * as directives from 'vuetify/directives';
 import { aliases, mdi } from 'vuetify/iconsets/mdi';
 import 'vuetify/styles';
 /* eslint-enable import/no-unresolved */
+import { VueMasonryPlugin } from 'vue-masonry';
 import { nationColors } from '../../../nationColors';
 import App from '../src/App.vue';
 import router from '../src/router';
@@ -72,6 +73,7 @@ const app = createApp(App, { env: process.env.NODE_ENV }).use(vuetify);
 
 app.use(router);
 app.use(VueCookies);
+app.use(VueMasonryPlugin);
 
 if (process.env.NODE_ENV === 'production') {
   const googleTagManagerHead = document.createElement('script');
