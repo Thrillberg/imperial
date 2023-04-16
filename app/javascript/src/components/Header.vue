@@ -136,7 +136,7 @@
         </template>
       </v-list-item>
       <v-list-item
-        title="Join on Discord!"
+        title="Join on Discord"
         href="https://discord.gg/VnxKwuQmg8"
       >
         <template #prepend>
@@ -146,17 +146,28 @@
           />
         </template>
       </v-list-item>
+      <v-list-item
+        title="Support on Patreon"
+        href="https://www.patreon.com/playimperialclub"
+      >
+        <template #prepend>
+          <patreon-icon
+            class="v-icon v-icon--size-default"
+            fill="#f1465a"
+          />
+        </template>
+      </v-list-item>
     </v-list>
   </v-navigation-drawer>
 </template>
 
 <script>
-import { DiscordIcon } from 'vue3-simple-icons';
+import { DiscordIcon, PatreonIcon } from 'vue3-simple-icons';
 import { useTheme } from 'vuetify';
 
 export default {
   name: 'Header',
-  components: { DiscordIcon },
+  components: { DiscordIcon, PatreonIcon },
   props: {
     profile: { type: Object, default: () => {} },
   },
