@@ -31,18 +31,21 @@
                   :game="Imperial.loadFromJSON(JSON.parse(game.latestState))"
                   :game-started="true"
                 />
-                <v-row>
+                <v-row v-if="game.latestState">
                   <v-col
-                    v-for="nation of JSON.parse(game.latestState).nations"
-                    :key="Object.keys(nation)[0]"
+                    v-for="player of players(game)"
+                    :key="player.name"
                     cols="auto"
                   >
+                    <span :class="player.itsMyTurn ? 'font-weight-bold' : ''">{{ player.name }}</span>
                     <Flag
-                      :nation="Object.keys(nation)[0]"
+                      v-for="nation of player.nations"
+                      :key="nation"
+                      :nation="nation"
                       width="30"
                       height="20"
+                      class="mx-1"
                     />
-                    {{ nation[Object.keys(nation)[0]].controller }}
                   </v-col>
                 </v-row>
               </v-card-text>
@@ -94,6 +97,31 @@ export default {
     },
     nationColors(nation) {
       return nationColors.nationColors[nation];
+    },
+    players(game) {
+      const players = [];
+
+      for (const player of game.players) {
+        const playerNations = [];
+        const playerObj = { name: player.name };
+        const { nations, currentNation } = JSON.parse(game.latestState);
+
+        nations.forEach((nation) => {
+          if (nation[Object.keys(nation)[0]].controller === player.name) {
+            const nationName = Object.keys(nation)[0];
+            playerNations.push(nationName);
+
+            if (currentNation === nationName) {
+              playerObj.itsMyTurn = true;
+            }
+          }
+        });
+
+        playerObj.nations = playerNations;
+        players.push(playerObj);
+      }
+
+      return players;
     },
     toTime(date) {
       return toTime(date);
