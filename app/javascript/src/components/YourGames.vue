@@ -21,7 +21,7 @@
           <template #default="{ isHovering, props }">
             <v-card
               :title="game.name + (game.players.length === 1 ? ' (solo)' : '')"
-              :subtitle="currentPlayer(game) ? currentPlayer(game) + '\'s turn' : ''"
+              :subtitle="currentPlayer(game)"
               :color="backgroundColor(isHovering, nationColors(JSON.parse(game.latestState).currentNation))"
               v-bind="props"
             >
@@ -118,9 +118,9 @@ export default {
       if (game.winner) {
         return `${game.winner} won!`;
       } if (game.currentPlayerName) {
-        return game.currentPlayerName;
+        return `${game.currentPlayerName}'s turn`;
       } if (game.startedAt) {
-        return 'Computer player';
+        return 'Computer player\'s turn';
       }
       return '';
     },
