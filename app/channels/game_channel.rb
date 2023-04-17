@@ -22,10 +22,9 @@ class GameChannel < ApplicationCable::Channel
     when "tick"
       latest_state = data["data"]["latestState"]
       game = game_from_data(data)
-      game_latest_states = JSON.parse(REDIS.get("game_latest_states")).merge(game.id => latest_state).to_json
-      REDIS.set("game_latest_states", game_latest_states)
       game.update(started_at: Time.zone.now) unless game.started_at
       game.update(force_ended_at: nil) if game.force_ended_at
+      game.update(latest_state: latest_state)
       data = data["data"]["action"]
       action = Action.create(data: data)
       if game.cloned_from_game

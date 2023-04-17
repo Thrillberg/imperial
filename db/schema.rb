@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_03_26_173107) do
+ActiveRecord::Schema[7.0].define(version: 2023_04_17_015610) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -53,6 +53,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_26_173107) do
     t.boolean "is_public", default: true
     t.string "discord_channel_id"
     t.boolean "is_imported"
+    t.json "latest_state"
     t.index ["cloned_from_game_id"], name: "index_games_on_cloned_from_game_id"
     t.index ["current_player_id"], name: "index_games_on_current_player_id"
     t.index ["host_id"], name: "index_games_on_host_id"
@@ -77,6 +78,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_26_173107) do
     t.datetime "anonymity_confirmed_at", precision: nil
     t.boolean "turn_notifications_enabled", default: false
     t.string "discord_id"
+    t.boolean "is_bot"
     t.index ["account_id"], name: "index_users_on_account_id"
   end
 
