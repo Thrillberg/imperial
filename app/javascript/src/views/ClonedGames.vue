@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container v-if="loaded">
     <b>Your Cloned Games</b>
     <div class="flex border-b border-black mt-2">
       <div class="w-1/2">
@@ -20,6 +20,9 @@
       </router-link>
     </div>
   </v-container>
+  <v-container v-else class="text-center">
+    <v-progress-circular indeterminate color="primary-darken-1" size="100" />
+  </v-container>
 </template>
 
 <script>
@@ -28,12 +31,13 @@ export default {
   props: { profile: { type: Object, default: () => {} } },
   data: () => ({
     games: [],
+    loaded: false,
   }),
   created() {
     document.title = 'Your Cloned Games - Imperial';
     fetch(`/api/games?filter=your_cloned&host_id=${this.profile.id}`, { method: 'GET' })
       .then((response) => response.json())
-      .then((data) => { this.games = data; });
+      .then((data) => { this.games = data; this.loaded = true; });
   },
 };
 </script>

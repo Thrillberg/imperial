@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container v-if="loaded">
     <v-card>
       <v-card-title>Rankings</v-card-title>
       <div
@@ -25,6 +25,9 @@
       </v-card-text>
     </v-card>
   </v-container>
+  <v-container v-else class="text-center">
+    <v-progress-circular indeterminate color="primary-darken-1" size="100" />
+  </v-container>
 </template>
 
 <script>
@@ -32,7 +35,7 @@ import { ordinal, rate, rating } from 'openskill';
 
 export default {
   name: 'Rankings',
-  data: () => ({ games: [] }),
+  data: () => ({ games: [], loaded: false }),
   computed: {
     users() {
       const userRatings = {};
@@ -70,7 +73,7 @@ export default {
     document.title = 'Rankings - Imperial';
     fetch('/api/ranked_games')
       .then((response) => response.json())
-      .then((games) => { this.games = games; });
+      .then((games) => { this.games = games; this.loaded = true; });
   },
 };
 </script>

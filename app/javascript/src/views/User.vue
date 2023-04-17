@@ -116,7 +116,6 @@ export default {
       user: {},
       finishedGames: [],
       wonGames: [],
-      gamesFetched: false,
       successfullyUpdated: false,
       turnNotificationsEnabled: false,
       discordId: '',
@@ -143,7 +142,6 @@ export default {
         );
         this.turnNotificationsEnabled = data.user.turn_notifications_enabled;
         this.discordId = data.user.discord_id;
-        this.gamesFetched = true;
         document.title = `${this.user.name}'s Profile - Imperial`;
       });
   },

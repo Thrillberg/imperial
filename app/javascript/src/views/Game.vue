@@ -1,5 +1,5 @@
 <template>
-  <v-sheet>
+  <v-sheet v-if="loaded">
     <v-row align="center">
       <v-col>
         <span class="text-h5 mr-2">{{ gameData.name }} <span v-if="gameData.clonedFromGame">(clone)</span></span>
@@ -325,6 +325,9 @@
       </v-row>
     </div>
   </v-sheet>
+  <v-container v-else class="text-center">
+    <v-progress-circular indeterminate color="primary-darken-1" size="100" />
+  </v-container>
 </template>
 
 <script>
@@ -409,6 +412,7 @@ export default {
     gameStarted: false,
     importPlacements: [],
     joinedGame: false,
+    loaded: false,
     logTimestamps: [],
     maneuverOrigin: '',
     nationsCard: false,
@@ -600,6 +604,7 @@ export default {
         apiClient.updateWinner(this.$route.params.id, this.game.winner, scores);
       }
       this.silenceAudio = false;
+      this.loaded = true;
     },
     validProvinces() {
       // This function returns all provinces that a unit can move

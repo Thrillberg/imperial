@@ -31,8 +31,8 @@
       </router-link>
     </div>
   </v-container>
-  <v-container v-else>
-    Loading games
+  <v-container v-else class="text-center">
+    <v-progress-circular indeterminate color="primary-darken-1" size="100" />
   </v-container>
 </template>
 
