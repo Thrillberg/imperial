@@ -756,6 +756,9 @@ export default {
       });
       apiClient.tick(gameData.id, action);
     },
+    addRandomBot() {
+      apiClient.addRandomBot(this.$route.params.id);
+    },
     cancelGame() {
       apiClient.cancel(this.gameData.id);
       this.$router.push('/');
@@ -836,6 +839,7 @@ export default {
         this.controllingPlayerName = this.game.currentPlayerName;
         this.updateFavicon();
         this.audioNotification();
+        this.handleBotMoves();
       }
 
       if (
@@ -865,6 +869,17 @@ export default {
 
       this.silenceAudio = false;
       this.loaded = true;
+    },
+    handleBotMoves() {
+      this.gameData.players.forEach((player) => {
+        if (player.name === this.game.currentPlayerName && player.isBot) {
+          this.tickWithAction(this.getRandomAction());
+        }
+      });
+    },
+    getRandomAction() {
+      const actionsArray = Array.from(this.game.availableActions);
+      return actionsArray[Math.floor(Math.random() * actionsArray.length)];
     },
     validProvinces() {
       // This function returns all provinces that a unit can move
