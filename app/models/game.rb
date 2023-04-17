@@ -43,7 +43,6 @@ class Game < ActiveRecord::Base
 
   def to_json
     observers = JSON.parse(REDIS.get("users_observing_games"))[id] || []
-    latest_state = JSON.parse(REDIS.get("game_latest_states"))[id]
     {
       name: name,
       id: id,
