@@ -27,7 +27,7 @@
     </div>
   </v-container>
   <v-container v-else class="text-center">
-    <v-progress-circular indeterminate color="primary-darken-1" size="100" />
+    <v-progress-circular indeterminate color="primary-darken-1" size="100" class="mt-10" />
   </v-container>
 </template>
 

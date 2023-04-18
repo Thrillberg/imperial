@@ -22,6 +22,7 @@
             @signed-in="signIn"
             @open-game="openGame"
             @receive-game-data="receiveGameData"
+            @anonymity_confirmed="anonymityConfirmed"
           />
         </router-view>
       </v-main>
@@ -34,6 +35,7 @@
         indeterminate
         color="primary-darken-1"
         size="100"
+        class="mt-10"
       />
     </div>
   </v-app>
@@ -91,8 +93,7 @@ export default {
         this.$refs.game.updateGameLog(
           log,
           logTimestamps,
-          this.gameData.baseGame,
-          this.gameData.currentPlayerName,
+          this.gameData,
         );
       }
     });

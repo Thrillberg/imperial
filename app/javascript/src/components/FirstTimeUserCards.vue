@@ -86,7 +86,7 @@ export default {
           this.$emit('anonymity_confirmed', data.anonymity_confirmed_at);
 
           apiClient.openGame(
-            this.$cookies.get('user_id'),
+            data.id,
             'imperial',
             'standard',
             false,
@@ -94,7 +94,7 @@ export default {
           )
             .then((game) => {
               this.$emit('openGame', game);
-              this.$router.push(`/game/${game.id}`);
+              this.$router.push(`/game/${game.id}?solo=true`);
             });
         });
     },
