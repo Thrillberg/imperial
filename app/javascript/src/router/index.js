@@ -279,6 +279,11 @@ const routes = [
     component: () => import('../views/NewGame.vue'),
   },
   {
+    path: '/games/open',
+    name: 'OpenGames',
+    component: () => import('../views/OpenGames.vue'),
+  },
+  {
     path: '/cloned_games',
     name: 'ClonedGames',
     component: () => import('../views/ClonedGames.vue'),

@@ -1,5 +1,9 @@
 <template>
-  <v-container v-if="gamesFetched">
+  <FirstTimeUserCards
+    v-if="isFirstTimeUser && gamesFetched"
+    :games="currentGames"
+  />
+  <v-container v-else-if="gamesFetched">
     <Suspense>
       <YourGames
         v-if="profile.registered || profile.anonymityConfirmedAt"
@@ -31,21 +35,29 @@
       </router-link>
     </div>
   </v-container>
-  <v-container v-else class="text-center">
-    <v-progress-circular indeterminate color="primary-darken-1" size="100" />
+  <v-container
+    v-else
+    class="text-center"
+  >
+    <v-progress-circular
+      indeterminate
+      color="primary-darken-1"
+      size="100"
+    />
   </v-container>
 </template>
 
 <script>
 import CurrentGames from '../components/CurrentGames.vue';
 import CurrentSoloGames from '../components/CurrentSoloGames.vue';
+import FirstTimeUserCards from '../components/FirstTimeUserCards.vue';
 import UnstartedGameList from '../components/UnstartedGameList.vue';
 import YourGames from '../components/YourGames.vue';
 
 export default {
   name: 'Home',
   components: {
-    CurrentGames, CurrentSoloGames, UnstartedGameList, YourGames,
+    CurrentGames, CurrentSoloGames, FirstTimeUserCards, UnstartedGameList, YourGames,
   },
   props: {
     games: { type: Array, default: () => [] },
@@ -86,6 +98,9 @@ export default {
       return this.games.filter(
         (game) => game.startedAt && !game.forceEndedAt && !game.winner && !game.clonedFromGame && game.players.length === 1,
       );
+    },
+    isFirstTimeUser() {
+      return !this.profile.registered && !this.profile.anonymityConfirmedAt;
     },
   },
   created() {
