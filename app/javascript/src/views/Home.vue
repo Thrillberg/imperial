@@ -2,6 +2,7 @@
   <FirstTimeUserCards
     v-if="isFirstTimeUser && gamesFetched"
     :games="currentGames"
+    @anonymity_confirmed="$emit('anonymity_confirmed', $event)"
   />
   <v-container v-else-if="gamesFetched">
     <Suspense>
@@ -43,6 +44,7 @@
       indeterminate
       color="primary-darken-1"
       size="100"
+      class="mt-10"
     />
   </v-container>
 </template>
@@ -65,6 +67,7 @@ export default {
     profile: { type: Object, default: () => {} },
     users: { type: Array, default: () => [] },
   },
+  emits: ['anonymity_confirmed'],
   computed: {
     yourGames() {
       return this.games.filter((game) => {

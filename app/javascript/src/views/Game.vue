@@ -245,7 +245,7 @@
             color="primary-darken-1"
             class="mt-2"
             block
-            @click="startGame"
+            @click="startGame(gameData)"
           >
             Start Solo Game (sandbox mode)
           </v-btn>
@@ -253,7 +253,7 @@
             v-else
             color="primary-darken-1"
             block
-            @click="startGame"
+            @click="startGame(gameData)"
           >
             Start Game
           </v-btn>
@@ -326,7 +326,7 @@
     </div>
   </v-sheet>
   <v-container v-else class="text-center">
-    <v-progress-circular indeterminate color="primary-darken-1" size="100" />
+    <v-progress-circular indeterminate color="primary-darken-1" size="100" class="mt-10" />
   </v-container>
 </template>
 
@@ -447,9 +447,14 @@ export default {
       return this.gameData.host === this.profile.username;
     },
     playersInGame() {
-      return this.games.find(
+      const myGame = this.games.find(
         (game) => game.id === this.$route.params.id,
-      ).players.map((player) => player.name);
+      );
+      if (myGame) {
+        return myGame.players.map((player) => player.name);
+      }
+
+      return [];
     },
     paused() {
       if (this.poppedTurns.length > 0) {
@@ -460,7 +465,7 @@ export default {
     },
   },
   created() {
-    apiClient.getGameLog(this.$route.params.id, this.game.baseGame);
+    apiClient.getGameLog(this.$route.params.id);
     window.addEventListener('beforeunload', this.beforeWindowUnload);
     apiClient.userObservingGame(this.profile.username, this.$route.params.id);
   },
@@ -493,19 +498,17 @@ export default {
       this.joinedGame = true;
       apiClient.joinGame(this.$cookies.get('user_id'), this.$route.params.id, this.profile.username);
     },
-    startGame() {
-      const playerNames = this.playerNames(this.gameData);
+    startGame(gameData) {
+      const playerNames = this.playerNames(gameData);
       let players = this.shuffle(playerNames);
-      const { baseGame } = this.gameData;
-      const { variant } = this.gameData;
+      const { baseGame, variant, soloMode } = gameData;
       if (variant === 'standard') {
         players = assignNations(players, baseGame);
       }
-      const { soloMode } = this.gameData;
       const action = Action.initialize({
         players, soloMode, variant, baseGame,
       });
-      apiClient.tick(this.gameData.id, action);
+      apiClient.tick(gameData.id, action);
     },
     cancelGame() {
       apiClient.cancel(this.gameData.id);
@@ -552,15 +555,16 @@ export default {
 
       return players.map((player) => ({ id: player }));
     },
-    updateGameLog(log, logTimestamps, baseGameInput, oldPlayerName) {
+    updateGameLog(log, logTimestamps, gameData) {
       this.logTimestamps = logTimestamps;
       this.poppedTurns = [];
-      let baseGame = baseGameInput;
+      let { baseGame } = gameData;
+      const oldPlayerName = gameData.currentPlayerName;
       if (!baseGame) {
         if (log[0]) {
           baseGame = JSON.parse(log[0]).payload.baseGame || 'imperial';
         } else {
-          ({ baseGame } = this.gameData.baseGame);
+          ({ baseGame } = gameData.baseGame);
         }
       }
 
@@ -574,7 +578,7 @@ export default {
         this.board = imperialAsiaBoard;
       }
 
-      this.game = markRaw(new Imperial(this.board, new Logger(this.env, this.gameData.id)));
+      this.game = markRaw(new Imperial(this.board, new Logger(this.env, gameData.id)));
       if (baseGame) {
         this.game.baseGame = baseGame;
       }
@@ -587,6 +591,7 @@ export default {
         this.updateFavicon();
         this.audioNotification();
       }
+
       if (
         oldPlayerName !== this.game.currentPlayerName
         && (oldPlayerName === this.profile.username || (
@@ -595,6 +600,7 @@ export default {
       ) {
         apiClient.notifyNextPlayer(this.$route.params.id, this.game.currentPlayerName);
       }
+
       apiClient.updateCurrentPlayerName(this.$route.params.id, this.game.currentPlayerName);
       if (this.game.winner) {
         const scores = {};
@@ -603,6 +609,14 @@ export default {
         }
         apiClient.updateWinner(this.$route.params.id, this.game.winner, scores);
       }
+
+      // First time user is playing a solo game
+      if (this.$route.query.solo) {
+        this.startGame(gameData);
+      }
+
+      this.$router.replace({ query: null });
+
       this.silenceAudio = false;
       this.loaded = true;
     },
