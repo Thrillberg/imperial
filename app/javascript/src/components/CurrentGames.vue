@@ -1,7 +1,7 @@
 <template>
-  <div class="text-h5">
+  <v-row class="text-h5">
     Current Games
-  </div>
+  </v-row>
   <v-row
     v-masonry
     item-selector=".game"

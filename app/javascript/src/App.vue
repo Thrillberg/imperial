@@ -28,9 +28,13 @@
     </div>
     <div
       v-else
-      class="text-center text-2xl mt-8"
+      class="text-center"
     >
-      Loading
+      <v-progress-circular
+        indeterminate
+        color="primary-darken-1"
+        size="100"
+      />
     </div>
   </v-app>
 </template>
