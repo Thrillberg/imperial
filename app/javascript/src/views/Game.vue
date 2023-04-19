@@ -1,5 +1,53 @@
 <template>
   <v-sheet v-if="loaded">
+    <v-tooltip
+      text="How to Play Imperial"
+      location="bottom"
+    >
+      <template #activator="{ props }">
+        <v-btn
+          prepend-icon="mdi-help-circle-outline"
+          variant="plain"
+          size="x-large"
+          style="position: sticky; z-index: 1; top: calc(100vh - 60px);"
+          class="pr-13"
+          v-bind="props"
+        >
+          <v-dialog
+            v-model="rulesDialog"
+            activator="parent"
+            width="75%"
+          >
+            <v-card>
+              <v-card-title>
+                <v-toolbar color="surface">
+                  How to Play Imperial
+                  <template #append>
+                    <v-btn
+                      icon="mdi-close"
+                      @click="rulesDialog = false"
+                    />
+                  </template>
+                </v-toolbar>
+              </v-card-title>
+              <v-card-subtitle>
+                A Brief and Incomplete Guide
+              </v-card-subtitle>
+              <Rules />
+              <v-card-actions>
+                <v-btn
+                  color="primary-darken-1"
+                  block
+                  @click="rulesDialog = false"
+                >
+                  Close
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+        </v-btn>
+      </template>
+    </v-tooltip>
     <v-row>
       <v-col>
         <span class="text-h5 mr-2">{{ gameData.name }} <span v-if="gameData.clonedFromGame">(clone)</span></span>
@@ -472,6 +520,7 @@ import GameDetails from '../components/GameDetails.vue';
 import GameLog from '../components/GameLog.vue';
 import NationComponent from '../components/NationComponent.vue';
 import Rondel from '../components/Rondel.vue';
+import Rules from '../components/Rules.vue';
 import TimeTravelButtons from '../components/TimeTravelButtons.vue';
 import TurnStatus from '../components/TurnStatus.vue';
 
@@ -497,6 +546,7 @@ export default {
     NationComponent,
     // NationControlChart,
     Rondel,
+    Rules,
     TimeTravelButtons,
     TurnStatus,
   },
@@ -551,6 +601,7 @@ export default {
     playerDialog: false,
     poppedTurns: [],
     provinceWithFight: '',
+    rulesDialog: false,
     silenceAudio: true,
     tab: null,
     tradedInBondNation: '',

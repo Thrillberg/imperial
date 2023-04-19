@@ -1,5 +1,8 @@
 <template>
-  <v-row justify="center" class="mb-7">
+  <v-row
+    justify="center"
+    class="mb-7"
+  >
     <svg
       width="350px"
       height="350px"
