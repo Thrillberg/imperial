@@ -111,9 +111,7 @@
       @click="toggleTheme"
     />
   </v-app-bar>
-  <v-navigation-drawer
-    v-model="drawer"
-  >
+  <v-navigation-drawer v-model="drawer">
     <v-list>
       <v-list-item
         :title="'Open Games (' + countOfOpenGames + ')'"

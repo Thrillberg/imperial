@@ -11,7 +11,7 @@
       :key="game.id"
       v-masonry-tile
       class="game"
-      cols="6"
+      :cols="mdAndUp ? '6' : '12'"
     >
       <router-link
         :to="{ path: '/game/' + game.id }"
@@ -58,6 +58,7 @@
 </template>
 
 <script>
+import { useDisplay } from 'vuetify';
 import nationColors from '../../../../nationColors';
 import toTime from '../toTime';
 import Board from './Board.vue';
@@ -70,11 +71,12 @@ export default {
   components: { Board, Flag },
   props: { games: { type: Array, default: () => [] } },
   async setup() {
+    const { mdAndUp } = useDisplay();
     const boardConfigs = {};
     await import('../boardConfigs').then((resp) => { boardConfigs.imperial = resp.default.imperial; });
     await import('../board2030Configs').then((resp) => { boardConfigs.imperial2030 = resp.default.imperial2030; });
     await import('../boardAsiaConfigs').then((resp) => { boardConfigs.imperialAsia = resp.default.imperialAsia; });
-    return { boardConfigs };
+    return { boardConfigs, mdAndUp };
   },
   computed: {
     Imperial() {
