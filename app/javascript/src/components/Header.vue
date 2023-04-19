@@ -126,6 +126,17 @@
         </template>
       </v-list-item>
       <v-list-item
+        v-if="countOfClonedGames > 0"
+        title="Your Cloned Games"
+        to="/cloned_games"
+      >
+        <template #prepend>
+          <v-icon color="primary-darken-1">
+            mdi-content-duplicate
+          </v-icon>
+        </template>
+      </v-list-item>
+      <v-list-item
         title="About"
         to="/about"
       >
@@ -179,6 +190,7 @@ export default {
   name: 'Header',
   components: { DiscordIcon, PatreonIcon },
   props: {
+    countOfClonedGames: { type: Number, default: 0 },
     countOfOpenGames: { type: String, default: '0' },
     profile: { type: Object, default: () => {} },
   },

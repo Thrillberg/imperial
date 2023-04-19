@@ -15,22 +15,6 @@
     <Suspense>
       <CurrentGames :games="currentGames" />
     </Suspense>
-    <CurrentSoloGames :games="currentSoloGames" />
-    <div class="px-4">
-      <router-link to="/cloned_games">
-        <b class="underline">Your Cloned Games</b>
-      </router-link>
-    </div>
-    <div class="px-4">
-      <router-link to="/games">
-        <b class="underline">All Games</b>
-      </router-link>
-    </div>
-    <div class="px-4">
-      <router-link to="/finished_games">
-        <b class="underline">All Finished Games</b>
-      </router-link>
-    </div>
   </v-container>
   <v-container
     v-else
@@ -47,14 +31,13 @@
 
 <script>
 import CurrentGames from '../components/CurrentGames.vue';
-import CurrentSoloGames from '../components/CurrentSoloGames.vue';
 import FirstTimeUserCards from '../components/FirstTimeUserCards.vue';
 import YourGames from '../components/YourGames.vue';
 
 export default {
   name: 'Home',
   components: {
-    CurrentGames, CurrentSoloGames, FirstTimeUserCards, YourGames,
+    CurrentGames, FirstTimeUserCards, YourGames,
   },
   props: {
     games: { type: Array, default: () => [] },

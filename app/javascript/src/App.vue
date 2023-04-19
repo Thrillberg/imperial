@@ -4,6 +4,7 @@
       <Header
         :profile="profile"
         :count-of-open-games="countOfOpenGames"
+        :count-of-cloned-games="countOfClonedGames"
         @sign-out="signOut"
         @anonymity_confirmed="anonymityConfirmed"
       />
@@ -81,6 +82,19 @@ export default {
       });
       const openGames = games.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
       return openGames.length.toString();
+    },
+    countOfClonedGames() {
+      const games = this.games.filter((game) => {
+        let inGame = false;
+        game.players.forEach((player) => {
+          if (player.name === this.profile.username) {
+            inGame = true;
+          }
+        });
+        return inGame && game.clonedFromGame;
+      });
+      const clonedGames = games.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      return clonedGames.length;
     },
   },
   beforeUnmount() {
