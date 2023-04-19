@@ -1,9 +1,6 @@
 <template>
-  <v-row>
-    <v-col
-      cols="4"
-      offset-sm="4"
-    >
+  <v-col cols="4">
+    <v-row justify="center">
       <svg
         width="350px"
         height="350px"
@@ -25,13 +22,16 @@
           @slot-silent="slotSilent()"
         />
       </svg>
-    </v-col>
+    </v-row>
 
-    <v-col
+    <v-row
       v-if="!!helperText"
-      cols="3"
+      justify="center"
     >
-      <v-card color="secondary">
+      <v-card
+        color="secondary"
+        width="350px"
+      >
         <v-card-text v-if="onInvestorSlot">
           <div
             v-for="[bearer, amount] of bondBearers"
@@ -44,22 +44,20 @@
           </div>
         </v-card-text>
         <v-card-text v-if="onTaxationSlot">
+          <div v-if="game.baseGame === 'imperial'">
+            <b>Tax Revenue</b> will go from
+            {{ displayMonetaryValue_InMillions(game.nations.get(game.currentNation).taxChartPosition) }} to
+            {{ displayMonetaryValue_InMillions(nextTaxChartPosition) }}
+          </div>
           <div>
-            <div v-if="game.baseGame === 'imperial'">
-              <b>Tax Revenue</b> will go from
-              {{ displayMonetaryValue_InMillions(game.nations.get(game.currentNation).taxChartPosition) }} to
-              {{ displayMonetaryValue_InMillions(nextTaxChartPosition) }}
-            </div>
-            <div>
-              <b>{{ game.currentPlayerName }}</b> would receive {{ displayMonetaryValue_InMillions(playerBonus) }}
-            </div>
-            <div>
-              <b>{{ displayNationName(game.currentNation.value) }}</b>'s treasury would change by
-              {{ displayMonetaryValue_InMillions(nationProfit) }}
-            </div>
-            <div>
-              <b>{{ displayNationName(game.currentNation.value) }}</b>'s power points would be {{ nextTaxationPowerPoints }}
-            </div>
+            <b>{{ game.currentPlayerName }}</b> would receive {{ displayMonetaryValue_InMillions(playerBonus) }}
+          </div>
+          <div>
+            <b>{{ displayNationName(game.currentNation.value) }}</b>'s treasury would change by
+            {{ displayMonetaryValue_InMillions(nationProfit) }}
+          </div>
+          <div>
+            <b>{{ displayNationName(game.currentNation.value) }}</b>'s power points would be {{ nextTaxationPowerPoints }}
           </div>
         </v-card-text>
         <v-card-text v-if="cost > 0">
@@ -74,9 +72,12 @@
           />
           <span>{{ helperText }}</span>
         </v-card-text>
+        <v-card-text v-else>
+          <span>{{ helperText }}</span>
+        </v-card-text>
       </v-card>
-    </v-col>
-  </v-row>
+    </v-row>
+  </v-col>
 </template>
 
 <script>

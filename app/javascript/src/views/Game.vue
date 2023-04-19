@@ -87,7 +87,6 @@
                   </v-tabs>
 
                   <v-window v-model="tab">
-                    <v-window-item />
                     <v-window-item value="nations">
                       <NationComponent
                         v-for="[nation] of game.nations"
@@ -129,12 +128,67 @@
                 </div>
               </v-sheet>
               <v-main>
-                <v-sheet>
+                <v-sheet v-if="game.baseGame === 'imperial' || game.baseGame === 'imperialAsia'">
                   <v-row>
-                    <v-col
-                      cols="12"
-                      class="mx-auto"
-                    >
+                    <v-col cols="8">
+                      <Board
+                        :config="boardConfig"
+                        :game="game"
+                        :game-started="gameStarted"
+                        :paused="paused"
+                        :profile="profile"
+                        :province-with-fight="provinceWithFight"
+                        :select-province="selectProvince"
+                        :units-to-import="importPlacements"
+                        :valid-provinces="validProvinces()"
+                        @fight-resolved="resolveFight"
+                      />
+                      <TimeTravelButtons
+                        :game="game"
+                        :popped-turns="poppedTurns"
+                        @back-to-game-start-event="backToGameStart"
+                        @back-to-round-start-event="backToRoundStart"
+                        @back-event="back"
+                        @forward-event="forward"
+                        @forward-to-current-action-event="forwardToCurrentAction"
+                      />
+                    </v-col>
+                    <Rondel
+                      v-if="!game.winner"
+                      :game="game"
+                      :name="profile.username"
+                      :paused="paused"
+                      :hosting-this-game="hostingThisGame"
+                      @tick-with-action="tickWithAction"
+                    />
+                  </v-row>
+                  <v-row>
+                    <v-col>
+                      <ControlPanel
+                        :game="game"
+                        :choose-import-type="importProvince"
+                        :controlling-player-name="controllingPlayerName"
+                        :profile="profile"
+                        :import-placements="importPlacements"
+                        :game-data="gameData"
+                        :traded-in-bond-nation="tradedInBondNation"
+                        :traded-in-value="tradedInValue"
+                        :paused="paused"
+                        :hosting-this-game="hostingThisGame"
+                        @tick="tickWithAction"
+                        @end-maneuver="endManeuver"
+                        @choose-import-type="makeImportTypeChoice"
+                        @run-import="runImport"
+                        @skip-build-factory="skipBuildFactory"
+                        @purchase-bond="purchaseBond"
+                        @toggle-trade-in="toggleTradeIn"
+                      />
+                    </v-col>
+                  </v-row>
+                </v-sheet>
+                <v-sheet v-else>
+                  <v-row>
+                    <v-col>
                       <Board
                         :config="boardConfig"
                         :game="game"
@@ -159,10 +213,15 @@
                     </v-col>
                   </v-row>
                   <v-row>
-                    <v-col
-                      cols="11"
-                      class="mx-auto"
-                    >
+                    <Rondel
+                      v-if="!game.winner"
+                      :game="game"
+                      :name="profile.username"
+                      :paused="paused"
+                      :hosting-this-game="hostingThisGame"
+                      @tick-with-action="tickWithAction"
+                    />
+                    <v-col>
                       <ControlPanel
                         :game="game"
                         :choose-import-type="importProvince"
@@ -181,20 +240,6 @@
                         @skip-build-factory="skipBuildFactory"
                         @purchase-bond="purchaseBond"
                         @toggle-trade-in="toggleTradeIn"
-                      />
-                    </v-col>
-                  </v-row>
-                  <v-row
-                    v-if="!game.winner"
-                    style="margin-bottom: 50px"
-                  >
-                    <v-col>
-                      <Rondel
-                        :game="game"
-                        :name="profile.username"
-                        :paused="paused"
-                        :hosting-this-game="hostingThisGame"
-                        @tick-with-action="tickWithAction"
                       />
                     </v-col>
                   </v-row>
@@ -325,8 +370,16 @@
       </v-row>
     </div>
   </v-sheet>
-  <v-container v-else class="text-center">
-    <v-progress-circular indeterminate color="primary-darken-1" size="100" class="mt-10" />
+  <v-container
+    v-else
+    class="text-center"
+  >
+    <v-progress-circular
+      indeterminate
+      color="primary-darken-1"
+      size="100"
+      class="mt-10"
+    />
   </v-container>
 </template>
 
