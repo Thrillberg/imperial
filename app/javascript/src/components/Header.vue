@@ -116,6 +116,16 @@
   >
     <v-list>
       <v-list-item
+        :title="'Open Games (' + countOfOpenGames + ')'"
+        to="/games/open"
+      >
+        <template #prepend>
+          <v-icon color="primary-darken-1">
+            mdi-crown
+          </v-icon>
+        </template>
+      </v-list-item>
+      <v-list-item
         title="About"
         to="/about"
       >
@@ -169,6 +179,7 @@ export default {
   name: 'Header',
   components: { DiscordIcon, PatreonIcon },
   props: {
+    countOfOpenGames: { type: String, default: '0' },
     profile: { type: Object, default: () => {} },
   },
   emits: ['anonymity_confirmed', 'signOut'],

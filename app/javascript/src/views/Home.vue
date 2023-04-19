@@ -12,10 +12,6 @@
         :profile="profile"
       />
     </Suspense>
-    <UnstartedGameList
-      :games="unstartedGames"
-      :profile="profile"
-    />
     <Suspense>
       <CurrentGames :games="currentGames" />
     </Suspense>
@@ -53,13 +49,12 @@
 import CurrentGames from '../components/CurrentGames.vue';
 import CurrentSoloGames from '../components/CurrentSoloGames.vue';
 import FirstTimeUserCards from '../components/FirstTimeUserCards.vue';
-import UnstartedGameList from '../components/UnstartedGameList.vue';
 import YourGames from '../components/YourGames.vue';
 
 export default {
   name: 'Home',
   components: {
-    CurrentGames, CurrentSoloGames, FirstTimeUserCards, UnstartedGameList, YourGames,
+    CurrentGames, CurrentSoloGames, FirstTimeUserCards, YourGames,
   },
   props: {
     games: { type: Array, default: () => [] },
@@ -79,18 +74,6 @@ export default {
         });
         return inGame && !game.forceEndedAt && !game.clonedFromGame;
       });
-    },
-    unstartedGames() {
-      const games = this.games.filter((game) => {
-        let inGame = false;
-        game.players.forEach((player) => {
-          if (player.name === this.profile.username) {
-            inGame = true;
-          }
-        });
-        return !game.startedAt && !inGame && !game.forceEndedAt && !game.clonedFromGame && game.isPublic;
-      });
-      return games.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     },
     currentGames() {
       return this.games.filter(
