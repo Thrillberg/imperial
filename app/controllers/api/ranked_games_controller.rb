@@ -3,7 +3,6 @@ class API::RankedGamesController < ApplicationController
     finished_games = Game
       .joins(:players)
       .where.not(winner_id: nil)
-      .distinct
     games = finished_games.map do |game|
       game.players.map do |player|
         {
