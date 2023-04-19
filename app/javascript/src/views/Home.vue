@@ -2,6 +2,7 @@
   <FirstTimeUserCards
     v-if="isFirstTimeUser && gamesFetched"
     :games="currentGames"
+    :open-games-count="openGamesCount"
     @anonymity_confirmed="$emit('anonymity_confirmed', $event)"
   />
   <v-container v-else-if="gamesFetched">
@@ -42,6 +43,7 @@ export default {
   props: {
     games: { type: Array, default: () => [] },
     gamesFetched: { type: Boolean, default: false },
+    openGamesCount: { type: Number, default: 0 },
     profile: { type: Object, default: () => {} },
     users: { type: Array, default: () => [] },
   },

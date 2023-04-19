@@ -35,6 +35,7 @@
           </v-card-text>
           <v-card-actions>
             <v-btn
+              v-if="openGamesCount > 0"
               color="primary-darken-1"
               to="/games/open"
             >
@@ -42,7 +43,7 @@
             </v-btn>
             <v-btn
               color="primary-darken-1"
-              to="/games/new"
+              @click="setAnonymous"
             >
               Start a New Game
             </v-btn>
@@ -68,9 +69,27 @@ export default {
   },
   props: {
     games: { type: Array, default: () => [] },
+    openGamesCount: { type: Number, default: 0 },
   },
   emits: ['anonymity_confirmed', 'openGame'],
   methods: {
+    setAnonymous(e) {
+      e.preventDefault();
+      fetch(
+        '/anonymity_confirmations',
+        {
+          method: 'POST',
+          body: JSON.stringify({ id: this.$cookies.get('user_id') }),
+          headers: { 'Content-Type': 'application/json' },
+        },
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          this.$emit('anonymity_confirmed', data.anonymity_confirmed_at);
+
+          this.$router.push('/games/new');
+        });
+    },
     startSoloGame(e) {
       e.preventDefault();
       fetch(

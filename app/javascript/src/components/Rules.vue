@@ -7,7 +7,7 @@
       <b>Imperial</b> is a board game in which you play as an investor in imperial powers.
       Players own bonds in various nations and whoever owns the majority stake in a nation controls the actions of that nation.
     </p>
-    <br />
+    <br>
     <p>
       Each nation takes its turn to do one action on the <b>rondel</b>.
       Whoever happens to control that nation when it is the nation's turn is the
@@ -18,7 +18,7 @@
       calculating who has the most valuable portfolio.
       A player's cash is also counted toward the final score.
     </p>
-    <br />
+    <br>
     <p class="text-h6">
       The Game Turn
     </p>
@@ -29,7 +29,7 @@
       up to <b>3 slots</b> for free and each additional slot costs the player <b>2m per slot</b> beyond the free 3,
       up to 3 additional slots. Costs in <b>Imperial 2030</b> and <b>Imperial Asia</b> vary.
     </p>
-    <br />
+    <br>
     <b>
       Production
     </b>
@@ -93,7 +93,7 @@
       Player receives tax (<b>2m</b> per unoccupied factory and <b>1m</b> per dot) from the nation.
       Power points are increased and nation receives tax, less soldiers' pay (<b>1m</b> per unit).
     </p>
-    <br />
+    <br>
     <p class="text-h6">
       The Investor Card
     </p>

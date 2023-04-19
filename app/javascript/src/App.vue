@@ -3,29 +3,32 @@
     <div v-if="profileFetched && gamesFetched">
       <Header
         :profile="profile"
-        :count-of-open-games="countOfOpenGames"
+        :count-of-open-games="countOfOpenGames.toString()"
         :count-of-cloned-games="countOfClonedGames"
         @sign-out="signOut"
         @anonymity_confirmed="anonymityConfirmed"
       />
       <v-main>
         <router-view v-slot="{ Component }">
-          <component
-            :is="Component"
-            ref="game"
-            :profile="profile"
-            :users="onlineUsers"
-            :games="games"
-            :games-fetched="gamesFetched"
-            :observers="observers"
-            :game-data="gameData"
-            :env="env"
-            @registered="register"
-            @signed-in="signIn"
-            @open-game="openGame"
-            @receive-game-data="receiveGameData"
-            @anonymity_confirmed="anonymityConfirmed"
-          />
+          <Suspense>
+            <component
+              :is="Component"
+              ref="game"
+              :profile="profile"
+              :users="onlineUsers"
+              :games="games"
+              :games-fetched="gamesFetched"
+              :observers="observers"
+              :game-data="gameData"
+              :env="env"
+              :open-games-count="countOfOpenGames"
+              @registered="register"
+              @signed-in="signIn"
+              @open-game="openGame"
+              @receive-game-data="receiveGameData"
+              @anonymity_confirmed="anonymityConfirmed"
+            />
+          </Suspense>
         </router-view>
       </v-main>
     </div>
@@ -81,7 +84,7 @@ export default {
         return !game.startedAt && !inGame && !game.forceEndedAt && !game.clonedFromGame && game.isPublic;
       });
       const openGames = games.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-      return openGames.length.toString();
+      return openGames.length;
     },
     countOfClonedGames() {
       const games = this.games.filter((game) => {

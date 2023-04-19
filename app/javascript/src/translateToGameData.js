@@ -1,4 +1,4 @@
-const defaultLatestState = (baseGame) => {
+export const defaultLatestState = (baseGame) => {
   switch (baseGame) {
     case 'imperial':
       return {
