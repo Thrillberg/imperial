@@ -9,12 +9,12 @@
           prepend-icon="mdi-help-circle-outline"
           variant="plain"
           size="x-large"
-          style="position: sticky; z-index: 1; top: calc(100vh - 60px);"
+          style="position: fixed; z-index: 1; top: calc(100vh - 60px); height: 0px;"
           class="pr-13"
           v-bind="props"
         >
           <v-dialog
-            v-model="rulesDialog"
+            v-model="rulesDialogFromSidebar"
             activator="parent"
             width="75%"
           >
@@ -25,7 +25,7 @@
                   <template #append>
                     <v-btn
                       icon="mdi-close"
-                      @click="rulesDialog = false"
+                      @click="rulesDialogFromSidebar = false"
                     />
                   </template>
                 </v-toolbar>
@@ -38,7 +38,7 @@
                 <v-btn
                   color="primary-darken-1"
                   block
-                  @click="rulesDialog = false"
+                  @click="rulesDialogFromSidebar = false"
                 >
                   Close
                 </v-btn>
@@ -48,12 +48,18 @@
         </v-btn>
       </template>
     </v-tooltip>
-    <v-row>
-      <v-col>
+    <v-row
+      :class="playersInGame.length === 1 ? 'bg-secondary' : ''"
+      justify="space-between"
+      class="py-3"
+    >
+      <v-col class="my-auto mx-2">
         <span class="text-h5 mr-2">{{ gameData.name }} <span v-if="gameData.clonedFromGame">(clone)</span></span>
         <v-btn
           v-if="gameData.clonedFromGame && gameStarted"
           size="x-small"
+          style="vertical-align: super;"
+          color="primary"
           @click="goToSourceGame"
         >
           Back to source game
@@ -61,10 +67,67 @@
         <v-btn
           v-else-if="gameStarted"
           size="x-small"
+          style="vertical-align: text-bottom;"
+          color="primary"
           @click="cloneGame"
         >
           Clone game
         </v-btn>
+      </v-col>
+      <v-col
+        v-if="playersInGame.length === 1"
+        style="text-align: right;"
+        class="mx-2"
+      >
+        <v-dialog
+          v-model="rulesDialog"
+          activator="parent"
+          width="75%"
+        >
+          <template #activator="{ props }">
+            <v-btn
+              variant="outlined"
+              class="text-none"
+              color="primary-darken-1"
+              prepend-icon="mdi-book-open-variant"
+              v-bind="props"
+            >
+              How do I play Imperial?
+            </v-btn>
+          </template>
+          <v-card>
+            <v-card-title>
+              <v-toolbar color="surface">
+                How to Play Imperial
+                <template #append>
+                  <v-btn
+                    icon="mdi-close"
+                    @click="rulesDialog = false"
+                  />
+                </template>
+              </v-toolbar>
+            </v-card-title>
+            <v-card-subtitle>
+              A Brief and Incomplete Guide
+            </v-card-subtitle>
+            <v-card-text>
+              <i>
+                You're playing a solo hotseat game, which means that you control all the players.
+                Explore the rondel on the main game screen for information on what moves each nation can perform.
+              </i>
+            </v-card-text>
+            <Rules />
+            <v-card-actions>
+              <v-btn
+                color="primary-darken-1"
+                block
+                @click="rulesDialog = false"
+              >
+                Close
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
       </v-col>
     </v-row>
     <v-sheet v-if="gameStarted">
@@ -602,6 +665,7 @@ export default {
     poppedTurns: [],
     provinceWithFight: '',
     rulesDialog: false,
+    rulesDialogFromSidebar: false,
     silenceAudio: true,
     tab: null,
     tradedInBondNation: '',

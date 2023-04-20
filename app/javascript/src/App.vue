@@ -1,6 +1,6 @@
 <template>
   <v-app id="app">
-    <div v-if="profileFetched && gamesFetched">
+    <v-layout v-if="profileFetched && gamesFetched">
       <Header
         :profile="profile"
         :count-of-open-games="countOfOpenGames.toString()"
@@ -31,7 +31,7 @@
           </Suspense>
         </router-view>
       </v-main>
-    </div>
+    </v-layout>
     <div
       v-else
       class="text-center"

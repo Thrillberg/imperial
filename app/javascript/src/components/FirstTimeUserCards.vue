@@ -6,7 +6,7 @@
           <v-card-title>
             First time playing Imperial?
           </v-card-title>
-          <v-card-subtitle>Try it out with a solo game!</v-card-subtitle>
+          <v-card-subtitle>Try it out with a solo hotseat game!</v-card-subtitle>
           <v-card-text>
             <b>Imperial</b> is a board game where players act as investors in nations.
             Players take control of nations by buying bonds.
@@ -18,7 +18,7 @@
               color="primary-darken-1"
               @click="startSoloGame"
             >
-              Play a Solo Game
+              Play a Solo Hotseat Game
             </v-btn>
           </v-card-actions>
         </v-card>
