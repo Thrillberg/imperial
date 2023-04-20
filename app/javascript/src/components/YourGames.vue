@@ -66,9 +66,6 @@
       </router-link>
     </v-col>
   </v-row>
-  <div v-if="games.length === 0">
-    Uh oh! You aren't in any active games.
-  </div>
 </template>
 
 <script>
