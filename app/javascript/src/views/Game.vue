@@ -86,9 +86,8 @@
         >
           <template #activator="{ props }">
             <v-btn
-              variant="outlined"
               class="text-none"
-              color="primary-darken-1"
+              color="primary"
               prepend-icon="mdi-book-open-variant"
               v-bind="props"
             >
