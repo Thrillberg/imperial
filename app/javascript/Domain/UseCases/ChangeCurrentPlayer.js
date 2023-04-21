@@ -1,19 +1,19 @@
 export default class ChangeCurrentPlayer {
-    #game;
+  #game;
 
-    constructor(game) {
-        this.#game = game;
+  constructor(game) {
+    this.#game = game;
+  }
+
+  changeTo(player, undoHistory) {
+    // do not short-circuit even if player identical. Always add undo checkpoint
+    if (undoHistory) {
+      const previousPlayer = this.#game.currentPlayer;
+
+      undoHistory.addUndoCheckpoint();
+      undoHistory.pushUndoOperation(() => this.changeTo(previousPlayer));
     }
 
-    changeTo(player, undoHistory) {
-        // do not short-circuit even if player identical. Always add undo checkpoint
-        if (undoHistory) {
-            const previousPlayer = this.#game.currentPlayer;
-
-            undoHistory.addUndoCheckpoint();
-            undoHistory.pushUndoOperation(() => this.changeTo(previousPlayer));
-        }
-
-        this.#game.currentPlayer = player;
-    }
+    this.#game.currentPlayer = player;
+  }
 }
