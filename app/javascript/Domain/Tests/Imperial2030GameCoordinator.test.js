@@ -477,4 +477,300 @@ describe('imperial2030', () => {
       expect(game.currentPlayerName).toEqual('player2');
     });
   });
+
+  describe('.loadFromJSON', () => {
+    test('returns game with correct state', () => {
+      const nations = [
+        {
+          RU: {
+            controller: 'player1',
+            flagCount: 0,
+            powerPoints: 0,
+            rondelPosition: null,
+            taxChartPosition: 5,
+            treasury: 11,
+          },
+        }, {
+          CN: {
+            controller: 'player2',
+            flagCount: 0,
+            powerPoints: 0,
+            rondelPosition: null,
+            taxChartPosition: 5,
+            treasury: 11,
+          },
+        }, {
+          IN: {
+            controller: 'player1',
+            flagCount: 0,
+            powerPoints: 0,
+            rondelPosition: null,
+            taxChartPosition: 5,
+            treasury: 11,
+          },
+        }, {
+          BR: {
+            controller: 'player2',
+            flagCount: 0,
+            powerPoints: 0,
+            rondelPosition: null,
+            taxChartPosition: 5,
+            treasury: 11,
+          },
+        }, {
+          US: {
+            controller: 'player1',
+            flagCount: 0,
+            powerPoints: 0,
+            rondelPosition: null,
+            taxChartPosition: 5,
+            treasury: 11,
+          },
+        }, {
+          EU: {
+            controller: 'player2',
+            flagCount: 0,
+            powerPoints: 0,
+            rondelPosition: null,
+            taxChartPosition: 5,
+            treasury: 11,
+          },
+        },
+      ];
+      const players = {
+        player1: {
+          bonds: [
+            {
+              cost: 9,
+              nation: 'RU',
+              number: 4,
+            },
+            {
+              cost: 2,
+              nation: 'US',
+              number: 1,
+            },
+            {
+              cost: 9,
+              nation: 'IN',
+              number: 4,
+            },
+            {
+              cost: 2,
+              nation: 'RU',
+              number: 1,
+            },
+            {
+              cost: 9,
+              nation: 'US',
+              number: 4,
+            },
+            {
+              cost: 2,
+              nation: 'CN',
+              number: 1,
+            },
+          ],
+          cash: 2,
+          name: 'player1',
+          rawScore: 0,
+        },
+        player2: {
+          bonds: [
+            {
+              cost: 9,
+              nation: 'CN',
+              number: 4,
+            },
+            {
+              cost: 2,
+              nation: 'BR',
+              number: 1,
+            },
+            {
+              cost: 9,
+              nation: 'EU',
+              number: 4,
+            },
+            {
+              cost: 2,
+              nation: 'IN',
+              number: 1,
+            },
+            {
+              cost: 9,
+              nation: 'BR',
+              number: 4,
+            },
+            {
+              cost: 2,
+              nation: 'EU',
+              number: 1,
+            },
+          ],
+          cash: 2,
+          name: 'player2',
+          rawScore: 0,
+        },
+      };
+      const provinces = {
+        a: { factory: null },
+        b: { factory: null },
+      };
+      const units = {
+        RU: {
+          a: { armies: 0, fleets: 0, friendly: false },
+          b: { armies: 0, fleets: 0, friendly: false },
+        },
+        CN: {
+          a: { armies: 0, fleets: 0, friendly: false },
+          b: { armies: 0, fleets: 0, friendly: false },
+        },
+        IN: {
+          a: { armies: 0, fleets: 0, friendly: false },
+          b: { armies: 0, fleets: 0, friendly: false },
+        },
+        BR: {
+          a: { armies: 0, fleets: 0, friendly: false },
+          b: { armies: 0, fleets: 0, friendly: false },
+        },
+        US: {
+          a: { armies: 0, fleets: 0, friendly: false },
+          b: { armies: 0, fleets: 0, friendly: false },
+        },
+        EU: {
+          a: { armies: 0, fleets: 0, friendly: false },
+          b: { armies: 0, fleets: 0, friendly: false },
+        },
+      };
+      const stateAsJSON = {
+        baseGame: 'imperial2030',
+        currentNation: 'RU',
+        nations,
+        players,
+        provinces,
+        units,
+        variant: 'standard',
+        winner: '',
+      };
+
+      const expectedNations = new Set();
+      [
+        [Nation2030.RU, 'player1'],
+        [Nation2030.CN, 'player2'],
+        [Nation2030.IN, 'player1'],
+        [Nation2030.BR, 'player2'],
+        [Nation2030.US, 'player1'],
+        [Nation2030.EU, 'player2'],
+      ].forEach(([nation, controller]) => {
+        expectedNations.add(new Map().set(nation, {
+          controller,
+          flagCount: 0,
+          powerPoints: 0,
+          rondelPosition: null,
+          taxChartPosition: 5,
+          treasury: 11,
+        }));
+      });
+      const expectedPlayers = {
+        player1: {
+          bonds: new Set([
+            {
+              cost: 9,
+              nation: Nation2030.RU,
+              number: 4,
+            },
+            {
+              cost: 2,
+              nation: Nation2030.US,
+              number: 1,
+            },
+            {
+              cost: 9,
+              nation: Nation2030.IN,
+              number: 4,
+            },
+            {
+              cost: 2,
+              nation: Nation2030.RU,
+              number: 1,
+            },
+            {
+              cost: 9,
+              nation: Nation2030.US,
+              number: 4,
+            },
+            {
+              cost: 2,
+              nation: Nation2030.CN,
+              number: 1,
+            },
+          ]),
+          cash: 2,
+          name: 'player1',
+          rawScore: 0,
+        },
+        player2: {
+          bonds: new Set([
+            {
+              cost: 9,
+              nation: Nation2030.CN,
+              number: 4,
+            },
+            {
+              cost: 2,
+              nation: Nation2030.BR,
+              number: 1,
+            },
+            {
+              cost: 9,
+              nation: Nation2030.EU,
+              number: 4,
+            },
+            {
+              cost: 2,
+              nation: Nation2030.IN,
+              number: 1,
+            },
+            {
+              cost: 9,
+              nation: Nation2030.BR,
+              number: 4,
+            },
+            {
+              cost: 2,
+              nation: Nation2030.EU,
+              number: 1,
+            },
+          ]),
+          cash: 2,
+          name: 'player2',
+          rawScore: 0,
+        },
+      };
+      const expectedProvinces = new Map();
+      expectedProvinces.set('a', { factory: null });
+      expectedProvinces.set('b', { factory: null });
+
+      const expectedUnitsByProvince = new Map();
+      expectedUnitsByProvince.set('a', { armies: 0, fleets: 0, friendly: false });
+      expectedUnitsByProvince.set('b', { armies: 0, fleets: 0, friendly: false });
+
+      const expectedUnits = new Map();
+      for (const nation in units) {
+        expectedUnits.set(Nation2030[nation], expectedUnitsByProvince);
+      }
+
+      const game = Imperial.loadFromJSON(stateAsJSON);
+
+      expect(game.baseGame).toEqual('imperial2030');
+      expect(game.currentNation).toEqual(Nation2030.RU);
+      expect(game.nations).toEqual(expectedNations);
+      expect(game.players).toEqual(expectedPlayers);
+      expect(game.provinces).toEqual(expectedProvinces);
+      expect(game.units).toEqual(expectedUnits);
+      expect(game.variant).toEqual('standard');
+      expect(game.winner).toEqual('');
+    });
+  });
 });

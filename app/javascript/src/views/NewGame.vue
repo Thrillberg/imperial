@@ -1,81 +1,115 @@
 <template>
   <v-container>
-    <v-sheet
-      width="500"
-      class="mx-auto"
-    >
-      <v-form @submit="openGame">
-        <b>Which base game?</b>
-        <v-radio-group v-model="baseGame">
-          <v-radio
-            label="Original Imperial"
-            value="imperial"
-          />
-          <v-radio
-            label="Imperial 2030"
-            value="imperial2030"
-          />
-          <v-radio
-            label="Imperial Asia"
-            value="imperialAsia"
-          />
-        </v-radio-group>
-        <b>Which variant?</b>
-        <v-radio-group v-model="variant">
-          <v-radio
-            label="Standard (with investor card, no auction)"
-            value="standard"
-          />
-          <v-radio
-            label="Auction (with investor card and auction)"
-            value="auction"
-          />
-          <v-radio
-            label="Without Investor Card (with auction, no investor card)"
-            value="withoutInvestorCard"
-          />
-        </v-radio-group>
-        <b>Is your game public or private?</b>
-        <div class="text-sm">
-          Public games are listed on the Open Games list.
-          Private games can only be joined with the game link.
-        </div>
-        <v-radio-group v-model="isGamePublic">
-          <v-radio
-            label="Public"
-            :value="true"
-          />
-          <v-radio
-            label="Private"
-            :value="false"
-          />
-        </v-radio-group>
-        <b>Do You Want a Discord Channel to Automatically be Created?</b>
-        (Optional)
-        <v-radio-group v-model="createDiscordChannel">
-          <v-radio
-            label="Yes"
-            :value="true"
-          />
-          <v-radio
-            label="No"
-            :value="false"
-          />
-        </v-radio-group>
-        <v-btn type="submit">
-          New Game
-        </v-btn>
-      </v-form>
-    </v-sheet>
+    <v-card class="mx-auto">
+      <v-card-text>
+        <v-form @submit="openGame">
+          <b>Which base game?</b>
+          <v-radio-group v-model="baseGame">
+            <v-row align="center">
+              <v-col :cols="mdAndUp ? '4' : '12'">
+                <Board
+                  :config="boardConfigs.imperial"
+                  :game="defaultLatestStateImperial"
+                />
+                <v-radio
+                  label="Original Imperial"
+                  value="imperial"
+                />
+              </v-col>
+              <v-col :cols="mdAndUp ? '4' : '12'">
+                <Board
+                  :config="boardConfigs.imperial2030"
+                  :game="defaultLatestStateImperial"
+                />
+                <v-radio
+                  label="Imperial 2030"
+                  value="imperial2030"
+                />
+              </v-col>
+              <v-col :cols="mdAndUp ? '4' : '12'">
+                <Board
+                  :config="boardConfigs.imperialAsia"
+                  :game="defaultLatestStateImperial"
+                />
+                <v-radio
+                  label="Imperial Asia"
+                  value="imperialAsia"
+                />
+              </v-col>
+            </v-row>
+          </v-radio-group>
+          <b>Which variant?</b>
+          <v-radio-group v-model="variant">
+            <v-radio
+              label="Standard (with investor card, no auction)"
+              value="standard"
+            />
+            <v-radio
+              label="Auction (with investor card and auction)"
+              value="auction"
+            />
+            <v-radio
+              label="Without Investor Card (with auction, no investor card)"
+              value="withoutInvestorCard"
+            />
+          </v-radio-group>
+          <b>Is your game public or private?</b>
+          <div class="text-sm">
+            Public games are listed on the Open Games list.
+            Private games can only be joined with the game link.
+          </div>
+          <v-radio-group v-model="isGamePublic">
+            <v-radio
+              label="Public"
+              :value="true"
+            />
+            <v-radio
+              label="Private"
+              :value="false"
+            />
+          </v-radio-group>
+          <b>Do You Want a Discord Channel to Automatically be Created?</b>
+          (Optional)
+          <v-radio-group v-model="createDiscordChannel">
+            <v-radio
+              label="Yes"
+              :value="true"
+            />
+            <v-radio
+              label="No"
+              :value="false"
+            />
+          </v-radio-group>
+          <v-btn
+            color="primary-darken-1"
+            type="submit"
+          >
+            New Game
+          </v-btn>
+        </v-form>
+      </v-card-text>
+    </v-card>
   </v-container>
 </template>
 
 <script>
+import { useDisplay } from 'vuetify';
+import Board from '../components/Board.vue';
 import { apiClient } from '../router/index';
+import { defaultLatestState } from '../translateToGameData';
 
 export default {
   name: 'NewGame',
+  components: { Board },
   emits: ['openGame'],
+  async setup() {
+    const { mdAndUp } = useDisplay();
+    const boardConfigs = {};
+    await import('../boardConfigs').then((resp) => { boardConfigs.imperial = resp.default.imperial; });
+    await import('../board2030Configs').then((resp) => { boardConfigs.imperial2030 = resp.default.imperial2030; });
+    await import('../boardAsiaConfigs').then((resp) => { boardConfigs.imperialAsia = resp.default.imperialAsia; });
+    return { boardConfigs, mdAndUp };
+  },
   data() {
     return {
       baseGame: 'imperial',
@@ -83,6 +117,11 @@ export default {
       isGamePublic: true,
       variant: 'standard',
     };
+  },
+  computed: {
+    defaultLatestStateImperial() {
+      return defaultLatestState('imperial');
+    },
   },
   created() {
     document.title = 'New Game - Imperial';

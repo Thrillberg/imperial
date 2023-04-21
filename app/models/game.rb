@@ -59,7 +59,8 @@ class Game < ActiveRecord::Base
       variant: variant,
       last_move_at: last_move_at,
       cloned_from_game: cloned_from_game&.id,
-      is_public: is_public
+      is_public: is_public,
+      latest_state: latest_state
     }
   end
 

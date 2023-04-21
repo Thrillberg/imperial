@@ -9,7 +9,7 @@
           height="20"
           width="30"
         />
-        <div :class="canPayOut ? '' : 'text-red-500 font-bold'">
+        <div :class="canPayOut ? '' : 'text-red font-weight-bold'">
           ${{ treasury }}mil
         </div>
         <div>{{ powerPoints }} power</div>

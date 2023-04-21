@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container v-if="loaded">
     <b>All Games</b>
     <div class="flex border-b border-black mt-2">
       <div class="w-1/2">
@@ -26,6 +26,17 @@
       </router-link>
     </div>
   </v-container>
+  <v-container
+    v-else
+    class="text-center"
+  >
+    <v-progress-circular
+      indeterminate
+      color="primary-darken-1"
+      size="100"
+      class="mt-10"
+    />
+  </v-container>
 </template>
 
 <script>
@@ -36,12 +47,13 @@ export default {
   props: { profile: { type: Object, default: () => {} } },
   data: () => ({
     games: [],
+    loaded: false,
   }),
   created() {
     document.title = 'Games - Imperial';
     fetch('/api/games', { method: 'GET' })
       .then((response) => response.json())
-      .then((data) => { this.games = data; });
+      .then((data) => { this.games = data; this.loaded = true; });
   },
   methods: {
     toDate(timestamp) {

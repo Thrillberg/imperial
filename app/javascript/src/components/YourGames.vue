@@ -2,70 +2,95 @@
   <div class="text-h5">
     Your Games
   </div>
-  <v-btn
-    href="/games/new"
-    class="bg-primary-darken-1"
+  <v-row
+    v-masonry
+    item-selector=".game"
   >
-    New Game
-  </v-btn>
-  <v-table
-    density="compact"
-    hover
-  >
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Players</th>
-        <th>Current Player</th>
-        <th>Last Move At</th>
-        <th>Variant</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr
-        v-for="game of orderedGames"
-        :key="game.id"
+    <v-col
+      v-for="game of orderedGames"
+      :key="game.id"
+      v-masonry-tile
+      class="game"
+      :cols="mdAndUp ? '6' : '12'"
+    >
+      <router-link
+        :to="{ path: '/game/' + game.id }"
+        style="text-decoration: none"
       >
-        <td>
-          <router-link :to="{ path: '/game/' + game.id }">
-            <Star
-              v-if="game.currentPlayerName
-                && game.currentPlayerName === profile.username
-                && !game.winner"
-            />
-            <span>{{ game.name }}</span>
-          </router-link>
-        </td>
-        <td>
-          {{ game.players.length }}
-        </td>
-        <td>
-          {{ currentPlayer(game) }}
-        </td>
-        <td>
-          {{ toTime(game.lastMoveAt) }}
-        </td>
-        <td>
-          {{ variant(game.baseGame) }}
-        </td>
-      </tr>
-    </tbody>
-  </v-table>
-  <div v-if="games.length === 0">
-    Uh oh! You aren't in any active games.
-  </div>
+        <v-hover>
+          <template #default="{ isHovering, props }">
+            <v-card
+              :title="game.name + (game.players.length === 1 ? ' (solo)' : '')"
+              :subtitle="currentPlayer(game)"
+              :color="backgroundColor(isHovering, nationColors(JSON.parse(game.latestState).currentNation))"
+              v-bind="props"
+            >
+              <template
+                v-if="game.currentPlayerName
+                  && game.currentPlayerName === profile.username
+                  && !game.winner"
+                #prepend
+              >
+                <v-btn
+                  icon="mdi-star"
+                  color="yellow"
+                />
+              </template>
+              <v-card-text>
+                <Board
+                  :config="boardConfigs[game.baseGame]"
+                  :game="Imperial.loadFromJSON(JSON.parse(game.latestState))"
+                  :game-started="true"
+                />
+                <v-row v-if="game.latestState">
+                  <v-col
+                    v-for="player of players(game)"
+                    :key="player.name"
+                    cols="auto"
+                  >
+                    <span :class="player.itsMyTurn ? 'font-weight-bold' : ''">{{ player.name }}</span>
+                    <Flag
+                      v-for="nation of player.nations"
+                      :key="nation"
+                      :nation="nation"
+                      width="30"
+                      height="20"
+                      class="mx-1"
+                    />
+                  </v-col>
+                </v-row>
+              </v-card-text>
+            </v-card>
+          </template>
+        </v-hover>
+      </router-link>
+    </v-col>
+  </v-row>
 </template>
 
 <script>
-import Star from './Star.vue';
+import { useDisplay } from 'vuetify';
+import Board from './Board.vue';
+
+import nationColors from '../../../../nationColors';
+import Imperial from '../../Domain/ImperialGameCoordinator';
+import Flag from './flags/Flag.vue';
 
 import toTime from '../toTime';
 
 export default {
   name: 'YourGames',
-  components: { Star },
+  components: { Board, Flag },
   props: {
     games: { type: Array, default: () => [] }, profile: { type: Object, default: () => {} },
+  },
+  async setup() {
+    const { mdAndUp } = useDisplay();
+    const boardConfigs = {};
+    await import('../boardConfigs').then((resp) => { boardConfigs.imperial = resp.default.imperial; });
+    await import('../board2030Configs').then((resp) => { boardConfigs.imperial2030 = resp.default.imperial2030; });
+    await import('../boardAsiaConfigs').then((resp) => { boardConfigs.imperialAsia = resp.default.imperialAsia; });
+    return { boardConfigs, mdAndUp };
   },
   computed: {
     orderedGames() {
@@ -80,17 +105,48 @@ export default {
         return 0;
       });
     },
+    Imperial() {
+      return Imperial;
+    },
   },
   methods: {
+    backgroundColor(isHovering, color) {
+      return isHovering ? color : `${color}88`;
+    },
     currentPlayer(game) {
       if (game.winner) {
         return `${game.winner} won!`;
       } if (game.currentPlayerName) {
-        return game.currentPlayerName;
+        return `${game.currentPlayerName}'s turn`;
       } if (game.startedAt) {
-        return 'Computer player';
+        return 'Computer player\'s turn';
       }
       return '';
+    },
+    players(game) {
+      const players = [];
+
+      for (const player of game.players) {
+        const playerNations = [];
+        const playerObj = { name: player.name };
+        const { nations, currentNation } = JSON.parse(game.latestState);
+
+        nations.forEach((nation) => {
+          if (nation[Object.keys(nation)[0]].controller === player.name) {
+            const nationName = Object.keys(nation)[0];
+            playerNations.push(nationName);
+
+            if (currentNation === nationName) {
+              playerObj.itsMyTurn = true;
+            }
+          }
+        });
+
+        playerObj.nations = playerNations;
+        players.push(playerObj);
+      }
+
+      return players;
     },
     toTime(date) {
       return toTime(date);
@@ -104,6 +160,9 @@ export default {
         return 'Imperial Asia';
       }
       return '';
+    },
+    nationColors(nation) {
+      return nationColors.nationColors[nation];
     },
   },
 };

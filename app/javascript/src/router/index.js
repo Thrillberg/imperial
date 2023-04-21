@@ -144,11 +144,11 @@ class APIClient {
     );
   }
 
-  tick(gameId, action) {
+  tick(gameId, action, latestState = {}) {
     return this.send(
       {
         kind: 'tick',
-        data: { gameId, action: JSON.stringify(action) },
+        data: { gameId, action: JSON.stringify(action), latestState: JSON.stringify(latestState) },
       },
       'GameChannel',
     );
@@ -277,6 +277,11 @@ const routes = [
     path: '/games/new',
     name: 'NewGame',
     component: () => import('../views/NewGame.vue'),
+  },
+  {
+    path: '/games/open',
+    name: 'OpenGames',
+    component: () => import('../views/OpenGames.vue'),
   },
   {
     path: '/cloned_games',

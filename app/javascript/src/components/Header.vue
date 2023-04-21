@@ -4,6 +4,21 @@
     class="bg-primary"
   >
     <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
+    <v-btn
+      v-if="$route.path !== '/'"
+      to="/"
+      prepend-icon="mdi-home"
+      stacked
+    >
+      Home
+    </v-btn>
+    <v-btn
+      v-if="(profile.registered || profile.anonymityConfirmedAt) && $route.path !== '/games/new'"
+      href="/games/new"
+      class="bg-primary-darken-1"
+    >
+      New Game
+    </v-btn>
     <v-app-bar-title />
     <div
       v-for="(error, index) in errors"
@@ -83,7 +98,7 @@
           @click="register"
         />
         <v-list-item
-          v-if="!profile.anonymityConfirmedAt && !profile.email"
+          v-if="!profile.anonymityConfirmedAt && !profile.email && Object.keys(profile).length > 0"
           prepend-icon="mdi-incognito"
           @click="setAnonymous"
         >
@@ -96,17 +111,26 @@
       @click="toggleTheme"
     />
   </v-app-bar>
-  <v-navigation-drawer
-    v-model="drawer"
-  >
+  <v-navigation-drawer v-model="drawer">
     <v-list>
       <v-list-item
-        title="Home"
-        to="/"
+        :title="'Open Games (' + countOfOpenGames + ')'"
+        to="/games/open"
       >
         <template #prepend>
           <v-icon color="primary-darken-1">
-            mdi-home
+            mdi-crown
+          </v-icon>
+        </template>
+      </v-list-item>
+      <v-list-item
+        v-if="countOfClonedGames > 0"
+        title="Your Cloned Games"
+        to="/cloned_games"
+      >
+        <template #prepend>
+          <v-icon color="primary-darken-1">
+            mdi-content-duplicate
           </v-icon>
         </template>
       </v-list-item>
@@ -131,7 +155,7 @@
         </template>
       </v-list-item>
       <v-list-item
-        title="Join on Discord!"
+        title="Join on Discord"
         href="https://discord.gg/VnxKwuQmg8"
       >
         <template #prepend>
@@ -141,18 +165,31 @@
           />
         </template>
       </v-list-item>
+      <v-list-item
+        title="Support on Patreon"
+        href="https://www.patreon.com/playimperialclub"
+      >
+        <template #prepend>
+          <patreon-icon
+            class="v-icon v-icon--size-default"
+            fill="#f1465a"
+          />
+        </template>
+      </v-list-item>
     </v-list>
   </v-navigation-drawer>
 </template>
 
 <script>
-import { DiscordIcon } from 'vue3-simple-icons';
+import { DiscordIcon, PatreonIcon } from 'vue3-simple-icons';
 import { useTheme } from 'vuetify';
 
 export default {
   name: 'Header',
-  components: { DiscordIcon },
+  components: { DiscordIcon, PatreonIcon },
   props: {
+    countOfClonedGames: { type: Number, default: 0 },
+    countOfOpenGames: { type: String, default: '0' },
     profile: { type: Object, default: () => {} },
   },
   emits: ['anonymity_confirmed', 'signOut'],

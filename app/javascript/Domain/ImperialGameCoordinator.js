@@ -11,6 +11,8 @@ import auctionAsiaSetup from './auctionAsiaSetup';
 import auctionStandardSetup from './auctionSetup';
 import availableBondPurchases from './availableBondPurchases';
 import standardGameBoard from './board';
+import gameBoard2030 from './board2030';
+import gameBoardAsia from './boardAsia';
 import {
   Bond,
   Nation,
@@ -82,6 +84,79 @@ export default class ImperialGameCoordinator {
 
   get game() {
     return this.#game;
+  }
+
+  static loadFromJSON(stateAsJSON) {
+    const { baseGame } = stateAsJSON;
+    let board;
+    let currentNation;
+    let nationEntity;
+    const nations = new Set();
+    const players = {};
+    const provinces = new Map();
+    const units = new Map();
+
+    switch (baseGame) {
+      case 'imperial':
+        board = standardGameBoard;
+        nationEntity = Nation;
+
+        break;
+      case 'imperial2030':
+        board = gameBoard2030;
+        nationEntity = Nation2030;
+
+        break;
+      case 'imperialAsia':
+        board = gameBoardAsia;
+        nationEntity = NationAsia;
+
+        break;
+      default:
+        board = standardGameBoard;
+        currentNation = Nation.AH;
+        nationEntity = Nation;
+    }
+
+    currentNation = nationEntity[stateAsJSON.currentNation];
+
+    stateAsJSON.nations.forEach((nation) => {
+      const nationName = Object.keys(nation)[0];
+      const nationData = Object.values(nation)[0];
+      const nationAsMap = new Map().set(nationEntity[nationName], nationData);
+      nations.add(nationAsMap);
+    });
+
+    for (const player in stateAsJSON.players) {
+      const bonds = new Set();
+      stateAsJSON.players[player].bonds.forEach((bond) => {
+        bonds.add({ ...bond, nation: nationEntity[bond.nation] });
+      });
+      players[player] = {
+        ...stateAsJSON.players[player],
+        bonds,
+      };
+    }
+
+    for (const province in stateAsJSON.provinces) {
+      provinces.set(province, stateAsJSON.provinces[province]);
+    }
+
+    for (const nation in stateAsJSON.units) {
+      units.set(nationEntity[nation], new Map(Object.entries(stateAsJSON.units[nation])));
+    }
+
+    const game = new ImperialGameCoordinator(board);
+    game.baseGame = baseGame;
+    game.currentNation = currentNation;
+    game.nations = nations;
+    game.players = players;
+    game.provinces = provinces;
+    game.units = units;
+    game.variant = stateAsJSON.variant;
+    game.winner = stateAsJSON.winner;
+
+    return game;
   }
 
   tickFromLog(log) {
@@ -279,6 +354,39 @@ export default class ImperialGameCoordinator {
         break;
       }
     }
+  }
+
+  toJSONWithLatestAction(action) {
+    // We probably want to move to bulk of this function off to the this.#game object.
+    // But state is currently split between this coordinator and the this.#game.object, so we'll keep this here for now.
+    this.tick(action);
+
+    const nations = [];
+    for (const [nationName, nation] of this.nations) {
+      nations.push({ [nationName.value]: nation });
+    }
+
+    const players = {};
+    for (const player in this.players) {
+      const bonds = [...this.players[player].bonds].map((bond) => ({ ...bond, nation: bond.nation.value }));
+      players[player] = { ...this.players[player], bonds };
+    }
+
+    const units = {};
+    for (const [nation, provinces] of this.units) {
+      units[nation.value] = Object.fromEntries(provinces);
+    }
+
+    return {
+      baseGame: this.baseGame,
+      currentNation: this.currentNation.value,
+      nations,
+      players,
+      provinces: Object.fromEntries(this.provinces),
+      units,
+      variant: this.variant,
+      winner: this.winner,
+    };
   }
 
   #addUndoCheckpoint(action) {

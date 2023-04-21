@@ -1,36 +1,47 @@
 <template>
   <v-app id="app">
-    <div v-if="profileFetched && gamesFetched">
+    <v-layout v-if="profileFetched && gamesFetched">
       <Header
         :profile="profile"
+        :count-of-open-games="countOfOpenGames.toString()"
+        :count-of-cloned-games="countOfClonedGames"
         @sign-out="signOut"
         @anonymity_confirmed="anonymityConfirmed"
       />
       <v-main>
         <router-view v-slot="{ Component }">
-          <component
-            :is="Component"
-            ref="game"
-            :profile="profile"
-            :users="onlineUsers"
-            :games="games"
-            :games-fetched="gamesFetched"
-            :observers="observers"
-            :game-data="gameData"
-            :env="env"
-            @registered="register"
-            @signed-in="signIn"
-            @open-game="openGame"
-            @receive-game-data="receiveGameData"
-          />
+          <Suspense>
+            <component
+              :is="Component"
+              ref="game"
+              :profile="profile"
+              :users="onlineUsers"
+              :games="games"
+              :games-fetched="gamesFetched"
+              :observers="observers"
+              :game-data="gameData"
+              :env="env"
+              :open-games-count="countOfOpenGames"
+              @registered="register"
+              @signed-in="signIn"
+              @open-game="openGame"
+              @receive-game-data="receiveGameData"
+              @anonymity_confirmed="anonymityConfirmed"
+            />
+          </Suspense>
         </router-view>
       </v-main>
-    </div>
+    </v-layout>
     <div
       v-else
-      class="text-center text-2xl mt-8"
+      class="text-center"
     >
-      Loading
+      <v-progress-circular
+        indeterminate
+        color="primary-darken-1"
+        size="100"
+        class="mt-10"
+      />
     </div>
   </v-app>
 </template>
@@ -61,6 +72,34 @@ export default {
       gamesFetched: false,
     };
   },
+  computed: {
+    countOfOpenGames() {
+      const games = this.games.filter((game) => {
+        let inGame = false;
+        game.players.forEach((player) => {
+          if (player.name === this.profile.username) {
+            inGame = true;
+          }
+        });
+        return !game.startedAt && !inGame && !game.forceEndedAt && !game.clonedFromGame && game.isPublic;
+      });
+      const openGames = games.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      return openGames.length;
+    },
+    countOfClonedGames() {
+      const games = this.games.filter((game) => {
+        let inGame = false;
+        game.players.forEach((player) => {
+          if (player.name === this.profile.username) {
+            inGame = true;
+          }
+        });
+        return inGame && game.clonedFromGame;
+      });
+      const clonedGames = games.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      return clonedGames.length;
+    },
+  },
   beforeUnmount() {
     apiClient.clearHandlers();
     apiClient.ws.close();
@@ -87,8 +126,7 @@ export default {
         this.$refs.game.updateGameLog(
           log,
           logTimestamps,
-          this.gameData.baseGame,
-          this.gameData.currentPlayerName,
+          this.gameData,
         );
       }
     });

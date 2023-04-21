@@ -20,9 +20,11 @@ class GameChannel < ApplicationCable::Channel
       broadcast_update_game_log "game_channel", "updateGameLog", game
 
     when "tick"
+      latest_state = data["data"]["latestState"]
       game = game_from_data(data)
       game.update(started_at: Time.zone.now) unless game.started_at
       game.update(force_ended_at: nil) if game.force_ended_at
+      game.update(latest_state: latest_state)
       data = data["data"]["action"]
       action = Action.create(data: data)
       if game.cloned_from_game
