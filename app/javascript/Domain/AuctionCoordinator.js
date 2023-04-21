@@ -1,7 +1,5 @@
 import Action from './action';
 
-import ChangeCurrentPlayer from "./UseCases/ChangeCurrentPlayer";
-
 import AffordableBonds from "./UseCases/Nations/Bonds/AffordableBonds";
 
 export default class AuctionCoordinator {
@@ -10,56 +8,42 @@ export default class AuctionCoordinator {
     #nationToAuction;
     #participatingPlayersInOrder;
 
-    #changeCurrentPlayer;
+    #auctionPlayerIndex = -1;
 
-    #auctionPlayerIndex;
-
-    #isComplete;
+    #isComplete = false;
 
     constructor(gameCoordinator, nationToAuction, participatingPlayersInOrder) {
         this.#gameCoordinator = gameCoordinator;
         this.#nationToAuction = nationToAuction;
         this.#participatingPlayersInOrder = participatingPlayersInOrder;
-
-        this.#changeCurrentPlayer = new ChangeCurrentPlayer(this.#gameCoordinator.game);
-
-        this.#isComplete = false;
     }
 
     get isComplete() {
         return this.#isComplete;
     }
 
-    beginAuction(undoHistory) {
-        this.#auctionPlayerIndex = -1;
-        this.#isComplete = false;
-
-        this.allowNextPlayerToBuy(undoHistory);
-    }
-
-    allowNextPlayerToBuy(undoHistory) {
+    allowNextPlayerToBuy() {
         this.#auctionPlayerIndex += 1;
         if (this.#auctionPlayerIndex >= this.#participatingPlayersInOrder.length) {
             this.#isComplete = true;
         } else {
-            this.#changeCurrentPlayer.changeTo(this.#participatingPlayersInOrder[this.#auctionPlayerIndex], undoHistory);
+            const nextPlayer = this.#participatingPlayersInOrder[this.#auctionPlayerIndex];
 
             allPurchasableBonds = new Set();
-            const currentPlayer = this.#gameCoordinator.game.currentPlayer;
-            for (const fullyPurchasableBond of AffordableBonds.bondsPurchasableInFull(this.#nationToAuction, currentPlayer.cash)) {
+            for (const fullyPurchasableBond of AffordableBonds.bondsPurchasableInFull(this.#nationToAuction, nextPlayer.cash)) {
                 const action = Action.bondPurchase({
                     nation: this.#nationToAuction.id,
-                    player: currentPlayer.id,
+                    player: nextPlayer.id,
                     cost: fullyPurchasableBond.cost,
                     tradeInValue: 0,
                 });
                 allPurchasableBonds.add(action);
             }
-            for (const ownedBond of currentPlayer.bondsOfNation(this.#nationToAuction)) {
-                for (const upgradableBond of AffordableBonds.bondsUpgradableFrom(ownedBond, currentPlayer.cash)) {
+            for (const ownedBond of nextPlayer.bondsOfNation(this.#nationToAuction)) {
+                for (const upgradableBond of AffordableBonds.bondsUpgradableFrom(ownedBond, nextPlayer.cash)) {
                     const action = Action.bondPurchase({
                         nation: this.#nationToAuction.id,
-                        player: currentPlayer.id,
+                        player: nextPlayer.id,
                         cost: upgradableBond.cost,
                         tradeInValue: ownedBond.cost,
                     });
@@ -68,13 +52,15 @@ export default class AuctionCoordinator {
             }
 
             if (allPurchasableBonds.length === 0) {
-                this.allowNextPlayerToBuy(undoHistory);
+                this.allowNextPlayerToBuy();
             } else {
                 this.#gameCoordinator.availableActions = allPurchasableBonds;
                 this.#gameCoordinator.availableActions.add(Action.skipBondPurchase({
-                    player: currentPlayer.id,
+                    player: nextPlayer.id,
                     nation: this.#nationToAuction.id,
                   }));
+
+                this.#gameCoordinator.changeCurrentPlayer(nextPlayer);
             }
         }
     }

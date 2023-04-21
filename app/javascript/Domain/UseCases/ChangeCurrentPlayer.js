@@ -6,6 +6,7 @@ export default class ChangeCurrentPlayer {
     }
 
     changeTo(player, undoHistory) {
+        // do not short-circuit even if player identical. Always add undo checkpoint
         if (undoHistory) {
             const previousPlayer = this.#game.currentPlayer;
 
