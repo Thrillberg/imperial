@@ -1,9 +1,22 @@
 import Entity from '../Entity';
 
 export default class Bond extends Entity {
-  static #bondCostsByInterest;
+  static* allInterestValues() {
+    for (let interest = 1; interest <= 9; interest += 1) {
+      yield interest;
+    }
+  }
 
-  static {
+  static #bondCostsByInterest;
+  static bondCostByInterestValue(interestValue) {
+    if (!Bond.#bondCostsByInterest) {
+      Bond.#initializeBondCosts();
+    }
+
+    return Bond.#bondCostsByInterest.get(interestValue);
+  }
+  // unable to use static constructor because it's not supported on certain browsers
+  static #initializeBondCosts() {
     Bond.#bondCostsByInterest = new Map();
     let marginalCost = 2;
     const marginalCostInterestIncreaseThresholds = [4, 6, 8];
@@ -17,15 +30,6 @@ export default class Bond extends Entity {
 
       Bond.#bondCostsByInterest.set(interest, previousBondCost + marginalCost);
     }
-  }
-
-  static* allInterestValues() {
-    for (let interest = 1; interest <= 9; interest += 1) {
-      yield interest;
-    }
-  }
-  static bondCostByInterestValue(interestValue) {
-    return Bond.#bondCostsByInterest.get(interestValue);
   }
 
   #nation;
