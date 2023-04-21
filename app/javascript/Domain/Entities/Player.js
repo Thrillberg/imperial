@@ -20,6 +20,13 @@ export default class Player extends Entity {
   get bonds() {
     return this.#bonds;
   }
+  * bondsOfNation(nation) {
+    for (const bond of this.#bonds) {
+      if (bond.nation === nation) {
+        yield bond;
+      }
+    }
+  }
 
   get isSwissBanker() {
     return this.#governingNations.size === 0;

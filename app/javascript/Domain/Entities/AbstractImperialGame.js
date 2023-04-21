@@ -6,15 +6,15 @@ export default class AbstractImperialGame extends Entity {
   #players;
   #playerOrder;
 
-  #rondel;
-  #availableFreeRondelSlotCount = 3;
-  #availablePaidRondelSlotCount = 3;
-  #factoryBuildCosts = 5;
-
   #nations;
   #nationOrder;
 
   #swissBankers;
+
+  #rondel;
+  #availableFreeRondelSlotCount = 3;
+  #availablePaidRondelSlotCount = 3;
+  #factoryBuildCosts = 5;
 
   constructor(id, playerOrder, nationOrder) {
     super(id);
@@ -24,19 +24,19 @@ export default class AbstractImperialGame extends Entity {
     for (const player of this.#playerOrder) {
       this.#players.set(player.name, player);
     }
-    this.currentPlayerIndex = 0;
-
-    this.#rondel = new Rondel();
+    this.currentPlayer = null;
 
     this.#nations = new Map();
     this.#nationOrder = nationOrder;
-
     for (const nation of this.#nationOrder) {
       this.#nations.set(nation.id, nation);
     }
     this.currentNationIndex = 0;
 
     this.#swissBankers = new Set(this.#playerOrder);
+    this.investorCardHolderPlayerIndex = null;
+
+    this.#rondel = new Rondel();
   }
 
   playerIdToEntity(playerId) {
@@ -56,8 +56,11 @@ export default class AbstractImperialGame extends Entity {
   playerByOrder(index) {
     return this.#playerOrder[index];
   }
-  get currentPlayer() {
-    return this.#playerOrder[this.currentPlayerIndex];
+  get investorCardHolder() {
+    if (this.investorCardHolderPlayerIndex) {
+      return this.#playerOrder[this.investorCardHolderPlayerIndex];
+    }
+    return null;
   }
 
   get rondel() {
@@ -83,11 +86,6 @@ export default class AbstractImperialGame extends Entity {
   }
   get nationCount() {
     return this.#nations.size;
-  }
-  * nationOrder() {
-    for (let i = 0; i < this.#nationOrder.length; i += 1) {
-      yield [i, this.#nationOrder[i]];
-    }
   }
   get nationOrderCount() {
     return this.#nationOrder.length;

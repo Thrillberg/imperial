@@ -1,11 +1,11 @@
-import Action from './action';
+import Action from '../action';
 
-import Auction from './auction';
-import Imperial from './ImperialGameCoordinator';
-import { Bond, Nation } from './constants';
-import auctionSetup from './auctionSetup';
+import Auction from '../auction';
+import Imperial from '../ImperialGameCoordinator';
+import { Bond, Nation } from '../constants';
+import auctionSetup from '../auctionSetup';
 
-import BoardEurope from './board';
+import BoardEurope from '../board';
 
 const ImperialFromLog = (log) => {
   const game = new Imperial(BoardEurope);
