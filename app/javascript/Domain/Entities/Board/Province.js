@@ -10,6 +10,7 @@ export default class Province extends Entity {
     this.hasArmsFactory = false;
     this.hasNavalFactory = false;
 
+    // map<nation, uint>
     this.friendlyUnits = new Map();
     this.hostileUnits = new Map();
   }

@@ -6,6 +6,9 @@ export default class Nation extends Entity {
   #allBondsByInterestValue;
   #allBondsByCost;
 
+  #homeProvinces;
+  #colonies;
+
   constructor(id) {
     super(id);
 
@@ -24,6 +27,9 @@ export default class Nation extends Entity {
       this.#allBondsByCost.set(bond.cost, bond);
     }
     this.unsoldBondsByInterestValue = new Map(this.#allBondsByInterestValue);
+
+    this.#homeProvinces = new Set();
+    this.#colonies = new Set();
   }
 
   * allBonds() {
@@ -43,5 +49,12 @@ export default class Nation extends Entity {
         yield this.bondByInterestValue(interest);
       }
     }
+  }
+
+  get homeProvinces() {
+    return this.#homeProvinces;
+  }
+  get colonies() {
+    return this.#colonies;
   }
 }
