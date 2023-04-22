@@ -43,6 +43,10 @@ export default class AbstractImperialGame extends Entity {
     this.#rondel = new Rondel();
   }
 
+  get map() {
+    return this.#map;
+  }
+
   playerIdToEntity(playerId) {
     return this.#players.get(playerId);
   }

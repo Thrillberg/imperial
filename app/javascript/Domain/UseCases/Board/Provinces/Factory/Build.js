@@ -1,12 +1,18 @@
 export default class Build {
-  constructor(province) {
-    this.province = province;
-  }
+  buildArmsFactory(province, undoHistory) {
+    if (undoHistory) {
+      const originallyHadArmsFactory = province.hasArmsFactory;
+      undoHistory.pushUndoOperation(() => { province.hasArmsFactory = originallyHadArmsFactory; });
+    }
 
-  buildArmsFactory() {
-    this.province.hasArmsFactory = true;
+    province.hasArmsFactory = true;
   }
-  buildNavalFactory() {
-    this.province.hasNavalFactory = true;
+  buildNavalFactory(province, undoHistory) {
+    if (undoHistory) {
+      const originallyHadNavalFactory = province.hasNavalFactory;
+      undoHistory.pushUndoOperation(() => { province.hasNavalFactory = originallyHadNavalFactory; });
+    }
+
+    province.hasNavalFactory = true;
   }
 }
