@@ -3,6 +3,8 @@ import Entity from './Entity';
 import Rondel from './Rondel';
 
 export default class AbstractImperialGame extends Entity {
+  #map;
+
   #players;
   #playerOrder;
 
@@ -16,8 +18,10 @@ export default class AbstractImperialGame extends Entity {
   #availablePaidRondelSlotCount = 3;
   #factoryBuildCosts = 5;
 
-  constructor(id, playerOrder, nationOrder) {
+  constructor(id, map, playerOrder, nationOrder) {
     super(id);
+
+    this.#map = map;
 
     this.#players = new Map();
     this.#playerOrder = playerOrder;

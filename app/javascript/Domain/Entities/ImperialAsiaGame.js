@@ -40,7 +40,7 @@ export default class ImperialAsiaGame extends AbstractImperialGame {
     nationOrder[5] = new Nation(ImperialAsiaGame.RussiaId);
     nationOrder[6] = new Nation(ImperialAsiaGame.GermanyId);
 
-    super(ImperialAsiaGame.classId, playerOrder, nationOrder);
+    super(ImperialAsiaGame.classId, null, playerOrder, nationOrder);
   }
 
   get China() {

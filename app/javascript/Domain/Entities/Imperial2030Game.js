@@ -2,6 +2,7 @@ import AbstractImperialGame from './AbstractImperialGame';
 
 import Nation from './Nations/Nation';
 import { Nation2030 as NationEnum } from '../constants';
+import WorldMap from './Board/WorldMap';
 
 export default class Imperial2030Game extends AbstractImperialGame {
   static get classId() {
@@ -36,7 +37,7 @@ export default class Imperial2030Game extends AbstractImperialGame {
     nationOrder[4] = new Nation(Imperial2030Game.UnitedStatesId);
     nationOrder[5] = new Nation(Imperial2030Game.EuropeanUnionId);
 
-    super(Imperial2030Game.classId, playerOrder, nationOrder);
+    super(Imperial2030Game.classId, new WorldMap(), playerOrder, nationOrder);
   }
 
   get Russia() {
