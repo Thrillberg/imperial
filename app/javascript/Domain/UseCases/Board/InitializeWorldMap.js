@@ -67,10 +67,10 @@ export default class InitializeWorldMap {
         this.#assignProvinceOwnership.assignAsHomeProvince(southAmerica.Manaus, brazil);
         this.#assignProvinceOwnership.assignAsHomeProvince(southAmerica.Fortaleza, brazil);
         this.#assignProvinceOwnership.assignAsHomeProvince(southAmerica.Brasilia, brazil);
-        this.#assignProvinceOwnership.assignAsHomeProvince(southAmerica.RioDeJanerio, brazil);
+        this.#assignProvinceOwnership.assignAsHomeProvince(southAmerica.RioDeJaneiro, brazil);
 
         this.#buildFactories.buildArmsFactory(southAmerica.Brasilia);
-        this.#buildFactories.buildNavalFactory(southAmerica.RioDeJanerio);
+        this.#buildFactories.buildNavalFactory(southAmerica.RioDeJaneiro);
     }
     #initializeUnitedStatesHomeProvinces() {
         const northAmerica = this.map.NorthAmerica;

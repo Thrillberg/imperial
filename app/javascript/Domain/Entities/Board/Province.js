@@ -1,6 +1,10 @@
 import Entity from '../Entity';
 
 export default class Province extends Entity {
+  #friendlyUnits;
+  #friendlyUnitsInPort;
+  #hostileUnits;
+
   #neighbouringProvinces;
   #canalAccess;
 
@@ -12,21 +16,22 @@ export default class Province extends Entity {
     this.ownership = null;
     this.hasArmsFactory = false;
     this.hasNavalFactory = false;
-    this.port = null;
+    this.portEgress = null;
     this.hasRailroad = false;
 
     // map<nation, uint>
-    this.friendlyUnits = new Map();
-    this.hostileUnits = new Map();
+    this.#friendlyUnits = new Map();
+    this.#friendlyUnitsInPort = new Map();
+    this.#hostileUnits = new Map();
 
     this.#neighbouringProvinces = new Set();
     this.#canalAccess = new Set();
   }
 
-  get isOcean() {
+  get isWater() {
     return this.isLand === false;
   }
-  set isOcean(value) {
+  set isWater(value) {
     this.isLand = (value === false);
   }
 
@@ -42,6 +47,16 @@ export default class Province extends Entity {
   }
   get isNotOccupiedByHostiles() {
     return this.isOccupiedByHostiles === false;
+  }
+
+  get friendlyUnits() {
+    return this.#friendlyUnits;
+  }
+  get friendlyUnitsInPort() {
+    return this.#friendlyUnitsInPort;
+  }
+  get hostileUnits() {
+    return this.#hostileUnits;
   }
 
   get neighbouringProvinces() {

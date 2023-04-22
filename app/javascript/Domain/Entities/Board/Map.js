@@ -1,13 +1,13 @@
 export default class Map {
   #allProvinces;
   #allLandProvinces;
-  #allOceanProvinces;
+  #allNavalProvinces;
 
   constructor() {
     this.#allProvinces = new Set();
 
     this.#allLandProvinces = new Set();
-    this.#allOceanProvinces = new Set();
+    this.#allNavalProvinces = new Set();
   }
 
   get allProvinces() {
@@ -17,7 +17,7 @@ export default class Map {
   get allLandProvinces() {
     return this.#allLandProvinces;
   }
-  get allOceanProvinces() {
-    return this.#allOceanProvinces;
+  get allNavalProvinces() {
+    return this.#allNavalProvinces;
   }
 }

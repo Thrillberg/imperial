@@ -17,7 +17,7 @@ export default class WorldMap extends Map {
 
   #pacificOcean;
   #indianOcean;
-  #alanticOcean;
+  #atlanticOcean;
 
   get NorthAmerica() {
     return this.#northAmerica;
@@ -62,8 +62,8 @@ export default class WorldMap extends Map {
   get IndianOcean() {
     return this.#indianOcean;
   }
-  get AlanticOcean() {
-    return this.#alanticOcean;
+  get AtlanticOcean() {
+    return this.#atlanticOcean;
   }
 
   constructor() {
@@ -119,7 +119,7 @@ export default class WorldMap extends Map {
     this.#southAmerica.Manaus = new Province('manaus');
     this.#southAmerica.Fortaleza = new Province('fortaleza');
     this.#southAmerica.Brasilia = new Province('brasilia');
-    this.#southAmerica.RioDeJanerio = new Province('riodejaneiro');
+    this.#southAmerica.RioDeJaneiro = new Province('riodejaneiro');
 
     this.#westernEurope.London = new Province('london');
     this.#westernEurope.Berlin = new Province('berlin');
@@ -190,7 +190,7 @@ export default class WorldMap extends Map {
   #initializeOceanProvinces() {
     this.#pacificOcean = {};
     this.#indianOcean = {};
-    this.#alanticOcean = {};
+    this.#atlanticOcean = {};
 
     this.#pacificOcean.NorthPacific = new Province('northpacific');
     this.#pacificOcean.SouthPacific = new Province('southpacific');
@@ -200,37 +200,39 @@ export default class WorldMap extends Map {
 
     this.#indianOcean = new Province('indianocean');
 
-    this.#alanticOcean.NorthAlantic = new Province('northatlantic');
-    this.#alanticOcean.MediterraneanSea = new Province('mediterraneansea');
-    this.#alanticOcean.CaribbeanSea = new Province('caribbeansea');
-    this.#alanticOcean.GulfOfGuinea = new Province('gulfofguinea');
-    this.#alanticOcean.SouthAlantic = new Province('southatlantic');
+    this.#atlanticOcean.NorthAtlantic = new Province('northatlantic');
+    this.#atlanticOcean.MediterraneanSea = new Province('mediterraneansea');
+    this.#atlanticOcean.CaribbeanSea = new Province('caribbeansea');
+    this.#atlanticOcean.GulfOfGuinea = new Province('gulfofguinea');
+    this.#atlanticOcean.SouthAtlantic = new Province('southatlantic');
 
     const allOceanRegions = [
       this.PacificOcean,
       { IndianOcean: this.IndianOcean },
-      this.AlanticOcean,
+      this.AtlanticOcean,
     ];
-    for (const oceanRegion of allOceanRegions) {
-      for (const oceanProvince of Object.values(oceanRegion)) {
-        oceanProvince.isOcean = true;
-        this.allProvinces.add(oceanProvince);
-        this.allOceanProvinces.add(oceanProvince);
+    for (const navalRegion of allOceanRegions) {
+      for (const navalProvince of Object.values(navalRegion)) {
+        navalProvince.isWater = true;
+        this.allProvinces.add(navalProvince);
+        this.allNavalProvinces.add(navalProvince);
       }
     }
   }
 
   #connectNorthAmericanProvinces() {
-    this.#connect(this.NorthAmerica.Alaska, this.NorthAmerica.Canada);
     this.#connect(this.NorthAmerica.Alaska, this.PacificOcean.NorthPacific);
+    this.#connect(this.NorthAmerica.Alaska, this.NorthAmerica.Canada);
 
+    this.#connect(this.NorthAmerica.Canada, this.PacificOcean.NorthPacific);
+    this.#connect(this.NorthAmerica.Canada, this.AtlanticOcean.NorthAtlantic);
     this.#connect(this.NorthAmerica.Canada, this.NorthAmerica.Quebec);
     this.#connect(this.NorthAmerica.Canada, this.NorthAmerica.SanFrancisco);
     this.#connect(this.NorthAmerica.Canada, this.NorthAmerica.Chicago);
     this.#connect(this.NorthAmerica.Canada, this.NorthAmerica.NewYork);
 
+    this.#connect(this.NorthAmerica.Quebec, this.AtlanticOcean.NorthAtlantic);
     this.#connect(this.NorthAmerica.Quebec, this.NorthAmerica.NewYork);
-    this.#connect(this.NorthAmerica.Quebec, this.AlanticOcean.NorthAlantic);
 
     this.#connect(this.NorthAmerica.SanFrancisco, this.PacificOcean.NorthPacific);
     this.#connect(this.NorthAmerica.SanFrancisco, this.NorthAmerica.Chicago);
@@ -240,80 +242,85 @@ export default class WorldMap extends Map {
     this.#connect(this.NorthAmerica.Chicago, this.NorthAmerica.NewYork);
     this.#connect(this.NorthAmerica.Chicago, this.NorthAmerica.NewOrleans);
 
-    this.#connect(this.NorthAmerica.NewYork, this.AlanticOcean.NorthAlantic);
+    this.#connect(this.NorthAmerica.NewYork, this.AtlanticOcean.NorthAtlantic);
     this.#connect(this.NorthAmerica.NewYork, this.NorthAmerica.NewOrleans);
 
     this.#connect(this.NorthAmerica.NewOrleans, this.CentralAmerica.Mexico);
-    this.#connect(this.NorthAmerica.NewOrleans, this.AlanticOcean.CaribbeanSea);
+    this.#connect(this.NorthAmerica.NewOrleans, this.AtlanticOcean.CaribbeanSea);
   }
   #connectCentralAmericanProvinces() {
     this.#connect(this.CentralAmerica.Mexico, this.PacificOcean.NorthPacific);
-    this.#connect(this.CentralAmerica.Mexico, this.AlanticOcean.CaribbeanSea);
+    this.#connect(this.CentralAmerica.Mexico, this.AtlanticOcean.CaribbeanSea);
+    this.#connect(this.CentralAmerica.Mexico, this.NorthAmerica.SanFrancisco);
+    this.#connect(this.CentralAmerica.Mexico, this.NorthAmerica.NewOrleans);
     this.#connect(this.CentralAmerica.Mexico, this.CentralAmerica.Colombia);
 
     this.#connect(this.CentralAmerica.Colombia, this.PacificOcean.NorthPacific);
-    this.#connect(this.CentralAmerica.Colombia, this.AlanticOcean.CaribbeanSea);
+    this.#connect(this.CentralAmerica.Colombia, this.AtlanticOcean.CaribbeanSea);
     this.#connect(this.CentralAmerica.Colombia, this.SouthAmerica.Peru);
     this.#connect(this.CentralAmerica.Colombia, this.SouthAmerica.Manaus);
     this.#provideCanalAccess(this.CentralAmerica.Colombia, this.PacificOcean.NorthPacific);
-    this.#provideCanalAccess(this.CentralAmerica.Colombia, this.AlanticOcean.CaribbeanSea);
+    this.#provideCanalAccess(this.CentralAmerica.Colombia, this.AtlanticOcean.CaribbeanSea);
   }
   #connectSouthAmericanProvinces() {
-    this.#connect(this.SouthAmerica.Manaus, this.AlanticOcean.CaribbeanSea);
+    this.#connect(this.SouthAmerica.Manaus, this.AtlanticOcean.CaribbeanSea);
+    this.#connect(this.SouthAmerica.Manaus, this.CentralAmerica.Colombia);
     this.#connect(this.SouthAmerica.Manaus, this.SouthAmerica.Peru);
     this.#connect(this.SouthAmerica.Manaus, this.SouthAmerica.Brasilia);
     this.#connect(this.SouthAmerica.Manaus, this.SouthAmerica.Fortaleza);
 
     this.#connect(this.SouthAmerica.Peru, this.PacificOcean.SouthPacific);
+    this.#connect(this.SouthAmerica.Peru, this.CentralAmerica.Colombia);
     this.#connect(this.SouthAmerica.Peru, this.SouthAmerica.Argentina);
     this.#connect(this.SouthAmerica.Peru, this.SouthAmerica.Brasilia);
 
-    this.#connect(this.SouthAmerica.Fortaleza, this.AlanticOcean.CaribbeanSea);
+    this.#connect(this.SouthAmerica.Fortaleza, this.AtlanticOcean.CaribbeanSea);
     this.#connect(this.SouthAmerica.Fortaleza, this.SouthAmerica.Brasilia);
-    this.#connect(this.SouthAmerica.Fortaleza, this.SouthAmerica.RioDeJanerio);
+    this.#connect(this.SouthAmerica.Fortaleza, this.SouthAmerica.RioDeJaneiro);
 
-    this.#connect(this.SouthAmerica.Brasilia, this.SouthAmerica.RioDeJanerio);
+    this.#connect(this.SouthAmerica.Brasilia, this.SouthAmerica.RioDeJaneiro);
     this.#connect(this.SouthAmerica.Brasilia, this.SouthAmerica.Argentina);
 
-    this.#connect(this.SouthAmerica.RioDeJanerio, this.AlanticOcean.SouthAlantic);
-    this.#connect(this.SouthAmerica.RioDeJanerio, this.SouthAmerica.Argentina);
+    this.#connect(this.SouthAmerica.RioDeJaneiro, this.AtlanticOcean.SouthAtlantic);
+    this.#connect(this.SouthAmerica.RioDeJaneiro, this.SouthAmerica.Argentina);
 
     this.#connect(this.SouthAmerica.Argentina, this.PacificOcean.SouthPacific);
-    this.#connect(this.SouthAmerica.Argentina, this.AlanticOcean.SouthAlantic);
+    this.#connect(this.SouthAmerica.Argentina, this.AtlanticOcean.SouthAtlantic);
   }
   #connectWestEuropeanProvinces() {
-    this.#connect(this.WesternEurope.London, this.AlanticOcean.NorthAlantic);
+    this.#connect(this.WesternEurope.London, this.AtlanticOcean.NorthAtlantic);
     this.#connect(this.WesternEurope.London, this.WesternEurope.Paris);
 
-    this.#connect(this.WesternEurope.Berlin, this.AlanticOcean.NorthAlantic);
+    this.#connect(this.WesternEurope.Berlin, this.AtlanticOcean.NorthAtlantic);
     this.#connect(this.WesternEurope.Berlin, this.WesternEurope.Paris);
     this.#connect(this.WesternEurope.Berlin, this.WesternEurope.Rome);
     this.#connect(this.WesternEurope.Berlin, this.EasternEurope.Murmansk);
     this.#connect(this.WesternEurope.Berlin, this.EasternEurope.Ukraine);
 
-    this.#connect(this.WesternEurope.Paris, this.AlanticOcean.NorthAlantic);
-    this.#connect(this.WesternEurope.Paris, this.AlanticOcean.MediterraneanSea);
+    this.#connect(this.WesternEurope.Paris, this.AtlanticOcean.NorthAtlantic);
+    this.#connect(this.WesternEurope.Paris, this.AtlanticOcean.MediterraneanSea);
     this.#connect(this.WesternEurope.Paris, this.WesternEurope.Rome);
 
-    this.#connect(this.WesternEurope.Rome, this.AlanticOcean.MediterraneanSea);
+    this.#connect(this.WesternEurope.Rome, this.AtlanticOcean.MediterraneanSea);
     this.#connect(this.WesternEurope.Rome, this.EasternEurope.Ukraine);
     this.#connect(this.WesternEurope.Rome, this.WesternAsia.Turkey);
   }
   #connectAfricanProvinces() {
-    this.#connect(this.Africa.NorthAfrica, this.AlanticOcean.NorthAlantic);
-    this.#connect(this.Africa.NorthAfrica, this.AlanticOcean.MediterraneanSea);
+    this.#connect(this.Africa.NorthAfrica, this.AtlanticOcean.NorthAtlantic);
+    this.#connect(this.Africa.NorthAfrica, this.AtlanticOcean.MediterraneanSea);
+    this.#connect(this.Africa.NorthAfrica, this.IndianOcean);
     this.#connect(this.Africa.NorthAfrica, this.WesternAsia.NearEast);
     this.#connect(this.Africa.NorthAfrica, this.Africa.Guinea);
     this.#connect(this.Africa.NorthAfrica, this.Africa.Nigeria);
     this.#connect(this.Africa.NorthAfrica, this.Africa.EastAfrica);
-    this.#provideCanalAccess(this.Africa.NorthAfrica, this.AlanticOcean.MediterraneanSea);
+    this.#provideCanalAccess(this.Africa.NorthAfrica, this.AtlanticOcean.MediterraneanSea);
     this.#provideCanalAccess(this.Africa.NorthAfrica, this.IndianOcean);
 
-    this.#connect(this.Africa.Guinea, this.AlanticOcean.NorthAlantic);
+    this.#connect(this.Africa.Guinea, this.AtlanticOcean.NorthAtlantic);
+    this.#connect(this.Africa.Guinea, this.AtlanticOcean.GulfOfGuinea);
     this.#connect(this.Africa.Guinea, this.Africa.Nigeria);
-    this.#connect(this.Africa.Guinea, this.AlanticOcean.GulfOfGuinea);
 
-    this.#connect(this.Africa.Nigeria, this.AlanticOcean.GulfOfGuinea);
+    this.#connect(this.Africa.Nigeria, this.AtlanticOcean.GulfOfGuinea);
     this.#connect(this.Africa.Nigeria, this.Africa.EastAfrica);
     this.#connect(this.Africa.Nigeria, this.Africa.Congo);
 
@@ -321,10 +328,10 @@ export default class WorldMap extends Map {
     this.#connect(this.Africa.EastAfrica, this.Africa.Congo);
     this.#connect(this.Africa.EastAfrica, this.Africa.SouthAfrica);
 
-    this.#connect(this.Africa.Congo, this.AlanticOcean.GulfOfGuinea);
+    this.#connect(this.Africa.Congo, this.AtlanticOcean.GulfOfGuinea);
     this.#connect(this.Africa.Congo, this.Africa.SouthAfrica);
 
-    this.#connect(this.Africa.SouthAfrica, this.AlanticOcean.GulfOfGuinea);
+    this.#connect(this.Africa.SouthAfrica, this.AtlanticOcean.GulfOfGuinea);
     this.#connect(this.Africa.SouthAfrica, this.IndianOcean);
   }
   #connectEasternEuropeanProvinces() {
@@ -333,7 +340,7 @@ export default class WorldMap extends Map {
     this.#connect(this.EasternEurope.Ukraine, this.EasternEurope.Murmansk);
     this.#connect(this.EasternEurope.Ukraine, this.EasternEurope.Moscow);
 
-    this.#connect(this.EasternEurope.Murmansk, this.AlanticOcean.NorthAlantic);
+    this.#connect(this.EasternEurope.Murmansk, this.AtlanticOcean.NorthAtlantic);
     this.#connect(this.EasternEurope.Murmansk, this.WesternEurope.Berlin);
     this.#connect(this.EasternEurope.Murmansk, this.EasternEurope.Moscow);
     this.#connect(this.EasternEurope.Murmansk, this.EasternEurope.Novosibirsk);
@@ -347,24 +354,25 @@ export default class WorldMap extends Map {
     this.#connect(this.EasternEurope.Novosibirsk, this.EastAsia.Mongolia);
     this.#connect(this.EasternEurope.Novosibirsk, this.EasternEurope.Vladivostok);
 
+    this.#connect(this.EasternEurope.Vladivostok, this.PacificOcean.SeaOfJapan);
     this.#connect(this.EasternEurope.Vladivostok, this.EastAsia.Mongolia);
     this.#connect(this.EasternEurope.Vladivostok, this.EastAsia.Beijing);
     this.#connect(this.EasternEurope.Vladivostok, this.EastAsia.Korea);
-    this.#connect(this.EasternEurope.Vladivostok, this.PacificOcean.SeaOfJapan);
   }
   #connectWesternAsianProvinces() {
+    this.#connect(this.WesternAsia.Turkey, this.AtlanticOcean.MediterraneanSea);
     this.#connect(this.WesternAsia.Turkey, this.WesternEurope.Rome);
-    this.#connect(this.WesternAsia.Turkey, this.AlanticOcean.MediterraneanSea);
     this.#connect(this.WesternAsia.Turkey, this.EasternEurope.Moscow);
     this.#connect(this.WesternAsia.Turkey, this.WesternAsia.NearEast);
     this.#connect(this.WesternAsia.Turkey, this.WesternAsia.Iran);
 
-    this.#connect(this.WesternAsia.NearEast, this.AlanticOcean.MediterraneanSea);
+    this.#connect(this.WesternAsia.NearEast, this.AtlanticOcean.MediterraneanSea);
     this.#connect(this.WesternAsia.NearEast, this.Africa.NorthAfrica);
     this.#connect(this.WesternAsia.NearEast, this.IndianOcean);
     this.#connect(this.WesternAsia.NearEast, this.WesternAsia.Iran);
 
     this.#connect(this.WesternAsia.Iran, this.IndianOcean);
+    this.#connect(this.WesternAsia.Iran, this.EasternEurope.Moscow);
     this.#connect(this.WesternAsia.Iran, this.CentralAsia.Afghanistan);
     this.#connect(this.WesternAsia.Iran, this.SouthernAsia.Mumbai);
   }
@@ -414,30 +422,31 @@ export default class WorldMap extends Map {
     this.#connect(this.EastAsia.Mongolia, this.EastAsia.Beijing);
     this.#connect(this.EastAsia.Mongolia, this.EasternEurope.Vladivostok);
 
+    this.#connect(this.EastAsia.Beijing, this.PacificOcean.ChinaSea);
     this.#connect(this.EastAsia.Beijing, this.EasternEurope.Vladivostok);
     this.#connect(this.EastAsia.Beijing, this.EastAsia.Chongqing);
     this.#connect(this.EastAsia.Beijing, this.EastAsia.Shanghai);
     this.#connect(this.EastAsia.Beijing, this.EastAsia.Korea);
-    this.#connect(this.EastAsia.Beijing, this.PacificOcean.ChinaSea);
 
     this.#connect(this.EastAsia.Chongqing, this.SouthernAsia.Kolkata);
     this.#connect(this.EastAsia.Chongqing, this.EastAsia.Shanghai);
     this.#connect(this.EastAsia.Chongqing, this.SouthEastAsia.IndoChina);
 
-    this.#connect(this.EastAsia.Shanghai, this.SouthEastAsia.IndoChina);
     this.#connect(this.EastAsia.Shanghai, this.PacificOcean.ChinaSea);
+    this.#connect(this.EastAsia.Shanghai, this.SouthEastAsia.IndoChina);
 
-    this.#connect(this.EastAsia.Korea, this.EasternEurope.Vladivostok);
+    this.#connect(this.EastAsia.Korea, this.PacificOcean.SeaOfJapan);
     this.#connect(this.EastAsia.Korea, this.PacificOcean.ChinaSea);
+    this.#connect(this.EastAsia.Korea, this.EasternEurope.Vladivostok);
 
     this.#connect(this.EastAsia.Japan, this.PacificOcean.SeaOfJapan);
   }
   #connectSouthEastAsianProvinces() {
     this.#connect(this.SouthEastAsia.IndoChina, this.IndianOcean);
+    this.#connect(this.SouthEastAsia.IndoChina, this.PacificOcean.ChinaSea);
     this.#connect(this.SouthEastAsia.IndoChina, this.SouthernAsia.Kolkata);
     this.#connect(this.SouthEastAsia.IndoChina, this.EastAsia.Chongqing);
     this.#connect(this.SouthEastAsia.IndoChina, this.EastAsia.Shanghai);
-    this.#connect(this.SouthEastAsia.IndoChina, this.PacificOcean.ChinaSea);
 
     this.#connect(this.SouthEastAsia.Philippines, this.PacificOcean.ChinaSea);
 
@@ -452,18 +461,18 @@ export default class WorldMap extends Map {
   }
 
   #connectOceanProvinces() {
-    this.#connect(this.AlanticOcean.NorthAlantic, this.AlanticOcean.MediterraneanSea);
-    this.#connect(this.AlanticOcean.NorthAlantic, this.AlanticOcean.CaribbeanSea);
-    this.#connect(this.AlanticOcean.NorthAlantic, this.AlanticOcean.GulfOfGuinea);
+    this.#connect(this.AtlanticOcean.NorthAtlantic, this.AtlanticOcean.MediterraneanSea);
+    this.#connect(this.AtlanticOcean.NorthAtlantic, this.AtlanticOcean.CaribbeanSea);
+    this.#connect(this.AtlanticOcean.NorthAtlantic, this.AtlanticOcean.GulfOfGuinea);
 
-    this.#connect(this.AlanticOcean.CaribbeanSea, this.AlanticOcean.GulfOfGuinea);
-    this.#connect(this.AlanticOcean.CaribbeanSea, this.AlanticOcean.SouthAlantic);
+    this.#connect(this.AtlanticOcean.CaribbeanSea, this.AtlanticOcean.GulfOfGuinea);
+    this.#connect(this.AtlanticOcean.CaribbeanSea, this.AtlanticOcean.SouthAtlantic);
 
-    this.#connect(this.AlanticOcean.GulfOfGuinea, this.AlanticOcean.SouthAlantic);
-    this.#connect(this.AlanticOcean.GulfOfGuinea, this.IndianOcean);
+    this.#connect(this.AtlanticOcean.GulfOfGuinea, this.AtlanticOcean.SouthAtlantic);
+    this.#connect(this.AtlanticOcean.GulfOfGuinea, this.IndianOcean);
 
-    this.#connect(this.AlanticOcean.SouthAlantic, this.PacificOcean.SouthPacific);
-    this.#connect(this.AlanticOcean.SouthAlantic, this.IndianOcean);
+    this.#connect(this.AtlanticOcean.SouthAtlantic, this.PacificOcean.SouthPacific);
+    this.#connect(this.AtlanticOcean.SouthAtlantic, this.IndianOcean);
 
     this.#connect(this.IndianOcean, this.PacificOcean.ChinaSea);
     this.#connect(this.IndianOcean, this.PacificOcean.TasmanSea);
@@ -490,22 +499,22 @@ export default class WorldMap extends Map {
   }
 
   #initializePorts() {
-    this.NorthAmerica.SanFrancisco.port = this.PacificOcean.NorthPacific;
-    this.NorthAmerica.NewYork.port = this.AlanticOcean.NorthAlantic;
-    this.NorthAmerica.NewOrleans = this.AlanticOcean.CaribbeanSea;
+    this.NorthAmerica.SanFrancisco.portEgress = this.PacificOcean.NorthPacific;
+    this.NorthAmerica.NewYork.portEgress = this.AtlanticOcean.NorthAtlantic;
+    this.NorthAmerica.NewOrleans = this.AtlanticOcean.CaribbeanSea;
 
-    this.SouthAmerica.Fortaleza.port = this.AlanticOcean.CaribbeanSea;
-    this.SouthAmerica.RioDeJanerio.port = this.AlanticOcean.SouthAlantic;
+    this.SouthAmerica.Fortaleza.portEgress = this.AtlanticOcean.CaribbeanSea;
+    this.SouthAmerica.RioDeJaneiro.portEgress = this.AtlanticOcean.SouthAtlantic;
 
-    this.WesternEurope.London.port = this.AlanticOcean.NorthAlantic;
-    this.WesternEurope.Rome.port = this.AlanticOcean.MediterraneanSea;
+    this.WesternEurope.London.portEgress = this.AtlanticOcean.NorthAtlantic;
+    this.WesternEurope.Rome.portEgress = this.AtlanticOcean.MediterraneanSea;
 
-    this.EasternEurope.Murmansk.port = this.AlanticOcean.NorthAlantic;
-    this.EasternEurope.Vladivostok.port = this.PacificOcean.SeaOfJapan;
+    this.EasternEurope.Murmansk.portEgress = this.AtlanticOcean.NorthAtlantic;
+    this.EasternEurope.Vladivostok.portEgress = this.PacificOcean.SeaOfJapan;
 
-    this.SouthernAsia.Mumbai.port = this.IndianOcean;
-    this.SouthernAsia.Kolkata.port = this.IndianOcean;
+    this.SouthernAsia.Mumbai.portEgress = this.IndianOcean;
+    this.SouthernAsia.Kolkata.portEgress = this.IndianOcean;
 
-    this.EastAsia.Shanghai.port = this.PacificOcean.ChinaSea;
+    this.EastAsia.Shanghai.portEgress = this.PacificOcean.ChinaSea;
   }
 }
