@@ -86,6 +86,8 @@ export default class WorldMap extends Map {
     this.#connectOceanianProvinces();
 
     this.#connectOceanProvinces();
+
+    this.#initializePorts();
   }
   #initializeLandProvinces() {
     this.#northAmerica = {};
@@ -485,5 +487,25 @@ export default class WorldMap extends Map {
 
   #provideCanalAccess(province, to) {
     province.canalAccess.add(to);
+  }
+
+  #initializePorts() {
+    this.NorthAmerica.SanFrancisco.port = this.PacificOcean.NorthPacific;
+    this.NorthAmerica.NewYork.port = this.AlanticOcean.NorthAlantic;
+    this.NorthAmerica.NewOrleans = this.AlanticOcean.CaribbeanSea;
+
+    this.SouthAmerica.Fortaleza.port = this.AlanticOcean.CaribbeanSea;
+    this.SouthAmerica.RioDeJanerio.port = this.AlanticOcean.SouthAlantic;
+
+    this.WesternEurope.London.port = this.AlanticOcean.NorthAlantic;
+    this.WesternEurope.Rome.port = this.AlanticOcean.MediterraneanSea;
+
+    this.EasternEurope.Murmansk.port = this.AlanticOcean.NorthAlantic;
+    this.EasternEurope.Vladivostok.port = this.PacificOcean.SeaOfJapan;
+
+    this.SouthernAsia.Mumbai.port = this.IndianOcean;
+    this.SouthernAsia.Kolkata.port = this.IndianOcean;
+
+    this.EastAsia.Shanghai.port = this.PacificOcean.ChinaSea;
   }
 }

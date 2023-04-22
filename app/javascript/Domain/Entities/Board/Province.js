@@ -12,6 +12,7 @@ export default class Province extends Entity {
     this.ownership = null;
     this.hasArmsFactory = false;
     this.hasNavalFactory = false;
+    this.port = null;
     this.hasRailroad = false;
 
     // map<nation, uint>
