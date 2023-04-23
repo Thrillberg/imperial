@@ -1,7 +1,7 @@
-import Map from './Map';
+import Board from './Board';
 import Province from './Province';
 
-export default class EuropeMap extends Map {
+export default class EuropeBoard extends Board {
   #britishIsles;
   #frenchTerritories;
   #northAfrica;
@@ -160,8 +160,7 @@ export default class EuropeMap extends Map {
     for (const landRegion of allLandRegions) {
       for (const landProvince of Object.values(landRegion)) {
         landProvince.isLand = true;
-        this.allProvinces.add(landProvince);
-        this.allLandProvinces.add(landProvince);
+        this._addProvince(landProvince);
       }
     }
   }
@@ -180,14 +179,13 @@ export default class EuropeMap extends Map {
 
     for (const navalProvince of Object.values(this.#seas)) {
       navalProvince.isWater = true;
-      this.allProvinces.add(navalProvince);
-      this.allNavalProvinces.add(navalProvince);
+      this._addProvince(navalProvince);
     }
   }
 
   #connectUnitedKingdomProvinces() {
     this._connect(this.BritishIsles.Edinburgh, this.Seas.NorthAtlantic);
-    this._connect(this.BritishIsles.Edinburgh, this.BritishIsles.NorthSea);
+    this._connect(this.BritishIsles.Edinburgh, this.Seas.NorthSea);
     this._connect(this.BritishIsles.Edinburgh, this.BritishIsles.Liverpool);
     this._connect(this.BritishIsles.Edinburgh, this.BritishIsles.Sheffield);
 
@@ -348,7 +346,7 @@ export default class EuropeMap extends Map {
 
     this._connect(this.AustrianHungarianTerritories.Lemberg, this.RussianTerritories.Warsaw);
     this._connect(this.AustrianHungarianTerritories.Lemberg, this.RussianTerritories.Kiev);
-    this._connect(this.AustrianHungarianTerritories.Lemberg, this.AustrianHungarianTerritories.Romania);
+    this._connect(this.AustrianHungarianTerritories.Lemberg, this.BalkanCountries.Romania);
   }
   #connectBalkanProvinces() {
     this._connect(this.BalkanCountries.WestBalkan, this.Seas.IonianSea);
@@ -411,7 +409,7 @@ export default class EuropeMap extends Map {
 
     // English Channel already completely connected
 
-    this._connect(this.Seas.WesternMediterranean, this.IonianSea);
+    this._connect(this.Seas.WesternMediterranean, this.Seas.IonianSea);
 
     // Baltic Sea already completely connected
 

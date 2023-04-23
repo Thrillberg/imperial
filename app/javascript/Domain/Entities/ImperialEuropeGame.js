@@ -2,6 +2,7 @@ import AbstractImperialGame from './AbstractImperialGame';
 
 import Nation from './Nations/Nation';
 import { Nation as NationEnum } from '../constants';
+import EuropeBoard from './Board/EuropeBoard';
 
 export default class ImperialEuropeGame extends AbstractImperialGame {
   static get classId() {
@@ -36,7 +37,7 @@ export default class ImperialEuropeGame extends AbstractImperialGame {
     nationOrder[4] = new Nation(ImperialEuropeGame.GermanyId);
     nationOrder[5] = new Nation(ImperialEuropeGame.RussiaId);
 
-    super(ImperialEuropeGame.classId, null, playerOrder, nationOrder);
+    super(ImperialEuropeGame.classId, new EuropeBoard(), playerOrder, nationOrder);
   }
 
   get AustriaHungary() {

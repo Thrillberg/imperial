@@ -1,12 +1,12 @@
 const DuplicateProvinceError = class extends Error {
   constructor(province) {
-    super(`${province.Id} already exists in the map`);
+    super(`${province.Id} already exists on the board`);
 
     this.name = 'DuplicateProvinceError';
   }
 };
 
-export default class Map {
+export default class Board {
   static get DuplicateProvinceError() {
     return DuplicateProvinceError;
   }
