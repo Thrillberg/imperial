@@ -1,23 +1,60 @@
+const DuplicateProvinceError = class extends Error {
+  constructor(province) {
+    super(`${province.Id} already exists in the map`);
+
+    this.name = 'DuplicateProvinceError';
+  }
+};
+
 export default class Map {
-  #allProvinces;
-  #allLandProvinces;
-  #allNavalProvinces;
+  static get DuplicateProvinceError() {
+    return DuplicateProvinceError;
+  }
+
+  #provinces;
 
   constructor() {
-    this.#allProvinces = new Set();
-
-    this.#allLandProvinces = new Set();
-    this.#allNavalProvinces = new Set();
+    this.#provinces = new Map();
   }
 
-  get allProvinces() {
-    return this.#allProvinces;
+  provinceIdToEntity(provinceId) {
+    return this.#provinces.get(provinceId);
+  }
+  * allProvinces() {
+    for (const province of this.#provinces.values()) {
+      yield province;
+    }
   }
 
-  get allLandProvinces() {
-    return this.#allLandProvinces;
+  * allLandProvinces() {
+    for (const province of this.allProvinces()) {
+      if (province.isLand) {
+        yield province;
+      }
+    }
   }
-  get allNavalProvinces() {
-    return this.#allNavalProvinces;
+  * allNavalProvinces() {
+    for (const province of this.allProvinces()) {
+      if (province.isWater) {
+        yield province;
+      }
+    }
+  }
+
+  _addProvince(province) {
+    if (this.#provinces.has(province.id)) {
+      throw new DuplicateProvinceError(province);
+    }
+
+    this.#provinces.set(province.id, province);
+  }
+
+  _connect(provinceA, provinceB) {
+    provinceA.neighbouringProvinces.add(provinceB);
+    provinceB.neighbouringProvinces.add(provinceA);
+  }
+
+  _provideCanalAccess(province, to) {
+    province.canalAccess.add(to);
   }
 }
