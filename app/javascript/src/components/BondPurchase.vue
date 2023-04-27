@@ -37,7 +37,7 @@
       </v-card-title>
       <v-card-text>
         <v-row>
-          <v-col :cols="game.auction.inAuction ? '12' : '9'">
+          <v-col :cols="game.auction?.inAuction ? '12' : '9'">
             <v-sheet
               v-for="bond of game.availableBonds"
               :key="bond.nation+bond.cost"
@@ -59,11 +59,11 @@
             </v-sheet>
           </v-col>
           <v-divider
-            v-if="!game.auction.inAuction"
+            v-if="!game.auction?.inAuction"
             vertical
           />
           <v-col
-            v-if="!game.auction.inAuction"
+            v-if="!game.auction?.inAuction"
             cols="3"
           >
             Your bonds that can be upgraded
