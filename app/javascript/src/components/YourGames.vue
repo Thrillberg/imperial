@@ -48,7 +48,7 @@
                     :key="player.name"
                     cols="auto"
                   >
-                    <span :class="player.itsMyTurn ? 'font-weight-bold' : ''">{{ player.name }}</span>
+                    <span>{{ player.name }}</span>
                     <Flag
                       v-for="nation of player.nations"
                       :key="nation"
