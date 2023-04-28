@@ -769,7 +769,7 @@ export default {
       const action = Action.initialize({
         players, soloMode, variant, baseGame,
       });
-      apiClient.tick(gameData.id, action);
+      apiClient.tick(this.gameData.id, action, this.game.toJSONWithLatestAction(action), [...this.game.availableActions]);
     },
     addRandomBot() {
       apiClient.addRandomBot(this.$route.params.id);
@@ -888,7 +888,8 @@ export default {
     handleBotMoves() {
       this.gameData.players.forEach((player) => {
         if (player.name === this.game.currentPlayerName && player.isBot) {
-          this.tickWithAction(this.getRandomAction());
+          // this.tickWithAction(this.getRandomAction());
+          apiClient.getBotMove(this.gameData.id, this.game.toJSON(), [...this.game.availableActions], this.game.board.toJSON(), this.game.log.slice(-10));
         }
       });
     },
@@ -976,14 +977,8 @@ export default {
     tickWithAction(action) {
       this.controllingPlayerName = this.game.currentPlayerName;
       if (!this.paused) {
-        apiClient.saveSnapshot(
-          this.$route.params.id,
-          action,
-          this.game.toJSONWithLatestAction(action),
-          [...this.game.availableActions],
-          this.game.log,
-        );
-        apiClient.tick(this.$route.params.id, action);
+        apiClient.saveSnapshot(this.$route.params.id, action, this.game.toJSON(), [...this.game.availableActions], this.game.log.slice(-10));
+        apiClient.tick(this.$route.params.id, action, this.game.toJSONWithLatestAction(action), [...this.game.availableActions]);
         this.displayFight(action);
         this.displayProduction(action);
       }

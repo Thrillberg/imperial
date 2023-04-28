@@ -41,5 +41,16 @@ module ApplicationCable
       }
       ActionCable.server.broadcast(channel, payload)
     end
+
+    def broadcast_bot_move(channel, kind, game_id, move)
+      payload = {
+        kind: kind,
+        data: {
+          gameId: game_id,
+          move: move
+        }
+      }
+      ActionCable.server.broadcast(channel, payload)
+    end
   end
 end

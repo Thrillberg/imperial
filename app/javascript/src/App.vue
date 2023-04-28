@@ -130,6 +130,14 @@ export default {
         );
       }
     });
+    apiClient.onBotMove(({ gameId, move }) => {
+      if (gameId === this.$route.params.id) {
+        console.log({move})
+        const action = move;
+
+        this.$refs.game.tickWithAction(action);
+      }
+    })
     if (this.$cookies.get('user_id')) {
       // Fetch user profile
       fetch(`/profiles/${this.$cookies.get('user_id')}`, { method: 'GET' })

@@ -84,7 +84,10 @@ GEM
     ffi (1.15.5)
     globalid (1.1.0)
       activesupport (>= 5.0)
-    i18n (1.13.0)
+    httparty (0.21.0)
+      mini_mime (>= 1.0.0)
+      multi_xml (>= 0.5.2)
+    i18n (1.12.0)
       concurrent-ruby (~> 1.0)
     json (2.6.3)
     language_server-protocol (3.17.0.3)
@@ -195,7 +198,9 @@ GEM
     rubocop-performance (1.16.0)
       rubocop (>= 1.7.0, < 2.0)
       rubocop-ast (>= 0.4.0)
-    ruby-progressbar (1.13.0)
+    ruby-openai (3.7.0)
+      httparty (>= 0.18.1)
+    ruby-progressbar (1.11.0)
     semantic_range (3.0.0)
     sentry-rails (5.9.0)
       railties (>= 5.0)
@@ -270,6 +275,7 @@ DEPENDENCIES
   railties (~> 7.0.4.3)
   redis (~> 4.0)
   rspec-rails (~> 4.0.2)
+  ruby-openai
   sentry-rails
   sentry-ruby
   sidekiq

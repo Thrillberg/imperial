@@ -13,6 +13,13 @@ export default class GameBoard {
     this.pathsFrom = memoizePath(this.unmemoizedPathsFrom, this);
   }
 
+  toJSON() {
+    return {
+      graph: Object.fromEntries(this.graph),
+      byNation: Object.fromEntries(this.byNation),
+    };
+  }
+
   setupGraph(nodes) {
     for (const {
       name: province,

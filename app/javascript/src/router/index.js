@@ -89,6 +89,13 @@ class APIClient {
     this.handlers.updateCurrentPlayerName = cb;
   }
 
+  onBotMove(cb) {
+    if (this.handlers.botMove !== undefined) {
+      throw new Error('there is already a handler defined');
+    }
+    this.handlers.botMove = cb;
+  }
+
   joinGame(userId, gameId, userName) {
     return this.send(
       {
@@ -154,27 +161,34 @@ class APIClient {
     );
   }
 
-  tick(gameId, action) {
+  tick(gameId, action, latestState = {}, availableActions = []) {
+    const state = { latestState, availableActions };
     return this.send(
       {
         kind: 'tick',
-        data: { gameId, action: JSON.stringify(action) },
+        data: { gameId, action: JSON.stringify(action), latestState: JSON.stringify(state) },
       },
       'GameChannel',
     );
   }
 
   saveSnapshot(gameId, action, oldState = {}, availableActions = [], log = []) {
+    const state = { oldState, availableActions, log };
+    console.log(log)
     return this.send(
       {
         kind: 'saveSnapshot',
-        data: {
-          gameId,
-          action: JSON.stringify(action),
-          state: JSON.stringify(oldState),
-          availableActions: JSON.stringify(availableActions),
-          log: JSON.stringify(log),
-        },
+        data: { gameId, action: JSON.stringify(action), oldState: JSON.stringify(state) },
+      },
+      'GameChannel',
+    );
+  }
+
+  getBotMove(gameId, latestState, availableActions, board, logSlice) {
+    return this.send(
+      {
+        kind: 'getBotMove',
+        data: { gameId, latestState, availableActions, board, logSlice },
       },
       'GameChannel',
     );
