@@ -281,7 +281,7 @@ DEPENDENCIES
   psych (< 4)
   puma (~> 4.3)
   rack-cors
-  rails (~> 7.0.4)
+  rails (~> 7.0.4.3)
   redis (~> 4.0)
   rspec-rails (~> 4.0.2)
   sentry-rails
