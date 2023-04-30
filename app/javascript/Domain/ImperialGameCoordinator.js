@@ -19,7 +19,6 @@ import {
   Nation2030,
   NationAsia,
 } from './constants';
-import setOldAuctionState from './setOldAuctionState';
 import setOldState from './setOldState';
 import standard2030Setup from './standard2030Setup';
 import standardAsiaSetup from './standardAsiaSetup';
@@ -213,9 +212,6 @@ export default class ImperialGameCoordinator {
         this.#undoHistory.undoToLastCheckpoint();
 
         Object.assign(this, this.oldState);
-        if (this.auction?.inAuction) {
-          Object.assign(this.auction, this.oldAuctionState);
-        }
         return;
       }
       case 'bondPurchase': {
@@ -405,10 +401,6 @@ export default class ImperialGameCoordinator {
 
       const oldState = setOldState(this);
       this.oldState = { ...this, ...oldState };
-      if (this.auction?.inAuction) {
-        const oldAuctionState = setOldAuctionState(this.auction);
-        this.oldAuctionState = { ...this.auction, ...oldAuctionState };
-      }
     }
   }
 
