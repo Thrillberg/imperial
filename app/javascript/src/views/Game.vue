@@ -946,7 +946,14 @@ export default {
     tickWithAction(action) {
       this.controllingPlayerName = this.game.currentPlayerName;
       if (!this.paused) {
-        apiClient.tick(this.$route.params.id, action, this.game.toJSONWithLatestAction(action));
+        apiClient.saveSnapshot(
+          this.$route.params.id,
+          action,
+          this.game.toJSON(),
+          [...this.game.availableActions],
+          this.game.log,
+        );
+        apiClient.tick(this.$route.params.id, action);
         this.displayFight(action);
       }
     },

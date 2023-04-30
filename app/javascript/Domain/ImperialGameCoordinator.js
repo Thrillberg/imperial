@@ -361,6 +361,10 @@ export default class ImperialGameCoordinator {
     // But state is currently split between this coordinator and the this.#game.object, so we'll keep this here for now.
     this.tick(action);
 
+    return this.toJSON();
+  }
+
+  toJSON() {
     const nations = [];
     for (const [nationName, nation] of this.nations) {
       nations.push({ [nationName.value]: nation });

@@ -6,6 +6,7 @@ class Game < ActiveRecord::Base
   has_many :players, dependent: :destroy
   has_many :users, through: :players
   has_many :cloned_games, class_name: "Game", foreign_key: "cloned_from_game_id", dependent: :nullify
+  has_many :snapshots
 
   belongs_to :winner, class_name: "User", optional: true
   belongs_to :host, class_name: "User"
@@ -43,6 +44,11 @@ class Game < ActiveRecord::Base
 
   def to_json
     observers = JSON.parse(REDIS.get("users_observing_games"))[id] || []
+    parsed_latest_state = nil
+    latest_state = snapshots.order(:created_at).last&.state
+    if latest_state
+      parsed_latest_state = JSON.parse(latest_state)["state"]
+    end
     {
       name: name,
       id: id,
@@ -60,7 +66,7 @@ class Game < ActiveRecord::Base
       last_move_at: last_move_at,
       cloned_from_game: cloned_from_game&.id,
       is_public: is_public,
-      latest_state: latest_state
+      latest_state: parsed_latest_state
     }
   end
 

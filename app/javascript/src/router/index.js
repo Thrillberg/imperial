@@ -144,11 +144,27 @@ class APIClient {
     );
   }
 
-  tick(gameId, action, latestState = {}) {
+  tick(gameId, action) {
     return this.send(
       {
         kind: 'tick',
-        data: { gameId, action: JSON.stringify(action), latestState: JSON.stringify(latestState) },
+        data: { gameId, action: JSON.stringify(action) },
+      },
+      'GameChannel',
+    );
+  }
+
+  saveSnapshot(gameId, action, oldState = {}, availableActions = [], log = []) {
+    return this.send(
+      {
+        kind: 'saveSnapshot',
+        data: {
+          gameId,
+          action: JSON.stringify(action),
+          state: JSON.stringify(oldState),
+          availableActions: JSON.stringify(availableActions),
+          log: JSON.stringify(log),
+        },
       },
       'GameChannel',
     );
