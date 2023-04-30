@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_04_17_015610) do
+ActiveRecord::Schema[7.0].define(version: 2023_04_30_005505) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -53,7 +53,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_17_015610) do
     t.boolean "is_public", default: true
     t.string "discord_channel_id"
     t.boolean "is_imported"
-    t.json "latest_state"
     t.index ["cloned_from_game_id"], name: "index_games_on_cloned_from_game_id"
     t.index ["current_player_id"], name: "index_games_on_current_player_id"
     t.index ["host_id"], name: "index_games_on_host_id"
@@ -68,6 +67,14 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_17_015610) do
     t.integer "score"
     t.index ["game_id"], name: "index_players_on_game_id"
     t.index ["user_id"], name: "index_players_on_user_id"
+  end
+
+  create_table "snapshots", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.json "state"
+    t.uuid "game_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["game_id"], name: "index_snapshots_on_game_id"
   end
 
   create_table "users", id: :uuid, default: -> { "public.gen_random_uuid()" }, force: :cascade do |t|
