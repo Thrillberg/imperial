@@ -8,11 +8,11 @@
         v-model="gameLog"
         class="rounded p-5 border border-green-800 my-2 sm:w-full self-center"
       />
-      <input
+      <v-btn
         type="submit"
         value="Import game"
         class="rounded p-5 bg-green-800 text-white cursor-pointer my-2 text-2xl sm:w-1/2 self-center"
-      >
+      />
     </form>
   </div>
 </template>
