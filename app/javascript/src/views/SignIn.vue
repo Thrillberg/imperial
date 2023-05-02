@@ -78,7 +78,7 @@ export default {
         .then((response) => response.json())
         .then((data) => {
           if (data.email) {
-            this.$emit('signedIn', { username: data.username, email: data.email });
+            this.$emit('signedIn', { username: data.username, email: data.email, id: data.id });
             this.errors = [];
             this.$router.push('/');
           } else {
