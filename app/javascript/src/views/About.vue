@@ -18,7 +18,7 @@
       </v-card-text>
       <v-card-text>
         Feel free to say hi <a
-          href="https://discord.gg/VnxKwuQmg8"
+          href="https://discord.gg/Q2Ynzp2Axs"
           class="underline"
         >on Discord</a>!
       </v-card-text>

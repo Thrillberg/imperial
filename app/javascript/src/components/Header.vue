@@ -156,7 +156,7 @@
       </v-list-item>
       <v-list-item
         title="Join on Discord"
-        href="https://discord.gg/VnxKwuQmg8"
+        href="https://discord.gg/Q2Ynzp2Axs"
       >
         <template #prepend>
           <discord-icon

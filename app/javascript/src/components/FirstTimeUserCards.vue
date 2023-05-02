@@ -31,7 +31,7 @@
           <v-card-subtitle>Jump right into a game or start your own!</v-card-subtitle>
           <v-card-text>
             <b>playimperial.club</b> supports both live and async games.
-            We also have <a href="https://discord.gg/VnxKwuQmg8">an active Discord community</a>.
+            We also have <a href="https://discord.gg/Q2Ynzp2Axs">an active Discord community</a>.
           </v-card-text>
           <v-card-actions>
             <v-btn
