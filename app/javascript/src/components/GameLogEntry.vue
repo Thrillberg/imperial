@@ -54,6 +54,26 @@
       </div>
     </div>
     <div
+      v-else-if="
+        ['bondPurchase', 'skipBondPurchase'].includes(action.type) && action.payload.nation
+      "
+      class="pt-1 d-flex justify-space-between"
+      :style="'background-color: ' + nationColors(action.payload.nation.value) + ';'"
+    >
+      <p>- {{ renderAction(action) }}</p>
+      <p>{{ timestampToString(timestamp) }}</p>
+    </div>
+    <div
+      v-else-if="
+        ['playerAutoSkipsBondPurchase'].includes(action.type) && action.payload.bondNation
+      "
+      class="pt-1 d-flex justify-space-between"
+      :style="'background-color: ' + nationColors(action.payload.bondNation.value) + ';'"
+    >
+      <p>- {{ renderAction(action) }}</p>
+      <p>{{ timestampToString(timestamp) }}</p>
+    </div>
+    <div
       v-else
       class="pt-1 d-flex justify-space-between"
     >
@@ -65,6 +85,7 @@
 
 <script>
 import { DateTime } from 'luxon';
+import { nationColors } from '../../../../nationColors';
 
 import {
   capitalize,
@@ -127,6 +148,12 @@ export default {
         case 'bondPurchase':
           return this.bondPurchaseAction(action.payload);
         case 'skipBondPurchase':
+          if (action.payload.nation) {
+            return `${action.payload.player} chose not to buy a bond from ${this.displayNationName(
+              action.payload.nation.value,
+            )}.`;
+          }
+
           return `${action.payload.player} chose not to buy a bond.`;
         case 'import':
           return this.importAction(action.payload);
@@ -280,6 +307,9 @@ export default {
       }
 
       return 'Automated';
+    },
+    nationColors(nation) {
+      return nationColors[nation];
     },
   },
 };
