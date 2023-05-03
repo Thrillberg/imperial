@@ -16,6 +16,7 @@ Rails.application.routes.draw do
   resources :clone_games, only: [:create]
   resources :exports, only: [:show]
   resources :imports, only: [:create]
+  resources :generate_csv, only: [:index], defaults: {format: :csv}
 
   namespace :api do
     resources :games, only: [:index, :create]
