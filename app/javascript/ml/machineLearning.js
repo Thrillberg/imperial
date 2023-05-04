@@ -1,9 +1,9 @@
-//import Imperial from "./imperial.js";
-const tf = require("@tensorflow/tfjs-node");
-const fs = require("fs");
-// import * as tf from "@tensorflow/tfjs-node";
-// import fs from "fs";
-//import * as tf from '@tensorflow/tfjs';
+// const tf = require("@tensorflow/tfjs-node");
+// const fs = require("fs");
+
+import * as tf from '@tensorflow/tfjs';
+
+import Imperial from '../Domain/ImperialGameCoordinator';
 
 export default class MachineLearning {
 // class MachineLearning {
@@ -21,10 +21,16 @@ export default class MachineLearning {
     // stateArray[9] = GB's power points
     // stateArray[10] = GE's power points
     // stateArray[11] = RU's power points
-    // stateArray[12] = Number of available bonds
-    // stateArray[13] = player1's cash
-    // stateArray[14] = player1's rawScore
-    // stateArray[15] = player1's bond count
+    // stateArray[12] = AH's flag count
+    // stateArray[13] = IT's flag count
+    // stateArray[14] = FR's flag count
+    // stateArray[15] = GB's flag count
+    // stateArray[16] = GE's flag count
+    // stateArray[17] = RU's flag count
+    // stateArray[18] = Number of available bonds
+    // stateArray[19] = player1's cash
+    // stateArray[20] = player1's rawScore
+    // stateArray[21] = player1's bond count
     let index = 0;
     for (const [, data] of game.nations) {
       stateArray[index] = this.rondelPositionIndex(data.rondelPosition);
@@ -32,6 +38,16 @@ export default class MachineLearning {
     }
     for (const [, data] of game.nations) {
       stateArray[index] = data.powerPoints;
+      index += 1;
+    }
+    for (const [nation] of game.nations) {
+      let flagCount = 0;
+      for (const [, provinceData] of game.provinces) {
+        if (provinceData.flag?.value === nation.value) {
+          flagCount += 1;
+        }
+      }
+      stateArray[index] = flagCount;
       index += 1;
     }
     stateArray[index] = game.availableBonds.size;
@@ -69,30 +85,39 @@ export default class MachineLearning {
 
   static async predictSample(sample) {
     const model = await tf.loadLayersModel(
-      //"../ml_models"
-      "file://app/javascript/lib/ml_models/model.json"
+      '../ml_models',
+      // 'file://app/javascript/lib/ml_models/model.json'
     );
-    let result = model.predict(tf.tensor(sample, [1,sample.length])).arraySync();
-    const maxResult = Math.max(...result[0])
-    const bucket = 10 - result[0].indexOf(maxResult)
-    return bucket
+    const result = model.predict(tf.tensor(sample, [1, sample.length])).arraySync();
+    console.log(result)
+    const maxResult = Math.max(...result[0]);
+    const bucket = 10 - result[0].indexOf(maxResult);
+    return bucket;
   }
 
   static async bestAction(availableActions, game, playerName) {
-    const nextGameStates = availableActions.map(action => {
-      game.tick(action)
-      return this.stateArray(game, playerName)
+    const nextGameStates = availableActions.map((action) => {
+      const clonedGame = new Imperial();
+      clonedGame.tickFromLog(game.log);
+      clonedGame.tick(action);
+      console.log(game, clonedGame)
+      return this.stateArray(clonedGame, playerName);
     });
-    let buckets = []
+    console.log(nextGameStates)
+    let buckets = [];
     for (const gameState of nextGameStates) {
-      const nextGameState = await this.predictSample(gameState)
-      buckets = buckets.concat(nextGameState)
-    };
-    const winningBucket = Math.max(...buckets)
-    const bucketIndex = buckets.indexOf(winningBucket)
+      const nextGameState = this.predictSample(gameState);
+      buckets = buckets.concat(nextGameState);
+    }
+    buckets = await Promise.all(buckets);
+    console.log(buckets)
+    const winningBucket = Math.max(...buckets);
+    const bucketIndex = buckets.indexOf(winningBucket);
     return availableActions[bucketIndex];
   }
 }
+
+
 
 function normalize(value, min, max) {
   if (min === undefined || max === undefined) {
@@ -114,11 +139,17 @@ const csvTransform = ({
   GBPowerPoints,
   GEPowerPoints,
   RUPowerPoints,
+  AHFlagCount,
+  ITFlagCount,
+  FRFlagCount,
+  GBFlagCount,
+  GEFlagCount,
+  RUFlagCount,
   NumberOfAvailableBonds,
-  Cash,
-  RawScore,
-  NumberOfOwnedBonds,
-  annotation
+  CurrentPlayerCash,
+  CurrentPlayerRawScore,
+  CurrentPlayerBondCount,
+  annotation,
 }) => {
   const xs = [
     normalize(AHRondelPosition, 0, 7),
@@ -133,13 +164,19 @@ const csvTransform = ({
     normalize(GBPowerPoints, 0, 25),
     normalize(GEPowerPoints, 0, 25),
     normalize(RUPowerPoints, 0, 25),
+    normalize(AHFlagCount, 0, 24),
+    normalize(ITFlagCount, 0, 24),
+    normalize(FRFlagCount, 0, 24),
+    normalize(GBFlagCount, 0, 24),
+    normalize(GEFlagCount, 0, 24),
+    normalize(RUFlagCount, 0, 24),
     normalize(NumberOfAvailableBonds, 0, 54),
-    normalize(Cash),
-    normalize(RawScore),
-    normalize(NumberOfOwnedBonds, 0, 54),
+    normalize(CurrentPlayerCash),
+    normalize(CurrentPlayerRawScore),
+    normalize(CurrentPlayerBondCount, 0, 54),
   ];
   return { xs, ys: annotation };
-}
+};
 
 const trainingData = tf.data.csv('file://app/javascript/ml/gameStates.csv')
   .map(csvTransform)
@@ -147,7 +184,7 @@ const trainingData = tf.data.csv('file://app/javascript/ml/gameStates.csv')
   .batch(100);
 
 const model = tf.sequential();
-model.add(tf.layers.dense({units: 250, activation: 'relu', inputShape: [16]}));
+model.add(tf.layers.dense({units: 250, activation: 'relu', inputShape: [22]}));
 model.add(tf.layers.dense({units: 175, activation: 'relu'}));
 model.add(tf.layers.dense({units: 150, activation: 'relu'}));
 model.add(tf.layers.dense({units: 11, activation: 'softmax'}));
@@ -174,4 +211,4 @@ async function run(epochCount, savePath) {
   }
 }
 
-run(6, 'file:///Users/eric/code/imperial/app/javascript/ml/ml_models')
+run(15, 'file:///Users/eric/code/imperial/app/javascript/ml/ml_models')

@@ -18,6 +18,9 @@ Rails.application.routes.draw do
   resources :imports, only: [:create]
   resources :generate_csv, only: [:index], defaults: {format: :csv}
 
+  get "/ml_models", to: "ml_models#index"
+  get "/weights.bin", to: "ml_weights#index"
+
   namespace :api do
     resources :games, only: [:index, :create]
     resources :ranked_games, only: [:index]

@@ -17,7 +17,7 @@ export default (game) => {
   }
   const nations = new Map();
   for (const [key, value] of game.nations) {
-    if (game.baseGame === 'imperial') {
+    if (game.baseGame === 'imperial' && key.value) {
       nations.set(Nation[key.value], { ...value });
     } else if (game.baseGame === 'imperial2030') {
       nations.set(Nation2030[key.value], { ...value });

@@ -3,7 +3,7 @@ class Snapshot < ActiveRecord::Base
 
   def to_csv
     state_as_array = []
-    16.times do
+    22.times do
       state_as_array << nil
     end
     parsed_state = JSON.parse(JSON.parse(state)["state"])
@@ -16,6 +16,11 @@ class Snapshot < ActiveRecord::Base
       nation.each do |key, value|
         state_as_array[nations_order.index(key)] = rondel_positions_order.index(value["rondelPosition"]) || -1
         state_as_array[nations_order.index(key) + 6] = value["powerPoints"]
+        flag_count = 0
+        parsed_state["provinces"].each do |province_key, province_value|
+          flag_count += 1 if province_value.dig("flag", "value") == key
+        end
+        state_as_array[nations_order.index(key) + 12] = flag_count
       end
     end
 
@@ -24,7 +29,7 @@ class Snapshot < ActiveRecord::Base
     JSON.parse(JSON.parse(state)["state"])["players"].each do |key, value|
       owned_bonds_count += value["bonds"].count
     end
-    state_as_array[12] = (9 * 6) - owned_bonds_count
+    state_as_array[18] = (9 * 6) - owned_bonds_count
 
     # Current player
     current_nation = parsed_state["currentNation"]
@@ -42,9 +47,9 @@ class Snapshot < ActiveRecord::Base
         current_player = value
       end
     end
-    state_as_array[13] = current_player["cash"]
-    state_as_array[14] = current_player["rawScore"] || 0
-    state_as_array[15] = current_player["bonds"].count
+    state_as_array[19] = current_player["cash"]
+    state_as_array[20] = current_player["rawScore"] || 0
+    state_as_array[21] = current_player["bonds"].count
 
     # Annotation
 
@@ -64,9 +69,9 @@ class Snapshot < ActiveRecord::Base
 
     game_snapshots = Snapshot.where(game: game).order(created_at: :asc)
     current_index = game_snapshots.index(self)
-    comparison_snapshot = game_snapshots[current_index + 10]
+    comparison_snapshot = game_snapshots[current_index + 50]
     if comparison_snapshot
-      current_score = state_as_array[13] + state_as_array[14]
+      current_score = state_as_array[19] + state_as_array[20]
 
       future_player = {}
       future_parsed_state = JSON.parse(JSON.parse(comparison_snapshot.state)["state"])
@@ -76,15 +81,15 @@ class Snapshot < ActiveRecord::Base
         end
       end
 
-      future_score = future_player["cash"] + (future_player["rawScore"] || 0)
+      future_score = (future_player["cash"] || 0) + (future_player["rawScore"] || 0)
       difference = future_score - current_score
-      state_as_array[16] = annotation(difference)
+      state_as_array[22] = annotation(difference)
     else
-      state_as_array[16] = 4 # default, neutral number
+      state_as_array[22] = 4 # default, neutral number
     end
 
     if game.winner == current_player_name
-      state_as_array[16] += 1
+      state_as_array[22] += 1
     end
 
     state_as_array.join(",")

@@ -483,6 +483,13 @@
                   Start Game
                 </v-btn>
                 <v-btn
+                  v-if="playersInGame.length < 6"
+                  color="primary"
+                  @click="addRandomBot"
+                >
+                  Add a Random Bot
+                </v-btn>
+                <v-btn
                   color="error"
                   class="mt-2"
                   block
@@ -597,6 +604,8 @@ import favicon3 from '../assets/favicon3.ico';
 
 import { Nation, Nation2030 } from '../../Domain/constants';
 import notification from '../assets/notification.mp3';
+
+import MachineLearning from '../../ml/machineLearning';
 
 export default {
   name: 'Game',
@@ -839,7 +848,7 @@ export default {
         this.controllingPlayerName = this.game.currentPlayerName;
         this.updateFavicon();
         this.audioNotification();
-        this.handleBotMoves();
+        this.handleBotMoves(gameData);
       }
 
       if (
@@ -870,12 +879,19 @@ export default {
       this.silenceAudio = false;
       this.loaded = true;
     },
-    handleBotMoves() {
-      this.gameData.players.forEach((player) => {
+    async handleBotMoves(gameData) {
+      let action;
+      for (const player of gameData.players) {
         if (player.name === this.game.currentPlayerName && player.isBot) {
-          this.tickWithAction(this.getRandomAction());
+          // this.tickWithAction(this.getRandomAction());
+          const actionsWithoutUndo = [...this.game.availableActions].filter((a) => a.type !== 'undo');
+          action = MachineLearning.bestAction(actionsWithoutUndo, this.game, player.name);
         }
-      });
+      }
+      if (action) {
+        action = await Promise.resolve(action);
+        this.tickWithAction(action);
+      }
     },
     getRandomAction() {
       const actionsArray = Array.from(this.game.availableActions);
