@@ -355,7 +355,9 @@ export default class ImperialGameCoordinator {
   toJSONWithLatestAction(action) {
     // We probably want to move to bulk of this function off to the this.#game object.
     // But state is currently split between this coordinator and the this.#game.object, so we'll keep this here for now.
-    this.tick(action);
+    if (action) {
+      this.tick(action);
+    }
 
     return this.toJSON();
   }

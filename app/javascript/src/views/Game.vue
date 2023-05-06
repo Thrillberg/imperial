@@ -949,7 +949,7 @@ export default {
         apiClient.saveSnapshot(
           this.$route.params.id,
           action,
-          this.game.toJSON(),
+          this.game.toJSONWithLatestAction(action),
           [...this.game.availableActions],
           this.game.log,
         );
