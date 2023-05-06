@@ -41,7 +41,15 @@
           />
         </v-card-title>
         <v-card-subtitle>
-          <div>${{ player.cash }}mil</div>
+          <div>
+            ${{ player.cash }}mil
+            <span
+              v-if="player.name === game.investorCardHolder"
+              class="font-weight-black"
+            >
+              + $2mil
+            </span>
+          </div>
           <div>{{ player.rawScore + player.cash }} VP</div>
         </v-card-subtitle>
       </v-card-item>
@@ -55,7 +63,10 @@
           :class="{ 'cursor-pointer': canTradeIn(bond) }"
           @click="applyToTradeIn(bond)"
         />
-        <div v-if="player.name === game.investorCardHolder">
+        <div
+          v-if="player.name === game.investorCardHolder"
+          class="font-weight-black"
+        >
           Investor Card
         </div>
         <div v-if="game.swissBanks.includes(player.name)">
