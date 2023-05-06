@@ -206,6 +206,25 @@ export default class Auction {
     }
     const nationIndex = nations.indexOf(game.currentNation);
     game.currentNation = nations[nationIndex + 1];
+
+    if (!game.investorCardHolder && game.variant !== 'withoutInvestorCard') {
+      let startingControllerIndex;
+      if (game.baseGame === 'imperial' || !game.baseGame) {
+        startingControllerIndex = game.order.indexOf(
+          game.nations.get(Nation.AH).controller,
+        );
+      } else if (game.baseGame === 'imperial2030') {
+        startingControllerIndex = game.order.indexOf(
+          game.nations.get(Nation2030.RU).controller,
+        );
+      } else if (game.baseGame === 'imperialAsia') {
+        startingControllerIndex = game.order.indexOf(
+          game.nations.get(NationAsia.CN).controller,
+        );
+      }
+
+      game.investorCardHolder = game.order[startingControllerIndex + 1] || game.order[0];
+    }
   }
 
   resetCurrentPlayer(game) {
@@ -230,23 +249,6 @@ export default class Auction {
       game.availableActions.add(rondelAction);
     }
     this.inAuction = false;
-    let startingControllerIndex;
-    if (game.baseGame === 'imperial' || !game.baseGame) {
-      startingControllerIndex = this.order.indexOf(
-        game.nations.get(Nation.AH).controller,
-      );
-    } else if (game.baseGame === 'imperial2030') {
-      startingControllerIndex = this.order.indexOf(
-        game.nations.get(Nation2030.RU).controller,
-      );
-    } else if (game.baseGame === 'imperialAsia') {
-      startingControllerIndex = this.order.indexOf(
-        game.nations.get(NationAsia.CN).controller,
-      );
-    }
-    if (game.variant !== 'withoutInvestorCard') {
-      game.investorCardHolder = this.order[startingControllerIndex + 1] || this.order[0];
-    }
   }
 
   static totalInvestmentInNation(player, nation, game) {
