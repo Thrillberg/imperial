@@ -393,14 +393,6 @@
               </v-col>
             </v-row>
             <v-row>
-              <Rondel
-                v-if="!game.winner"
-                :game="game"
-                :name="profile.username"
-                :paused="paused"
-                :hosting-this-game="hostingThisGame"
-                @tick-with-action="tickWithAction"
-              />
               <v-col>
                 <ControlPanel
                   :game="game"
@@ -422,6 +414,16 @@
                   @toggle-trade-in="toggleTradeIn"
                 />
               </v-col>
+            </v-row>
+            <v-row>
+              <Rondel
+                v-if="!game.winner"
+                :game="game"
+                :name="profile.username"
+                :paused="paused"
+                :hosting-this-game="hostingThisGame"
+                @tick-with-action="tickWithAction"
+              />
             </v-row>
           </v-sheet>
           <div v-if="game.winner">
