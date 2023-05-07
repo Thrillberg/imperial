@@ -44,7 +44,7 @@
           <div>
             ${{ player.cash }}mil
             <span
-              v-if="player.name === game.investorCardHolder"
+              v-if="player.name === game.investorCardHolder && !purchasingBond"
               class="font-weight-black"
             >
               + $2mil
