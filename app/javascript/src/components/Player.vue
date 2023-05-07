@@ -2,7 +2,7 @@
   <v-col>
     <v-card
       :color="player.name === currentPlayer ? 'primary' : ''"
-      style="width: max-content"
+      style="width: 280px"
     >
       <v-card-item>
         <v-card-title>
@@ -53,7 +53,7 @@
           <div>{{ player.rawScore + player.cash }} VP</div>
         </v-card-subtitle>
       </v-card-item>
-      <v-card-text>
+      <v-card-text class="overflow-auto">
         <Bond
           v-for="bond of sortedBonds(player.bonds)"
           :key="bond.nation.value + bond.cost"
