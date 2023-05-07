@@ -44,7 +44,7 @@
           <div>
             ${{ player.cash }}mil
             <span
-              v-if="player.name === game.investorCardHolder && !purchasingBond"
+              v-if="player.name === game.investorCardHolder && !someoneIsPurchasingABond"
               class="font-weight-black"
             >
               + $2mil
@@ -103,6 +103,15 @@ export default {
     turnIndex: { type: Number, default: 0 },
   },
   emits: ['toggleTradeIn', 'cancelApplyToTradeIn'],
+  computed: {
+    someoneIsPurchasingABond() {
+      const purchasingBond = this.game.availableActions.size > 0
+        && Array.from(this.game.availableActions).every(
+          (action) => action.type === 'bondPurchase' || action.type === 'skipBondPurchase' || action.type === 'undo',
+        );
+      return purchasingBond;
+    },
+  },
   methods: {
     applyToTradeIn(bond) {
       if (this.canTradeIn(bond)) {
