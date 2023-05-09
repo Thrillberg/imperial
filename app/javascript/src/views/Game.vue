@@ -984,7 +984,8 @@ export default {
         const provincesWithProduction = [];
         const homeProvinces = this.game.board.byNation.get(action.payload.nation);
         for (const homeProvince of homeProvinces) {
-          if (this.game.provinces.get(homeProvince).factory) {
+          const provinceIsOccupied = this.game.provinceIsOccupied(homeProvince, action.payload.nation);
+          if (this.game.provinces.get(homeProvince).factory && !provinceIsOccupied) {
             provincesWithProduction.push(homeProvince);
           }
         }
