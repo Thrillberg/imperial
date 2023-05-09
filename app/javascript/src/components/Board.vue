@@ -89,11 +89,13 @@
             :factory="factory(name)"
             :factory-type="factoryType(name)"
             :province-with-fight="provinceWithFight === (name.toString().replace(/\.*\s/gm, '').toLowerCase())"
+            :province-with-production="provincesWithProduction.includes(name.toString().replace(/\.*\s/gm, '').toLowerCase())"
             :adjustments="config.adjustments[name]"
             :nation-color="config.nationColors[dot(name)]"
             :is-impassable="isImpassable(name)"
             :font-size="game.baseGame === 'imperialAsia' ? '13': '8'"
             @fight-resolved="$emit('fightResolved')"
+            @production-resolved="$emit('productionResolved')"
           />
         </g>
       </svg>
@@ -115,10 +117,11 @@ export default {
     unitsToImport: { type: Array, default: () => [] },
     paused: Boolean,
     provinceWithFight: { type: String, default: '' },
+    provincesWithProduction: { type: Array, default: () => [] },
     selectProvince: { type: Function, default: () => {} },
     validProvinces: { type: Array, default: () => [] },
   },
-  emits: ['fightResolved'],
+  emits: ['fightResolved', 'productionResolved'],
   methods: {
     armies(province) {
       const armies = [];

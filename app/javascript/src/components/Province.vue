@@ -124,8 +124,9 @@ export default {
     armies: { type: Array, default: () => [] },
     fleets: { type: Array, default: () => [] },
     provinceWithFight: Boolean,
+    provinceWithProduction: Boolean,
   },
-  emits: ['fightResolved'],
+  emits: ['fightResolved', 'productionResolved'],
   data: () => ({
     mounted: false,
     originalFill: '',
@@ -173,6 +174,16 @@ export default {
         iterations: 1,
       });
       this.$emit('fightResolved');
+    }
+    if (this.provinceWithProduction) {
+      this.$refs.province.children[0].children[0].animate([
+        { fill: '#FFD700' },
+        { fill: this.originalFill },
+      ], {
+        duration: 2000,
+        iterations: 1,
+      });
+      this.$emit('productionResolved');
     }
   },
   methods: {

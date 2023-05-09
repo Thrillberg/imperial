@@ -222,10 +222,12 @@
                 :paused="paused"
                 :profile="profile"
                 :province-with-fight="provinceWithFight"
+                :provinces-with-production="provincesWithProduction"
                 :select-province="selectProvince"
                 :units-to-import="importPlacements"
                 :valid-provinces="validProvinces()"
                 @fight-resolved="resolveFight"
+                @production-resolved="resolveProduction"
               />
               <TimeTravelButtons
                 :game="game"
@@ -315,10 +317,12 @@
                   :paused="paused"
                   :profile="profile"
                   :province-with-fight="provinceWithFight"
+                  :provinces-with-production="provincesWithProduction"
                   :select-province="selectProvince"
                   :units-to-import="importPlacements"
                   :valid-provinces="validProvinces()"
                   @fight-resolved="resolveFight"
+                  @production-resolved="resolveProduction"
                 />
                 <TimeTravelButtons
                   :game="game"
@@ -376,10 +380,12 @@
                   :paused="paused"
                   :profile="profile"
                   :province-with-fight="provinceWithFight"
+                  :provinces-with-production="provincesWithProduction"
                   :select-province="selectProvince"
                   :units-to-import="importPlacements"
                   :valid-provinces="validProvinces()"
                   @fight-resolved="resolveFight"
+                  @production-resolved="resolveProduction"
                 />
                 <TimeTravelButtons
                   :game="game"
@@ -447,10 +453,12 @@
                 :paused="paused"
                 :profile="profile"
                 :province-with-fight="provinceWithFight"
+                :provinces-with-production="provincesWithProduction"
                 :select-province="selectProvince"
                 :units-to-import="importPlacements"
                 :valid-provinces="validProvinces()"
                 @fight-resolved="resolveFight"
+                @production-resolved="resolveProduction"
               />
             </v-col>
             <v-col align-self="center">
@@ -665,6 +673,7 @@ export default {
     playerDialog: false,
     poppedTurns: [],
     provinceWithFight: '',
+    provincesWithProduction: [],
     rulesDialog: false,
     rulesDialogFromSidebar: false,
     silenceAudio: true,
@@ -957,6 +966,7 @@ export default {
         );
         apiClient.tick(this.$route.params.id, action);
         this.displayFight(action);
+        this.displayProduction(action);
       }
     },
     displayFight(action) {
@@ -966,6 +976,23 @@ export default {
     },
     resolveFight() {
       this.provinceWithFight = '';
+    },
+    displayProduction(action) {
+      if (
+        action.type === 'rondel' && (action.payload.slot === 'production1' || action.payload.slot === 'production2')
+      ) {
+        const provincesWithProduction = [];
+        const homeProvinces = this.game.board.byNation.get(action.payload.nation);
+        for (const homeProvince of homeProvinces) {
+          if (this.game.provinces.get(homeProvince).factory) {
+            provincesWithProduction.push(homeProvince);
+          }
+        }
+        this.provincesWithProduction = provincesWithProduction;
+      }
+    },
+    resolveProduction() {
+      this.provincesWithProduction = [];
     },
     makeImportTypeChoice(type) {
       this.importPlacements.push(
