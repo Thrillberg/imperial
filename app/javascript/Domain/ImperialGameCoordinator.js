@@ -199,9 +199,7 @@ export default class ImperialGameCoordinator {
 
     this.availableActions = new Set();
     if (this.log.length > 0 && !this.winner) {
-      if (this.log.slice(-1)[0].type !== 'undo') {
-        this.availableActions.add(Action.undo({ player: this.currentPlayerName }));
-      }
+      this.availableActions.add(Action.undo({ player: this.currentPlayerName }));
     }
     this.log.push(action);
     const annotatedAction = { playerName: this.currentPlayerName, ...action };

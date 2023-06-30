@@ -4635,7 +4635,7 @@ describe('imperial', () => {
             { name: 'b', nation: Nation.IT },
             { name: 'c', nation: Nation.FR },
           ],
-          edges: [],
+          edges: [['a', 'b']],
         });
 
         const game = new Imperial(board);
@@ -4674,6 +4674,26 @@ describe('imperial', () => {
         game.tick(Action.undo({ player: 'player1' }));
 
         expect(game.currentNation).toEqual(Nation.FR);
+        expect(game.currentPlayerName).toEqual('player1');
+      });
+
+      test('undo after maneuver works', () => {
+        const game = newGame();
+        game.units.get(Nation.AH).get('a').armies = 1;
+
+        game.tick(
+          Action.rondel({ nation: Nation.AH, cost: 0, slot: 'maneuver1' }),
+        );
+        game.tick(
+          Action.maneuver({ origin: 'a', destination: 'b' }),
+        );
+        game.tick(Action.undo({ player: 'player1' }));
+        game.tick(
+          Action.rondel({ nation: Nation.AH, cost: 0, slot: 'production1' }),
+        );
+        game.tick(Action.undo({ player: 'player1' }));
+
+        expect(game.currentNation).toEqual(Nation.AH);
         expect(game.currentPlayerName).toEqual('player1');
       });
 
