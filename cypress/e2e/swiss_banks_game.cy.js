@@ -69,14 +69,13 @@ describe('Swiss banks', () => {
     cy.get('#import').click();
     cy.contains('Undo').click();
     cy.get('#import').click();
-    // TODO: Fix the below errors. They arise from a very unrealistic game but should be handled nonetheless.
-    // cy.contains('Undo').click();
-    // cy.get('#import').click();
-    // cy.contains('Undo').click();
-    // cy.get('#import').click();
-    // cy.contains('Force investor').click();
-    // cy.contains('Do not buy a bond').click();
-    // cy.contains('Do not buy a bond').click();
-    // cy.contains('Do not buy a bond').click();
+    cy.contains('Undo').click();
+    cy.get('#import').click();
+    cy.contains('Undo').click();
+    cy.get('#import').click();
+    cy.contains('Force investor').click();
+    cy.get('.v-card-actions').contains('Do not buy a bond').click();
+    cy.get('.v-card-actions').contains('Do not buy a bond').click();
+    cy.get('.v-card-actions').contains('Do not buy a bond').click();
   });
 });
