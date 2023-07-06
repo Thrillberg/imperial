@@ -65,6 +65,7 @@ export default (game) => {
     lastMoveAt: game.last_move_at,
     clonedFromGame: game.cloned_from_game,
     isPublic: game.is_public,
+    timeCommitment: game.time_commitment,
     latestState,
   };
 };

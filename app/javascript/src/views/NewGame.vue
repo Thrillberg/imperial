@@ -72,6 +72,25 @@
               :value="false"
             />
           </v-radio-group>
+          <b>What level of time commitment should players expect? </b>
+          <v-radio-group v-model="timeCommitment">
+            <v-radio
+              label="Infinite (no speed commitment)"
+              :value="0"
+            />
+            <v-radio
+              label="Slow Async (1 move every other day)"
+              :value="1"
+            />
+            <v-radio
+              label="Async (1 move per day)"
+              :value="2"
+            />
+            <v-radio
+              label="Live, Fast Async ( 2+ moves per day)"
+              :value="3"
+            />
+          </v-radio-group>
           <b>Do You Want a Discord Channel to Automatically be Created?</b>
           (Optional)
           <v-radio-group v-model="createDiscordChannel">
@@ -119,6 +138,7 @@ export default {
       baseGame: 'imperial',
       createDiscordChannel: false,
       isGamePublic: true,
+      timeCommitment: 0,
       variant: 'standard',
     };
   },

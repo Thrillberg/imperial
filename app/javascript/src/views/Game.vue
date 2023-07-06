@@ -481,6 +481,10 @@
                   <b>Variant:</b>
                   <span>{{ variant(gameData.variant) }}</span>
                 </p>
+                <p>
+                  <b>Time Commitment:</b>
+                  <span>{{ timeCommitment(gameData.timeCommitment) }}</span>
+                </p>
                 <v-btn
                   v-if="playersInGame.length === 1"
                   color="primary-darken-1"
@@ -757,12 +761,12 @@ export default {
     startGame(gameData) {
       const playerNames = this.playerNames(gameData);
       let players = this.shuffle(playerNames);
-      const { baseGame, variant, soloMode } = gameData;
+      const { baseGame, variant, soloMode, timeCommitment } = gameData;
       if (variant === 'standard') {
         players = assignNations(players, baseGame);
       }
       const action = Action.initialize({
-        players, soloMode, variant, baseGame,
+        players, soloMode, variant, baseGame, timeCommitment,
       });
       apiClient.tick(gameData.id, action);
     },
@@ -1126,6 +1130,18 @@ export default {
         return 'Without Investor Card (with auction, no investor card)';
       }
 
+      return '';
+    },
+    timeCommitment(timeCommitment) {
+      if (timeCommitment === 'infinite') {
+        return 'Infinite (no speed commitment)';
+      } if (timeCommitment === 'slow') {
+        return 'Slow Async (1 every other day)';
+      } if (timeCommitment === 'async') {
+        return 'Async (1 move per day)';
+      } if (timeCommitment === 'live') {
+        return 'Live, Fast Async (2+ moves per day)';
+      }
       return '';
     },
     cloneGame() {

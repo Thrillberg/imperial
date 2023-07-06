@@ -99,11 +99,11 @@ class APIClient {
     );
   }
 
-  openGame(id, baseGame, variant, createDiscordChannel, isGamePublic) {
+  openGame(id, baseGame, variant, createDiscordChannel, isGamePublic, timeCommitment) {
     return fetch('/api/games', {
       method: 'POST',
       body: JSON.stringify({
-        id, base_game: baseGame, variant, create_discord_channel: createDiscordChannel, is_game_public: isGamePublic,
+        id, base_game: baseGame, variant, create_discord_channel: createDiscordChannel, is_game_public: isGamePublic, time_commitment: timeCommitment,
       }),
       headers: { 'Content-Type': 'application/json' },
     })

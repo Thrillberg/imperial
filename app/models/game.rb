@@ -1,6 +1,7 @@
 class Game < ActiveRecord::Base
   enum base_game: {imperial: 0, imperial2030: 1, imperialAsia: 2, imperialEurope2030: 3}
   enum variant: {standard: 0, auction: 1, withoutInvestorCard: 2}
+  enum time_commitment: {infinite: 0, slowAsync: 1, async: 2, live: 3}
 
   has_many :actions, dependent: :destroy
   has_many :players, dependent: :destroy
@@ -66,6 +67,7 @@ class Game < ActiveRecord::Base
       last_move_at: last_move_at,
       cloned_from_game: cloned_from_game&.id,
       is_public: is_public,
+      time_commitment: time_commitment,
       latest_state: parsed_latest_state
     }
   end
