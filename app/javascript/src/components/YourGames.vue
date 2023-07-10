@@ -22,7 +22,6 @@
             <v-card
               :title="game.name + (game.players.length === 1 ? ' (solo)' : '')"
               :subtitle="currentPlayer(game)"
-              :text="timeCommitment(game.timeCommitment)"
               :color="backgroundColor(isHovering, nationColors(JSON.parse(game.latestState).currentNation))"
               v-bind="props"
             >
@@ -58,6 +57,8 @@
                       height="20"
                       class="mx-1"
                     />
+                    <br>
+                    <span><v-icon icon="mdi-timer-sand" />Time Commitment: {{ timeCommitment(game.timeCommitment) }}</span>
                   </v-col>
                 </v-row>
               </v-card-text>
