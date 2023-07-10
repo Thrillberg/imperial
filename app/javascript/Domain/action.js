@@ -63,7 +63,7 @@ export default {
   investorCardHolderChanged: makeAction('investorCardHolderChanged', ['oldInvestorCardHolder', 'newInvestorCardHolder']),
   nationControllerChanged: makeAction('nationControllerChanged', ['oldNationController', 'newNationController', 'nation']),
   // The remaining actions are for the main log
-  initialize: makeAction('initialize', ['players', 'soloMode', 'variant', 'baseGame']),
+  initialize: makeAction('initialize', ['players', 'soloMode', 'variant', 'baseGame', 'timeCommitment']),
   blockCanal: makeAction('blockCanal', []),
   bondPurchase: makeAction('bondPurchase', ['nation', 'player', 'cost', 'tradeInValue']),
   buildFactory: makeAction('buildFactory', ['province', 'player', 'nationCosts', 'playerCosts']),
