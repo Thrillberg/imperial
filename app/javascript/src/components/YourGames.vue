@@ -22,6 +22,7 @@
             <v-card
               :title="game.name + (game.players.length === 1 ? ' (solo)' : '')"
               :subtitle="currentPlayer(game)"
+              :text="timeCommitment(game.timeCommitment)"
               :color="backgroundColor(isHovering, nationColors(JSON.parse(game.latestState).currentNation))"
               v-bind="props"
             >
@@ -150,6 +151,18 @@ export default {
       }
 
       return players;
+    },
+    timeCommitment(timeCommitment) {
+      if (timeCommitment === 'infinite') {
+        return 'Infinite (no speed commitment)';
+      } if (timeCommitment === 'slow') {
+        return 'Slow Async (1 every other day)';
+      } if (timeCommitment === 'async') {
+        return 'Async (1 move per day)';
+      } if (timeCommitment === 'live') {
+        return 'Live, Fast Async (2+ moves per day)';
+      }
+      return '';
     },
     toTime(date) {
       return toTime(date);
