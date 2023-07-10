@@ -52,6 +52,7 @@
         />
       </template>
       <v-list-item-title>{{ 'Turn ' + index }}</v-list-item-title>
+      Time Commitment: {{ action.payload.timeCommitment }}
       <b>{{ action.playerName }}</b>
       <div class="d-flex justify-space-between">
         <p>{{ rondelAction(action.payload) }}</p>
