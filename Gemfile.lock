@@ -128,7 +128,7 @@ GEM
       coderay (~> 1.1)
       method_source (~> 1.0)
     psych (3.3.4)
-    puma (4.3.12)
+    puma (5.6.7)
       nio4r (~> 2.0)
     racc (1.6.2)
     rack (2.2.7)
@@ -265,7 +265,7 @@ DEPENDENCIES
   pg (>= 0.18, < 2.0)
   pry
   psych (< 4)
-  puma (~> 4.3)
+  puma (~> 5.6)
   rack-cors
   railties (~> 7.0.4.3)
   redis (~> 4.0)

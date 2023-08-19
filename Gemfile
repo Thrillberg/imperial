@@ -12,7 +12,7 @@ gem "net-pop", require: false
 gem "net-smtp", require: false
 gem "pg", ">= 0.18", "< 2.0"
 gem "psych", "< 4"
-gem "puma", "~> 4.3"
+gem "puma", "~> 5.6"
 gem "rack-cors"
 
 # rails without actionmailbox because of memory bloat
