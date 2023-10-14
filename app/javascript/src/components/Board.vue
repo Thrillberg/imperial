@@ -72,6 +72,7 @@
             :nation-color="config.nationColors[dot(name)]"
             :is-impassable="isImpassable(name)"
             :font-size="game.baseGame === 'imperialAsia' ? '13': '8'"
+            :config="config"
             @fight-resolved="$emit('fightResolved')"
           />
           <Province
@@ -94,6 +95,7 @@
             :nation-color="config.nationColors[dot(name)]"
             :is-impassable="isImpassable(name)"
             :font-size="game.baseGame === 'imperialAsia' ? '13': '8'"
+            :config="config"
             @fight-resolved="$emit('fightResolved')"
             @production-resolved="$emit('productionResolved')"
           />
@@ -132,7 +134,7 @@ export default {
             for (let i = 0; i < provinceUnits.armies; i += 1) {
               let onForeignLand = false;
               for (const [homeNation, provinces] of this.game.board.byNation) {
-                if (homeNation?.value !== nation && provinces.has(normalizedProvince)) {
+                if (homeNation && homeNation.value !== nation && provinces.has(normalizedProvince)) {
                   onForeignLand = true;
                 }
               }
@@ -229,7 +231,7 @@ export default {
               if (fleetNation === 'CN' && this.game.baseGame === 'imperialAsia') {
                 fleetNation = 'CNAsia';
               }
-              fleets.push(fleetNation);
+              fleets.push({ nation: fleetNation });
             }
           }
         }
