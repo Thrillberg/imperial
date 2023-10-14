@@ -5,7 +5,10 @@
     @mouseover="showFactory()"
     @mouseleave="hideFactory()"
   >
-    <component :is="province" />
+    <component
+      :is="province"
+      :style="!isValid ? {'filter': 'saturate(0.6)'} : {}"
+    />
     <text
       v-if="mounted && !isImpassable"
       :font-size="fontSize"
@@ -66,15 +69,59 @@
       width="21"
       height="11"
     />
+    <circle
+      v-for="(nation, index) in availableFleets()"
+      :key="nation + index + 'FBox'"
+      r="6.75"
+      :cx="flagX(index) + (adjustments?.flagFleetX || 0) + 10.5"
+      :cy="flagY(index) + (adjustments?.flagFleetY || 0) + 15.5"
+      fill="none"
+      :fill-opacity="0"
+      :stroke="nationColor ? nationColor : getNationColor()"
+      :stroke-width="1.75"
+    />
+    <circle
+      v-for="(nation, index) in availableFleets()"
+      :key="nation + index + 'FOutline'"
+      r="7.75"
+      :cx="flagX(index) + (adjustments?.flagFleetX || 0) + 10.5"
+      :cy="flagY(index) + (adjustments?.flagFleetY || 0) + 15.5"
+      fill="none"
+      :fill-opacity="0"
+      stroke="black"
+      :stroke-width="0.5"
+    />
     <Flag
       v-for="(army, index) in availableArmies()"
       :key="army.nation + index + 'A'"
       :nation="army.nation"
-      :friendly="army.friendly"
       :x="flagX(index) + (adjustments?.flagArmyX || 0)"
       :y="flagY(index) + (adjustments?.flagArmyY || 0)"
       width="13"
       height="8"
+    />
+    <rect
+      v-for="(army, index) in availableArmies()"
+      :key="army.nation + index + 'ABox'"
+      width="13.5"
+      height="10"
+      :x="flagX(index) + (adjustments?.flagArmyX || 0) - 0.5"
+      :y="flagY(index) + (adjustments?.flagArmyY || 0) - 1"
+      fill="none"
+      :fill-opacity="0"
+      :stroke="nationColor ? nationColor : getNationColor(army)"
+      :stroke-width="1.75"
+    />
+    <rect
+      v-for="(army, index) in availableArmies()"
+      :key="army.nation + index + 'AOutline'"
+      width="15.5"
+      height="12"
+      :x="flagX(index) + (adjustments?.flagArmyX || 0) - 1.5"
+      :y="flagY(index) + (adjustments?.flagArmyY || 0) - 2"
+      fill="none"
+      stroke="black"
+      :stroke-width="0.5"
     />
     <Flag
       v-for="(army, index) in importingArmies"
@@ -229,6 +276,18 @@ export default {
     },
     hideFactory() {
       this.tempFactory = '';
+    },
+    getNationColor(army) {
+      // A hacky way to get the province's color when it is a home province of a nation
+      if (army?.friendly && army?.onForeignLand) {
+        return '#32CD32';
+      }
+
+      if (army?.onForeignLand) {
+        return 'red';
+      }
+
+      return this.$refs.province.children[0].children[0].attributes.fill.value;
     },
   },
 };

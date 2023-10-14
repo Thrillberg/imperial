@@ -136,12 +136,11 @@ export default {
                   onForeignLand = true;
                 }
               }
-              const friendly = provinceUnits.friendly && onForeignLand;
               let armyNation = nation;
               if (armyNation === 'CN' && this.game.baseGame === 'imperialAsia') {
                 armyNation = 'CNAsia';
               }
-              armies.push({ nation: armyNation, friendly });
+              armies.push({ nation: armyNation, friendly: provinceUnits.friendly, onForeignLand });
             }
           }
         }

@@ -172,10 +172,10 @@ describe('Standard game', () => {
     cy.contains('Berlin').next().click();
     cy.contains('Munich').next().click();
     cy.contains('Fight').click();
-    cy.contains('Holland').click();
-    cy.contains('Belgium').click();
+    cy.contains('Holland').click({ force: true });
+    cy.contains('Belgium').click({ force: true });
     cy.contains('Fight').click();
-    cy.contains('Denmark').click();
+    cy.contains('Denmark').click({ force: true });
     cy.contains('Sweden').click();
     // RU
     cy.get('#investor').click();

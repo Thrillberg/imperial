@@ -10,15 +10,6 @@
       :fleet="fleet"
       :filter="activeFilter"
     />
-    <rect
-      v-if="friendly"
-      :x="x + 3"
-      :y="y + 2"
-      :width="7"
-      :height="4"
-      fill="white"
-      stroke="none"
-    />
   </g>
 </template>
 
@@ -32,7 +23,6 @@ export default {
     fleet: Boolean,
     height: { type: String, default: '' },
     nation: { type: String, default: '' },
-    friendly: Boolean,
     transform: { type: String, default: '' },
     width: { type: String, default: '' },
     x: { type: Number, default: 0 },
