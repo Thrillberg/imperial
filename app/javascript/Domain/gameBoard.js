@@ -1,4 +1,5 @@
 import MapWithDefault from './mapWithDefault';
+import { memoizePath } from './memo';
 
 export default class GameBoard {
   constructor({ nodes, edges }) {
@@ -7,6 +8,9 @@ export default class GameBoard {
 
     this.setupGraph(nodes);
     this.setImmediateNeighbors(edges);
+
+    this.unmemoizedPathsFrom = this.unmemoizedPathsFrom.bind(this);
+    this.pathsFrom = memoizePath(this.unmemoizedPathsFrom, this);
   }
 
   setupGraph(nodes) {
@@ -48,7 +52,7 @@ export default class GameBoard {
     return [...new Set(allPaths.map((path) => path[path.length - 1]))];
   }
 
-  pathsFrom(
+  unmemoizedPathsFrom(
     {
       origin,
       nation,
@@ -58,11 +62,12 @@ export default class GameBoard {
       hasMoved = false,
     },
     currentPath,
+    graph = this.graph,
     paths = [],
   ) {
     this.validate(origin);
 
-    for (const province of this.graph.get(origin).neighbors) {
+    for (const province of graph.get(origin).neighbors) {
       // Add all immediate neighbors
       if (currentPath.includes(province)) {
         // Don't repeat ourselves
@@ -73,38 +78,39 @@ export default class GameBoard {
 
       if (
         !isFleet
-        && !this.graph.get(province).isOcean
+        && !graph.get(province).isOcean
         && !occupiedHomeProvinces.includes(province)
-        && this.graph.get(province).nation === nation
+        && graph.get(province).nation === nation
       ) {
         if (currentPath[currentPath.length - 1] === province) {
           paths.push(currentPath);
         } else {
           paths.push(newPath);
         }
-        this.pathsFrom(
+        this.unmemoizedPathsFrom(
           {
             origin: province,
             nation,
             isFleet,
             friendlyFleets,
             occupiedHomeProvinces,
-            hasMoved: this.graph.get(origin).nation === nation ? hasMoved : true,
+            hasMoved: graph.get(origin).nation === nation ? hasMoved : true,
           },
           newPath,
+          graph,
           paths,
         );
       }
 
       if (
         !isFleet
-        && this.graph.get(province).isOcean
+        && graph.get(province).isOcean
         && friendlyFleets.has(province)
         && !hasMoved
       ) {
         // Army convoying over ocean
         paths.push(newPath);
-        this.pathsFrom(
+        this.unmemoizedPathsFrom(
           {
             origin: province,
             nation,
@@ -114,30 +120,31 @@ export default class GameBoard {
             hasMoved: false,
           },
           newPath,
+          graph,
           paths,
         );
-      } else if (isFleet && this.graph.get(province).isOcean) {
+      } else if (isFleet && graph.get(province).isOcean) {
         // Fleet maneuvering to the ocean
         paths.push(newPath);
       } else if (
         !isFleet
-        && !this.graph.get(province).isOcean
-        && this.graph.get(origin).nation === nation
-        && this.graph.get(province).nation !== nation
+        && !graph.get(province).isOcean
+        && graph.get(origin).nation === nation
+        && graph.get(province).nation !== nation
         && !hasMoved
       ) {
         // Army maneuvering from its own unoccupied land to foreign land
         paths.push(newPath);
       } else if (
         !isFleet
-        && !this.graph.get(province).isOcean
-        && this.graph.get(province).nation === nation
+        && !graph.get(province).isOcean
+        && graph.get(province).nation === nation
         && occupiedHomeProvinces.includes(province)
         && !hasMoved
       ) {
         // Army maneuvering to its own occupied land
         paths.push(newPath);
-      } else if (!isFleet && !this.graph.get(province).isOcean && !hasMoved) {
+      } else if (!isFleet && !graph.get(province).isOcean && !hasMoved) {
         // Army maneuvering to foreign land
         paths.push(newPath);
       }

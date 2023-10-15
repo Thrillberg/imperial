@@ -65,4 +65,45 @@ const memoize = (fn) => {
   return (...args) => memory.getOrInsert(args, fn, args);
 };
 
+export const memoizePath = (fn) => {
+  const cache = {};
+  return (...args) => {
+    const {
+      origin,
+      nation,
+      isFleet,
+      friendlyFleets,
+      occupiedHomeProvinces,
+      hasMoved,
+    } = args[0];
+    const currentPath = args[1];
+    const graph = args[2];
+    const paths = args[3];
+    let stringifiedArgs = JSON.stringify(origin)
+      + JSON.stringify(nation)
+      + JSON.stringify(isFleet)
+      + JSON.stringify([...friendlyFleets])
+      + JSON.stringify(occupiedHomeProvinces)
+      + JSON.stringify(hasMoved)
+      + JSON.stringify(currentPath)
+      + JSON.stringify(graph);
+    if (paths) {
+      stringifiedArgs += JSON.stringify(paths);
+    }
+    if (stringifiedArgs in cache) {
+      return cache[stringifiedArgs];
+    }
+    const result = fn({
+      origin,
+      nation,
+      isFleet,
+      friendlyFleets,
+      occupiedHomeProvinces,
+      hasMoved,
+    }, currentPath, graph, paths);
+    cache[stringifiedArgs] = result;
+    return result;
+  };
+};
+
 export default memoize;

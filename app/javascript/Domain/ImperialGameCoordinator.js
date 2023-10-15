@@ -1160,9 +1160,10 @@ export default class ImperialGameCoordinator {
           nation: this.currentNation,
           isFleet: false,
           friendlyFleets,
-          isOccupied: false,
+          occupiedHomeProvinces: this.occupiedHomeProvinces(this.currentNation),
         },
         [origin],
+        this.board.graph,
       );
       const validPaths = paths.filter((path) => path[path.length - 1] === destination) || [];
       const ourPath = validPaths.sort((pathA, pathB) => (
