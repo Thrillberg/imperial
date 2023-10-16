@@ -155,7 +155,7 @@ const nodes = [
     nation: NationAsia.GB, factoryType: 'shipyard', name: 'bengal', egress: 'bayofbengal',
   },
   {
-    nation: NationAsia.GB, factoryType: 'shipyard', name: 'bombay', egress: 'arabaiansea',
+    nation: NationAsia.GB, factoryType: 'shipyard', name: 'bombay', egress: 'arabiansea',
   },
   {
     nation: NationAsia.GE,
