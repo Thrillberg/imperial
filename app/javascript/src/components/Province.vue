@@ -59,68 +59,6 @@
       stroke-width="2px"
       :fill-opacity="tempFactory ? 0.3 : 1"
     />
-    <g
-      v-for="(fleet, index) in availableFleets()"
-      :key="fleet.nation + index + 'F'"
-    >
-      <Flag
-        :nation="fleet.nation"
-        :x="flagX(index) + (adjustments?.flagFleetX || 0)"
-        :y="flagY(index) + 10 + (adjustments?.flagFleetY || 0)"
-        :fleet="true"
-        width="21"
-        height="11"
-      />
-      <circle
-        r="6.75"
-        :cx="flagX(index) + (adjustments?.flagFleetX || 0) + 10.5"
-        :cy="flagY(index) + (adjustments?.flagFleetY || 0) + 15.5"
-        fill="none"
-        :fill-opacity="0"
-        :stroke="getNationColor(fleet)"
-        :stroke-width="1.75"
-      />
-      <circle
-        r="7.75"
-        :cx="flagX(index) + (adjustments?.flagFleetX || 0) + 10.5"
-        :cy="flagY(index) + (adjustments?.flagFleetY || 0) + 15.5"
-        fill="none"
-        :fill-opacity="0"
-        stroke="black"
-        :stroke-width="0.5"
-      />
-    </g>
-    <g
-      v-for="(army, index) in availableArmies()"
-      :key="army.nation + index + 'A'"
-    >
-      <Flag
-        :nation="army.nation"
-        :x="flagX(index) + (adjustments?.flagArmyX || 0)"
-        :y="flagY(index) + (adjustments?.flagArmyY || 0)"
-        width="13"
-        height="8"
-      />
-      <rect
-        width="13.5"
-        height="10"
-        :x="flagX(index) + (adjustments?.flagArmyX || 0) - 0.5"
-        :y="flagY(index) + (adjustments?.flagArmyY || 0) - 1"
-        fill="none"
-        :fill-opacity="0"
-        :stroke="getNationColor(army)"
-        :stroke-width="1.75"
-      />
-      <rect
-        width="15.5"
-        height="12"
-        :x="flagX(index) + (adjustments?.flagArmyX || 0) - 1.5"
-        :y="flagY(index) + (adjustments?.flagArmyY || 0) - 2"
-        fill="none"
-        stroke="black"
-        :stroke-width="0.5"
-      />
-    </g>
     <Flag
       v-for="(army, index) in importingArmies"
       :key="army.nation + index + 'A'"
@@ -233,20 +171,6 @@ export default {
     }
   },
   methods: {
-    availableArmies() {
-      if (this.mounted) {
-        return this.armies;
-      }
-
-      return [];
-    },
-    availableFleets() {
-      if (this.mounted) {
-        return this.fleets;
-      }
-
-      return [];
-    },
     flagX(index) {
       return (
         index * 3.5
