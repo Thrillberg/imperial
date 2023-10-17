@@ -64,7 +64,6 @@
             :province="province"
             :name="name"
             :select-province="selectProvince"
-            :fleets="fleets(name)"
             :is-valid="isValid(name)"
             :dot="dot(name)"
             :province-with-fight="provinceWithFight === (name.toString().replace(/\.*\s/gm, '').toLowerCase())"
@@ -81,8 +80,6 @@
             :province="province"
             :name="name"
             :select-province="selectProvince"
-            :fleets="fleets(name)"
-            :armies="armies(name)"
             :importing-units="importingUnits(name)"
             :is-valid="isValid(name)"
             :dot="dot(name)"
@@ -99,6 +96,36 @@
             @fight-resolved="$emit('fightResolved')"
             @production-resolved="$emit('productionResolved')"
           />
+          <ProvinceFleet
+            v-for="(province, name) in config.seaProvinces"
+            :key="name"
+            :province="province"
+            :name="name"
+            :fleets="fleets(name)"
+            :adjustments="config.adjustments[name]"
+            :nation-color="config.nationColors[dot(name)]"
+            :config="config"
+          />
+          <ProvinceFleet
+            v-for="(province, name) in config.landProvinces"
+            :key="name"
+            :province="province"
+            :name="name"
+            :fleets="fleets(name)"
+            :adjustments="config.adjustments[name]"
+            :nation-color="config.nationColors[dot(name)]"
+            :config="config"
+          />
+          <ProvinceArmy
+            v-for="(province, name) in config.landProvinces"
+            :key="name"
+            :province="province"
+            :name="name"
+            :armies="armies(name)"
+            :adjustments="config.adjustments[name]"
+            :nation-color="config.nationColors[dot(name)]"
+            :config="config"
+          />
         </g>
       </svg>
     </v-col>
@@ -107,10 +134,12 @@
 
 <script>
 import Province from './Province.vue';
+import ProvinceArmy from './ProvinceArmy.vue';
+import ProvinceFleet from './ProvinceFleet.vue';
 
 export default {
   name: 'Board',
-  components: { Province },
+  components: { Province, ProvinceArmy, ProvinceFleet },
   props: {
     config: { type: Object, default: () => {} },
     game: { type: Object, default: () => {} },
