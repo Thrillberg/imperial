@@ -159,7 +159,8 @@
         href="https://discord.gg/Q2Ynzp2Axs"
       >
         <template #prepend>
-          <discord-icon
+          <component
+            :is="discordLogo"
             class="v-icon v-icon--size-default"
             fill="#5865F2"
           />
@@ -170,7 +171,8 @@
         href="https://www.patreon.com/playimperialclub"
       >
         <template #prepend>
-          <patreon-icon
+          <component
+            :is="patreonLogo"
             class="v-icon v-icon--size-default"
             fill="#f1465a"
           />
@@ -181,12 +183,13 @@
 </template>
 
 <script>
-import { DiscordIcon, PatreonIcon } from 'vue3-simple-icons';
+import { markRaw } from 'vue';
 import { useTheme } from 'vuetify';
+import discordLogo from '../assets/discord.svg';
+import patreonLogo from '../assets/patreon.svg';
 
 export default {
   name: 'Header',
-  components: { DiscordIcon, PatreonIcon },
   props: {
     countOfClonedGames: { type: Number, default: 0 },
     countOfOpenGames: { type: String, default: '0' },
@@ -202,6 +205,8 @@ export default {
     };
   },
   data: () => ({
+    discordLogo: markRaw(discordLogo),
+    patreonLogo: markRaw(patreonLogo),
     drawer: false,
     email: '',
     errors: [],

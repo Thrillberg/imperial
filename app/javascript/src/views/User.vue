@@ -41,7 +41,8 @@
           @input="resetTurnNotifications"
         >
           <template #prepend>
-            <discord-icon
+            <component
+              :is="discordLogo"
               class="v-icon v-icon--size-default"
               fill="#5865F2"
             />
@@ -105,13 +106,14 @@
 
 <script>
 import { DateTime } from 'luxon';
-import { DiscordIcon } from 'vue3-simple-icons';
+import { markRaw } from 'vue';
+import discordLogo from '../assets/discord.svg';
 
 export default {
   name: 'User',
-  components: { DiscordIcon },
   data() {
     return {
+      discordLogo: markRaw(discordLogo),
       errors: [],
       user: {},
       finishedGames: [],
