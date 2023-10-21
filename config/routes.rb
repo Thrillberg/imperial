@@ -26,6 +26,7 @@ Rails.application.routes.draw do
   resources :profiles, only: [:show]
 
   root "pages#index", as: :pages_index
+  get "/robots.txt", to: "pages#robots"
   get "*path", to: "pages#index", format: false
 
   if Rails.env.test?
