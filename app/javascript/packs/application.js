@@ -73,22 +73,24 @@ const vuetify = createVuetify({
 
 const app = createApp(App, { env: process.env.NODE_ENV }).use(vuetify);
 
-Sentry.init({
-  app,
-  dsn: 'https://cd525e4c75fe2fd58a52ac7cc91acee9@o987046.ingest.sentry.io/4506082726445056',
-  integrations: [
-    new Sentry.BrowserTracing({
-      tracePropagationTargets: ['localhost', /^https:\/\/playimperial\.club/],
-      routingInstrumentation: Sentry.vueRouterInstrumentation(router),
-    }),
-    new Sentry.Replay(),
-  ],
-  // Performance Monitoring
-  tracesSampleRate: 0.5, // Capture 50% of the transactions
-  // Session Replay
-  replaysSessionSampleRate: 0.1,
-  replaysOnErrorSampleRate: 1.0,
-});
+if (process.env.NODE_ENV === 'production') {
+  Sentry.init({
+    app,
+    dsn: 'https://cd525e4c75fe2fd58a52ac7cc91acee9@o987046.ingest.sentry.io/4506082726445056',
+    integrations: [
+      new Sentry.BrowserTracing({
+        tracePropagationTargets: ['localhost', /^https:\/\/playimperial\.club/],
+        routingInstrumentation: Sentry.vueRouterInstrumentation(router),
+      }),
+      new Sentry.Replay(),
+    ],
+    // Performance Monitoring
+    tracesSampleRate: 0.5, // Capture 50% of the transactions
+    // Session Replay
+    replaysSessionSampleRate: 0.1,
+    replaysOnErrorSampleRate: 1.0,
+  });
+}
 
 app.use(router);
 app.use(VueCookies);
