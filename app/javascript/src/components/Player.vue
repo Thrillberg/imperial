@@ -19,7 +19,8 @@
             {{ turnIndex }}
           </span>
           <v-chip
-            :to="player.id ? '/users/' + player.id : ''"
+            :to="isHuman ? '/users/' + player.id : ''"
+            :color="isHuman ? 'default': 'red'"
             class="mr-2"
           >
             <template #prepend>
@@ -101,6 +102,7 @@ export default {
     tradedInBondNation: { type: String, default: '' },
     tradedInValue: { type: Number, default: 0 },
     turnIndex: { type: Number, default: 0 },
+    isHuman: Boolean,
   },
   emits: ['toggleTradeIn', 'cancelApplyToTradeIn'],
   computed: {

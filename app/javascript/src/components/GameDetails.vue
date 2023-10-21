@@ -12,6 +12,7 @@
     :traded-in-value="tradedInValue"
     :index="game.winner ? index + 1 : null"
     :turn-index="index + 1"
+    :is-human="gameData.players.map(p => p.name).includes(player.name)"
     @toggle-trade-in="toggleTradeIn"
   />
 </template>
