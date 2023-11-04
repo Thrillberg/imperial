@@ -87,7 +87,10 @@ export default {
   async setup() {
     const { mdAndUp } = useDisplay();
     const boardConfigs = {};
-    await import('../boardConfigs').then((resp) => { boardConfigs.imperial = resp.default.imperial; });
+    await import('../boardConfigs').then((resp) => {
+      boardConfigs.imperial = resp.default.imperial;
+      boardConfigs.imperialEurope2030 = resp.default.imperial;
+    });
     await import('../board2030Configs').then((resp) => { boardConfigs.imperial2030 = resp.default.imperial2030; });
     await import('../boardAsiaConfigs').then((resp) => { boardConfigs.imperialAsia = resp.default.imperialAsia; });
     return { boardConfigs, mdAndUp };
