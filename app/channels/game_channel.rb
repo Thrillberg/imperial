@@ -35,7 +35,8 @@ class GameChannel < ApplicationCable::Channel
 
       until move_to_json
         begin
-          move_to_json = JSON.parse(move[0].split("} ")[0].strip + "}")
+          binding.pry
+          move_to_json = JSON.parse(move)[0]
         rescue
           # move = ask_chatgpt(data)
           move = ask_finetuned_chatgpt(data)
@@ -58,13 +59,6 @@ class GameChannel < ApplicationCable::Channel
       game.actions << action
       broadcast_update_game_log "game_channel", "updateGameLog", game
       broadcast_games "game_channel", "updateGames"
-    
-    when "saveSnapshot"
-      game = game_from_data(data)
-      old_state = data["data"]["oldState"]
-      action = data["data"]["action"]
-      full_state = { state: old_state, action: action }.to_json
-      Snapshot.create(game: game, state: full_state)
 
     when "saveSnapshot"
       game = game_from_data(data)
@@ -324,12 +318,12 @@ class GameChannel < ApplicationCable::Channel
     client = OpenAI::Client.new
     response = client.completions(
       parameters: {
-        model: "davinci:ft-personal-2023-04-23-14-30-58",
+        model: "ft:davinci-002:personal::8GZFTYze",
         prompt: prompt,
         max_tokens: 50
       }
     )
     binding.pry
-    JSON.parse(response.body)["choices"].map { |c| c["text"] }
+    JSON.parse(response["choices"][0]["text"].split("} ")[0].strip + "}")
   end
 end

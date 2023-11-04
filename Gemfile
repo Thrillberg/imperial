@@ -32,7 +32,7 @@ gem "actiontext", rails_version
 gem "railties", rails_version
 
 gem "redis", "~> 4.0"
-gem "ruby-openai"
+gem "ruby-openai", git: "https://github.com/alexrudall/ruby-openai.git", branch: "fine-tuning-jobs"
 gem "sentry-rails"
 gem "sentry-ruby"
 gem "sidekiq"

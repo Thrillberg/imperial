@@ -173,14 +173,19 @@ class APIClient {
   }
 
   saveSnapshot(gameId, action, oldState = {}, availableActions = [], log = []) {
-    const state = { oldState, availableActions, log };
-    console.log(log)
+    debugger
     return this.send(
       {
         kind: 'saveSnapshot',
-        data: { gameId, action: JSON.stringify(action), oldState: JSON.stringify(state) },
+        data: {
+          gameId,
+          action: JSON.stringify(action),
+          state: JSON.stringify(oldState),
+          availableActions: JSON.stringify(availableActions),
+          log: JSON.stringify(log),
+        },
       },
-      'GameChannel',
+      'GameChannel'
     );
   }
 

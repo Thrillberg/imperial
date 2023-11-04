@@ -1,3 +1,13 @@
+GIT
+  remote: https://github.com/alexrudall/ruby-openai.git
+  revision: d433da12930ac7c290cc8f43f25590e86173499e
+  branch: fine-tuning-jobs
+  specs:
+    ruby-openai (5.2.0)
+      event_stream_parser (>= 0.3.0, < 1.0.0)
+      faraday (>= 1)
+      faraday-multipart (>= 1)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -208,10 +218,6 @@ GEM
     rubocop-performance (1.19.1)
       rubocop (>= 1.7.0, < 2.0)
       rubocop-ast (>= 0.4.0)
-    ruby-openai (5.2.0)
-      event_stream_parser (>= 0.3.0, < 1.0.0)
-      faraday (>= 1)
-      faraday-multipart (>= 1)
     ruby-progressbar (1.13.0)
     ruby2_keywords (0.0.5)
     semantic_range (3.0.0)
@@ -289,7 +295,7 @@ DEPENDENCIES
   railties (~> 7.0.4.3)
   redis (~> 4.0)
   rspec-rails (~> 4.0.2)
-  ruby-openai
+  ruby-openai!
   sentry-rails
   sentry-ruby
   sidekiq

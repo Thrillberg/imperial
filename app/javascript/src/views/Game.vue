@@ -442,126 +442,127 @@
       This game was cancelled by the host
     </div>
     <div v-else>
-<v-card>
+      <v-card>
         <v-card-text>
           <v-row>
             <v-col :cols="mdAndUp ? '8' : '12'">
-          <Board
-            :config="boardConfig"
-            :game="game"
-            :game-started="gameStarted"
-            :paused="paused"
-            :profile="profile"
-            :province-with-fight="provinceWithFight"
-            :select-province="selectProvince"
-            :units-to-import="importPlacements"
-            :valid-provinces="validProvinces()"
-            @fight-resolved="resolveFight"
-          />
-        </v-col>
-        <v-col align-self="center">
-        <div v-if="hostingThisGame">
-          <p>
-            <b>Players:</b>
-            <span>{{ playersInGame.join(", ") }}</span>
-          </p>
-          <p>
-            <b>Base game:</b>
-            <span>{{ baseGameString(gameData.baseGame) }}</span>
-          </p>
-          <p>
-            <b>Variant:</b>
-            <span>{{ variant(gameData.variant) }}</span>
-          </p>
-          <v-btn
-            v-if="playersInGame.length === 1"
-            color="primary-darken-1"
-            class="mt-2"
-            block
-            @click="startGame"
-          >
-            Start Solo Game (sandbox mode)
-          </v-btn>
-          <v-btn
-            v-else
-            color="primary-darken-1"
-            block
-            @click="startGame"
-          >
-            Start Game
-          </v-btn>
-          <v-btn
-            v-if="playersInGame.length < 6"
-            color="primary"
-            @click="addRandomBot"
-          >
-            Add a Random Bot
-          </v-btn>
-          <v-btn
-            color="error"
-            class="mt-2"
-            block
-            @click="cancelGame"
-          >
-            Cancel Game
-          </v-btn>
-          <v-btn
-            v-for="player in otherPlayersInGame()"
-            :key="player"
-            color="error"
-            block
-            @click="boot(player)"
-          >
-            Boot {{ player }}
-          </v-btn>
-        </div>
-        <div v-else-if="playingInThisGame">
-          <p>
-            <b>Players:</b>
-            <span>{{ playersInGame.join(", ") }}</span>
-          </p>
-          <p>
-            <b>Base game:</b>
-            <span>{{ baseGameString(gameData.baseGame) }}</span>
-          </p>
-          <p>
-            <b>Variant:</b>
-            <span>{{ variant(gameData.variant) }}</span>
-          </p>
-          <div class="text-2xl m-2">
-            Game not yet started!
-          </div>
-          <v-btn
-            color="error"
-            block
-            @click="leaveGame(profile.username)"
-          >
-            Leave Game
-          </v-btn>
-        </div>
-        <div v-else-if="!joinedGame">
-          <div class="mx-auto p-2 text-center">
-            <p>
-              <b>Players:</b>
-              <span>{{ playersInGame.join(", ") }}</span>
-            </p>
-            <p>
-              <b>Base game:</b>
-              <span>{{ baseGameString(gameData.baseGame) }}</span>
-            </p>
-            <p>
-              <b>Variant:</b>
-              <span>{{ variant(gameData.variant) }}</span>
-            </p>
-          </div>
-          <v-btn
-            color="primary-darken-1"
-            block
-            @click="joinGame"
-          >
-            Join This Game
-          </v-btn>
-        </v-col>
+              <Board
+                :config="boardConfig"
+                :game="game"
+                :game-started="gameStarted"
+                :paused="paused"
+                :profile="profile"
+                :province-with-fight="provinceWithFight"
+                :select-province="selectProvince"
+                :units-to-import="importPlacements"
+                :valid-provinces="validProvinces()"
+                @fight-resolved="resolveFight"
+              />
+            </v-col>
+            <v-col align-self="center">
+              <div v-if="hostingThisGame">
+                <p>
+                  <b>Players:</b>
+                  <span>{{ playersInGame.join(", ") }}</span>
+                </p>
+                <p>
+                  <b>Base game:</b>
+                  <span>{{ baseGameString(gameData.baseGame) }}</span>
+                </p>
+                <p>
+                  <b>Variant:</b>
+                  <span>{{ variant(gameData.variant) }}</span>
+                </p>
+                <v-btn
+                  v-if="playersInGame.length === 1"
+                  color="primary-darken-1"
+                  class="mt-2"
+                  block
+                  @click="startGame(gameData)"
+                >
+                  Start Solo Game (sandbox mode)
+                </v-btn>
+                <v-btn
+                  v-else
+                  color="primary-darken-1"
+                  block
+                  @click="startGame(gameData)"
+                >
+                  Start Game
+                </v-btn>
+                <v-btn
+                  v-if="playersInGame.length < 6"
+                  color="primary"
+                  @click="addRandomBot"
+                >
+                  Add a Random Bot
+                </v-btn>
+                <v-btn
+                  color="error"
+                  class="mt-2"
+                  block
+                  @click="cancelGame"
+                >
+                  Cancel Game
+                </v-btn>
+                <v-btn
+                  v-for="player in otherPlayersInGame()"
+                  :key="player"
+                  color="error"
+                  block
+                  @click="boot(player)"
+                >
+                  Boot {{ player }}
+                </v-btn>
+              </div>
+              <div v-else-if="playingInThisGame">
+                <p>
+                  <b>Players:</b>
+                  <span>{{ playersInGame.join(", ") }}</span>
+                </p>
+                <p>
+                  <b>Base game:</b>
+                  <span>{{ baseGameString(gameData.baseGame) }}</span>
+                </p>
+                <p>
+                  <b>Variant:</b>
+                  <span>{{ variant(gameData.variant) }}</span>
+                </p>
+                <div class="text-2xl m-2">
+                  Game not yet started!
+                </div>
+                <v-btn
+                  color="error"
+                  block
+                  @click="leaveGame(profile.username)"
+                >
+                  Leave Game
+                </v-btn>
+              </div>
+              <div v-else-if="!joinedGame">
+                <div class="mx-auto p-2 text-center">
+                  <p>
+                    <b>Players:</b>
+                    <span>{{ playersInGame.join(", ") }}</span>
+                  </p>
+                  <p>
+                    <b>Base game:</b>
+                    <span>{{ baseGameString(gameData.baseGame) }}</span>
+                  </p>
+                  <p>
+                    <b>Variant:</b>
+                    <span>{{ variant(gameData.variant) }}</span>
+                  </p>
+                </div>
+                <v-btn
+                  color="primary-darken-1"
+                  block
+                  @click="joinGame"
+                >
+                  Join This Game
+                </v-btn>
+              </div>
+            </v-col>
           </v-row>
         </v-card-text>
       </v-card>
@@ -978,7 +979,7 @@ export default {
       this.controllingPlayerName = this.game.currentPlayerName;
       if (!this.paused) {
         apiClient.saveSnapshot(this.$route.params.id, action, this.game.toJSON(), [...this.game.availableActions], this.game.log.slice(-10));
-        apiClient.tick(this.$route.params.id, action, this.game.toJSONWithLatestAction(action), [...this.game.availableActions]);
+        apiClient.tick(this.$route.params.id, action);
         this.displayFight(action);
         this.displayProduction(action);
       }
