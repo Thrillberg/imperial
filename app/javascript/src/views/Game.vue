@@ -957,11 +957,12 @@ export default {
     tickWithAction(action) {
       this.controllingPlayerName = this.game.currentPlayerName;
       if (!this.paused) {
+        const availableActions = [...this.game.availableActions];
         apiClient.saveSnapshot(
           this.$route.params.id,
           action,
           this.game.toJSONWithLatestAction(action),
-          [...this.game.availableActions],
+          availableActions,
           this.game.log,
         );
         apiClient.tick(this.$route.params.id, action);
