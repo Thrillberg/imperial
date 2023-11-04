@@ -4,7 +4,7 @@ export default (rawLog, baseGame) => rawLog.map((rawAction) => {
   // The following map only exists because of our custom Nation type, which
   // has weirdness when we attempt nation.when() in the setup file.
   let nations;
-  if (baseGame === 'imperial') {
+  if (baseGame === 'imperial' || baseGame === 'imperialEurope2030') {
     nations = Nation;
   } else if (baseGame === 'imperial2030') {
     nations = Nation2030;

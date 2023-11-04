@@ -1,5 +1,5 @@
 class Game < ActiveRecord::Base
-  enum base_game: {imperial: 0, imperial2030: 1, imperialAsia: 2}
+  enum base_game: {imperial: 0, imperial2030: 1, imperialAsia: 2, imperialEurope2030: 3}
   enum variant: {standard: 0, auction: 1, withoutInvestorCard: 2}
 
   has_many :actions, dependent: :destroy

@@ -12,8 +12,12 @@
                   :game="defaultLatestStateImperial"
                 />
                 <v-radio
-                  label="Original Imperial"
+                  label="Imperial (Classic)"
                   value="imperial"
+                />
+                <v-radio
+                  label="Imperial (2030 Rules)"
+                  value="imperialEurope2030"
                 />
               </v-col>
               <v-col :cols="mdAndUp ? '4' : '12'">

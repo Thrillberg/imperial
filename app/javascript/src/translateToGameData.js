@@ -7,6 +7,13 @@ export const defaultLatestState = (baseGame) => {
         nations: [],
         units: {},
       };
+    case 'imperialEurope2030':
+      return {
+        baseGame: 'imperialEurope2030',
+        currentNation: 'AH',
+        nations: [],
+        units: {},
+      };
     case 'imperial2030':
       return {
         baseGame: 'imperial2030',

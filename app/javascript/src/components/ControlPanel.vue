@@ -25,7 +25,7 @@
       </v-col>
       <v-col>
         <TaxChart
-          :show-bonus="game.baseGame === 'imperial2030'"
+          :show-bonus="game.baseGame === 'imperial2030' || game.baseGame === 'imperialEurope2030'"
           :taxes="taxes()"
         />
       </v-col>
@@ -341,7 +341,11 @@ export default {
           const powerPointIncrease = slot - 5;
           return { slot, nations, powerPointIncrease };
         });
-      } if (this.game.baseGame === 'imperial2030' || this.game.baseGame === 'imperialAsia') {
+      } if (
+        this.game.baseGame === 'imperial2030'
+        || this.game.baseGame === 'imperialAsia'
+        || this.game.baseGame === 'imperialEurope2030'
+      ) {
         const taxes = [18, 16, 15, 14, 13, 12, 11, 10, 8, 6, 5];
         return taxes.map((slot, index) => {
           const nations = [];

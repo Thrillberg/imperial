@@ -1,7 +1,7 @@
 import { Nation, Nation2030, NationAsia } from '../Domain/constants';
 
 export default (players, baseGame) => {
-  if (baseGame === 'imperial') {
+  if (baseGame === 'imperial' || baseGame === 'imperialEurope2030') {
     switch (players.length) {
       case 2:
         return [

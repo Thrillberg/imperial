@@ -57,7 +57,7 @@ export default {
       return '';
     },
     width() {
-      if (this.baseGame === 'imperial' || this.baseGame === 'imperialAsia') {
+      if (this.baseGame === 'imperial' || this.baseGame === 'imperialEurope2030' || this.baseGame === 'imperialAsia') {
         return 'w-1/3 md:w-full lg:w-full xl:w-full 2xl:w-full';
       }
 

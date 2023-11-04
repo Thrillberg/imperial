@@ -7,7 +7,7 @@ export default (game) => {
     for (const [key2, value2] of value) {
       newValue.set(key2, { ...value2 });
     }
-    if (game.baseGame === 'imperial') {
+    if (game.baseGame === 'imperial' || game.baseGame === 'imperialEurope2030') {
       units.set(Nation[key.value], newValue);
     } else if (game.baseGame === 'imperial2030') {
       units.set(Nation2030[key.value], newValue);
@@ -17,7 +17,7 @@ export default (game) => {
   }
   const nations = new Map();
   for (const [key, value] of game.nations) {
-    if (game.baseGame === 'imperial') {
+    if (game.baseGame === 'imperial' || game.baseGame === 'imperialEurope2030') {
       nations.set(Nation[key.value], { ...value });
     } else if (game.baseGame === 'imperial2030') {
       nations.set(Nation2030[key.value], { ...value });
