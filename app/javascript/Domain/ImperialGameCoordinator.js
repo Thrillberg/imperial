@@ -1,6 +1,7 @@
 import Imperial2030Game from './Entities/Imperial2030Game';
 import ImperialAsiaGame from './Entities/ImperialAsiaGame';
 import ImperialEuropeGame from './Entities/ImperialEuropeGame';
+import ImperialEurope2030Game from './Entities/ImperialEurope2030Game';
 
 import { translateProvinceModel } from './Entities/Board/Province';
 
@@ -450,7 +451,6 @@ export default class ImperialGameCoordinator {
 
     switch (this.baseGame) {
       case ImperialEuropeGame.classId:
-      case 'imperialEurope2030':
         this.#game = new ImperialEuropeGame([...this.order]);
         break;
 
@@ -460,6 +460,10 @@ export default class ImperialGameCoordinator {
 
       case ImperialAsiaGame.classId:
         this.#game = new ImperialAsiaGame([...this.order]);
+        break;
+
+      case ImperialEurope2030Game.classId:
+        this.#game = new ImperialEurope2030Game([...this.order]);
         break;
 
       default:

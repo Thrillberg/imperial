@@ -1,6 +1,7 @@
 import Imperial2030Game from '../../../Entities/Imperial2030Game';
 import ImperialAsiaGame from '../../../Entities/ImperialAsiaGame';
 import ImperialEuropeGame from '../../../Entities/ImperialEuropeGame';
+import ImperialEurope2030Game from '../../../Entities/ImperialEurope2030Game';
 
 export default class SlotDistanceCosts {
   #game;
@@ -19,6 +20,7 @@ export default class SlotDistanceCosts {
 
       case Imperial2030Game:
       case ImperialAsiaGame:
+      case ImperialEurope2030Game:
       default:
         costPerPaidDistance += Math.floor(nation.powerPoints / 5);
         break;
