@@ -2399,10 +2399,10 @@ export default class ImperialGameCoordinator {
 
   taxRevenueOf(nationName) {
     const taxes = this.unoccupiedFactoryCount(nationName) * 2 + this.flagCount(nationName);
-    if (this.baseGame === 'imperial' || this.baseGame === 'imperialEurope2030') {
+    if (this.baseGame === 'imperial') {
       // Taxes cannot exceed 20m
       if (taxes > 20) return 20;
-    } else if (this.baseGame === 'imperial2030' || this.baseGame === 'imperialAsia') {
+    } else if (this.baseGame === 'imperial2030' || this.baseGame === 'imperialAsia' || this.baseGame === 'imperialEurope2030') {
       // Taxes cannot exceed 23m
       if (taxes > 23) return 23;
     }
@@ -2410,7 +2410,7 @@ export default class ImperialGameCoordinator {
   }
 
   getTaxChartPosition(taxes) {
-    if (this.baseGame === 'imperial' || this.baseGame === 'imperialEurope2030') {
+    if (this.baseGame === 'imperial') {
       // Nation's taxChartPosition matches taxes with a floor
       // of 5 and ceiling of 15
       if (taxes >= 15) {
@@ -2428,9 +2428,9 @@ export default class ImperialGameCoordinator {
   powerPointsGainedFrom(taxes) {
     let powerPoints = 0;
 
-    if (this.baseGame === 'imperial' || this.baseGame === 'imperialEurope2030') {
+    if (this.baseGame === 'imperial') {
       powerPoints = Math.min(Math.max(0, taxes - 5), 10);
-    } else if (this.baseGame === 'imperial2030' || this.baseGame === 'imperialAsia') {
+    } else if (this.baseGame === 'imperial2030' || this.baseGame === 'imperialAsia' || this.baseGame === 'imperialEurope2030') {
       const powerPointsByTax = {
         0: 0,
         1: 0,
@@ -2466,9 +2466,9 @@ export default class ImperialGameCoordinator {
   playerBonusBeforeUnitMaintenanceCosts(nationName, taxes) {
     let bonus = 0;
 
-    if (this.baseGame === 'imperial' || this.baseGame === 'imperialEurope2030') {
+    if (this.baseGame === 'imperial') {
       bonus = Math.max(0, this.getTaxChartPosition(taxes) - this.nations.get(nationName).taxChartPosition);
-    } else if (this.baseGame === 'imperial2030' || this.baseGame === 'imperialAsia') {
+    } else if (this.baseGame === 'imperial2030' || this.baseGame === 'imperialAsia' || this.baseGame === 'imperialEurope2030') {
       const bonusByTaxes = {
         0: 0,
         1: 0,
@@ -2509,7 +2509,7 @@ export default class ImperialGameCoordinator {
   playerBonusAfterUnitMaintenanceCosts(nationName, taxes) {
     let bonus = this.playerBonusBeforeUnitMaintenanceCosts(nationName, taxes);
 
-    if (this.baseGame === 'imperial2030' || this.baseGame === 'imperialAsia') {
+    if (this.baseGame === 'imperial2030' || this.baseGame === 'imperialAsia' || this.baseGame === 'imperialEurope2030') {
       const treasuryAmountBeforeMaintenanceCosts = this.nations.get(nationName).treasury + taxes;
       const treasuryAmountAfterMaintenanceCosts = treasuryAmountBeforeMaintenanceCosts - this.unitMaintenanceCosts(nationName);
       bonus = Math.max(0, Math.min(bonus, treasuryAmountAfterMaintenanceCosts));
@@ -2522,7 +2522,7 @@ export default class ImperialGameCoordinator {
     let bonusPaidByNation = 0;
     let nationMinProfit = 0;
 
-    if (this.baseGame === 'imperial2030' || this.baseGame === 'imperialAsia') {
+    if (this.baseGame === 'imperial2030' || this.baseGame === 'imperialAsia' || this.baseGame === 'imperialEurope2030') {
       bonusPaidByNation = this.playerBonusAfterUnitMaintenanceCosts(nationName, taxes);
       nationMinProfit = -this.nations.get(nationName).treasury;
       // nations cannot go in debt, but can lose all their money
