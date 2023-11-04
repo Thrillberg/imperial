@@ -330,7 +330,7 @@ export default {
       return canUndo;
     },
     taxes() {
-      if (this.game.baseGame === 'imperial') {
+      if (this.game.baseGame === 'imperial' || this.game.baseGame === 'imperialEurope2030') {
         return [15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5].map((slot) => {
           const nations = [];
           for (const [nation, data] of this.game.nations) {

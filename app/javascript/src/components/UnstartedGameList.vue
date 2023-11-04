@@ -54,7 +54,9 @@ export default {
     },
     variant(baseGame) {
       if (baseGame === 'imperial') {
-        return 'Imperial';
+        return 'Imperial (Classic)';
+      } if (baseGame === 'imperialEurope2030') {
+        return 'Imperial (2030 Rules)';
       } if (baseGame === 'imperial2030') {
         return 'Imperial 2030';
       } if (baseGame === 'imperialAsia') {

@@ -97,6 +97,7 @@ export default class ImperialGameCoordinator {
 
     switch (baseGame) {
       case 'imperial':
+      case 'imperialEurope2030':
         board = standardGameBoard;
         nationEntity = Nation;
 
@@ -409,7 +410,7 @@ export default class ImperialGameCoordinator {
     this.variant = action.payload.variant;
     let setup;
     if (this.variant === 'standard') {
-      if (this.baseGame === 'imperial') {
+      if (this.baseGame === 'imperial' || this.baseGame === 'imperialEurope2030') {
         setup = standardSetup;
       } else if (this.baseGame === 'imperial2030') {
         setup = standard2030Setup;
@@ -417,7 +418,7 @@ export default class ImperialGameCoordinator {
         setup = standardAsiaSetup;
       }
     } else {
-      if (this.baseGame === 'imperial') {
+      if (this.baseGame === 'imperial' || this.baseGame === 'imperialEurope2030') {
         setup = auctionStandardSetup;
       } else if (this.baseGame === 'imperial2030') {
         setup = auction2030Setup;
@@ -449,6 +450,7 @@ export default class ImperialGameCoordinator {
 
     switch (this.baseGame) {
       case ImperialEuropeGame.classId:
+      case 'imperialEurope2030':
         this.#game = new ImperialEuropeGame([...this.order]);
         break;
 
@@ -574,7 +576,7 @@ export default class ImperialGameCoordinator {
     if (this.investing) {
       this.previousPlayerName = this.currentPlayerName;
       let nextNation;
-      if (this.baseGame === 'imperial') {
+      if (this.baseGame === 'imperial' || this.baseGame === 'imperialEurope2030') {
         nextNation = this.currentNation.when({
           AH: () => Nation.IT,
           IT: () => Nation.FR,
@@ -2099,7 +2101,7 @@ export default class ImperialGameCoordinator {
 
   nextNation(lastTurnNation) {
     let nextNation;
-    if (this.baseGame === 'imperial') {
+    if (this.baseGame === 'imperial' || this.baseGame === 'imperialEurope2030') {
       nextNation = lastTurnNation.when({
         AH: () => Nation.IT,
         IT: () => Nation.FR,
@@ -2397,7 +2399,7 @@ export default class ImperialGameCoordinator {
 
   taxRevenueOf(nationName) {
     const taxes = this.unoccupiedFactoryCount(nationName) * 2 + this.flagCount(nationName);
-    if (this.baseGame === 'imperial') {
+    if (this.baseGame === 'imperial' || this.baseGame === 'imperialEurope2030') {
       // Taxes cannot exceed 20m
       if (taxes > 20) return 20;
     } else if (this.baseGame === 'imperial2030' || this.baseGame === 'imperialAsia') {
@@ -2408,7 +2410,7 @@ export default class ImperialGameCoordinator {
   }
 
   getTaxChartPosition(taxes) {
-    if (this.baseGame === 'imperial') {
+    if (this.baseGame === 'imperial' || this.baseGame === 'imperialEurope2030') {
       // Nation's taxChartPosition matches taxes with a floor
       // of 5 and ceiling of 15
       if (taxes >= 15) {
@@ -2426,7 +2428,7 @@ export default class ImperialGameCoordinator {
   powerPointsGainedFrom(taxes) {
     let powerPoints = 0;
 
-    if (this.baseGame === 'imperial') {
+    if (this.baseGame === 'imperial' || this.baseGame === 'imperialEurope2030') {
       powerPoints = Math.min(Math.max(0, taxes - 5), 10);
     } else if (this.baseGame === 'imperial2030' || this.baseGame === 'imperialAsia') {
       const powerPointsByTax = {
@@ -2464,7 +2466,7 @@ export default class ImperialGameCoordinator {
   playerBonusBeforeUnitMaintenanceCosts(nationName, taxes) {
     let bonus = 0;
 
-    if (this.baseGame === 'imperial') {
+    if (this.baseGame === 'imperial' || this.baseGame === 'imperialEurope2030') {
       bonus = Math.max(0, this.getTaxChartPosition(taxes) - this.nations.get(nationName).taxChartPosition);
     } else if (this.baseGame === 'imperial2030' || this.baseGame === 'imperialAsia') {
       const bonusByTaxes = {

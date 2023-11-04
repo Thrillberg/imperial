@@ -43,7 +43,7 @@
           </div>
         </v-card-text>
         <v-card-text v-if="onTaxationSlot">
-          <div v-if="game.baseGame === 'imperial'">
+          <div v-if="game.baseGame === 'imperial' || game.baseGame === 'imperialEurope2030'">
             <b>Tax Revenue</b> will go from
             {{ displayMonetaryValue_InMillions(game.nations.get(game.currentNation).taxChartPosition) }} to
             {{ displayMonetaryValue_InMillions(nextTaxChartPosition) }}

@@ -307,7 +307,13 @@
           </v-window>
         </v-card>
         <v-card-text v-if="mdAndUp">
-          <v-sheet v-if="game.baseGame === 'imperial' || game.baseGame === 'imperialAsia'">
+          <v-sheet
+            v-if="
+              game.baseGame === 'imperial' ||
+                game.baseGame === 'imperialEurope2030' ||
+                game.baseGame === 'imperialAsia'
+            "
+          >
             <v-row>
               <v-col cols="8">
                 <Board
@@ -736,7 +742,7 @@ export default {
 
   methods: {
     getBoardConfig() {
-      if (this.gameData.baseGame === 'imperial') {
+      if (this.gameData.baseGame === 'imperial' || this.gameData.baseGame === 'imperialEurope2030') {
         import('../boardConfigs').then((resp) => { this.boardConfig = resp.default.imperial; });
       } else if (this.gameData.baseGame === 'imperial2030') {
         import('../board2030Configs').then((resp) => { this.boardConfig = resp.default.imperial2030; });
@@ -827,7 +833,7 @@ export default {
 
       const gameLog = getGameLog(log, baseGame);
 
-      if (baseGame === 'imperial') {
+      if (baseGame === 'imperial' || baseGame === 'imperialEurope2030') {
         this.board = imperialBoard;
       } else if (baseGame === 'imperial2030') {
         this.board = imperial2030Board;
@@ -1042,7 +1048,8 @@ export default {
       this.game.tickFromLog(log);
     },
     backToRoundStart() {
-      const startingNation = this.game.baseGame === 'imperial' ? Nation.AH : Nation2030.RU;
+      const startingNation = (this.game.baseGame === 'imperial' || this.game.baseGame === 'imperialEurope2030')
+        ? Nation.AH : Nation2030.RU;
       while ((this.game.log[this.game.log.length - 1].payload.nation !== startingNation)
         || (this.game.log[this.game.log.length - 1].type !== 'rondel')) {
         this.back();
@@ -1124,10 +1131,11 @@ export default {
     // },
     baseGameString(baseGame) {
       switch (baseGame) {
-        case 'imperial': return 'Original Imperial';
+        case 'imperial': return 'Imperial (Classic)';
+        case 'imperialEurope2030': return 'Imperial (2030 Rules)';
         case 'imperial2030': return 'Imperial 2030';
         case 'imperialAsia': return 'Imperial Asia';
-        default: return 'Imperial';
+        default: return 'Imperial (Classic)';
       }
     },
     variant(variant) {
