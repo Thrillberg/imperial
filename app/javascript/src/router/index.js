@@ -173,7 +173,6 @@ class APIClient {
   }
 
   saveSnapshot(gameId, action, oldState = {}, availableActions = [], log = []) {
-    debugger
     return this.send(
       {
         kind: 'saveSnapshot',

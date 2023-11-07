@@ -3,14 +3,9 @@ require "openai"
 desc "Run training on OpenAI bot"
 
 task train_openai_bot: :environment do
-  real_games = Game.joins(:players)
-    .where('game_id IN (SELECT game_id FROM players GROUP BY game_id HAVING COUNT(game_id) > 1)')
-    .where.not(winner_id: nil)
-  real_games.order(created_at: :desc)[1..9].each do |game|
-    snapshots = Snapshot.where(game: game)
+  snapshots = Snapshot.where("snapshots.created_at > ?", DateTime.parse('2023-11-04'))
     snapshots.each do |snapshot|
       full_state = JSON.parse(snapshot.state)
-      binding.pry
       # parsed_state = JSON.parse(full_state["state"])
 
       # units = {}
@@ -41,7 +36,8 @@ task train_openai_bot: :environment do
 
       parsed_log = JSON.parse(full_state["log"])
       parsed_available_actions = JSON.parse(full_state["available_actions"])
-      prompt = {log: parsed_log, available_actions: parsed_available_actions}.to_json
+      # prompt = {log: parsed_log, available_actions: parsed_available_actions}.to_json
+      prompt = {available_actions: parsed_available_actions}.to_json
       completion = " " + full_state["action"]
 
       line = { prompt: prompt, completion: completion }.to_json
@@ -49,7 +45,7 @@ task train_openai_bot: :environment do
       File.open("public/openai.jsonl", "a") do |f|
         f << line + "\n"
       end
-    end
+    # end
   end
 
   client = OpenAI::Client.new

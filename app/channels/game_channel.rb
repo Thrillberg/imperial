@@ -35,8 +35,8 @@ class GameChannel < ApplicationCable::Channel
 
       until move_to_json
         begin
-          binding.pry
-          move_to_json = JSON.parse(move)[0]
+          # binding.pry
+          move_to_json = JSON.parse(move)
         rescue
           # move = ask_chatgpt(data)
           move = ask_finetuned_chatgpt(data)
@@ -318,12 +318,12 @@ class GameChannel < ApplicationCable::Channel
     client = OpenAI::Client.new
     response = client.completions(
       parameters: {
-        model: "ft:davinci-002:personal::8GZFTYze",
+        model: "ft:davinci-002:personal::8HKYEFNW",
         prompt: prompt,
         max_tokens: 50
       }
     )
     binding.pry
-    JSON.parse(response["choices"][0]["text"].split("} ")[0].strip + "}")
+    response["choices"][0]["text"].split(/(?<=}) /)[0].strip
   end
 end
