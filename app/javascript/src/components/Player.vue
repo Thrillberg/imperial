@@ -19,7 +19,7 @@
             {{ turnIndex }}
           </span>
           <v-chip
-            :to="isHuman ? '/users/' + player.id : ''"
+            :to="isHuman ? '/users/' + profile.id : ''"
             :color="isHuman ? 'default': 'red'"
             class="mr-2"
           >
