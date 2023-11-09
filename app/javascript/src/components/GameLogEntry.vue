@@ -301,12 +301,12 @@ export default {
       if (timestamp !== '' && timestamp) {
         let out = DateTime.fromISO(timestamp).toLocaleString(DateTime.DATETIME_FULL);
         if (out === 'Invalid DateTime') {
-          out = 'Automated';
+          out = '';
         }
         return out;
       }
 
-      return 'Automated';
+      return '';
     },
     nationColors(nation) {
       return nationColors[nation];
