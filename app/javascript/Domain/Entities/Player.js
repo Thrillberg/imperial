@@ -10,6 +10,8 @@ export default class Player extends Entity {
 
     this.cash = 0;
 
+    this.uuid = '';
+
     // Todo: rework with Map<nation, bond> for easier querying
     this.#bonds = new Set();
     this.score = 0;

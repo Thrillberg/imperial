@@ -4882,6 +4882,7 @@ describe('imperial', () => {
           ],
           cash: 2,
           score: 0,
+          uuid: '',
         },
         player2: {
           bonds: [
@@ -4918,6 +4919,7 @@ describe('imperial', () => {
           ],
           cash: 2,
           score: 0,
+          uuid: '',
         },
       };
       const expectedProvinces = {

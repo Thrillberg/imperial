@@ -66,6 +66,9 @@ export default {
       for (const name in this.game.players) {
         players[name] = this.game.players[name];
       }
+      for (const { name, id } of this.gameData.players) {
+        players[name].uuid = id;
+      }
 
       return Object.values(players);
     },
