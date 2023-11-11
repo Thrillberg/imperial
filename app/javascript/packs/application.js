@@ -22,14 +22,12 @@ import * as Sentry from '@sentry/vue';
 
 import { createVuetify } from 'vuetify';
 /* eslint-disable import/no-unresolved */
-import * as components from 'vuetify/components';
-import * as directives from 'vuetify/directives';
 import { aliases, mdi } from 'vuetify/iconsets/mdi';
 import 'vuetify/styles';
 /* eslint-enable import/no-unresolved */
 import { VueMasonryPlugin } from 'vue-masonry';
 import { nationColors } from '../../../nationColors';
-import App from './App.vue';
+import App from '../src/views/App.vue';
 import router from '../src/router';
 
 const darkTheme = {
@@ -53,8 +51,6 @@ const lightTheme = {
 };
 
 const vuetify = createVuetify({
-  components,
-  directives,
   icons: {
     defaultSet: 'mdi',
     aliases,
