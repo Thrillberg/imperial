@@ -27,7 +27,7 @@ import 'vuetify/styles';
 /* eslint-enable import/no-unresolved */
 import { VueMasonryPlugin } from 'vue-masonry';
 import { nationColors } from '../../../nationColors';
-import App from '../src/views/App.vue';
+import App from '../src/App.vue';
 import router from '../src/router';
 
 const darkTheme = {

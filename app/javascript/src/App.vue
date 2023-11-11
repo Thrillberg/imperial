@@ -47,13 +47,13 @@
 </template>
 
 <script>
-import { apiClient } from '../router/index';
-import translateToGameData from '../translateToGameData';
+import { apiClient } from './router/index';
+import translateToGameData from './translateToGameData';
 
-import Header from '../components/Header.vue';
+import Header from './components/Header.vue';
 
-import favicon2 from '../assets/favicon2.ico';
-import favicon3 from '../assets/favicon3.ico';
+import favicon2 from './assets/favicon2.ico';
+import favicon3 from './assets/favicon3.ico';
 
 export default {
   name: 'App',
