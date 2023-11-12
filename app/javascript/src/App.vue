@@ -1,6 +1,6 @@
 <template>
-  <v-app id="app">
-    <v-layout v-if="profileFetched && gamesFetched">
+  <v-app>
+    <v-layout v-if="profileFetched">
       <Header
         :profile="profile"
         :count-of-open-games="countOfOpenGames.toString()"
@@ -17,7 +17,7 @@
               :profile="profile"
               :users="onlineUsers"
               :games="games"
-              :games-fetched="gamesFetched"
+              :games-fetched="true"
               :observers="observers"
               :game-data="gameData"
               :env="env"
@@ -60,6 +60,7 @@ export default {
   components: { Header },
   props: {
     env: { type: String, default: '' },
+    initialGames: { type: Array, default: () => [] },
   },
   data() {
     return {
@@ -69,7 +70,6 @@ export default {
       onlineUsers: [],
       observers: [],
       profileFetched: false,
-      gamesFetched: false,
     };
   },
   computed: {
@@ -105,6 +105,13 @@ export default {
     apiClient.ws.close();
   },
   created() {
+    this.games = this.initialGames.map((game) => {
+      if (game.id === this.$route.params.id) {
+        this.observers = game.observers;
+        this.gameData = translateToGameData(game);
+      }
+      return translateToGameData(game);
+    });
     apiClient.onUpdateUsers(({ users }) => {
       this.onlineUsers = users;
     });
@@ -116,7 +123,6 @@ export default {
         }
         return translateToGameData(game);
       });
-      this.gamesFetched = true;
     });
     apiClient.onUpdateGameLog(({
       gameId, log, logTimestamps, game,
