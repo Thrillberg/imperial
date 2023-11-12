@@ -1,7 +1,6 @@
 class PagesController < ActionController::Base
   def index
-    @games = Game.current.map(&:to_json)
-    render layout: "application"
+    render file: "public/packs/index.html"
   end
 
   def robots

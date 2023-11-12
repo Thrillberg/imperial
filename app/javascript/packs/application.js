@@ -22,6 +22,8 @@ import * as Sentry from '@sentry/vue';
 
 import { createVuetify } from 'vuetify';
 /* eslint-disable import/no-unresolved */
+import * as components from 'vuetify/components';
+import * as directives from 'vuetify/directives';
 import { aliases, mdi } from 'vuetify/iconsets/mdi';
 import 'vuetify/styles';
 /* eslint-enable import/no-unresolved */
@@ -51,6 +53,8 @@ const lightTheme = {
 };
 
 const vuetify = createVuetify({
+  components,
+  directives,
   icons: {
     defaultSet: 'mdi',
     aliases,
@@ -67,53 +71,52 @@ const vuetify = createVuetify({
   },
 });
 
-document.addEventListener('DOMContentLoaded', () => {
-  const app = createApp(
-    App,
-    { env: process.env.NODE_ENV, initialGames: window.initialGames },
-  ).use(vuetify);
+const app = createApp(App, { env: process.env.NODE_ENV }).use(vuetify);
 
-  if (process.env.NODE_ENV === 'production') {
-    Sentry.init({
-      app,
-      dsn: 'https://cd525e4c75fe2fd58a52ac7cc91acee9@o987046.ingest.sentry.io/4506082726445056',
-      integrations: [
-        new Sentry.BrowserTracing({
-          tracePropagationTargets: ['localhost', /^https:\/\/playimperial\.club/],
-          routingInstrumentation: Sentry.vueRouterInstrumentation(router),
-        }),
-        new Sentry.Replay(),
-      ],
-      // Performance Monitoring
-      tracesSampleRate: 0.5, // Capture 50% of the transactions
-      // Session Replay
-      replaysSessionSampleRate: 0.1,
-      replaysOnErrorSampleRate: 1.0,
-    });
-  }
+if (process.env.NODE_ENV === 'production') {
+  Sentry.init({
+    app,
+    dsn: 'https://cd525e4c75fe2fd58a52ac7cc91acee9@o987046.ingest.sentry.io/4506082726445056',
+    integrations: [
+      new Sentry.BrowserTracing({
+        tracePropagationTargets: ['localhost', /^https:\/\/playimperial\.club/],
+        routingInstrumentation: Sentry.vueRouterInstrumentation(router),
+      }),
+      new Sentry.Replay(),
+    ],
+    // Performance Monitoring
+    tracesSampleRate: 0.5, // Capture 50% of the transactions
+    // Session Replay
+    replaysSessionSampleRate: 0.1,
+    replaysOnErrorSampleRate: 1.0,
+  });
+}
 
-  app.use(router);
-  app.use(VueCookies);
-  app.use(VueMasonryPlugin);
+app.use(router);
+app.use(VueCookies);
+app.use(VueMasonryPlugin);
 
-  if (process.env.NODE_ENV === 'production') {
-    const googleTagManagerHead = document.createElement('script');
-    googleTagManagerHead.innerHTML = `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-  })(window,document,'script','dataLayer','GTM-TPLXHT2');`;
-    document.head.appendChild(googleTagManagerHead);
+if (process.env.NODE_ENV === 'production') {
+  const googleTagManagerHead = document.createElement('script');
+  googleTagManagerHead.innerHTML = `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-TPLXHT2');`;
+  document.head.appendChild(googleTagManagerHead);
 
-    const googleTagManagerBody = document.createElement('noscript');
-    const iFrame = document.createElement('iframe');
-    iFrame.setAttribute('src', 'https://www.googletagmanager.com/ns.html?id=GTM-TPLXHT2');
-    iFrame.setAttribute('height', 0);
-    iFrame.setAttribute('width', 0);
-    iFrame.setAttribute('style', 'display:none;visibility:hidden');
-    googleTagManagerBody.appendChild(iFrame);
-    document.body.appendChild(googleTagManagerBody);
-  }
+  const googleTagManagerBody = document.createElement('noscript');
+  const iFrame = document.createElement('iframe');
+  iFrame.setAttribute('src', 'https://www.googletagmanager.com/ns.html?id=GTM-TPLXHT2');
+  iFrame.setAttribute('height', 0);
+  iFrame.setAttribute('width', 0);
+  iFrame.setAttribute('style', 'display:none;visibility:hidden');
+  googleTagManagerBody.appendChild(iFrame);
+  document.body.appendChild(googleTagManagerBody);
+}
 
-  app.mount('#app');
-});
+const appElement = document.createElement('div');
+appElement.setAttribute('id', 'app');
+document.body.appendChild(appElement);
+
+app.mount('#app');
