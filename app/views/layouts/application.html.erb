@@ -1,13 +1,44 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
     <%= javascript_pack_tag 'application' %>
     <%= stylesheet_pack_tag 'application', media: 'all' %>
+
+    <title>Imperial</title>
+    <link rel="icon" href="/packs/favicon.ico">
+
+    <meta charset="UTF-8">
+    <meta name="description" content="Play Imperial online">
+    <meta name="keywords" content="imperial, board game, game, online, play">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <% if Rails.env.production? %>
+      <script>
+        (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+          new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+          j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+          'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+          })(window,document,'script','dataLayer','GTM-TPLXHT2');
+      </script>
+    <% end %>
   </head>
   <body>
+    <% if Rails.env.production? %>
+      <!-- Google tag (gtag.js) -->
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-HETMN2G3GE"></script>
+      <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-HETMN2G3GE');
+      </script>
+      <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TPLXHT2"
+        height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <% end %>
     <script>
       window.initialGames = <%= raw @games.to_json %>;
     </script>
