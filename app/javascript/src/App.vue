@@ -52,6 +52,7 @@ import translateToGameData from './translateToGameData';
 
 import Header from './components/Header.vue';
 
+import favicon from './assets/favicon.ico';
 import favicon2 from './assets/favicon2.ico';
 import favicon3 from './assets/favicon3.ico';
 
@@ -177,7 +178,7 @@ export default {
     } else if (itsMyTurnInAGame) {
       link.href = favicon3;
     } else {
-      link.href = '/packs/favicon.ico';
+      link.href = favicon;
     }
   },
   methods: {
