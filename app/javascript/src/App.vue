@@ -52,10 +52,6 @@ import translateToGameData from './translateToGameData';
 
 import Header from './components/Header.vue';
 
-import favicon from './assets/favicon.ico';
-import favicon2 from './assets/favicon2.ico';
-import favicon3 from './assets/favicon3.ico';
-
 export default {
   name: 'App',
   components: { Header },
@@ -154,31 +150,7 @@ export default {
           }
         });
     } else {
-      // Create user profile
       this.createUserProfile();
-    }
-  },
-  updated() {
-    // Set correct favicon
-    const link = document.createElement('link');
-    link.rel = 'icon';
-    document.getElementsByTagName('head')[0].appendChild(link);
-
-    const itsMyTurnInThisGame = this.games.find((game) => (
-      game.currentPlayerName === this.profile.username
-      && game.id === this.$route.params.id
-      && !game.winner
-    ));
-    const itsMyTurnInAGame = this.games.some(
-      (game) => game.currentPlayerName === this.profile.username && !game.winner,
-    );
-
-    if (itsMyTurnInThisGame) {
-      link.href = favicon2;
-    } else if (itsMyTurnInAGame) {
-      link.href = favicon3;
-    } else {
-      link.href = favicon;
     }
   },
   methods: {

@@ -607,9 +607,7 @@ import imperial2030Board from '../../Domain/board2030';
 import imperialAsiaBoard from '../../Domain/boardAsia';
 import assignNations from '../assignNations';
 import getGameLog from '../getGameLog';
-
-import favicon2 from '../assets/favicon2.ico';
-import favicon3 from '../assets/favicon3.ico';
+import setFavicon from '../setFavicon';
 
 import { Nation, Nation2030 } from '../../Domain/constants';
 import notification from '../assets/notification.mp3';
@@ -630,21 +628,6 @@ export default {
   },
   beforeRouteLeave(to, from, next) {
     apiClient.userStoppedObservingGame(this.profile.username, this.$route.params.id);
-
-    // Set correct favicon
-    const link = document.createElement('link');
-    link.rel = 'icon';
-    document.getElementsByTagName('head')[0].appendChild(link);
-
-    const itsMyTurnInAGame = this.games.some(
-      (game) => game.currentPlayerName === this.profile.username && !game.winner,
-    );
-
-    if (itsMyTurnInAGame) {
-      link.href = favicon3;
-    } else {
-      link.href = '/packs/favicon.ico';
-    }
     next();
   },
   props: {
@@ -731,6 +714,7 @@ export default {
     apiClient.getGameLog(this.$route.params.id);
     window.addEventListener('beforeunload', this.beforeWindowUnload);
     apiClient.userObservingGame(this.profile.username, this.$route.params.id);
+    setFavicon(this.games, this.profile, this.$route.params.id);
   },
   updated() {
     this.getBoardConfig();
@@ -738,6 +722,7 @@ export default {
   },
   beforeUnmount() {
     window.removeEventListener('beforeunload', this.beforeWindowUnload);
+    setFavicon(this.games, this.profile, '');
   },
 
   methods: {
@@ -851,7 +836,6 @@ export default {
         this.gameStarted = true;
         this.currentPlayer = markRaw(this.game.players[this.profile.username] || {});
         this.controllingPlayerName = this.game.currentPlayerName;
-        this.updateFavicon();
         this.audioNotification();
       }
 
@@ -1091,19 +1075,6 @@ export default {
     forwardToCurrentAction() {
       while (this.poppedTurns.length > 0) {
         this.forward();
-      }
-    },
-    updateFavicon() {
-      if (this.currentPlayer.name === this.game.currentPlayerName) {
-        const link = document.createElement('link');
-        link.rel = 'icon';
-        document.getElementsByTagName('head')[0].appendChild(link);
-        link.href = favicon2;
-      } else {
-        const link = document.createElement('link');
-        link.rel = 'icon';
-        document.getElementsByTagName('head')[0].appendChild(link);
-        link.href = '/packs/favicon.ico';
       }
     },
     audioNotification() {

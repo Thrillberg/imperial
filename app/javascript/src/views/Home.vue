@@ -35,6 +35,8 @@ import CurrentGames from '../components/CurrentGames.vue';
 import FirstTimeUserCards from '../components/FirstTimeUserCards.vue';
 import YourGames from '../components/YourGames.vue';
 
+import setFavicon from '../setFavicon';
+
 export default {
   name: 'Home',
   components: {
@@ -76,6 +78,7 @@ export default {
   },
   created() {
     document.title = 'Imperial';
+    setFavicon(this.games, this.profile, this.$route.params.id);
   },
 };
 </script>
