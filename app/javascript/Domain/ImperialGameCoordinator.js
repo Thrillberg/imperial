@@ -1052,6 +1052,7 @@ export default class ImperialGameCoordinator {
     }
 
     this.handlingConflict = false;
+    this.fleetConvoyCount = {};
     if (this.unitsToMove.length === 0) {
       this.unitsToMove = [];
       this.maneuvering = false;
