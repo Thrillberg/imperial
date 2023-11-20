@@ -11,8 +11,10 @@ class GameChannel < ApplicationCable::Channel
 
     when "joinGame"
       game = game_from_data(data)
-      user = User.find(data["data"]["userId"])
-      game.users << user
+      if game.players.count < 6
+        user = User.find(data["data"]["userId"])
+        game.users << user
+      end
       broadcast_games "game_channel", "updateGames"
 
     when "getGameLog"

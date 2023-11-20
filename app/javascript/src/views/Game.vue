@@ -556,12 +556,16 @@
                   </p>
                 </div>
                 <v-btn
+                  v-if="gameData.players.length < 6"
                   color="primary-darken-1"
                   block
                   @click="joinGame"
                 >
                   Join This Game
                 </v-btn>
+                <div v-else class="mx-auto p-2 text-center">
+                  <b>Game is full but not yet started!</b>
+                </div>
               </div>
             </v-col>
           </v-row>
