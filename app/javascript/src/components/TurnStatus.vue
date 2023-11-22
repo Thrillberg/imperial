@@ -16,6 +16,8 @@
 </template>
 
 <script>
+import { displayLocationName } from '../stringify';
+
 export default {
   name: 'TurnStatus',
   props: {
@@ -62,7 +64,7 @@ export default {
       } if (actionsWithoutUndo.every((action) => action.type === 'import')) {
         return 'choosing where to import additional military units';
       } if (actionsWithoutUndo.every((action) => action.type === 'fight' || action.type === 'coexist')) {
-        return 'choosing whether to fight or coexist';
+        return `choosing whether to fight or coexist in ${displayLocationName(actionsWithoutUndo[0].payload.province)}`;
       } if (actionsWithoutUndo.every((action) => action.type === 'forceInvestor' || action.type === 'skipForceInvestor')) {
         return 'choosing whether to force the current nation to stop on the Investor rondel slot';
       } if (actionsWithoutUndo.every((action) => action.type === 'destroyFactory' || action.type === 'skipDestroyFactory')) {

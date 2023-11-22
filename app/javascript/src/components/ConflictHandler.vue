@@ -11,7 +11,7 @@
           color="primary-darken-1"
           @click="coexist"
         >
-          Coexist
+          Coexist in {{ displayLocationName(provinceInConflict()) }}
         </v-btn>
       </v-col>
       <v-col>
@@ -21,7 +21,11 @@
           color="primary-darken-1"
           @click="$emit('tick-with-action', fightAction)"
         >
-          Fight {{ displayNationName(fightAction.payload.incumbent.value) }} ({{ fightAction.payload.targetType }})
+          Fight {{ displayNationName(
+            fightAction.payload.incumbent.value
+          ) }} ({{ fightAction.payload.targetType }}) in {{ displayLocationName(
+            provinceInConflict()
+          ) }}
         </v-btn>
       </v-col>
     </v-row>
@@ -63,7 +67,7 @@
 </template>
 
 <script>
-import { displayNationName } from '../stringify';
+import { displayNationName, displayLocationName } from '../stringify';
 
 export default {
   name: 'ConflictHandler',
@@ -140,6 +144,25 @@ export default {
     },
     displayNationName(nation) {
       return displayNationName(nation);
+    },
+    displayLocationName(province) {
+      return displayLocationName(province);
+    },
+    provinceInConflict() {
+      const provincesWithUnfriendlyUnits = {};
+      for (const [, nationData] of this.game.units) {
+        for (const [provinceName, provinceData] of nationData) {
+          if ((provinceData.armies > 0 || provinceData.fleets > 0) && provinceData.friendly === false) {
+            if (provincesWithUnfriendlyUnits[provinceName]) {
+              provincesWithUnfriendlyUnits[provinceName] += 1;
+            } else {
+              provincesWithUnfriendlyUnits[provinceName] = 1;
+            }
+          }
+        }
+      }
+
+      return Object.keys(provincesWithUnfriendlyUnits).filter((province) => provincesWithUnfriendlyUnits[province] > 1)[0];
     },
   },
 };
