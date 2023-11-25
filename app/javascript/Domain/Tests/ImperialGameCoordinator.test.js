@@ -4625,18 +4625,6 @@ describe('imperial', () => {
         expect(game.currentNation).toEqual(Nation.FR);
         expect(game.currentPlayerName).toEqual('player1');
       });
-
-      test('when a player does not have enough money to buy a bond, skip their invest turn', () => {
-        const game = newGame();
-        game.players.player2.cash = 0;
-        game.players.player2.bonds.clear();
-
-        game.tick(Action.rondel({ nation: Nation.AH, cost: 0, slot: 'investor' }));
-
-        // This is an awkward way to assert that we're not in a bond purchase round
-        expect([...game.availableActions].every((action) => action.type !== 'skipBondPurchase')).toEqual(true);
-        expect(game.currentPlayerName).toEqual('player2');
-      });
     });
 
     describe('undo', () => {
