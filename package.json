@@ -16,7 +16,7 @@
     "sass-loader": "^13.3.2",
     "vue": "^3.2.0",
     "vue-cookies": "^1.8.2",
-    "vue-google-charts": "1.1.0",
+    "vue-google-charts": "^1.1.0",
     "vue-loader": "^16.0.0",
     "vue-masonry": "^0.16.0",
     "vue-router": "^4.1.6",

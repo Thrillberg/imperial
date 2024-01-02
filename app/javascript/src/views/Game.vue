@@ -439,7 +439,7 @@
             </v-row>
           </v-sheet>
           <div v-if="game.winner">
-            <!-- <NationControlChart :game="game" /> -->
+            <NationControlChart :game="game" />
           </div>
         </v-card-text>
       </v-card>
@@ -563,7 +563,10 @@
                 >
                   Join This Game
                 </v-btn>
-                <div v-else class="mx-auto p-2 text-center">
+                <div
+                  v-else
+                  class="mx-auto p-2 text-center"
+                >
                   <b>Game is full but not yet started!</b>
                 </div>
               </div>
@@ -600,6 +603,7 @@ import Board from '../components/Board.vue';
 import ControlPanel from '../components/ControlPanel.vue';
 import GameDetails from '../components/GameDetails.vue';
 import GameLog from '../components/GameLog.vue';
+import NationControlChart from '../components/NationControlChart.vue';
 import NationComponent from '../components/NationComponent.vue';
 import Rondel from '../components/Rondel.vue';
 import Rules from '../components/Rules.vue';
@@ -624,7 +628,7 @@ export default {
     GameDetails,
     GameLog,
     NationComponent,
-    // NationControlChart,
+    NationControlChart,
     Rondel,
     Rules,
     TimeTravelButtons,
