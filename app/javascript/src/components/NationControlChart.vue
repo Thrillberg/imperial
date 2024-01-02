@@ -1,25 +1,26 @@
 <template>
   <div class="w-3/4 m-auto">
-    <!-- <GChart
+    <GChart
       type="Timeline"
       :settings="{ packages: ['timeline'] }"
       :data="chartData()"
       :options="chartOptions()"
-    /> -->
+    />
   </div>
 </template>
 
 <script>
-// Temporarily removing vue-google-charts in case it's a performance issue
-// import { GChart } from "vue-google-charts";
+import { GChart } from 'vue-google-charts';
 
 import Imperial from '../../Domain/ImperialGameCoordinator';
 
 import { nationColors } from '../../../../nationColors';
 
 export default {
-  // components: { GChart },
-  props: { game: Object },
+  components: { GChart },
+  props: {
+    game: { type: Object, default: () => {} },
+  },
   data: () => ({
     ticks: [],
   }),

@@ -33,5 +33,8 @@ module.exports = {
     new webpack.EnvironmentPlugin(['NODE_ENV']),
     new VueLoaderPlugin(),
     new VuetifyPlugin({ autoImport: true }),
+    new webpack.DefinePlugin({
+      __VUE_PROD_DEVTOOLS__: JSON.stringify(false),
+    }),
   ],
 };
