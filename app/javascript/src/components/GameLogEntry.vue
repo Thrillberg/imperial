@@ -1,18 +1,26 @@
 <template>
-  <v-list-tile
+  <v-list-item
     v-for="({action, timestamp}, i) in event"
     :key="i"
+    :style="{
+      backgroundColor: backgroundColor(action),
+      color: textColor(action)
+    }"
   >
-    <div
+    <v-list
       v-if="action.type === 'initialize'"
-      class="pt-2"
+      dense
     >
-      <v-divider />
-      <div class="d-flex justify-space-between">
-        <p><b>{{ action.payload.soloMode ? "Solo game started!" : "Game started!" }}</b></p>
-        <p>{{ timestampToString(timestamp) }}</p>
-      </div>
-      Variant: {{ action.payload.variant || "standard" }}
+      <v-list-item>
+        <v-list-title>
+          <b>{{ action.payload.soloMode ? "Solo game started!" : "Game started!" }}</b>
+        </v-list-title>
+      </v-list-item>
+      <v-list-item>
+        <v-list-title>
+          Variant: {{ action.payload.variant || "standard" }}
+        </v-list-title>
+      </v-list-item>
       <v-list
         v-if="!action.payload.variant || action.payload.variant === 'standard'"
         density="compact"
@@ -21,75 +29,55 @@
           v-for="(player, innerIndex) in action.payload.players"
           :key="innerIndex"
         >
-          <Flag
-            v-if="!!player.nation"
-            :nation="getNation(player.nation)"
-            class="inline-block mr-1"
-            width="30"
-            height="20"
-          />
-          <span
-            v-if="!action.payload.variant || action.payload.variant === 'standard'"
-            v-html="initializeAction(player)"
-          />
+          <template #prepend>
+            <Flag
+              v-if="!!player.nation"
+              :nation="getNation(player.nation)"
+              class="inline-block mr-1"
+              width="30"
+              height="20"
+            />
+          </template>
+          <v-list-title>{{ initializeAction(player) }}</v-list-title>
         </v-list-item>
       </v-list>
-    </div>
-    <div
-      v-else-if="action.type === 'rondel'"
-      class="pt-2"
-      :style="{
-        backgroundColor: rondelColors(action.payload.slot),
-        color: action.payload.slot.replace(/\d/g, '') === 'production' ? 'white' : 'black'
-      }"
-    >
-      <b>Turn {{ index }}: </b>
-      <Flag
-        :nation="getNation(action.payload.nation)"
-        class="inline-block mr-1"
-        width="30"
-        height="20"
-      />
+    </v-list>
+    <v-list-item v-else-if="action.type === 'rondel'">
+      <template #prepend>
+        <Flag
+          :nation="getNation(action.payload.nation)"
+          class="inline-block mr-1"
+          width="30"
+          height="20"
+        />
+      </template>
+      <v-list-item-title>{{ 'Turn ' + index }}</v-list-item-title>
       <b>{{ action.playerName }}</b>
       <div class="d-flex justify-space-between">
         <p>{{ rondelAction(action.payload) }}</p>
-        <p>{{ timestampToString(timestamp) }}</p>
       </div>
-    </div>
-    <div
+    </v-list-item>
+    <v-list-item
       v-else-if="
         ['bondPurchase', 'skipBondPurchase'].includes(action.type) && action.payload.nation
       "
-      class="pt-1 d-flex justify-space-between"
-      :style="{
-        backgroundColor: nationColors(action.payload.nation.value),
-        color: ['IT', 'BR', 'JP', 'RU'].includes(action.payload.nation.value) ? 'white' : 'black'
-      }"
     >
-      <p>- {{ renderAction(action) }}</p>
-      <p>{{ timestampToString(timestamp) }}</p>
-    </div>
-    <div
+      <v-list-title>{{ renderAction(action) }}</v-list-title>
+    </v-list-item>
+    <v-list-item
       v-else-if="
         ['playerAutoSkipsBondPurchase'].includes(action.type) && action.payload.bondNation
       "
-      class="pt-1 d-flex justify-space-between"
-      :style="{
-        backgroundColor: nationColors(action.payload.bondNation.value),
-        color: ['BR', 'RU'].includes(action.payload.bondNation.value) ? 'white' : 'black'
-      }"
     >
-      <p>- {{ renderAction(action) }}</p>
-      <p>{{ timestampToString(timestamp) }}</p>
-    </div>
-    <div
-      v-else
-      class="pt-1 d-flex justify-space-between"
-    >
-      <p>- {{ renderAction(action) }}</p>
-      <p>{{ timestampToString(timestamp) }}</p>
-    </div>
-  </v-list-tile>
+      <v-list-title>{{ renderAction(action) }}</v-list-title>
+    </v-list-item>
+    <v-list-item v-else>
+      <v-list-title>{{ renderAction(action) }}</v-list-title>
+    </v-list-item>
+    <template #append>
+      {{ timestampToString(timestamp) }}
+    </template>
+  </v-list-item>
 </template>
 
 <script>
@@ -234,7 +222,7 @@ export default {
     initializeAction(player) {
       const name = player.id;
       const nation = this.displayNationName(player.nation.value);
-      return `<strong>${nation}</strong> is controlled by <strong>${name}</strong>`;
+      return `${nation} is controlled by ${name}`;
     },
     getNation(nation) {
       if (nation.value === 'CN' && nation.label === 'NationAsia') {
@@ -308,7 +296,7 @@ export default {
     },
     timestampToString(timestamp) {
       if (timestamp !== '' && timestamp) {
-        let out = DateTime.fromISO(timestamp).toLocaleString(DateTime.DATETIME_FULL);
+        let out = DateTime.fromISO(timestamp).toLocaleString(DateTime.DATETIME_SHORT);
         if (out === 'Invalid DateTime') {
           out = '';
         }
@@ -331,6 +319,26 @@ export default {
         taxation: '#FFD281',
         factory: '#8DBCFB',
       }[slot];
+    },
+    backgroundColor(action) {
+      if (action.payload.slot) {
+        return this.rondelColors(action.payload.slot);
+      } if (action.payload.nation?.value) {
+        return nationColors[action.payload.nation.value];
+      } if (action.payload.bondNation?.value) {
+        return nationColors[action.payload.bondNation.value];
+      }
+      return 'white';
+    },
+    textColor(action) {
+      if (action.payload.slot) {
+        return action.payload.slot.replace(/\d/g, '') === 'production' ? 'white' : 'black';
+      } if (action.payload.nation?.value) {
+        return ['IT', 'BR', 'JP', 'RU'].includes(action.payload.nation.value) ? 'white' : 'black';
+      } if (action.payload.bondNation?.value) {
+        return ['IT', 'BR', 'JP', 'RU'].includes(action.payload.bondNation.value) ? 'white' : 'black';
+      }
+      return 'black';
     },
   },
 };
