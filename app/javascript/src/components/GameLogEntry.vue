@@ -38,8 +38,11 @@
     <div
       v-else-if="action.type === 'rondel'"
       class="pt-2"
+      :style="{
+        backgroundColor: rondelColors(action.payload.slot),
+        color: action.payload.slot.replace(/\d/g, '') === 'production' ? 'white' : 'black'
+      }"
     >
-      <v-divider />
       <b>Turn {{ index }}: </b>
       <Flag
         :nation="getNation(action.payload.nation)"
@@ -49,7 +52,7 @@
       />
       <b>{{ action.playerName }}</b>
       <div class="d-flex justify-space-between">
-        <p>{{ renderAction(action) }}</p>
+        <p>{{ rondelAction(action.payload) }}</p>
         <p>{{ timestampToString(timestamp) }}</p>
       </div>
     </div>
@@ -58,7 +61,10 @@
         ['bondPurchase', 'skipBondPurchase'].includes(action.type) && action.payload.nation
       "
       class="pt-1 d-flex justify-space-between"
-      :style="'background-color: ' + nationColors(action.payload.nation.value) + ';'"
+      :style="{
+        backgroundColor: nationColors(action.payload.nation.value),
+        color: ['IT', 'BR', 'JP', 'RU'].includes(action.payload.nation.value) ? 'white' : 'black'
+      }"
     >
       <p>- {{ renderAction(action) }}</p>
       <p>{{ timestampToString(timestamp) }}</p>
@@ -68,7 +74,10 @@
         ['playerAutoSkipsBondPurchase'].includes(action.type) && action.payload.bondNation
       "
       class="pt-1 d-flex justify-space-between"
-      :style="'background-color: ' + nationColors(action.payload.bondNation.value) + ';'"
+      :style="{
+        backgroundColor: nationColors(action.payload.bondNation.value),
+        color: ['BR', 'RU'].includes(action.payload.bondNation.value) ? 'white' : 'black'
+      }"
     >
       <p>- {{ renderAction(action) }}</p>
       <p>{{ timestampToString(timestamp) }}</p>
@@ -236,7 +245,7 @@ export default {
     rondelAction(payload) {
       const nation = this.displayNationName(payload.nation.value);
       const slot = this.capitalize(payload.slot).replace(/\d/g, '');
-      return `${nation} advanced to the ${slot} rondel slot.`;
+      return `${nation} → ${slot}`;
     },
     buildFactoryAction(payload) {
       const province = this.displayLocationName(payload.province);
@@ -310,6 +319,18 @@ export default {
     },
     nationColors(nation) {
       return nationColors[nation];
+    },
+    rondelColors(slot) {
+      return {
+        production1: '#8C8798',
+        maneuver1: '#7EA850',
+        investor: '#8EDFFF',
+        import: '#F39D81',
+        production2: '#8C8798',
+        maneuver2: '#7EA850',
+        taxation: '#FFD281',
+        factory: '#8DBCFB',
+      }[slot];
     },
   },
 };
