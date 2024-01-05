@@ -1,6 +1,6 @@
 <template>
-  <v-container>
-    <v-list>
+  <v-card max-width="600">
+    <v-list dense>
       <GameLogEntry
         v-for="(entry, index) in processedLog"
         :key="index"
@@ -9,7 +9,7 @@
         :index="processedLog.length - index - 1"
       />
     </v-list>
-  </v-container>
+  </v-card>
 </template>
 
 <script>
