@@ -321,21 +321,21 @@ export default {
       }[slot];
     },
     backgroundColor(action) {
-      if (action.payload.slot) {
+      if (action.payload?.slot) {
         return this.rondelColors(action.payload.slot);
-      } if (action.payload.nation?.value) {
+      } if (action.payload?.nation?.value) {
         return nationColors[action.payload.nation.value];
-      } if (action.payload.bondNation?.value) {
+      } if (action.payload?.bondNation?.value) {
         return nationColors[action.payload.bondNation.value];
       }
       return 'white';
     },
     textColor(action) {
-      if (action.payload.slot) {
-        return action.payload.slot.replace(/\d/g, '') === 'production' ? 'white' : 'black';
-      } if (action.payload.nation?.value) {
+      if (action.payload?.slot) {
+        return action.payload?.slot.replace(/\d/g, '') === 'production' ? 'white' : 'black';
+      } if (action.payload?.nation?.value) {
         return ['IT', 'BR', 'JP', 'RU'].includes(action.payload.nation.value) ? 'white' : 'black';
-      } if (action.payload.bondNation?.value) {
+      } if (action.payload?.bondNation?.value) {
         return ['IT', 'BR', 'JP', 'RU'].includes(action.payload.bondNation.value) ? 'white' : 'black';
       }
       return 'black';
