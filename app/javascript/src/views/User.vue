@@ -138,7 +138,7 @@ export default {
         this.user = data.user;
         this.finishedGames = data.games.filter(
           (game) => !!game.winner_name,
-        ).sort((a, b) => a.last_move_at < b.last_move_at);
+        ).sort((a, b) => Date.parse(b.last_move_at) - Date.parse(a.last_move_at));
         this.wonGames = this.finishedGames.filter(
           (game) => game.winner_name === this.user.name,
         );
