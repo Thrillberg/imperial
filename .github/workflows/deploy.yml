@@ -1,0 +1,24 @@
+name: Deploy to Amazon EC2
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: SSH into EC2 Instance
+        env:
+          PRIVATE_KEY: ${{ secrets.SSH_AWS_PRIVATE_KEY }}
+          HOST_NAME: ${{secrets.SSH_AWS_HOST_NAME}}
+          USER_NAME: ${{secrets.AWS_USER_NAME}}
+        run: |
+          ssh -i PRIVATE_KEY USER_NAME@HOST_NAME '
+            cd imperial &&
+            sudo docker-compose build &&
+            sudo docker-compose up
+          '

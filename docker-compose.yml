@@ -1,0 +1,16 @@
+version: "3"
+
+services:
+  worker:
+    build: .
+    command: bundle exec sidekiq -q default
+
+  web:
+    build: .
+    command: bundle exec puma -C config/puma.rb -p 80
+    ports:
+      - "80:80"
+    volumes:
+      - .:/imperial
+    depends_on:
+      - worker
