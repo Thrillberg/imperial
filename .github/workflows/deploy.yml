@@ -16,6 +16,16 @@ jobs:
           PRIVATE_KEY: ${{ secrets.SSH_AWS_PRIVATE_KEY }}
           HOST_NAME: ${{secrets.SSH_AWS_HOST_NAME}}
           USER_NAME: ${{secrets.AWS_USER_NAME}}
+          REDIS_URL: ${{ secrets.REDIS_URL }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          RAILS_ENV: ${{ secrets.RAILS_ENV }}
+          RAILS_SERVE_STATIC_FILES: ${{ secrets.RAILS_SERVE_STATIC_FILES }}
+          SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+          POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
+          POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
         run: |
           ssh -i PRIVATE_KEY USER_NAME@HOST_NAME '
             cd imperial &&
