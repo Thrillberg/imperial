@@ -22,13 +22,14 @@
     "vue-router": "^4.1.6",
     "vue-svg-loader": "^0.17.0-beta.2",
     "vue3-cookies": "^1.0.6",
-    "vuetify": "^3.1.12",
+    "vuetify": "^3.5.5",
     "webpack": "^5.76.0",
     "webpack-cli": "^4.8.0",
     "webpack-plugin-vuetify": "^2.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.12.16",
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@babel/preset-env": "^7.12.16",
     "@types/jest": "^29.5.0",
     "@vue/compiler-sfc": "^3.1.0",
@@ -58,8 +59,5 @@
     "lint/fix": "eslint $(git diff --name-only HEAD~1 | grep -E '\\.(js|vue)$' | xargs) --fix",
     "test": "jest",
     "cypress": "cypress open"
-  },
-  "browserslist": [
-    "defaults"
-  ]
+  }
 }

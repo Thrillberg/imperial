@@ -55,6 +55,16 @@ pnpm-debug.log*
 /yarn-debug.log*
 /.yarn-integrity
 
+!/tmp/pids
 /tmp
 /config/master.key
 /config/credentials/production.key
+
+/public/packs
+/public/packs-test
+/node_modules
+/yarn-error.log
+yarn-debug.log*
+.yarn-integrity
+
+/pgdata

@@ -102,4 +102,6 @@ Rails.application.configure do
 
   config.hosts << "www.playimperial.club"
   config.hosts << "imperial-staging.herokuapp.com"
+  config.hosts << "staging.playimperial.club"
+  config.hosts << "172.31.39.170"
 end
