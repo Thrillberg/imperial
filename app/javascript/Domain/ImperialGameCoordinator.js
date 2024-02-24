@@ -1136,19 +1136,26 @@ export default class ImperialGameCoordinator {
         const northAfricaCanalOwner = this.provinces.get('northafrica').flag;
         const movingBetweenMediterraneanAndIndianOcean = (origin === 'mediterraneansea' && destination === 'indianocean')
           || (origin === 'indianocean' && destination === 'mediterraneansea');
-        const canalCanBeBlocked = (movingBetweenNorthPacificAndCaribbean
+        const panamaCanBeBlocked = (movingBetweenNorthPacificAndCaribbean
           && colombiaCanalOwner
           && colombiaCanalOwner !== this.currentNation)
-          || (movingBetweenMediterraneanAndIndianOcean
-            && northAfricaCanalOwner
-            && northAfricaCanalOwner !== this.currentNation);
-        if (canalCanBeBlocked) {
-          const canalOwner = colombiaCanalOwner || northAfricaCanalOwner;
+        const suezCanBeBlocked =  (movingBetweenMediterraneanAndIndianOcean
+          && northAfricaCanalOwner
+          && northAfricaCanalOwner !== this.currentNation);
+        let canalOwner;
+        if (movingBetweenNorthPacificAndCaribbean && panamaCanBeBlocked) {
+          canalOwner = colombiaCanalOwner;
+        };
+        if (movingBetweenMediterraneanAndIndianOcean && suezCanBeBlocked) {
+          canalOwner = northAfricaCanalOwner;
+        };
+
+        if (canalOwner) {
           this.availableActions.add(Action.blockCanal());
           this.availableActions.add(Action.unblockCanal());
           this.currentPlayerName = this.nations.get(canalOwner).controller;
           return;
-        }
+        };
       }
 
       this.units.get(this.currentNation).get(origin).fleets -= 1;
