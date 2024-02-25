@@ -764,17 +764,12 @@ export default {
     startGame(gameData) {
       const playerNames = this.playerNames(gameData);
       let players = this.shuffle(playerNames);
-      const {
-        baseGame,
-        variant,
-        soloMode,
-        timeCommitment,
-      } = gameData;
+      const { baseGame, variant, soloMode } = gameData;
       if (variant === 'standard') {
         players = assignNations(players, baseGame);
       }
       const action = Action.initialize({
-        players, soloMode, variant, baseGame, timeCommitment,
+        players, soloMode, variant, baseGame,
       });
       apiClient.tick(gameData.id, action);
     },
