@@ -74,8 +74,8 @@
           Clone game
         </v-btn>
       </v-col>
-      <v-col class="text-center mx-2">
-        <span class="mx-2"><v-icon icon="mdi-timer-sand" /> Time Commitment: {{ timeCommitment(gameData.timeCommitment) }}</span>
+      <v-col class="text-right my-auto mx-2">
+        <span><v-icon icon="mdi-timer-sand" /> <b>Time Commitment:</b> {{ timeCommitment(gameData.timeCommitment) }}</span>
       </v-col>
       <v-col
         v-if="playersInGame.length === 1"
