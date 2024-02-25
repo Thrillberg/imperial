@@ -4,3 +4,6 @@ tmp/
 .git*
 log/
 vendor/
+.git
+log/*
+tmp/*

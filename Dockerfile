@@ -1,19 +1,20 @@
 FROM ruby:3.2.2
 
 ENV APP_ROOT /imperial
-RUN mkdir -p $APP_ROOT
-
-RUN apt-get update && apt-get install -y \
-  build-essential npm nodejs
-
-RUN gem install rails
+RUN mkdir -p $APP_ROOT && \
+  apt-get update && apt-get install -y \
+  build-essential npm nodejs && \
+  gem install rails
 
 WORKDIR $APP_ROOT
 
 COPY . .
 
-RUN npm install --global yarn
-RUN npm install
-RUN bundle config set --local without 'development test'
-RUN bundle install
-RUN bundle exec rails webpacker:install
+RUN npm install --global yarn && \
+  npm install && \
+  bundle config set --local without 'development test' && \
+  bundle install
+
+RUN bin/webpack
+
+CMD [ "rails", "s", "-p", "80", "-b", "0.0.0.0" ]

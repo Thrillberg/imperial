@@ -5,7 +5,7 @@ on:
     branches: [main]
 
 jobs:
-  push-build-image:
+  deploy:
     runs-on: ubuntu-latest
     environment: production
     steps:
@@ -24,6 +24,7 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Build, tag, and push image to Amazon ECR
+        id: build-image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: imperial
@@ -31,45 +32,24 @@ jobs:
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-  
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+      - name: Fill in the new image ID in the Amazon ECS task definition
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: task-definition.json
+          container-name: web
+          image: ${{ steps.build-image.outputs.image }}
+
+      - name: Deploy Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          service: imperial-service
+          cluster: imperial
+          wait-for-service-stability: true
+
       - name: Log out of Amazon ECR
         if: always()
         run: docker logout ${{ steps.login-ecr.outputs.registry }}
-
-  deploy:
-    runs-on: ubuntu-latest
-    environment: production
-    needs: push-build-image
-    steps:
-      - name: Rsync Deployment
-        env:
-          PRIVATE_KEY: ${{ secrets.SSH_AWS_PRIVATE_KEY }}
-          HOST_NAME: ${{ secrets.AWS_HOST_NAME }}
-          USER_NAME: ${{ secrets.AWS_USER_NAME }}
-        run: |
-          echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
-          rsync -avze "ssh -o StrictHostKeyChecking=no -o ServerAliveInterval=60 -i private_key" $GITHUB_WORKSPACE ${USER_NAME}@${HOST_NAME}:/home/ec2-user
-      
-      - name: Run on EC2 Instance
-        env:
-          PRIVATE_KEY: ${{ secrets.SSH_AWS_PRIVATE_KEY }}
-          SSH_HOST_NAME: ${{ secrets.SSH_AWS_HOST_NAME }}
-          USER_NAME: ${{ secrets.AWS_USER_NAME }}
-          DOCKER_USERNAME: ${{ steps.login-ecr.outputs.docker_username_723548248552_dkr_ecr_us_east_2_amazonaws_com }}
-          DOCKER_PASSWORD: ${{ steps.login-ecr.outputs.docker_password_723548248552_dkr_ecr_us_east_2_amazonaws_com }}
-          DOCKER_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        run: |
-          echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
-          ssh -o StrictHostKeyChecking=no -o ServerAliveInterval=60 -i private_key ${USER_NAME}@${SSH_HOST_NAME} '
-            echo "${{ env.DOCKER_PASSWORD }}" | sudo docker login ${{ env.DOCKER_REGISTRY }} -u "${{ env.DOCKER_USERNAME }}" --password-stdin
-            cd imperial
-            sudo docker-compose down
-            sudo SECRET_KEY_BASE=${{ secrets.SECRET_KEY_BASE }} POSTGRES_HOST=${{ secrets.POSTGRES_HOST }} \
-              POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} POSTGRES_USER=${{ secrets.POSTGRES_USER }} \
-              POSTGRES_DB=${{ secrets.POSTGRES_DB }} DATABASE_URL=${{ secrets.DATABASE_URL }} \
-              IMAGE_TAG=${{ github.sha }} \
-              docker-compose up -d --remove-orphans
-            sudo docker ps
-            sudo docker logs imperial-web-1
-            sudo docker logs imperial-redis-1
-          '

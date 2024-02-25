@@ -103,5 +103,5 @@ Rails.application.configure do
   config.hosts << "www.playimperial.club"
   config.hosts << "imperial-staging.herokuapp.com"
   config.hosts << "staging.playimperial.club"
-  config.hosts << "172.31.39.170"
+  config.hosts << IPAddr.new("172.31.0.0/16")
 end
