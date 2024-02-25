@@ -768,7 +768,7 @@ export default {
         baseGame,
         variant,
         soloMode,
-        timeCommitment
+        timeCommitment,
       } = gameData;
       if (variant === 'standard') {
         players = assignNations(players, baseGame);
