@@ -1138,24 +1138,24 @@ export default class ImperialGameCoordinator {
           || (origin === 'indianocean' && destination === 'mediterraneansea');
         const panamaCanBeBlocked = (movingBetweenNorthPacificAndCaribbean
           && colombiaCanalOwner
-          && colombiaCanalOwner !== this.currentNation)
-        const suezCanBeBlocked =  (movingBetweenMediterraneanAndIndianOcean
+          && colombiaCanalOwner !== this.currentNation);
+        const suezCanBeBlocked = (movingBetweenMediterraneanAndIndianOcean
           && northAfricaCanalOwner
           && northAfricaCanalOwner !== this.currentNation);
         let canalOwner;
         if (movingBetweenNorthPacificAndCaribbean && panamaCanBeBlocked) {
           canalOwner = colombiaCanalOwner;
-        };
+        }
         if (movingBetweenMediterraneanAndIndianOcean && suezCanBeBlocked) {
           canalOwner = northAfricaCanalOwner;
-        };
+        }
 
         if (canalOwner) {
           this.availableActions.add(Action.blockCanal());
           this.availableActions.add(Action.unblockCanal());
           this.currentPlayerName = this.nations.get(canalOwner).controller;
           return;
-        };
+        }
       }
 
       this.units.get(this.currentNation).get(origin).fleets -= 1;
