@@ -24,7 +24,7 @@ services:
 
   web:
     image: "723548248552.dkr.ecr.us-east-2.amazonaws.com/imperial:latest"
-    command: rails server -b 0.0.0.0 -p 80
+    command: /bin/sh -c "sudo rm tmp/pids/server.pid && rails server -b 0.0.0.0 -p 80"
     environment:
       REDIS_URL: redis://redis:6379/0
       RAILS_ENV: production
