@@ -764,7 +764,12 @@ export default {
     startGame(gameData) {
       const playerNames = this.playerNames(gameData);
       let players = this.shuffle(playerNames);
-      const { baseGame, variant, soloMode, timeCommitment } = gameData;
+      const {
+        baseGame,
+        variant,
+        soloMode,
+        timeCommitment
+      } = gameData;
       if (variant === 'standard') {
         players = assignNations(players, baseGame);
       }

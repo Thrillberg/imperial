@@ -19,6 +19,7 @@ RSpec.describe Game, "#to_json" do
       cancelled_at: game.cancelled_at,
       created_at: game.created_at,
       started_at: game.started_at,
+      time_commitment: "infinite",
       winner_name: nil,
       observers: [],
       variant: "standard",
