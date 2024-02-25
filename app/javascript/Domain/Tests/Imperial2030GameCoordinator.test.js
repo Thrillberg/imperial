@@ -476,6 +476,22 @@ describe('imperial2030', () => {
       expect(game.availableActions).toEqual(expected);
       expect(game.currentPlayerName).toEqual('player2');
     });
+
+    test('if both canals can be blocked, the right player is asked about the Suez Canal', () => {
+      const game = newGame();
+      game.provinces.get('colombia').flag = Nation2030.US;
+      game.provinces.get('northafrica').flag = Nation2030.CN;
+      game.units.get(Nation2030.RU).get('mediterraneansea').fleets = 1;
+
+      game.tick(
+        Action.rondel({ nation: Nation2030.RU, cost: 0, slot: 'maneuver1' }),
+      );
+      game.tick(
+        Action.maneuver({ origin: 'mediterraneansea', destination: 'indianocean' }),
+      );
+
+      expect(game.currentPlayerName).toEqual('player2');
+    });
   });
 
   describe('.loadFromJSON', () => {
