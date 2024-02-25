@@ -57,6 +57,8 @@
                       height="20"
                       class="mx-1"
                     />
+                    <br>
+                    <span><v-icon icon="mdi-timer-sand" />Time Commitment: {{ timeCommitment(game.timeCommitment) }}</span>
                   </v-col>
                 </v-row>
               </v-card-text>
@@ -150,6 +152,18 @@ export default {
       }
 
       return players;
+    },
+    timeCommitment(timeCommitment) {
+      if (timeCommitment === 'infinite') {
+        return 'Infinite (no speed commitment)';
+      } if (timeCommitment === 'slow') {
+        return 'Slow Async (1 every other day)';
+      } if (timeCommitment === 'async') {
+        return 'Async (1 move per day)';
+      } if (timeCommitment === 'live') {
+        return 'Live, Fast Async (2+ moves per day)';
+      }
+      return '';
     },
     toTime(date) {
       return toTime(date);

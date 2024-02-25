@@ -74,6 +74,9 @@
           Clone game
         </v-btn>
       </v-col>
+      <v-col class="text-right my-auto mx-2">
+        <span><v-icon icon="mdi-timer-sand" /> <b>Time Commitment:</b> {{ timeCommitment(gameData.timeCommitment) }}</span>
+      </v-col>
       <v-col
         v-if="playersInGame.length === 1"
         style="text-align: right;"
@@ -480,6 +483,10 @@
                 <p>
                   <b>Variant:</b>
                   <span>{{ variant(gameData.variant) }}</span>
+                </p>
+                <p>
+                  <b>Time Commitment:</b>
+                  <span>{{ timeCommitment(gameData.timeCommitment) }}</span>
                 </p>
                 <v-btn
                   v-if="playersInGame.length === 1"
@@ -1126,6 +1133,18 @@ export default {
         return 'Without Investor Card (with auction, no investor card)';
       }
 
+      return '';
+    },
+    timeCommitment(timeCommitment) {
+      if (timeCommitment === 'infinite') {
+        return 'Infinite (no speed commitment)';
+      } if (timeCommitment === 'slow') {
+        return 'Slow Async (1 every other day)';
+      } if (timeCommitment === 'async') {
+        return 'Async (1 move per day)';
+      } if (timeCommitment === 'live') {
+        return 'Live, Fast Async (2+ moves per day)';
+      }
       return '';
     },
     cloneGame() {

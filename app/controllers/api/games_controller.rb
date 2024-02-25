@@ -28,6 +28,7 @@ class API::GamesController < ApplicationController
       host: host,
       base_game: params[:base_game],
       variant: params[:variant],
+      time_commitment: params[:time_commitment],
       is_public: params[:is_game_public]
     )
     host.games << game
