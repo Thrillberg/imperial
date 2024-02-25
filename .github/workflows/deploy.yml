@@ -29,8 +29,8 @@ jobs:
           ECR_REPOSITORY: imperial
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:latest -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
   
       - name: Log out of Amazon ECR
         if: always()
@@ -67,6 +67,7 @@ jobs:
             sudo SECRET_KEY_BASE=${{ secrets.SECRET_KEY_BASE }} POSTGRES_HOST=${{ secrets.POSTGRES_HOST }} \
               POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} POSTGRES_USER=${{ secrets.POSTGRES_USER }} \
               POSTGRES_DB=${{ secrets.POSTGRES_DB }} DATABASE_URL=${{ secrets.DATABASE_URL }} \
+              IMAGE_TAG=${{ github.sha }} \
               docker-compose up -d --remove-orphans
             sudo docker ps
             sudo docker logs imperial-web-1

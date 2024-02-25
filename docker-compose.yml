@@ -7,7 +7,7 @@ services:
       - "6379:6379"
 
   sidekiq:
-    image: "723548248552.dkr.ecr.us-east-2.amazonaws.com/imperial:latest"
+    image: "723548248552.dkr.ecr.us-east-2.amazonaws.com/imperial:${IMAGE_TAG}"
     command: bundle exec sidekiq -q default
     environment:
       RAILS_ENV: production
@@ -17,13 +17,13 @@ services:
       - redis
   
   webpacker:
-    image: "723548248552.dkr.ecr.us-east-2.amazonaws.com/imperial:latest"
+    image: "723548248552.dkr.ecr.us-east-2.amazonaws.com/imperial:${IMAGE_TAG}"
     command: /imperial/bin/webpack
     volumes:
       - .:/imperial
 
   web:
-    image: "723548248552.dkr.ecr.us-east-2.amazonaws.com/imperial:latest"
+    image: "723548248552.dkr.ecr.us-east-2.amazonaws.com/imperial:${IMAGE_TAG}"
     command: /bin/sh -c "sudo rm tmp/pids/server.pid && rails server -b 0.0.0.0 -p 80"
     environment:
       REDIS_URL: redis://redis:6379/0
