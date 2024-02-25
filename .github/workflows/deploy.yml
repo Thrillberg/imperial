@@ -63,6 +63,7 @@ jobs:
           ssh -o StrictHostKeyChecking=no -o ServerAliveInterval=60 -i private_key ${USER_NAME}@${SSH_HOST_NAME} '
             echo "${{ env.DOCKER_PASSWORD }}" | sudo docker login ${{ env.DOCKER_REGISTRY }} -u "${{ env.DOCKER_USERNAME }}" --password-stdin
             cd imperial
+            sudo docker-compose down
             sudo SECRET_KEY_BASE=${{ secrets.SECRET_KEY_BASE }} POSTGRES_HOST=${{ secrets.POSTGRES_HOST }} \
               POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} POSTGRES_USER=${{ secrets.POSTGRES_USER }} \
               POSTGRES_DB=${{ secrets.POSTGRES_DB }} DATABASE_URL=${{ secrets.DATABASE_URL }} \
