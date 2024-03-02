@@ -253,7 +253,7 @@ export default {
 
       return this.game.maneuvering
       && this.factoryToDestroy === ''
-      && !this.game.handlingConflict
+      && this.game.provinceInConflict === ''
       && (
         this.profile.username === this.game.currentPlayerName
           || (this.game.soloMode && this.hostingThisGame)

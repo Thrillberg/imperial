@@ -60,7 +60,7 @@ export default class ImperialGameCoordinator {
     this.availableActions = new Set();
 
     this.maneuvering = false;
-    this.handlingConflict = false;
+    this.provinceInConflict = '';
     this.soloMode = false;
     this.swissBanks = [];
     this.uncontrolledNations = [];
@@ -916,7 +916,7 @@ export default class ImperialGameCoordinator {
       }
     }
 
-    this.handlingConflict = false;
+    this.provinceInConflict = '';
     this.previousPlayerName = this.currentPlayerName;
     if (this.log[this.log.length - 2].type === 'coexist') {
       this.currentPlayerName = this.nations.get(
@@ -1002,12 +1002,12 @@ export default class ImperialGameCoordinator {
             challenger: nationsAtProvince[0],
           }),
         );
-        this.handlingConflict = true;
+        this.provinceInConflict = destination;
         return;
       }
     }
 
-    this.handlingConflict = false;
+    this.provinceInConflict = '';
     this.coexistingNations = [];
     this.currentNationInConflict = null;
     this.previousPlayerName = this.currentPlayerName;
@@ -1051,7 +1051,7 @@ export default class ImperialGameCoordinator {
       return;
     }
 
-    this.handlingConflict = false;
+    this.provinceInConflict = '';
     this.fleetConvoyCount = {};
     if (this.unitsToMove.length === 0) {
       this.unitsToMove = [];
@@ -1063,7 +1063,7 @@ export default class ImperialGameCoordinator {
   }
 
   friendlyEntrance(action) {
-    this.handlingConflict = false;
+    this.provinceInConflict = '';
     this.units
       .get(action.payload.challenger)
       .get(action.payload.province).friendly = true;
@@ -1095,12 +1095,12 @@ export default class ImperialGameCoordinator {
   destroyFactory(action) {
     this.provinces.get(action.payload.province).factory = '';
     this.units.get(this.currentNation).get(action.payload.province).armies -= 3;
-    this.handlingConflict = false;
+    this.provinceInConflict = '';
     this.setManeuverAvailableActions();
   }
 
   skipDestroyFactory() {
-    this.handlingConflict = false;
+    this.provinceInConflict = '';
     this.setManeuverAvailableActions();
   }
 
@@ -1257,7 +1257,7 @@ export default class ImperialGameCoordinator {
           challenger: this.currentNation,
         }),
       );
-      this.handlingConflict = true;
+      this.provinceInConflict = destination;
       return;
     }
 
@@ -1307,7 +1307,7 @@ export default class ImperialGameCoordinator {
             province: destination,
           }),
         );
-        this.handlingConflict = true;
+        this.provinceInConflict = destination;
         return;
       }
     }
