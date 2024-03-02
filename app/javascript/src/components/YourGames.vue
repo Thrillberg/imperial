@@ -1,5 +1,5 @@
 <template>
-  <div class="text-h5">
+  <div class="text-h5 my-4">
     Your Games
   </div>
   <v-row
@@ -7,7 +7,7 @@
     item-selector=".game"
   >
     <v-col
-      v-for="game of orderedGames"
+      v-for="game of games"
       :key="game.id"
       v-masonry-tile
       class="game"
@@ -108,18 +108,6 @@ export default {
     return { boardConfigs, mdAndUp };
   },
   computed: {
-    orderedGames() {
-      return [...this.games].sort((a, b) => {
-        if (a.winner === b.winner) {
-          return 0;
-        } if (a.winner === null) {
-          return -1;
-        } if (b.winner === null) {
-          return 1;
-        }
-        return 0;
-      });
-    },
     Imperial() {
       return Imperial;
     },

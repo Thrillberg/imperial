@@ -6,20 +6,16 @@
     @anonymity_confirmed="$emit('anonymity_confirmed', $event)"
   />
   <v-container v-else-if="gamesFetched">
-    <Suspense>
-      <YourGames
-        v-if="profile.registered || profile.anonymityConfirmedAt"
-        :games="yourGames"
-        :profile="profile"
-        :users="users"
-      />
-    </Suspense>
-    <Suspense>
-      <CurrentGames
-        :games="currentGames"
-        :users="users"
-      />
-    </Suspense>
+    <YourGames
+      v-if="profile.registered || profile.anonymityConfirmedAt"
+      :games="yourGames"
+      :profile="profile"
+      :users="users"
+    />
+    <CurrentGames
+      :games="currentGames"
+      :users="users"
+    />
   </v-container>
   <v-container
     v-else
@@ -64,6 +60,15 @@ export default {
           }
         });
         return inGame && !game.forceEndedAt && !game.clonedFromGame;
+      }).sort((a, b) => {
+        if (a.winner === b.winner) {
+          return 0;
+        } if (a.winner === null) {
+          return -1;
+        } if (b.winner === null) {
+          return 1;
+        }
+        return 0;
       });
     },
     currentGames() {
