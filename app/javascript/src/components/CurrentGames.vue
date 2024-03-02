@@ -37,7 +37,15 @@
                     :key="player.name"
                     cols="auto"
                   >
-                    <span>{{ player.name }}</span>
+                    <span>
+                      <v-icon
+                        v-if="users.includes(player.name)"
+                        color="success"
+                        icon="mdi-circle"
+                        size="small"
+                      />
+                      {{ player.name }}
+                    </span>
                     <Flag
                       v-for="nation of player.nations"
                       :key="nation"
@@ -69,7 +77,10 @@ import Imperial from '../../Domain/ImperialGameCoordinator';
 export default {
   name: 'CurrentGames',
   components: { Board, Flag },
-  props: { games: { type: Array, default: () => [] } },
+  props: {
+    games: { type: Array, default: () => [] },
+    users: { type: Array, default: () => [] },
+  },
   async setup() {
     const { mdAndUp } = useDisplay();
     const boardConfigs = {};

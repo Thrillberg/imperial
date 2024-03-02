@@ -48,7 +48,15 @@
                     :key="player.name"
                     cols="auto"
                   >
-                    <span>{{ player.name }}</span>
+                    <span>
+                      <v-icon
+                        v-if="users.includes(player.name)"
+                        color="success"
+                        icon="mdi-circle"
+                        size="small"
+                      />
+                      {{ player.name }}
+                    </span>
                     <Flag
                       v-for="nation of player.nations"
                       :key="nation"
@@ -57,7 +65,7 @@
                       height="20"
                       class="mx-1"
                     />
-                    <br>
+                    <v-divider class="my-2" />
                     <span><v-icon icon="mdi-timer-sand" />Time Commitment: {{ timeCommitment(game.timeCommitment) }}</span>
                   </v-col>
                 </v-row>
@@ -84,7 +92,9 @@ export default {
   name: 'YourGames',
   components: { Board, Flag },
   props: {
-    games: { type: Array, default: () => [] }, profile: { type: Object, default: () => {} },
+    games: { type: Array, default: () => [] },
+    profile: { type: Object, default: () => {} },
+    users: { type: Array, default: () => [] },
   },
   async setup() {
     const { mdAndUp } = useDisplay();

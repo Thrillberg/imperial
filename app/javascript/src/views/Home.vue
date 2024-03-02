@@ -11,10 +11,14 @@
         v-if="profile.registered || profile.anonymityConfirmedAt"
         :games="yourGames"
         :profile="profile"
+        :users="users"
       />
     </Suspense>
     <Suspense>
-      <CurrentGames :games="currentGames" />
+      <CurrentGames
+        :games="currentGames"
+        :users="users"
+      />
     </Suspense>
   </v-container>
   <v-container
