@@ -1,6 +1,6 @@
 <template>
   <v-col
-    v-if="game.handlingConflict && (profile.username === controllingPlayerName || (game.soloMode && hostingThisGame))"
+    v-if="game.provinceInConflict !== '' && (profile.username === controllingPlayerName || (game.soloMode && hostingThisGame))"
   >
     <v-row
       v-if="fighting()"
@@ -11,7 +11,7 @@
           color="primary-darken-1"
           @click="coexist"
         >
-          Coexist in {{ displayLocationName(provinceInConflict()) }}
+          Coexist in {{ displayLocationName(game.provinceInConflict) }}
         </v-btn>
       </v-col>
       <v-col>
@@ -24,7 +24,7 @@
           Fight {{ displayNationName(
             fightAction.payload.incumbent.value
           ) }} ({{ fightAction.payload.targetType }}) in {{ displayLocationName(
-            provinceInConflict()
+            game.provinceInConflict
           ) }}
         </v-btn>
       </v-col>
@@ -147,22 +147,6 @@ export default {
     },
     displayLocationName(province) {
       return displayLocationName(province);
-    },
-    provinceInConflict() {
-      const provincesWithUnfriendlyUnits = {};
-      for (const [, nationData] of this.game.units) {
-        for (const [provinceName, provinceData] of nationData) {
-          if ((provinceData.armies > 0 || provinceData.fleets > 0) && provinceData.friendly === false) {
-            if (provincesWithUnfriendlyUnits[provinceName]) {
-              provincesWithUnfriendlyUnits[provinceName] += 1;
-            } else {
-              provincesWithUnfriendlyUnits[provinceName] = 1;
-            }
-          }
-        }
-      }
-
-      return Object.keys(provincesWithUnfriendlyUnits).filter((province) => provincesWithUnfriendlyUnits[province] > 1)[0];
     },
   },
 };
