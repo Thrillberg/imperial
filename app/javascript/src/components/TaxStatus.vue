@@ -15,7 +15,7 @@
     <v-card>
       <v-card-title>Tax Status</v-card-title>
       <v-card-subtitle>
-        This shows the power points and tax chart positions of each nation if they were to tax <i>right now</i>.
+        This shows the power points and scoring track positions of each nation if they were to tax <i>right now</i>.
       </v-card-subtitle>
       <v-card-text>
         <v-table>

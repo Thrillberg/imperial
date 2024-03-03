@@ -8,12 +8,12 @@
         color="primary"
         v-bind="props"
       >
-        Tax chart
+        Scoring Track
       </v-btn>
     </template>
 
     <v-card>
-      <v-card-title>Tax Chart</v-card-title>
+      <v-card-title>Scoring Track</v-card-title>
       <v-card-text>
         <v-row
           class="flex-row-reverse"
@@ -64,7 +64,7 @@
 import TaxChartSlot from './TaxChartSlot.vue';
 
 export default {
-  name: 'TaxChart',
+  name: 'ScoringTrack',
   components: {
     TaxChartSlot,
   },

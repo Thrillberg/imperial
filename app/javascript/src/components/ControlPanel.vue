@@ -24,7 +24,7 @@
         <TaxStatus :game="game" />
       </v-col>
       <v-col>
-        <TaxChart
+        <ScoringTrack
           :show-bonus="game.baseGame === 'imperial2030' || game.baseGame === 'imperialEurope2030'"
           :taxes="taxes()"
         />
@@ -165,13 +165,13 @@ import Action from '../../Domain/action';
 import AvailableBonds from './AvailableBonds.vue';
 import BondPurchase from './BondPurchase.vue';
 import ConflictHandler from './ConflictHandler.vue';
-import TaxChart from './TaxChart.vue';
+import ScoringTrack from './ScoringTrack.vue';
 import TaxStatus from './TaxStatus.vue';
 
 export default {
   name: 'ControlPanel',
   components: {
-    AvailableBonds, BondPurchase, ConflictHandler, TaxStatus, TaxChart,
+    AvailableBonds, BondPurchase, ConflictHandler, TaxStatus, ScoringTrack,
   },
   props: {
     game: { type: Object, default: () => {} },
