@@ -28,6 +28,16 @@
               @receive-game-data="receiveGameData"
               @anonymity_confirmed="anonymityConfirmed"
             />
+            <template #fallback>
+              <v-container class="text-center">
+                <v-progress-circular
+                  indeterminate
+                  color="primary-darken-1"
+                  size="100"
+                  class="mt-10"
+                />
+              </v-container>
+            </template>
           </Suspense>
         </router-view>
       </v-main>

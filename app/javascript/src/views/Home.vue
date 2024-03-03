@@ -6,16 +6,30 @@
     @anonymity_confirmed="$emit('anonymity_confirmed', $event)"
   />
   <v-container v-else-if="gamesFetched">
-    <YourGames
-      v-if="profile.registered || profile.anonymityConfirmedAt"
-      :games="yourGames"
-      :profile="profile"
-      :users="users"
-    />
-    <CurrentGames
-      :games="currentGames"
-      :users="users"
-    />
+    <Suspense>
+      <YourGames
+        v-if="profile.registered || profile.anonymityConfirmedAt"
+        :games="yourGames"
+        :profile="profile"
+        :users="users"
+      />
+      <template #fallback>
+        <v-container class="text-center">
+          <v-progress-circular
+            indeterminate
+            color="primary-darken-1"
+            size="100"
+            class="mt-10"
+          />
+        </v-container>
+      </template>
+    </Suspense>
+    <Suspense>
+      <CurrentGames
+        :games="currentGames"
+        :users="users"
+      />
+    </Suspense>
   </v-container>
   <v-container
     v-else
