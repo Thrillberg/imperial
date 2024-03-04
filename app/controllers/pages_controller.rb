@@ -1,6 +1,6 @@
 class PagesController < ActionController::Base
   def index
-    @games = Game.current.includes(:host, :users).map(&:to_json)
+    @games = Game.current.includes(:host, :current_player, :users, :winner, :cloned_from_game).map(&:to_json)
     render layout: "application"
   end
 

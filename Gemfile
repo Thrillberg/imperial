@@ -38,6 +38,7 @@ gem "sidekiq"
 gem "webpacker", "~> 5.x"
 
 group :development, :test do
+  gem "bullet"
   gem "factory_bot_rails"
   gem "standard", "~> 1.16", ">= 1.16.1"
   gem "rspec-rails", "~> 4.0.2"
