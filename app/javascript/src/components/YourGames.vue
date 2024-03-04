@@ -65,9 +65,9 @@
                       height="20"
                       class="mx-1"
                     />
-                    <v-divider class="my-2" />
-                    <span><v-icon icon="mdi-timer-sand" />Time Commitment: {{ timeCommitment(game.timeCommitment) }}</span>
                   </v-col>
+                  <v-divider class="my-2" />
+                  <span><v-icon icon="mdi-timer-sand" />Time Commitment: {{ timeCommitment(game.timeCommitment) }}</span>
                 </v-row>
               </v-card-text>
             </v-card>
