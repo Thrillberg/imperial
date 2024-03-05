@@ -1,9 +1,0 @@
-pgdata/
-node_modules/
-tmp/
-.git*
-log/
-vendor/
-.git
-log/*
-tmp/*
