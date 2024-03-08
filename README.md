@@ -108,5 +108,3 @@ Visit `/exports/[game_id]` and a `JSON` file will be downloaded to your computer
 ### Importing a game
 
 Visit `http://localhost:3000/import_game` and paste the contents of the downloaded `JSON` in the box and click `Import game`. This will reconstruct the game locally in your database and let you play around with it and, hopefully, improve debugging.
-
-Please *only* do this in local development. Imported games are not allowed on the production database.

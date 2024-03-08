@@ -15,7 +15,10 @@ Rails.application.routes.draw do
 
   resources :clone_games, only: [:create]
   resources :exports, only: [:show]
-  resources :imports, only: [:create]
+
+  unless Rails.env.production?
+    resources :imports, only: [:create]
+  end
 
   namespace :api do
     resources :games, only: [:index, :create]
