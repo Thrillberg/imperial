@@ -78,11 +78,20 @@ class GameChannel < ApplicationCable::Channel
             .perform_later(next_player.id, game.id)
         end
         # Send Discord notification
+        current_player_identifier = next_player_name
         current_player_discord_id = next_player&.discord_id
-        if current_player_discord_id.present? && ENV["RAILS_ENV"] == "production"
+        if current_player_discord_id
+          current_player_identifier = "<@#{current_player_discord_id}>"
+        end
+        if ENV["RAILS_ENV"] == "production"
           puts "Preparing to send notifyNextPlayer Discord notification"
           DiscordTurnNotificationJob.set(wait: 5.minutes)
-            .perform_later(current_player_discord_id, next_player.id, game.id, game.name)
+            .perform_later(
+              current_player_identifier,
+              next_player.id,
+              game.id,
+              game.name
+            )
         end
 
         game.last_move.update(player_notified_at: Time.now)
