@@ -70,16 +70,20 @@ class GameChannel < ApplicationCable::Channel
       next_player_name = data["data"]["nextPlayerName"]
       next_player = game.users.find_by(name: next_player_name)
 
-      if !game.winner && !game.last_move&.player_notified_at && !game.cloned_from_game
+      if next_player &&
+          !game.winner &&
+          !game.last_move&.player_notified_at &&
+          !game.cloned_from_game
+
         # Send email notification
-        should_send_turn_notification = next_player&.turn_notifications_enabled
+        should_send_turn_notification = next_player.turn_notifications_enabled
         if should_send_turn_notification
           TurnNotificationJob.set(wait: 1.hour)
             .perform_later(next_player.id, game.id)
         end
         # Send Discord notification
         current_player_identifier = next_player_name
-        current_player_discord_id = next_player&.discord_id
+        current_player_discord_id = next_player.discord_id
         if current_player_discord_id
           current_player_identifier = "<@#{current_player_discord_id}>"
         end
