@@ -642,7 +642,8 @@ export default {
     TurnStatus,
   },
   beforeRouteLeave(to, from, next) {
-    apiClient.userStoppedObservingGame(this.profile.username, this.$route.params.id);
+    // TODO: Uncomment when we want to implement game-observing users
+    // apiClient.userStoppedObservingGame(this.profile.username, this.$route.params.id);
     next();
   },
   props: {
@@ -728,7 +729,8 @@ export default {
   created() {
     apiClient.getGameLog(this.$route.params.id);
     window.addEventListener('beforeunload', this.beforeWindowUnload);
-    apiClient.userObservingGame(this.profile.username, this.$route.params.id);
+    // TODO: Uncomment when we want to implement game-observing users
+    // apiClient.userObservingGame(this.profile.username, this.$route.params.id);
     setFavicon(this.games, this.profile, this.$route.params.id);
   },
   updated() {
@@ -750,9 +752,10 @@ export default {
         import('../boardAsiaConfigs').then((resp) => { this.boardConfig = resp.default.imperialAsia; });
       }
     },
-    beforeWindowUnload() {
-      apiClient.userStoppedObservingGame(this.profile.username, this.$route.params.id);
-    },
+    // TODO: Uncomment when we want to implement game-observing users
+    // beforeWindowUnload() {
+    //   apiClient.userStoppedObservingGame(this.profile.username, this.$route.params.id);
+    // },
     otherPlayersInGame() {
       const players = this.playersInGame;
       return players.filter((player) => player !== this.profile.username);
