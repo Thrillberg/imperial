@@ -14,7 +14,6 @@
 // const images = require.context('../images', true)
 // const imagePath = (name) => images(name, true)
 
-import '@mdi/font/css/materialdesignicons.css';
 import { createApp } from 'vue';
 import VueCookies from 'vue3-cookies';
 
@@ -22,11 +21,58 @@ import * as Sentry from '@sentry/vue';
 
 import { createVuetify } from 'vuetify';
 /* eslint-disable import/no-unresolved */
+import { aliases, mdi } from 'vuetify/iconsets/mdi-svg';
+// import {
+//   VApp,
+//   VContainer,
+//   VLayout,
+//   VMain,
+//   VProgressCircular,
+//   VDialog,
+//   VBtn,
+//   VCard,
+//   VCardTitle,
+//   VCardText,
+//   VRow,
+//   VCol,
+//   VCardActions,
+//   VTooltip,
+//   VSheet,
+//   VToolbar,
+//   VTable,
+//   VTextField,
+//   VRadio,
+//   VRadioGroup,
+//   VForm,
+// } from 'vuetify/components';
 import * as components from 'vuetify/components';
-import * as directives from 'vuetify/directives';
-import { aliases, mdi } from 'vuetify/iconsets/mdi';
-import '../styles/site.scss';
 /* eslint-enable import/no-unresolved */
+import {
+  mdiAccount,
+  mdiAccountGroup,
+  mdiAccountPlus,
+  mdiBookOpenVariant,
+  mdiCircle,
+  mdiCircleMedium,
+  mdiClose,
+  mdiContentDuplicate,
+  mdiCrown,
+  mdiEmailOutline,
+  mdiFlag,
+  mdiFullscreen,
+  mdiHelpCircleOutline,
+  mdiHome,
+  mdiIncognito,
+  mdiInformation,
+  mdiLogout,
+  mdiScriptTextOutline,
+  mdiStar,
+  mdiThemeLightDark,
+  mdiTimerSand,
+  mdiTrophy,
+} from '@mdi/js';
+import '../styles/site.scss';
+
 import { VueMasonryPlugin } from 'vue-masonry';
 import { nationColors } from '../../../nationColors';
 import App from '../src/App.vue';
@@ -54,10 +100,56 @@ const lightTheme = {
 
 const vuetify = createVuetify({
   components,
-  directives,
+  // components: {
+  //   VApp,
+  //   VLayout,
+  //   VMain,
+  //   VContainer,
+  //   VProgressCircular,
+  //   VDialog,
+  //   VBtn,
+  //   VCard,
+  //   VCardTitle,
+  //   VCardText,
+  //   VRow,
+  //   VCol,
+  //   VCardActions,
+  //   VTooltip,
+  //   VSheet,
+  //   VToolbar,
+  //   VTable,
+  //   VTextField,
+  //   VRadio,
+  //   VRadioGroup,
+  //   VForm,
+  // },
   icons: {
     defaultSet: 'mdi',
-    aliases,
+    aliases: {
+      ...aliases,
+      account: mdiAccount,
+      accountGroup: mdiAccountGroup,
+      accountPlus: mdiAccountPlus,
+      bookOpenVariant: mdiBookOpenVariant,
+      close: mdiClose,
+      circle: mdiCircle,
+      circleMedium: mdiCircleMedium,
+      contentDuplicate: mdiContentDuplicate,
+      crown: mdiCrown,
+      emailOutline: mdiEmailOutline,
+      flag: mdiFlag,
+      fullscreen: mdiFullscreen,
+      helpCircleOutline: mdiHelpCircleOutline,
+      home: mdiHome,
+      incognito: mdiIncognito,
+      information: mdiInformation,
+      logout: mdiLogout,
+      scriptTextOutline: mdiScriptTextOutline,
+      star: mdiStar,
+      themeLightDark: mdiThemeLightDark,
+      timerSand: mdiTimerSand,
+      trophy: mdiTrophy,
+    },
     sets: {
       mdi,
     },

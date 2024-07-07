@@ -106,4 +106,4 @@ export default {
 };
 </script>
 
-<style src="../assets/tailwind.css" />
+<style src="../assets/styles.css" />

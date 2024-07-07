@@ -29,7 +29,7 @@
 
           <template #append>
             <v-btn
-              icon="mdi-close"
+              icon="$close"
               @click="dialog = false"
             />
           </template>

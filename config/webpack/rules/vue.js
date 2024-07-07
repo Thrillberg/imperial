@@ -32,7 +32,7 @@ module.exports = {
   plugins: [
     new webpack.EnvironmentPlugin(['NODE_ENV']),
     new VueLoaderPlugin(),
-    new VuetifyPlugin({ autoImport: true }),
+    new VuetifyPlugin({ autoImport: true, styles: { configFile: 'app/javascript/src/assets/styles.css' } }),
     new webpack.DefinePlugin({
       __VUE_OPTIONS_API__: 'true',
       __VUE_PROD_DEVTOOLS__: 'false',

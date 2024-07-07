@@ -28,7 +28,7 @@
                 v-if="onlineUsers.includes(player.name)"
                 color="blue"
               >
-                mdi-circle-medium
+                $circleMedium
               </v-icon>
             </template>
             {{ player.name }}

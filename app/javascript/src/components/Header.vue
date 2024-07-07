@@ -7,7 +7,7 @@
     <v-btn
       v-if="$route.path !== '/'"
       to="/"
-      prepend-icon="mdi-home"
+      prepend-icon="$home"
       stacked
     >
       Home
@@ -31,7 +31,7 @@
         <!-- User is registered and signed in -->
         <v-btn
           v-if="profile.email"
-          prepend-icon="mdi-account"
+          :prepend-icon="mdiAccount"
           class="text-none"
           stacked
           v-bind="props"
@@ -41,8 +41,8 @@
         <!-- User is anonymous (not registered) and signed in -->
         <v-btn
           v-if="profile.anonymityConfirmedAt && !profile.email"
-          prepend-icon="mdi-incognito"
-          class="text-none"
+          prepend-icon="$incognito"
+          class="text-none incognito"
           stacked
           v-bind="props"
         >
@@ -51,8 +51,8 @@
         <!-- User is not signed in -->
         <v-btn
           v-if="!profile.anonymityConfirmedAt && !profile.email"
-          icon="mdi-incognito"
-          class="text-none"
+          icon="$incognito"
+          class="text-none incognito"
           stacked
           v-bind="props"
         />
@@ -61,45 +61,46 @@
         <!-- User is registered and signed in -->
         <v-list-item
           v-if="profile.email"
-          prepend-icon="mdi-account"
+          prepend-icon="$account"
           title="Profile"
           :to="'/users/' + profile.id"
         />
         <v-list-item
           v-if="profile.email"
-          prepend-icon="mdi-logout"
+          prepend-icon="$logout"
           title="Sign out"
           @click="signOut"
         />
         <!-- User is anonymous (not registered) and signed in -->
         <v-list-item
           v-if="profile.anonymityConfirmedAt && !profile.email"
-          prepend-icon="mdi-account-plus"
+          prepend-icon="$accountPlus"
           title="Register"
           @click="register"
         />
         <v-list-item
           v-if="profile.anonymityConfirmedAt && !profile.email"
-          prepend-icon="mdi-logout"
+          prepend-icon="$logout"
           title="Permanently sign out"
           @click="signOut"
         />
         <!-- User is not signed in -->
         <v-list-item
           v-if="!profile.anonymityConfirmedAt && !profile.email"
-          prepend-icon="mdi-account"
+          prepend-icon="$account"
           title="Sign In"
           @click="signIn"
         />
         <v-list-item
           v-if="!profile.anonymityConfirmedAt && !profile.email"
-          prepend-icon="mdi-account-plus"
+          prepend-icon="$accountPlus"
           title="Register"
           @click="register"
         />
         <v-list-item
           v-if="!profile.anonymityConfirmedAt && !profile.email && Object.keys(profile).length > 0"
-          prepend-icon="mdi-incognito"
+          prepend-icon="$incognito"
+          class="incognito"
           @click="setAnonymous"
         >
           Play anonymously as {{ profile.username }}
@@ -107,7 +108,7 @@
       </v-list>
     </v-menu>
     <v-btn
-      icon="mdi-theme-light-dark"
+      icon="$themeLightDark"
       @click="toggleTheme"
     />
   </v-app-bar>
@@ -119,7 +120,7 @@
       >
         <template #prepend>
           <v-icon color="primary-darken-1">
-            mdi-crown
+            $crown
           </v-icon>
         </template>
       </v-list-item>
@@ -130,7 +131,7 @@
       >
         <template #prepend>
           <v-icon color="primary-darken-1">
-            mdi-content-duplicate
+            $contentDuplicate
           </v-icon>
         </template>
       </v-list-item>
@@ -140,7 +141,7 @@
       >
         <template #prepend>
           <v-icon color="primary-darken-1">
-            mdi-information
+            $information
           </v-icon>
         </template>
       </v-list-item>
@@ -150,7 +151,7 @@
       >
         <template #prepend>
           <v-icon color="primary-darken-1">
-            mdi-trophy
+            $trophy
           </v-icon>
         </template>
       </v-list-item>

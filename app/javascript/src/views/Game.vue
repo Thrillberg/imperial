@@ -6,7 +6,7 @@
     >
       <template #activator="{ props }">
         <v-btn
-          prepend-icon="mdi-help-circle-outline"
+          prepend-icon="$helpCircleOutline"
           variant="plain"
           size="x-large"
           style="position: fixed; z-index: 1; top: calc(100vh - 60px); height: 0px;"
@@ -24,7 +24,7 @@
                   How to Play Imperial
                   <template #append>
                     <v-btn
-                      icon="mdi-close"
+                      icon="$close"
                       @click="rulesDialogFromSidebar = false"
                     />
                   </template>
@@ -75,7 +75,7 @@
         </v-btn>
       </v-col>
       <v-col class="text-right my-auto mx-2">
-        <span><v-icon icon="mdi-timer-sand" /> <b>Time Commitment:</b> {{ timeCommitment(gameData.timeCommitment) }}</span>
+        <span><v-icon icon="$timerSand" /> <b>Time Commitment:</b> {{ timeCommitment(gameData.timeCommitment) }}</span>
       </v-col>
       <v-col
         v-if="playersInGame.length === 1"
@@ -91,7 +91,7 @@
             <v-btn
               class="text-none"
               color="primary"
-              prepend-icon="mdi-book-open-variant"
+              prepend-icon="$bookOpenVariant"
               v-bind="props"
             >
               How do I play Imperial?
@@ -103,7 +103,7 @@
                 How to Play Imperial
                 <template #append>
                   <v-btn
-                    icon="mdi-close"
+                    icon="$close"
                     @click="rulesDialog = false"
                   />
                 </template>
@@ -161,7 +161,7 @@
                     v-bind="props"
                     size="x-large"
                   >
-                    mdi-fullscreen
+                    $fullscreen
                   </v-icon>
                 </template>
               </v-tooltip>
@@ -176,7 +176,7 @@
                     v-bind="props"
                     size="x-large"
                   >
-                    mdi-flag
+                    $flag
                   </v-icon>
                 </template>
               </v-tooltip>
@@ -191,7 +191,7 @@
                     v-bind="props"
                     size="x-large"
                   >
-                    mdi-account-group
+                    $accountGroup
                   </v-icon>
                 </template>
               </v-tooltip>
@@ -206,7 +206,7 @@
                     v-bind="props"
                     size="x-large"
                   >
-                    mdi-script-text-outline
+                    $scriptTextOutline
                   </v-icon>
                 </template>
               </v-tooltip>

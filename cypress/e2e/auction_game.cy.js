@@ -19,7 +19,9 @@ describe('Auction game', () => {
     // IT
     cy.get('.v-card-actions').contains('Do not buy a bond').click();
     cy.get('.v-card-actions').contains('Do not buy a bond').click();
-    cy.get('.mdi-close').click();
+    cy.get('.v-card-title').within(() => {
+      cy.get('button').click();
+    });
     cy.contains('Undo').click();
     cy.contains('Buy a bond').click();
     cy.get('.bg-IT').contains('2:4').click();

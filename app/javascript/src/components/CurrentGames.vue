@@ -41,7 +41,7 @@
                       <v-icon
                         v-if="users.includes(player.name)"
                         color="success"
-                        icon="mdi-circle"
+                        icon="$circle"
                         size="small"
                       />
                       {{ player.name }}

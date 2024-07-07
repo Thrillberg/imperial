@@ -19,7 +19,9 @@ describe('Without Investor Card game', () => {
     // IT
     cy.get('.v-card-actions').contains('Do not buy a bond').click();
     cy.get('.v-card-actions').contains('Do not buy a bond').click();
-    cy.get('.mdi-close').click();
+    cy.get('.v-card-title').within(() => {
+      cy.get('button').click();
+    });
     cy.contains('Undo').click();
     cy.contains('Do not buy a bond').click();
     cy.contains('Do not buy a bond').click();

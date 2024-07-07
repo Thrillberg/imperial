@@ -32,7 +32,7 @@
                 #prepend
               >
                 <v-btn
-                  icon="mdi-star"
+                  icon="$star"
                   color="yellow"
                 />
               </template>
@@ -52,7 +52,7 @@
                       <v-icon
                         v-if="users.includes(player.name)"
                         color="success"
-                        icon="mdi-circle"
+                        icon="$circle"
                         size="small"
                       />
                       {{ player.name }}
@@ -67,7 +67,7 @@
                     />
                   </v-col>
                   <v-divider class="my-2" />
-                  <span><v-icon icon="mdi-timer-sand" />Time Commitment: {{ timeCommitment(game.timeCommitment) }}</span>
+                  <span><v-icon icon="$timerSand" />Time Commitment: {{ timeCommitment(game.timeCommitment) }}</span>
                 </v-row>
               </v-card-text>
             </v-card>

@@ -16,7 +16,7 @@
       <v-card-text>
         <v-radio-group
           v-model="turnNotificationsEnabled"
-          prepend-icon="mdi-email-outline"
+          prepend-icon="$emailOutline"
           label="Send me turn notifications via email"
         >
           <v-radio
