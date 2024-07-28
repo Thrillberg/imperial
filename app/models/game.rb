@@ -45,11 +45,34 @@ class Game < ActiveRecord::Base
 
   def to_json
     observers = JSON.parse(REDIS.get("users_observing_games"))[id] || []
-    parsed_latest_state = nil
     latest_state = snapshots.order(:created_at).last&.state
-    if latest_state
-      parsed_latest_state = JSON.parse(latest_state)["state"]
-    end
+    parsed_latest_state = latest_state ? JSON.parse(latest_state)["state"] : nil
+    {
+      name: name,
+      id: id,
+      base_game: base_game,
+      host: host.name,
+      players: users.map(&:to_json_in_game),
+      force_ended_at: force_ended_at,
+      cancelled_at: cancelled_at,
+      created_at: created_at,
+      current_player_name: current_player&.name,
+      started_at: started_at,
+      winner_name: winner&.name,
+      observers: observers,
+      variant: variant,
+      last_move_at: last_move_at,
+      cloned_from_game: cloned_from_game&.id,
+      is_public: is_public,
+      time_commitment: time_commitment,
+      latest_state: parsed_latest_state
+    }
+  end
+
+  def to_json_with_observers(observers)
+    latest_state = snapshots.order(:created_at).last&.state
+    parsed_latest_state = latest_state ? JSON.parse(latest_state)["state"] : nil
+
     {
       name: name,
       id: id,

@@ -1,6 +1,13 @@
 class PagesController < ActionController::Base
   def index
-    @games = Game.current.includes(:host, :current_player, :users, :winner, :cloned_from_game).map(&:to_json)
+    raw_games = Game.current.includes(:host, :current_player, :users, :winner, :cloned_from_game)
+    redis_data = JSON.parse(REDIS.get("users_observing_games"))
+
+    @games = raw_games.map do |game|
+      observers = redis_data[game.id.to_s] || []
+      game.to_json_with_observers(observers)
+    end
+
     render layout: "application"
   end
 
