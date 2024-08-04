@@ -22,29 +22,6 @@ import * as Sentry from '@sentry/vue';
 import { createVuetify } from 'vuetify';
 /* eslint-disable import/no-unresolved */
 import { aliases, mdi } from 'vuetify/iconsets/mdi-svg';
-// import {
-//   VApp,
-//   VContainer,
-//   VLayout,
-//   VMain,
-//   VProgressCircular,
-//   VDialog,
-//   VBtn,
-//   VCard,
-//   VCardTitle,
-//   VCardText,
-//   VRow,
-//   VCol,
-//   VCardActions,
-//   VTooltip,
-//   VSheet,
-//   VToolbar,
-//   VTable,
-//   VTextField,
-//   VRadio,
-//   VRadioGroup,
-//   VForm,
-// } from 'vuetify/components';
 import * as components from 'vuetify/components';
 /* eslint-enable import/no-unresolved */
 import {
@@ -100,29 +77,6 @@ const lightTheme = {
 
 const vuetify = createVuetify({
   components,
-  // components: {
-  //   VApp,
-  //   VLayout,
-  //   VMain,
-  //   VContainer,
-  //   VProgressCircular,
-  //   VDialog,
-  //   VBtn,
-  //   VCard,
-  //   VCardTitle,
-  //   VCardText,
-  //   VRow,
-  //   VCol,
-  //   VCardActions,
-  //   VTooltip,
-  //   VSheet,
-  //   VToolbar,
-  //   VTable,
-  //   VTextField,
-  //   VRadio,
-  //   VRadioGroup,
-  //   VForm,
-  // },
   icons: {
     defaultSet: 'mdi',
     aliases: {
@@ -197,4 +151,12 @@ document.addEventListener('DOMContentLoaded', () => {
   document.body.appendChild(appElement);
 
   app.mount('#app');
+});
+
+window.addEventListener('unhandledrejection', (event) => {
+  Sentry.captureException(event.reason);
+});
+
+window.addEventListener('error', (event) => {
+  Sentry.captureException(event.error);
 });

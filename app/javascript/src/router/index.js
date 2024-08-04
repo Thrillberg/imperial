@@ -1,11 +1,10 @@
-import { Logtail } from '@logtail/browser';
 import ActionCable from 'actioncable';
 import { createRouter, createWebHistory } from 'vue-router';
+import * as Sentry from '@sentry/vue';
 import Home from '../views/Home.vue';
 
 class APIClient {
   constructor() {
-    this.logtail = new Logtail('3bdHcA8P3mcww2ojgC5G8YiT');
     this.ws = this.initws();
     this.handlers = {};
     this.messageQueue = [];
@@ -22,7 +21,6 @@ class APIClient {
         if (this.handlers[envelope.kind]) {
           this.handlers[envelope.kind](envelope.data);
         } else {
-          this.logtail.error('unhandled websocket envelope kind in GameChannel', envelope);
           throw new Error(`unhandled kind: ${envelope.kind}`);
         }
       },
@@ -32,7 +30,6 @@ class APIClient {
         if (this.handlers[envelope.kind]) {
           this.handlers[envelope.kind](envelope.data);
         } else {
-          this.logtail.error('unhandled websocket envelope kind in AppearanceChannel', envelope);
           throw new Error(`unhandled kind: ${envelope.kind}`);
         }
       },
@@ -337,6 +334,31 @@ const router = createRouter({
   scrollBehavior() {
     return { x: 0, y: 0 };
   },
+});
+
+router.beforeEach((to, from, next) => {
+  Sentry.addBreadcrumb({
+    category: 'navigation',
+    message: `Navigating from ${from.fullPath} to ${to.fullPath}`,
+    level: 'info',
+    data: {
+      from: from.fullPath,
+      to: to.fullPath,
+    },
+  });
+  next();
+});
+
+router.afterEach((to, from) => {
+  Sentry.addBreadcrumb({
+    category: 'navigation',
+    message: `Finished navigating to ${to.fullPath}`,
+    level: 'info',
+    data: {
+      from: from.fullPath,
+      to: to.fullPath,
+    },
+  });
 });
 
 export default router;

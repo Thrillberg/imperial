@@ -1,6 +1,5 @@
 {
   "dependencies": {
-    "@logtail/browser": "^0.3.0",
     "@mdi/font": "^7.2.96",
     "@mdi/js": "^7.4.47",
     "@rails/webpacker": "git+https://github.com/rails/webpacker.git",
