@@ -38,7 +38,7 @@
               </template>
               <v-card-text>
                 <Board
-                  :config="boardConfigs[game.baseGame]"
+                  :config="boardConfigs?.[game?.baseGame]"
                   :game="Imperial.loadFromJSON(JSON.parse(game.latestState))"
                   :game-started="true"
                 />
