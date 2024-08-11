@@ -109,7 +109,6 @@ export default {
   },
   beforeUnmount() {
     apiClient.clearHandlers();
-    apiClient.ws.close();
   },
   created() {
     this.games = this.initialGames.map((game) => {
