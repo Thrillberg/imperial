@@ -152,11 +152,3 @@ document.addEventListener('DOMContentLoaded', () => {
 
   app.mount('#app');
 });
-
-window.addEventListener('unhandledrejection', (event) => {
-  Sentry.captureException(event.reason);
-});
-
-window.addEventListener('error', (event) => {
-  Sentry.captureException(event.error);
-});

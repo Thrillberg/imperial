@@ -37,8 +37,13 @@ class APIClient {
     return ws;
   }
 
-  onclose() {
-    this.ws = this.initws();
+  onclose(event) {
+    console.log(`WebSocket closed with code: ${event.code}, reason: ${event.reason}`);
+    if (event.code !== 1000) {
+      setTimeout(() => {
+        this.ws = this.initws();
+      }, 5000);
+    }
   }
 
   send(data, channel) {
