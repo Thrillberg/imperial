@@ -155,6 +155,8 @@ class GameChannel < ApplicationCable::Channel
       broadcast_games "game_channel", "updateGames"
 
     end
+  rescue => e
+    Rails.logger.error(e)
   end
 
   private
