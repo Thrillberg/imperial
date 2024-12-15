@@ -503,4 +503,120 @@ describe('auction', () => {
       expect(game.availableActions).toEqual(expectedActions);
     });
   });
+
+  describe('another real game example', () => {
+    const newGame = () => {
+      const game = new Imperial();
+      game.tick(
+        Action.initialize({
+          players: [
+            { id: 'm' },
+            { id: 'e' },
+            { id: 't' },
+            { id: 'f' },
+          ],
+          soloMode: false,
+          variant: 'auction',
+          baseGame: 'imperial2030',
+        }),
+      );
+      return game;
+    };
+
+    test('whole auction', () => {
+      const game = newGame();
+      const expectedActions = new Set([
+        Action.skipBondPurchase({ player: 't', nation: Nation2030.IN }),
+        Action.undo({ player: 'm' }),
+      ]);
+      [2, 4, 6, 9, 12, 16].forEach((cost) => {
+        expectedActions.add(
+          Action.bondPurchase({
+            nation: Nation2030.IN,
+            cost,
+            tradeInValue: 0,
+            player: 't',
+          }),
+        );
+      });
+
+      // Russia
+      // m
+      game.tick(
+        Action.bondPurchase({
+          player: 'm', cost: 6, nation: Nation2030.RU, tradeInValue: 0,
+        }),
+      );
+      game.tick(
+        Action.undo({ player: 'm' }),
+      );
+      game.tick(
+        Action.bondPurchase({
+          player: 'm', cost: 6, nation: Nation2030.RU, tradeInValue: 0,
+        }),
+      );
+
+      // e
+      game.tick(
+        Action.bondPurchase({
+          player: 'e', cost: 9, nation: Nation2030.RU, tradeInValue: 0,
+        }),
+      );
+
+      // t
+      game.tick(
+        Action.skipBondPurchase({ player: 't', nation: Nation2030.RU }),
+      );
+
+      // f
+      game.tick(
+        Action.bondPurchase({
+          player: 'f', cost: 4, nation: Nation2030.RU, tradeInValue: 0,
+        }),
+      );
+
+      // China
+      // e
+      game.tick(
+        Action.bondPurchase({
+          player: 'e', cost: 6, nation: Nation2030.CN, tradeInValue: 0,
+        }),
+      );
+
+      // t
+      game.tick(
+        Action.skipBondPurchase({ player: 't', nation: Nation2030.CN }),
+      );
+
+      // f
+      game.tick(
+        Action.skipBondPurchase({ player: 'f', nation: Nation2030.CN }),
+      );
+
+      // m
+      game.tick(
+        Action.bondPurchase({
+          player: 'm', cost: 12, nation: Nation2030.CN, tradeInValue: 0,
+        }),
+      );
+      game.tick(
+        Action.undo({ player: 'm' }),
+      );
+      game.tick(
+        Action.bondPurchase({
+          player: 'm', cost: 9, nation: Nation2030.CN, tradeInValue: 0,
+        }),
+      );
+      game.tick(
+        Action.undo({ player: 'm' }),
+      );
+      game.tick(
+        Action.bondPurchase({
+          player: 'm', cost: 12, nation: Nation2030.CN, tradeInValue: 0,
+        }),
+      );
+
+      expect(game.availableActions).toEqual(expectedActions);
+    });
+  });
 });
