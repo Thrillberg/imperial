@@ -128,12 +128,10 @@ document.addEventListener('DOMContentLoaded', () => {
       app,
       dsn: 'https://cd525e4c75fe2fd58a52ac7cc91acee9@o987046.ingest.sentry.io/4506082726445056',
       integrations: [
-        new Sentry.BrowserTracing({
-          tracePropagationTargets: ['localhost', /^https:\/\/playimperial\.club/],
-          routingInstrumentation: Sentry.vueRouterInstrumentation(router),
-        }),
-        new Sentry.Replay(),
+        Sentry.browserTracingIntegration({ router }),
+        Sentry.replayIntegration(),
       ],
+      tracePropagationTargets: ['localhost', /^https:\/\/playimperial\.club/],
       // Performance Monitoring
       tracesSampleRate: 0.5, // Capture 50% of the transactions
       // Session Replay
