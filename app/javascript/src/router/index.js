@@ -8,6 +8,7 @@ class APIClient {
     this.ws = this.initws();
     this.handlers = {};
     this.messageQueue = [];
+    this.maxQueueSize = 100;
   }
 
   initws() {
@@ -21,7 +22,7 @@ class APIClient {
         if (this.handlers[envelope.kind]) {
           this.handlers[envelope.kind](envelope.data);
         } else {
-          throw new Error(`unhandled kind: ${envelope.kind}`);
+          console.warn(`Unhandled kind: ${envelope.kind}`, envelope);
         }
       },
     });
@@ -30,7 +31,7 @@ class APIClient {
         if (this.handlers[envelope.kind]) {
           this.handlers[envelope.kind](envelope.data);
         } else {
-          throw new Error(`unhandled kind: ${envelope.kind}`);
+          console.warn(`Unhandled kind: ${envelope.kind}`, envelope);
         }
       },
     });
@@ -40,10 +41,16 @@ class APIClient {
   onclose(event) {
     console.log(`WebSocket closed with code: ${event.code}, reason: ${event.reason}`);
     if (event.code !== 1000) {
+      this.ws?.connection?.webSocket?.close();
+
       setTimeout(() => {
         this.ws = this.initws();
       }, 5000);
     }
+  }
+
+  beforeunload() {
+    this.ws?.connection?.webSocket?.close();
   }
 
   send(data, channel) {
@@ -55,6 +62,10 @@ class APIClient {
       };
       this.ws.send(sendableData);
     } else {
+      if (this.messageQueue.length >= this.maxQueueSize) {
+        console.warn('Message queue is full, dropping message');
+        return;
+      }
       this.messageQueue.push(data);
     }
   }
