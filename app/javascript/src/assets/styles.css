@@ -1,10 +1,12 @@
 .hoverable {
   stroke-width: 0.5px;
   filter: brightness(0.7);
+  -webkit-filter: brightness(0.7);
 }
 
 .hoverable:hover {
   filter: url(#brightness);
+  -webkit-filter: url(#brightness);
 }
 
 .tooltip .tooltip-text {

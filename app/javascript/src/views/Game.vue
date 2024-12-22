@@ -74,7 +74,7 @@
           Clone game
         </v-btn>
       </v-col>
-      <v-col class="text-right my-auto mx-2">
+      <v-col class="text-right my-auto mx-2" v-if="gameData.timeCommitment">
         <span><v-icon icon="$timerSand" /> <b>Time Commitment:</b> {{ timeCommitment(gameData.timeCommitment) }}</span>
       </v-col>
       <v-col

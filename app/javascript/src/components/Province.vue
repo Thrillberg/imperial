@@ -145,9 +145,9 @@ export default {
     province.prepend(provincePath, province.children[0]);
     // Add hoverable effect for maneuvers
     if (this.isValid) {
-      this.$refs.province.children[0].classList.add('hoverable');
+      this.$refs.province.classList.add('hoverable');
     } else {
-      this.$refs.province.children[0].classList.remove('hoverable');
+      this.$refs.province.classList.remove('hoverable');
     }
     if (this.provinceWithFight) {
       this.$refs.province.children[0].children[0].animate([
