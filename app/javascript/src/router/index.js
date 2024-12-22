@@ -22,7 +22,7 @@ class APIClient {
         if (this.handlers[envelope.kind]) {
           this.handlers[envelope.kind](envelope.data);
         } else {
-          console.warn(`Unhandled kind: ${envelope.kind}`, envelope);
+          Sentry.captureMessage(`Unhandled kind: ${envelope.kind}`, envelope);
         }
       },
     });
@@ -31,7 +31,7 @@ class APIClient {
         if (this.handlers[envelope.kind]) {
           this.handlers[envelope.kind](envelope.data);
         } else {
-          console.warn(`Unhandled kind: ${envelope.kind}`, envelope);
+          Sentry.captureMessage(`Unhandled kind: ${envelope.kind}`, envelope);
         }
       },
     });
@@ -39,7 +39,7 @@ class APIClient {
   }
 
   onclose(event) {
-    console.log(`WebSocket closed with code: ${event.code}, reason: ${event.reason}`);
+    Sentry.captureMessage(`WebSocket closed with code: ${event.code}, reason: ${event.reason}`);
     if (event.code !== 1000) {
       this.ws?.connection?.webSocket?.close();
 
@@ -63,7 +63,7 @@ class APIClient {
       this.ws.send(sendableData);
     } else {
       if (this.messageQueue.length >= this.maxQueueSize) {
-        console.warn('Message queue is full, dropping message');
+        Sentry.captureMessage('Message queue is full, dropping message');
         return;
       }
       this.messageQueue.push(data);

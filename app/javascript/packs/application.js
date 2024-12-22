@@ -130,6 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
       integrations: [
         Sentry.browserTracingIntegration({ router }),
         Sentry.replayIntegration(),
+        Sentry.breadcrumbsIntegration(),
       ],
       tracePropagationTargets: ['localhost', /^https:\/\/playimperial\.club/],
       // Performance Monitoring
