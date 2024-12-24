@@ -212,12 +212,16 @@ export default class ImperialGameCoordinator {
         this.#undoHistory.undoToLastCheckpoint();
 
         Object.assign(this, this.oldState);
-        if (
-          this.auction?.inAuction
-          && this.auction.firstPlayerIndex !== Array.from(this.nations.keys()).indexOf(this.currentNation)
-        ) {
-          this.auction.firstPlayerIndex -= 1;
+        if (this.auction?.inAuction) {
+          if (this.auction.firstPlayerIndex !== Array.from(this.nations.keys()).indexOf(this.currentNation)) {
+            if (this.auction.firstPlayerIndex === 0) {
+              this.auction.firstPlayerIndex = this.auction.order.length - 1;
+            } else {
+              this.auction.firstPlayerIndex -= 1;
+            }
+          }
         }
+
         return;
       }
       case 'bondPurchase': {

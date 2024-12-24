@@ -526,13 +526,13 @@ describe('auction', () => {
     test('whole auction', () => {
       const game = newGame();
       const expectedActions = new Set([
-        Action.skipBondPurchase({ player: 't', nation: Nation2030.IN }),
-        Action.undo({ player: 'm' }),
+        Action.skipBondPurchase({ player: 't', nation: Nation2030.US }),
+        Action.undo({ player: 't' }),
       ]);
-      [2, 4, 6, 9, 12, 16].forEach((cost) => {
+      [2, 4, 6, 9].forEach((cost) => {
         expectedActions.add(
           Action.bondPurchase({
-            nation: Nation2030.IN,
+            nation: Nation2030.US,
             cost,
             tradeInValue: 0,
             player: 't',
@@ -612,7 +612,71 @@ describe('auction', () => {
       );
       game.tick(
         Action.bondPurchase({
+          player: 'm', cost: 9, nation: Nation2030.CN, tradeInValue: 0,
+        }),
+      );
+      game.tick(
+        Action.undo({ player: 'm' }),
+      );
+      game.tick(
+        Action.bondPurchase({
           player: 'm', cost: 12, nation: Nation2030.CN, tradeInValue: 0,
+        }),
+      );
+
+      // India
+      // t
+      game.tick(
+        Action.bondPurchase({
+          player: 't', cost: 4, nation: Nation2030.IN, tradeInValue: 0,
+        }),
+      );
+      // f
+      game.tick(
+        Action.bondPurchase({
+          player: 'f', cost: 6, nation: Nation2030.IN, tradeInValue: 0,
+        }),
+      );
+      // m has insufficient funds
+      // e
+      game.tick(
+        Action.bondPurchase({
+          player: 'e', cost: 2, nation: Nation2030.IN, tradeInValue: 0,
+        }),
+      );
+
+      // Brazil
+      // f
+      game.tick(
+        Action.skipBondPurchase({ player: 'f', nation: Nation2030.BR }),
+      );
+      // m has insufficient funds
+      // e
+      game.tick(
+        Action.bondPurchase({
+          player: 'e', cost: 2, nation: Nation2030.BR, tradeInValue: 0,
+        }),
+      );
+      // t
+      game.tick(
+        Action.bondPurchase({
+          player: 't', cost: 4, nation: Nation2030.BR, tradeInValue: 0,
+        }),
+      );
+      game.tick(
+        Action.undo({ player: 't' }),
+      );
+      game.tick(
+        Action.bondPurchase({
+          player: 't', cost: 4, nation: Nation2030.BR, tradeInValue: 0,
+        }),
+      );
+      game.tick(
+        Action.undo({ player: 't' }),
+      );
+      game.tick(
+        Action.bondPurchase({
+          player: 't', cost: 4, nation: Nation2030.BR, tradeInValue: 0,
         }),
       );
 

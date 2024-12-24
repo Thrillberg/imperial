@@ -178,7 +178,7 @@ export default class Auction {
     return game.currentPlayerName === this.order[this.firstPlayerIndex || 0];
   }
 
-  static advanceNation(game) {
+  static nationsInOrder = (game) => {
     let nations = [];
     switch (game.baseGame) {
       case 'imperial2030':
@@ -216,6 +216,11 @@ export default class Auction {
         break;
     }
 
+    return nations;
+  };
+
+  static advanceNation(game) {
+    const nations = this.nationsInOrder(game);
     const nationIndex = nations.indexOf(game.currentNation);
     game.currentNation = nations[nationIndex + 1];
 
