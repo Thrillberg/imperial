@@ -108,9 +108,11 @@ export default {
     },
   },
   beforeUnmount() {
+    window.removeEventListener('beforeunload', apiClient.beforeWindowUnload);
     apiClient.clearHandlers();
   },
   created() {
+    window.addEventListener('beforeunload', apiClient.beforeunload);
     this.games = this.initialGames.map((game) => {
       if (game.id === this.$route.params.id) {
         this.observers = game.observers;

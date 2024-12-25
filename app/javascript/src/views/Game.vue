@@ -728,7 +728,6 @@ export default {
   },
   created() {
     apiClient.getGameLog(this.$route.params.id);
-    window.addEventListener('beforeunload', this.beforeWindowUnload);
     // TODO: Uncomment when we want to implement game-observing users
     // apiClient.userObservingGame(this.profile.username, this.$route.params.id);
     setFavicon(this.games, this.profile, this.$route.params.id);
@@ -738,7 +737,6 @@ export default {
     document.title = `${this.gameData.name} - Imperial`;
   },
   beforeUnmount() {
-    window.removeEventListener('beforeunload', this.beforeWindowUnload);
     setFavicon(this.games, this.profile, '');
   },
 
