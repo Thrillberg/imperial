@@ -1,0 +1,8 @@
+cypress/
+node_modules/
+vendor/
+tmp/
+log/
+.git/
+spec/
+docker-compose.yml

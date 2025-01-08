@@ -39,7 +39,7 @@ Rails.application.configure do
   # config.action_cable.allowed_request_origins = [ "http://example.com", /http:\/\/example.*/ ]
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
-  config.force_ssl = true
+  config.force_ssl = false
 
   # Include generic and useful information about system operation, but avoid logging too much
   # information to avoid inadvertent exposure of personally identifiable information (PII).
@@ -101,7 +101,6 @@ Rails.application.configure do
   config.active_record.dump_schema_after_migration = false
 
   config.hosts << "www.playimperial.club"
-  config.hosts << "imperial-staging.herokuapp.com"
-  config.hosts << "staging.playimperial.club"
-  config.hosts << IPAddr.new("172.31.0.0/16")
+  config.hosts << "playimperial.club"
+  config.hosts << /\A172\.30\.\d+\.\d+\z/
 end

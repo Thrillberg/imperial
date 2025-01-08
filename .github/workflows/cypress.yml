@@ -43,8 +43,9 @@ jobs:
         PGUSER: postgres
         PGPASSWORD: postgres
         RAILS_ENV: test
+        REDIS_URL: redis://localhost:6379/0
       run: |
-        npm ci
+        yarn install
         bin/rails db:setup
         bin/webpack
     - name: Cypress run
@@ -54,5 +55,6 @@ jobs:
         PGUSER: postgres
         PGPASSWORD: postgres
         RAILS_ENV: test
+        REDIS_URL: redis://localhost:6379/0
       with:
         start: bundle exec rails server -e test -p 5002

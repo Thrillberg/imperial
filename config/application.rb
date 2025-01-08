@@ -41,8 +41,6 @@ module RailsServer
     config.middleware.use ActionDispatch::Session::CookieStore
     # config.middleware.insert_after ActionDispatch::Static, Rack::Deflater
 
-    config.hosts << "imperial-staging.herokuapp.com"
-    config.hosts << "imperial-game.herokuapp.com"
     config.hosts << "localhost"
 
     config.autoloader = :classic
