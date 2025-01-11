@@ -1,0 +1,35 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    platform: linux/amd64
+    depends_on:
+      - db
+      - redis
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - /app/vendor
+      - /app/node_modules
+    environment:
+      DATABASE_URL: postgres://postgres:password@db:5432/postgres
+      RAILS_ENV: development
+    command: ["sh", "-c", "rm -f tmp/pids/server.pid && bin/rails db:migrate && rails s -b 0.0.0.0"]
+  db:
+    image: postgres:13
+    container_name: db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: postgres
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+  redis:
+    image: redis:alpine
+volumes:
+  db-data:
+    driver: local

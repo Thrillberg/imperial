@@ -15,7 +15,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_05_193644) do
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
 
-  create_table "accounts", id: :uuid, default: -> { "public.gen_random_uuid()" }, force: :cascade do |t|
+  create_table "accounts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
     t.string "reset_password_token"
@@ -27,7 +27,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_05_193644) do
     t.index ["reset_password_token"], name: "index_accounts_on_reset_password_token", unique: true
   end
 
-  create_table "actions", id: :uuid, default: -> { "public.gen_random_uuid()" }, force: :cascade do |t|
+  create_table "actions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "data"
     t.uuid "game_id", null: false
     t.datetime "created_at", null: false
@@ -37,7 +37,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_05_193644) do
     t.index ["game_id"], name: "index_actions_on_game_id"
   end
 
-  create_table "games", id: :uuid, default: -> { "public.gen_random_uuid()" }, force: :cascade do |t|
+  create_table "games", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "name"
     t.uuid "host_id", null: false
     t.datetime "created_at", null: false
@@ -60,7 +60,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_05_193644) do
     t.index ["winner_id"], name: "index_games_on_winner_id"
   end
 
-  create_table "players", id: :uuid, default: -> { "public.gen_random_uuid()" }, force: :cascade do |t|
+  create_table "players", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "user_id", null: false
     t.uuid "game_id", null: false
     t.datetime "created_at", null: false
@@ -78,7 +78,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_05_193644) do
     t.index ["game_id"], name: "index_snapshots_on_game_id"
   end
 
-  create_table "users", id: :uuid, default: -> { "public.gen_random_uuid()" }, force: :cascade do |t|
+  create_table "users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -86,7 +86,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_05_193644) do
     t.datetime "anonymity_confirmed_at", precision: nil
     t.boolean "turn_notifications_enabled", default: false
     t.string "discord_id"
-    t.boolean "is_bot"
     t.index ["account_id"], name: "index_users_on_account_id"
   end
 

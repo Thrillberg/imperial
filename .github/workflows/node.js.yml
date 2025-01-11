@@ -23,7 +23,7 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-      - run: npm ci
+      - run: yarn install
       - name: Run eslint on changed files
         uses: tj-actions/eslint-changed-files@v18
         with:
