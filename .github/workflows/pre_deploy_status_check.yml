@@ -1,0 +1,24 @@
+name: Pre-Deploy Status Check
+
+on:
+  workflow_run:
+    workflows: ["Ruby", "Node.js CI", "Cypress Tests"]
+    branches: [main]
+    types:
+      - completed
+
+jobs:
+  check-statuses:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Workflow Statuses
+        run: |
+          required_workflows=("Ruby" "Node.js CI" "Cypress Tests")
+          for workflow in "${required_workflows[@]}"; do
+            status=$(gh run list --workflow "$workflow" --branch main --json conclusion -q '.[0].conclusion')
+            echo "$workflow: $status"
+            if [[ "$status" != "success" ]]; then
+              echo "Workflow $workflow did not succeed. Aborting deployment."
+              exit 1
+            fi
+          done
