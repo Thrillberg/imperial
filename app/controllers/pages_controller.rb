@@ -1,5 +1,7 @@
 class PagesController < ActionController::Base
   def index
+    raise ActionController::RoutingError.new("Not Found") unless route_valid?
+
     raw_games = Game.current.includes(:host, :current_player, :users, :winner, :cloned_from_game)
     redis_data = JSON.parse(REDIS.get("users_observing_games"))
 
@@ -20,5 +22,11 @@ class PagesController < ActionController::Base
     respond_to do |format|
       format.text { render plain: rules }
     end
+  end
+
+  private
+
+  def route_valid?
+    %w[register sign_in about rules game finished_games users games cloned_games import_game forgot_password reset_password rankings].any? { |path| params[:path]&.include?(path) } || !params[:path]
   end
 end

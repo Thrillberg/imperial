@@ -30,7 +30,7 @@ Rails.application.routes.draw do
 
   root "pages#index", as: :pages_index
   get "/robots.txt", to: "pages#robots"
-  get "*path", to: "pages#index", format: false
+  get "*path", to: "pages#index", constraints: ->(req) { req.format.html? }, format: false
 
   if Rails.env.test?
     namespace :cypress do
