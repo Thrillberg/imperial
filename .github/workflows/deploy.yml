@@ -1,21 +1,145 @@
 name: Deploy to AWS
 
 on:
-  workflow_run:
-    workflows: ["Pre-Deploy Status Check"]
+  push:
     branches: [main]
-    types: 
-      - completed
 
 permissions:
   id-token: write
   contents: read
 
 jobs:
+  node:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16.x]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: yarn install
+      - name: Run eslint on changed files
+        uses: tj-actions/eslint-changed-files@v18
+        with:
+          skip_annotations: true
+          file_extensions: |
+            **/*.js
+            **/*.vue
+      - run: npm test
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+  ruby:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.2.2
+          bundler-cache: true
+      - name: Install PostgreSQL client
+        run: |
+          sudo apt-get -yqq install libpq-dev
+      - name: Start Redis
+        uses: supercharge/redis-github-action@1.2.0
+        with:
+          redis-version: 4
+      - name: Build App
+        env:
+          PGHOST: localhost
+          PGUSER: postgres
+          PGPASSWORD: postgres
+          RAILS_ENV: test
+          REDIS_URL: redis://localhost:6379/0
+        run: |
+          bin/rails db:setup
+      - name: Run tests
+        env:
+          PGHOST: localhost
+          PGUSER: postgres
+          PGPASSWORD: postgres
+          RAILS_ENV: test
+          REDIS_URL: redis://localhost:6379/0
+        run: |
+          bundle exec standardrb
+          bundle exec rake
+
+  cypress:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: 3.2.2
+        bundler-cache: true
+    - name: Install PostgreSQL client
+      run: |
+        sudo apt-get -yqq install libpq-dev
+    - name: Start Redis
+      uses: supercharge/redis-github-action@1.2.0
+      with:
+        redis-version: 4
+    - name: Build App
+      env:
+        PGHOST: localhost
+        PGUSER: postgres
+        PGPASSWORD: postgres
+        RAILS_ENV: test
+        REDIS_URL: redis://localhost:6379/0
+      run: |
+        yarn install
+        bin/rails db:setup
+        bin/webpack
+    - name: Cypress run
+      uses: cypress-io/github-action@v5
+      env:
+        PGHOST: localhost
+        PGUSER: postgres
+        PGPASSWORD: postgres
+        RAILS_ENV: test
+        REDIS_URL: redis://localhost:6379/0
+      with:
+        start: bundle exec rails server -e test -p 5002
+
   deploy:
     name: Build, Push to ECR, and Deploy to Fargate
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success'}}
 
     steps:
     - name: Checkout Code
