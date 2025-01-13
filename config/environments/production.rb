@@ -1,4 +1,6 @@
 require "active_support/core_ext/integer/time"
+require "json"
+require "ipaddr"
 
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
@@ -99,6 +101,13 @@ Rails.application.configure do
 
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
+
+  aws_ip_ranges_path = Rails.root.join("config", "environments", "aws_ip_ranges.json")
+  aws_ip_ranges_data = JSON.parse(File.read(aws_ip_ranges_path))
+  aws_ips = aws_ip_ranges_data["prefixes"]
+    .select { |prefix| prefix["region"] == "us-east-1" }
+    .map { |prefix| prefix["ip_prefix"] }
+  config.action_dispatch.trusted_proxies = aws_ips.map { |ip| IPAddr.new(ip) }
 
   config.hosts << "www.playimperial.club"
   config.hosts << "playimperial.club"
