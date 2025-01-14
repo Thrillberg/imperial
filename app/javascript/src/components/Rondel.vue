@@ -293,7 +293,8 @@ export default {
     handleCircleHovered(nation) {
       this.displayHelperFlag = true;
       this.helperNation = nation;
-      this.helperText = displayNationName(nation);
+      const nationData = [...this.game.nations.entries()].find(([label]) => label.value === nation)[1];
+      this.helperText = `${displayNationName(nation)} has $${nationData.treasury}mil and ${nationData.powerPoints} Power Points`;
     },
     validSlots() {
       const slots = [];
