@@ -38,7 +38,7 @@
           </thead>
           <tbody>
             <tr
-              v-for="[nation,] of game.nations"
+              v-for="[nation, nationData] of game.nations"
               :key="nation.value"
             >
               <td>
@@ -54,7 +54,7 @@
                 {{ displayMonetaryValue_InMillions(nextNationProfit(nation)) }}
               </td>
               <td>
-                {{ nextTaxationPowerPoints(nation) }}
+                {{ nationData.powerPoints + ' → ' + nextTaxationPowerPoints(nation) }}
               </td>
             </tr>
           </tbody>
