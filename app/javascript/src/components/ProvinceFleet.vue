@@ -89,7 +89,7 @@ export default {
         return this.config.nationColors[unit.nation];
       }
 
-      return this.$refs.province.children[0].children[0].attributes.fill.value;
+      return this.$refs.province.children[0].children[0].getAttribute('fill');
     },
   },
 };

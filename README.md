@@ -51,15 +51,15 @@ bin/setup
 sudo su postgres -c "psql rails_server_development -c 'CREATE EXTENSION pgcrypto;'"
 ```
 - If you get the error `‘ruby\r’: No such file or directory`, make sure your editor's line-endings are set to `LF` instead of `CRLF`.
-6. Run the npm install command:
+6. Run the yarn install command:
 ```
-npm install
+yarn
 ```
-7. In one terminal window, run webpack:
+7. In one terminal window, run vite:
 ```
-bin/webpack --watch
+bin/vite dev
 ```
-8. Keep webpack running and in a separate terminal window, run the Rails server:
+8. Keep vite running and in a separate terminal window, run the Rails server:
 ```
 rails s
 ```
@@ -87,7 +87,6 @@ This project also uses [Cypress](https://www.cypress.io/) for feature tests. **T
 run these tests, run the following command from the project root:
 
 ```
-bin/webpack
 ./test_server
 ```
 

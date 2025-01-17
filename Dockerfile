@@ -12,6 +12,6 @@ COPY package.json yarn.lock ./
 RUN npm install -g yarn@1.22.21
 RUN yarn install
 COPY . .
-RUN bundle exec ./bin/webpack
+RUN bundle exec rails assets:precompile
 EXPOSE 80
 CMD ["rails", "s", "-b", "0.0.0.0", "-p", "80"]
