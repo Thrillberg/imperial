@@ -83,7 +83,7 @@
 
 <script>
 import { DateTime } from 'luxon';
-import { nationColors } from '../../../../nationColors';
+import nationColors from '../../../../nationColors';
 
 import {
   capitalize,
