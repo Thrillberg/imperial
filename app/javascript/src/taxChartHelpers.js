@@ -1,3 +1,3 @@
-export const nextTaxationPowerPoints = (game, nationName) => {
-  return game.nations.get(nationName).powerPoints + game.powerPointsGainedFrom(game.taxRevenueOf(nationName));
-};
+export default (game, nationName) => (
+  game.nations.get(nationName).powerPoints + game.powerPointsGainedFrom(game.taxRevenueOf(nationName))
+);

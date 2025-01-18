@@ -14,7 +14,7 @@ import { GChart } from 'vue-google-charts';
 
 import Imperial from '../../Domain/ImperialGameCoordinator';
 
-import { nationColors } from '../../../../nationColors';
+import nationColors from '../../../../nationColors';
 
 export default {
   components: { GChart },

@@ -2,23 +2,23 @@
   <div class="flex flex-wrap">
     <PowerPointSlot
       v-for="powerPointSlot in power_points"
-      v-bind:powerPointSlot="powerPointSlot.slot"
-      v-bind:nations="powerPointSlot.nations"
-      v-bind:key="powerPointSlot.slot"
-    ></PowerPointSlot>
+      :key="powerPointSlot.slot"
+      :power-point-slot="powerPointSlot.slot"
+      :nations="powerPointSlot.nations"
+    />
   </div>
 </template>
 
 <script>
-import PowerPointSlot from "./PowerPointSlot.vue";
+import PowerPointSlot from './PowerPointSlot.vue';
 
 export default {
-  name: "PowerPointsChart",
-  props: {
-    power_points: Array
-  },
+  name: 'PowerPointsChart',
   components: {
-    PowerPointSlot
-  }
+    PowerPointSlot,
+  },
+  props: {
+    power_points: Array,
+  },
 };
 </script>

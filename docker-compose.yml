@@ -7,16 +7,31 @@ services:
     depends_on:
       - db
       - redis
+      - vite
     ports:
       - "3000:3000"
+    environment:
+      DATABASE_URL: postgres://postgres:password@db:5432/postgres
+      RAILS_ENV: development
+      REDIS_URL: redis://redis:6379/0
     volumes:
       - .:/app
       - /app/vendor
       - /app/node_modules
-    environment:
-      DATABASE_URL: postgres://postgres:password@db:5432/postgres
-      RAILS_ENV: development
+      - ./public:/app/public
+      - ./log:/app/log
     command: ["sh", "-c", "rm -f tmp/pids/server.pid && bin/rails db:migrate && rails s -b 0.0.0.0"]
+  vite:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    platform: linux/amd64
+    environment:
+      RAILS_ENV: development
+      VITE_RUBY_HOST: 0.0.0.0
+    ports:
+      - "3036:3036"
+    command: ["bin/vite", "dev"]
   db:
     image: postgres:13
     container_name: db
@@ -25,11 +40,8 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: postgres
     volumes:
-      - db-data:/var/lib/postgresql/data
+      - ./postgres-data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
   redis:
     image: redis:alpine
-volumes:
-  db-data:
-    driver: local

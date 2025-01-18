@@ -14,7 +14,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [16.x]
+        node-version: [18.x]
 
     steps:
       - uses: actions/checkout@v2
@@ -125,7 +125,7 @@ jobs:
       run: |
         yarn install
         bin/rails db:setup
-        bin/webpack
+        bin/rails assets:precompile
     - name: Cypress run
       uses: cypress-io/github-action@v5
       env:

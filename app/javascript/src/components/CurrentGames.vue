@@ -112,7 +112,7 @@ export default {
       return '';
     },
     nationColors(nation) {
-      return nationColors.nationColors[nation];
+      return nationColors[nation];
     },
     players(game) {
       const players = [];

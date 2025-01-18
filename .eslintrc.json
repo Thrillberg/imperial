@@ -10,6 +10,12 @@
         "plugin:cypress/recommended"
     ],
     "overrides": [
+        {
+            "files": ["app/javascript/src/components/flags/*.vue"],
+            "rules": {
+                "max-len": "off"
+            }
+        }
     ],
     "parserOptions": {
         "ecmaVersion": "latest",
@@ -31,7 +37,7 @@
             "object": true
         }],
         "vue/multi-word-component-names": ["error", {
-            "ignores": ["Board", "Game", "Province", "Flag", "Bond", "Player", "Rondel", "About", "Header", "Home", "Import", "Games", "Register", "Rankings", "Rules", "User"]
+            "ignores": ["Board", "Game", "Province", "Flag", "Bond", "Player", "Rondel", "About", "Header", "Home", "Import", "Games", "Register", "Rankings", "Rules", "User", "Star"]
         }],
         "vue/no-reserved-component-names": ["off"],
         "vue/no-v-html": ["off"]
