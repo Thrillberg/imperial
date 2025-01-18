@@ -14,7 +14,6 @@
     "vue-google-charts": "^1.1.0",
     "vue-masonry": "^0.16.0",
     "vue-router": "^4.1.6",
-    "vue-svg-loader": "^0.17.0-beta.2",
     "vue3-cookies": "^1.0.6",
     "vuetify": "^3.5.5"
   },
@@ -51,5 +50,6 @@
     "lint/fix": "git diff --name-only HEAD~1 | grep -E '\\.(js|vue)$' | xargs -r ls 2>/dev/null | xargs eslint --fix",
     "test": "jest",
     "cypress": "cypress open"
-  }
+  },
+  "packageManager": "yarn@4.6.0"
 }

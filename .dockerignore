@@ -1,5 +1,4 @@
 cypress/
-node_modules/
 vendor/
 tmp/
 log/
