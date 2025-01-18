@@ -75,7 +75,7 @@
 
 <script>
 import { displayMonetaryValueInMillions, displayNationName } from '../stringify';
-import { nextTaxationPowerPoints } from '../taxChartHelpers';
+import nextTaxationPowerPoints from '../taxChartHelpers';
 
 export default {
   name: 'TaxStatus',

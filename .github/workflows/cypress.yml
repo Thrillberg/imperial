@@ -45,7 +45,7 @@ jobs:
       run: |
         yarn install
         bin/rails db:setup
-        bin/webpack
+        bin/rails assets:precompile
     - name: Cypress run
       uses: cypress-io/github-action@v5
       env:

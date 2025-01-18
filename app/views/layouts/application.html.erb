@@ -4,9 +4,6 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
-    <%= javascript_pack_tag 'application' %>
-    <%= stylesheet_pack_tag 'application', media: 'all' %>
-
     <title>Imperial</title>
 
     <meta charset="UTF-8">
@@ -23,6 +20,9 @@
           })(window,document,'script','dataLayer','GTM-TPLXHT2');
       </script>
     <% end %>
+
+    <%= vite_client_tag %>
+    <%= vite_javascript_tag 'application' %>
   </head>
   <body>
     <% if Rails.env.production? %>

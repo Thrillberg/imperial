@@ -81,7 +81,7 @@
 
 <script>
 import { displayMonetaryValueInMillions, displayNationName } from '../stringify';
-import { nextTaxationPowerPoints } from '../taxChartHelpers';
+import nextTaxationPowerPoints from '../taxChartHelpers';
 import Flag from './flags/Flag.vue';
 
 import RondelSlot from './RondelSlot.vue';
