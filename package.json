@@ -6,7 +6,7 @@
     "actioncable": "^5.2.4-5",
     "howler": "^2.2.1",
     "luxon": "^1.28.1",
-    "openskill": "^1.4.1",
+    "openskill": "^4.1.0",
     "sass": "^1.69.5",
     "vite-svg-loader": "^5.1.0",
     "vue": "^3.4.0",
