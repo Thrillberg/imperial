@@ -1,7 +1,7 @@
 class Game < ActiveRecord::Base
   enum base_game: {imperial: 0, imperial2030: 1, imperialAsia: 2, imperialEurope2030: 3}
   enum variant: {standard: 0, auction: 1, withoutInvestorCard: 2}
-  enum time_commitment: {infinite: 0, slow: 1, async: 2, live: 3}
+  enum time_commitment: {infinite: 0, slow: 1, async: 2, live: 3}, _suffix: "game"
 
   has_many :actions, dependent: :destroy
   has_many :players, dependent: :destroy
