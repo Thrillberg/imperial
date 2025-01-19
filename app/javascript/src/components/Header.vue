@@ -1,7 +1,7 @@
 <template>
   <v-app-bar
     :elevation="5"
-    class="bg-primary"
+    :class="(profile.registered || profile.anonymityConfirmedAt) ? 'bg-primary' : 'bg-grey-lighten-2'"
   >
     <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
     <v-btn
