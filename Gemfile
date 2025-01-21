@@ -12,13 +12,13 @@ gem "net-pop", require: false
 gem "net-smtp", require: false
 gem "pg", ">= 0.18", "< 2.0"
 gem "psych", "< 4"
-gem "puma", "~> 5.6"
+gem "puma", "~> 6.5"
 gem "rack-cors"
 gem "concurrent-ruby", "1.3.4"
 
 # rails without actionmailbox because of memory bloat
-# gem "rails", "~> 7.0.4.3"
-rails_version = "~> 7.0.4.3"
+# gem "rails", "~> 7.1.5.1"
+rails_version = "~> 7.1.5.1"
 gem "activesupport", rails_version
 gem "actionpack", rails_version
 gem "actionview", rails_version
