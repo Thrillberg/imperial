@@ -1,5 +1,3 @@
-require "sidekiq/web"
-
 Rails.application.routes.draw do
   devise_for :accounts, controllers: {
     registrations: "accounts/registrations",
@@ -7,7 +5,6 @@ Rails.application.routes.draw do
     passwords: "accounts/passwords"
   }, defaults: {format: :json}
   mount ActionCable.server => "/ws"
-  mount Sidekiq::Web => "/sidekiq"
   get "/health", to: "health#index"
 
   post "/session", to: "sessions#create"

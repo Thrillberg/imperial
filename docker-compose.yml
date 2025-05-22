@@ -6,14 +6,12 @@ services:
     platform: linux/amd64
     depends_on:
       - db
-      - redis
       - vite
     ports:
       - "3000:3000"
     environment:
       DATABASE_URL: postgres://postgres:password@db:5432/postgres
       RAILS_ENV: development
-      REDIS_URL: redis://redis:6379/0
     volumes:
       - .:/app
       - /app/vendor
@@ -43,5 +41,3 @@ services:
       - ./postgres-data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
-  redis:
-    image: redis:alpine
