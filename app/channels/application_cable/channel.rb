@@ -10,9 +10,8 @@ module ApplicationCable
 
     def broadcast_games(channel, kind)
       games = Game.current.includes(:host, :current_player, :users, :winner, :cloned_from_game)
-      redis_data = JSON.parse(REDIS.get("users_observing_games"))
       payload_games = games.map do |game|
-        observers = redis_data[game.id.to_s] || []
+        observers = Rails.cache.fetch("users_observing_game_#{game.id}") { [] }
         game.to_json_with_observers(observers)
       end
       payload = {

@@ -12,7 +12,7 @@ By participating in this project you agree to abide by its terms._
 
 ## Local development setup
 
-Imperial uses Ruby version 3.2.2, Redis (> 4.0), PostgreSQL, and NodeJS.
+Imperial uses Ruby version 3.2.2, PostgreSQL, and NodeJS.
 
 To run Imperial on your local machine, please follow these instructions:
 
@@ -33,16 +33,7 @@ brew services start postgresql
 ```
 sudo service postgresql start
 ```
-4. Start a Redis server:
-- If installed through `brew`,
-```
-brew services start redis
-```
-- If installed through `apt`, in a separate terminal
-```
-redis-server
-```
-5. Run the Rails setup command:
+4. Run the Rails setup command:
 ```
 bin/setup
 ```

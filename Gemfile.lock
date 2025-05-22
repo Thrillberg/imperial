@@ -179,9 +179,6 @@ GEM
     rainbow (3.1.1)
     rake (13.2.1)
     rdoc (6.3.4.1)
-    redis (4.8.1)
-    redis-client (0.23.2)
-      connection_pool
     regexp_parser (2.10.0)
     reline (0.6.0)
       io-console (~> 0.5)
@@ -228,12 +225,6 @@ GEM
     sentry-ruby (5.22.1)
       bigdecimal
       concurrent-ruby (~> 1.0, >= 1.0.2)
-    sidekiq (7.3.8)
-      base64
-      connection_pool (>= 2.3.0)
-      logger
-      rack (>= 2.2.4)
-      redis-client (>= 0.22.2)
     standard (1.44.0)
       language_server-protocol (~> 3.17.0.2)
       lint_roller (~> 1.0)
@@ -301,11 +292,9 @@ DEPENDENCIES
   puma (~> 6.5)
   rack-cors
   railties (~> 7.1.5.1)
-  redis (~> 4.0)
   rspec-rails (~> 4.0.2)
   sentry-rails
   sentry-ruby
-  sidekiq
   standard (~> 1.16, >= 1.16.1)
   vite_rails
 

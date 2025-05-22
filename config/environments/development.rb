@@ -1,4 +1,5 @@
 require "active_support/core_ext/integer/time"
+require "active_support/core_ext/numeric/bytes"
 
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
@@ -27,7 +28,7 @@ Rails.application.configure do
   else
     config.action_controller.perform_caching = false
 
-    config.cache_store = :null_store
+    config.cache_store = :memory_store, {size: 64.megabytes}
   end
 
   # Store uploaded files on the local file system (see config/storage.yml for options).

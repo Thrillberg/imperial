@@ -32,10 +32,8 @@ gem "activestorage", rails_version
 gem "actiontext", rails_version
 gem "railties", rails_version
 
-gem "redis", "~> 4.0"
 gem "sentry-rails"
 gem "sentry-ruby"
-gem "sidekiq"
 gem "vite_rails"
 
 group :development, :test do

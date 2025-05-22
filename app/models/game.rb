@@ -44,7 +44,7 @@ class Game < ActiveRecord::Base
   end
 
   def to_json
-    observers = JSON.parse(REDIS.get("users_observing_games"))[id] || []
+    observers = Rails.cache.fetch("users_observing_game_#{id}") { [] }
     latest_state = snapshots.order(:created_at).last&.state
     parsed_latest_state = latest_state ? JSON.parse(latest_state)["state"] : nil
     {

@@ -61,17 +61,12 @@ jobs:
       - name: Install PostgreSQL client
         run: |
           sudo apt-get -yqq install libpq-dev
-      - name: Start Redis
-        uses: supercharge/redis-github-action@1.2.0
-        with:
-          redis-version: 4
       - name: Build App
         env:
           PGHOST: localhost
           PGUSER: postgres
           PGPASSWORD: postgres
           RAILS_ENV: test
-          REDIS_URL: redis://localhost:6379/0
         run: |
           bin/rails db:setup
       - name: Run tests
@@ -80,7 +75,6 @@ jobs:
           PGUSER: postgres
           PGPASSWORD: postgres
           RAILS_ENV: test
-          REDIS_URL: redis://localhost:6379/0
         run: |
           bundle exec standardrb
           bundle exec rake
@@ -111,17 +105,12 @@ jobs:
     - name: Install PostgreSQL client
       run: |
         sudo apt-get -yqq install libpq-dev
-    - name: Start Redis
-      uses: supercharge/redis-github-action@1.2.0
-      with:
-        redis-version: 4
     - name: Build App
       env:
         PGHOST: localhost
         PGUSER: postgres
         PGPASSWORD: postgres
         RAILS_ENV: test
-        REDIS_URL: redis://localhost:6379/0
       run: |
         yarn install
         bin/rails db:setup
@@ -133,7 +122,6 @@ jobs:
         PGUSER: postgres
         PGPASSWORD: postgres
         RAILS_ENV: test
-        REDIS_URL: redis://localhost:6379/0
       with:
         start: bundle exec rails server -e test -p 5002
 
