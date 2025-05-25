@@ -146,16 +146,6 @@
         </template>
       </v-list-item>
       <v-list-item
-        title="Rankings"
-        to="/rankings"
-      >
-        <template #prepend>
-          <v-icon color="primary-darken-1">
-            $trophy
-          </v-icon>
-        </template>
-      </v-list-item>
-      <v-list-item
         title="Join on Discord"
         href="https://discord.gg/Q2Ynzp2Axs"
       >
@@ -167,18 +157,6 @@
           />
         </template>
       </v-list-item>
-      <v-list-item
-        title="Support on Patreon"
-        href="https://www.patreon.com/playimperialclub"
-      >
-        <template #prepend>
-          <component
-            :is="patreonLogo"
-            class="v-icon v-icon--size-default"
-            fill="#f1465a"
-          />
-        </template>
-      </v-list-item>
     </v-list>
   </v-navigation-drawer>
 </template>
@@ -187,7 +165,6 @@
 import { markRaw } from 'vue';
 import { useTheme } from 'vuetify';
 import discordLogo from '../assets/discord.svg';
-import patreonLogo from '../assets/patreon.svg';
 
 export default {
   name: 'Header',
@@ -207,7 +184,6 @@ export default {
   },
   data: () => ({
     discordLogo: markRaw(discordLogo),
-    patreonLogo: markRaw(patreonLogo),
     drawer: false,
     email: '',
     errors: [],

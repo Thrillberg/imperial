@@ -337,11 +337,12 @@ const routes = [
     name: 'ResetPassword',
     component: () => import('../views/ResetPassword.vue'),
   },
-  {
-    path: '/rankings',
-    name: 'Rankings',
-    component: () => import('../views/Rankings.vue'),
-  },
+  // TODO: Restore this whenever we feel like it
+  // {
+  //   path: '/rankings',
+  //   name: 'Rankings',
+  //   component: () => import('../views/Rankings.vue'),
+  // },
 ];
 
 const router = createRouter({
