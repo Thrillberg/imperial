@@ -5,4 +5,8 @@ class Account < ApplicationRecord
     :recoverable, :rememberable, :validatable
 
   has_one :user
+
+  def admin?
+    admin
+  end
 end

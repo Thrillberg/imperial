@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script>
+    window.rootPath = "<%= root_path %>";
+  </script>
+  <title>Blazer</title>
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+
+  <%= javascript_include_tag "blazer", "data-turbo-track": "reload" %>
+  <%= stylesheet_link_tag "blazer", "data-turbo-track": "reload" %>
+</head>
+<body>
+  <%= yield %>
+</body>
+</html>

@@ -5,6 +5,9 @@ Rails.application.routes.draw do
     passwords: "accounts/passwords"
   }, defaults: {format: :json}
   mount ActionCable.server => "/ws"
+  authenticate :account, ->(account) { account.admin? } do
+    mount Blazer::Engine, at: "blazer"
+  end
   get "/health", to: "health#index"
 
   post "/session", to: "sessions#create"

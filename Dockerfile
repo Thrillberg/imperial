@@ -19,6 +19,6 @@ RUN yarn install --immutable
 
 COPY . .
 
-RUN bin/vite build && bundle exec rails assets:precompile
+RUN bin/vite build && rm -rf public/assets && bundle exec rails assets:precompile
 EXPOSE 80
 CMD ["rails", "s", "-b", "0.0.0.0", "-p", "80"]
