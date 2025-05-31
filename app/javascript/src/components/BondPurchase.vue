@@ -49,6 +49,7 @@
                 :can-be-purchased="true"
                 :is-being-applied-to-trade-in="tradedInValue > 0"
                 :traded-in-value="tradedInValue"
+                :type-of-ownership="typeOfOwnership(bond)"
                 @click="purchase(bond)"
               />
               <Bond
@@ -155,6 +156,16 @@ export default {
         }
       }
       return canBePurchased;
+    },
+    typeOfOwnership(bond) {
+      if (
+        (this.game.totalInvestmentInNation(this.currentPlayer, bond.nation) + bond.cost)
+          > this.game.totalInvestmentInNation(this.game.nations.get(bond.nation).controller, bond.nation)
+      ) {
+        return this.game.nations.get(bond.nation).controller === this.currentPlayer ? 'incumbent' : 'new';
+      }
+
+      return 'none';
     },
     purchase(bond) {
       this.$emit('purchaseBond', bond);
