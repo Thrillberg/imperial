@@ -15,6 +15,7 @@ RUN bundle install --without development test
 
 COPY package.json yarn.lock .yarnrc.yml ./
 COPY .yarn .yarn
+RUN yarn cache clean
 RUN yarn install --immutable
 
 COPY . .

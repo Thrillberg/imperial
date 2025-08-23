@@ -6,3 +6,4 @@ log/
 spec/
 docker-compose.yml
 public/assets
+node_modules/
