@@ -444,9 +444,7 @@
               />
             </v-row>
           </v-sheet>
-          <div v-if="game.winner">
-            <NationControlChart :game="game" />
-          </div>
+          <NationControlChart v-if="game.winner" :game="game" />
         </v-card-text>
       </v-card>
     </v-sheet>

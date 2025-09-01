@@ -1,12 +1,10 @@
 <template>
-  <div class="w-3/4 m-auto">
-    <GChart
-      type="Timeline"
-      :settings="{ packages: ['timeline'] }"
-      :data="chartData()"
-      :options="chartOptions()"
-    />
-  </div>
+  <GChart
+    type="Timeline"
+    :settings="{ packages: ['timeline'] }"
+    :data="chartData()"
+    :options="chartOptions()"
+  />
 </template>
 
 <script>
