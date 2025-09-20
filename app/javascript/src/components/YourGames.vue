@@ -1,7 +1,20 @@
 <template>
-  <div class="text-h5 my-4">
-    Your Games
-  </div>
+  <v-row>
+    <v-col class="my-auto mx-2">
+      <span class="text-h5 mr-2">
+        Your Games
+      </span>
+      <v-btn
+        v-if="hasHiddenGames"
+        color="primary"
+        size="x-small"
+        style="vertical-align: text-bottom;"
+        @click="$emit('unhide-all-games')"
+      >
+        Show more games
+      </v-btn>
+    </v-col>
+  </v-row>
   <v-row
     v-masonry
     item-selector=".game"
@@ -23,6 +36,7 @@
               :title="game.name + (game.players.length === 1 ? ' (solo)' : '')"
               :subtitle="currentPlayer(game)"
               :color="backgroundColor(isHovering, nationColors(JSON.parse(game.latestState).currentNation))"
+              style="cursor: pointer"
               v-bind="props"
             >
               <template
@@ -35,6 +49,20 @@
                   icon="$star"
                   color="yellow"
                 />
+              </template>
+              <template
+                v-if="profile.username"
+                #append
+              >
+                <v-tooltip text="Hide game">
+                  <template #activator="{ hideProps }">
+                    <v-icon
+                      icon="$close"
+                      v-bind="hideProps"
+                      @click.stop.prevent="onHideGameClick($event, game.id)"
+                    />
+                  </template>
+                </v-tooltip>
               </template>
               <v-card-text>
                 <Board
@@ -95,7 +123,9 @@ export default {
     games: { type: Array, default: () => [] },
     profile: { type: Object, default: () => {} },
     users: { type: Array, default: () => [] },
+    hasHiddenGames: { type: Boolean, default: false },
   },
+  emits: ['hide-game', 'unhide-all-games'],
   async setup() {
     const { mdAndUp } = useDisplay();
     const boardConfigs = {};
@@ -180,6 +210,10 @@ export default {
     },
     nationColors(nation) {
       return nationColors[nation];
+    },
+    onHideGameClick(event, gameId) {
+      event.preventDefault();
+      this.$emit('hide-game', gameId);
     },
   },
 };

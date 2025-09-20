@@ -22,11 +22,14 @@
               :game-data="gameData"
               :env="env"
               :open-games-count="countOfOpenGames"
+              :hidden-game-ids="hiddenGameIds"
               @registered="register"
               @signed-in="signIn"
               @open-game="openGame"
               @receive-game-data="receiveGameData"
               @anonymity_confirmed="anonymityConfirmed"
+              @game_hidden="onChangeIfGameHidden"
+              @games_unhidden="onChangeIfGameHidden"
             />
             <template #fallback>
               <v-container class="text-center">
@@ -74,6 +77,7 @@ export default {
       profile: {},
       gameData: {},
       games: [],
+      hiddenGameIds: [],
       onlineUsers: [],
       observers: [],
       profileFetched: false,
@@ -123,7 +127,7 @@ export default {
     apiClient.onUpdateUsers(({ users }) => {
       this.onlineUsers = users;
     });
-    apiClient.onUpdateGames(({ games }) => {
+    apiClient.onUpdateGames(({ games, hidden_game_ids: hiddenGameIds }) => {
       this.games = games.map((game) => {
         if (game.id === this.$route.params.id) {
           this.observers = game.observers;
@@ -131,6 +135,7 @@ export default {
         }
         return translateToGameData(game);
       });
+      this.hiddenGameIds = hiddenGameIds;
     });
     apiClient.onUpdateGameLog(({
       gameId, log, logTimestamps, game,
@@ -205,6 +210,9 @@ export default {
     },
     receiveGameData(data) {
       this.games.push(translateToGameData(data));
+    },
+    onChangeIfGameHidden() {
+      apiClient.updateGames();
     },
   },
 };

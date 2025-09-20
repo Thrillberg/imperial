@@ -12,6 +12,9 @@
         :games="yourGames"
         :profile="profile"
         :users="users"
+        :has-hidden-games="hasHiddenGames"
+        @hide-game="hideGame"
+        @unhide-all-games="unhideAllGames"
       />
       <template #fallback>
         <v-container class="text-center">
@@ -62,8 +65,9 @@ export default {
     openGamesCount: { type: Number, default: 0 },
     profile: { type: Object, default: () => {} },
     users: { type: Array, default: () => [] },
+    hiddenGameIds: { type: Array, default: () => [] },
   },
-  emits: ['anonymity_confirmed'],
+  emits: ['anonymity_confirmed', 'game_hidden', 'games_unhidden'],
   computed: {
     yourGames() {
       return this.games.filter((game) => {
@@ -98,10 +102,39 @@ export default {
     isFirstTimeUser() {
       return !this.profile.registered && !this.profile.anonymityConfirmedAt;
     },
+    hasHiddenGames() {
+      return this.hiddenGameIds.length > 0;
+    },
   },
   created() {
     document.title = 'Imperial';
     setFavicon(this.games, this.profile, this.$route.params.id);
+  },
+  methods: {
+    hideGame(gameId) {
+      fetch(
+        `/api/games/${gameId}`,
+        {
+          method: 'PATCH',
+          body: JSON.stringify({ hide: true, user_id: this.profile.id }),
+          headers: { 'Content-Type': 'application/json' },
+        },
+      ).then(() => {
+        this.$emit('game_hidden', gameId);
+      });
+    },
+    unhideAllGames() {
+      fetch(
+        '/api/hidden_games/destroy_all',
+        {
+          method: 'DELETE',
+          body: JSON.stringify({ user_id: this.profile.id }),
+          headers: { 'Content-Type': 'application/json' },
+        },
+      ).then(() => {
+        this.$emit('games_unhidden');
+      });
+    },
   },
 };
 </script>
