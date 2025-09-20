@@ -28,8 +28,8 @@
               @open-game="openGame"
               @receive-game-data="receiveGameData"
               @anonymity_confirmed="anonymityConfirmed"
-              @game_hidden="onGameHidden"
-              @games_unhidden="unhideAllGames"
+              @game_hidden="onChangeIfGameHidden"
+              @games_unhidden="onChangeIfGameHidden"
             />
             <template #fallback>
               <v-container class="text-center">
@@ -77,6 +77,7 @@ export default {
       profile: {},
       gameData: {},
       games: [],
+      hiddenGameIds: [],
       onlineUsers: [],
       observers: [],
       profileFetched: false,
@@ -210,10 +211,7 @@ export default {
     receiveGameData(data) {
       this.games.push(translateToGameData(data));
     },
-    onGameHidden(gameId) {
-      this.games = this.games.filter((game) => game.id !== gameId);
-    },
-    unhideAllGames() {
+    onChangeIfGameHidden() {
       apiClient.updateGames();
     },
   },
