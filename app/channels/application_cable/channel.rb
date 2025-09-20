@@ -10,7 +10,7 @@ module ApplicationCable
 
     def broadcast_games(channel, kind)
       games = Game.current.includes(:host, :current_player, :users, :winner, :cloned_from_game)
-      
+
       if current_user
         hidden_game_ids = current_user.hidden_games.pluck(:game_id)
         games = games.where.not(id: hidden_game_ids)

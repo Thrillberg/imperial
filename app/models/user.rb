@@ -3,7 +3,7 @@ class User < ActiveRecord::Base
   has_many :games, through: :players
   has_many :hidden_games
   has_many :hidden_games_list, through: :hidden_games, source: :game
-  
+
   belongs_to :account, optional: true
 
   validates :name, uniqueness: {case_sensitive: false}

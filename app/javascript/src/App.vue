@@ -208,7 +208,7 @@ export default {
       this.games.push(translateToGameData(data));
     },
     onGameHidden(gameId) {
-      this.games = this.games.filter(game => game.id !== gameId);
+      this.games = this.games.filter((game) => game.id !== gameId);
     },
   },
 };

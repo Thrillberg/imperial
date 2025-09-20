@@ -64,7 +64,7 @@ export default {
     profile: { type: Object, default: () => {} },
     users: { type: Array, default: () => [] },
   },
-  emits: ['anonymity_confirmed'],
+  emits: ['anonymity_confirmed', 'game_hidden'],
   computed: {
     yourGames() {
       return this.games.filter((game) => {
@@ -112,12 +112,12 @@ export default {
           method: 'PATCH',
           body: JSON.stringify({ hide: true, user_id: this.profile.id }),
           headers: { 'Content-Type': 'application/json' },
-        }
+        },
       ).then(() => {
         this.$emit('game_hidden', gameId);
       });
-    }
-  }
+    },
+  },
 };
 </script>
 

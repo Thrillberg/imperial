@@ -37,12 +37,15 @@
                   color="yellow"
                 />
               </template>
-              <template #append v-if="profile.username">
+              <template
+                v-if="profile.username"
+                #append
+              >
                 <v-tooltip text="Hide game">
-                  <template #activator="{ props }">
+                  <template #activator="{ hideProps }">
                     <v-icon
                       icon="$close"
-                      v-bind="props"
+                      v-bind="hideProps"
                       @click.stop.prevent="onHideGameClick($event, game.id)"
                     />
                   </template>
@@ -108,6 +111,7 @@ export default {
     profile: { type: Object, default: () => {} },
     users: { type: Array, default: () => [] },
   },
+  emits: ['hide-game'],
   async setup() {
     const { mdAndUp } = useDisplay();
     const boardConfigs = {};
@@ -194,7 +198,7 @@ export default {
       return nationColors[nation];
     },
     onHideGameClick(event, gameId) {
-      event.preventDefault(); // Prevent router-link navigation
+      event.preventDefault();
       this.$emit('hide-game', gameId);
     },
   },
