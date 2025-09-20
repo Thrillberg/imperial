@@ -23,6 +23,7 @@
               :title="game.name + (game.players.length === 1 ? ' (solo)' : '')"
               :subtitle="currentPlayer(game)"
               :color="backgroundColor(isHovering, nationColors(JSON.parse(game.latestState).currentNation))"
+              style="cursor: pointer"
               v-bind="props"
             >
               <template
@@ -35,6 +36,20 @@
                   icon="$star"
                   color="yellow"
                 />
+              </template>
+              <template
+                v-if="profile.username"
+                #append
+              >
+                <v-tooltip text="Hide game">
+                  <template #activator="{ hideProps }">
+                    <v-icon
+                      icon="$close"
+                      v-bind="hideProps"
+                      @click.stop.prevent="onHideGameClick($event, game.id)"
+                    />
+                  </template>
+                </v-tooltip>
               </template>
               <v-card-text>
                 <Board
@@ -96,6 +111,7 @@ export default {
     profile: { type: Object, default: () => {} },
     users: { type: Array, default: () => [] },
   },
+  emits: ['hide-game'],
   async setup() {
     const { mdAndUp } = useDisplay();
     const boardConfigs = {};
@@ -180,6 +196,10 @@ export default {
     },
     nationColors(nation) {
       return nationColors[nation];
+    },
+    onHideGameClick(event, gameId) {
+      event.preventDefault();
+      this.$emit('hide-game', gameId);
     },
   },
 };

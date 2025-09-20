@@ -12,6 +12,7 @@
         :games="yourGames"
         :profile="profile"
         :users="users"
+        @hide-game="hideGame"
       />
       <template #fallback>
         <v-container class="text-center">
@@ -63,7 +64,7 @@ export default {
     profile: { type: Object, default: () => {} },
     users: { type: Array, default: () => [] },
   },
-  emits: ['anonymity_confirmed'],
+  emits: ['anonymity_confirmed', 'game_hidden'],
   computed: {
     yourGames() {
       return this.games.filter((game) => {
@@ -102,6 +103,20 @@ export default {
   created() {
     document.title = 'Imperial';
     setFavicon(this.games, this.profile, this.$route.params.id);
+  },
+  methods: {
+    hideGame(gameId) {
+      fetch(
+        `/api/games/${gameId}`,
+        {
+          method: 'PATCH',
+          body: JSON.stringify({ hide: true, user_id: this.profile.id }),
+          headers: { 'Content-Type': 'application/json' },
+        },
+      ).then(() => {
+        this.$emit('game_hidden', gameId);
+      });
+    },
   },
 };
 </script>

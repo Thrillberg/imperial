@@ -21,7 +21,7 @@ Rails.application.routes.draw do
   end
 
   namespace :api do
-    resources :games, only: [:index, :create]
+    resources :games, only: [:index, :create, :update]
     resources :ranked_games, only: [:index]
     resources :users, only: [:show, :create, :update]
   end

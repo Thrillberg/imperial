@@ -8,6 +8,7 @@ class Game < ActiveRecord::Base
   has_many :users, through: :players
   has_many :cloned_games, class_name: "Game", foreign_key: "cloned_from_game_id", dependent: :nullify
   has_many :snapshots
+  has_many :hidden_games
 
   belongs_to :winner, class_name: "User", optional: true
   belongs_to :host, class_name: "User"

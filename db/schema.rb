@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_05_24_210238) do
+ActiveRecord::Schema[7.1].define(version: 2025_09_20_173109) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -117,6 +117,16 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_24_210238) do
     t.index ["winner_id"], name: "index_games_on_winner_id"
   end
 
+  create_table "hidden_games", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "user_id", null: false
+    t.uuid "game_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["game_id"], name: "index_hidden_games_on_game_id"
+    t.index ["user_id", "game_id"], name: "index_hidden_games_on_user_id_and_game_id", unique: true
+    t.index ["user_id"], name: "index_hidden_games_on_user_id"
+  end
+
   create_table "players", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "user_id", null: false
     t.uuid "game_id", null: false
@@ -150,5 +160,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_24_210238) do
   add_foreign_key "games", "users", column: "current_player_id"
   add_foreign_key "games", "users", column: "host_id"
   add_foreign_key "games", "users", column: "winner_id"
+  add_foreign_key "hidden_games", "games"
+  add_foreign_key "hidden_games", "users"
   add_foreign_key "users", "accounts"
 end
