@@ -27,6 +27,7 @@
               @open-game="openGame"
               @receive-game-data="receiveGameData"
               @anonymity_confirmed="anonymityConfirmed"
+              @game-hidden="onGameHidden"
             />
             <template #fallback>
               <v-container class="text-center">
@@ -205,6 +206,9 @@ export default {
     },
     receiveGameData(data) {
       this.games.push(translateToGameData(data));
+    },
+    onGameHidden(gameId) {
+      this.games = this.games.filter(game => game.id !== gameId);
     },
   },
 };

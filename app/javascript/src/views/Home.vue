@@ -12,6 +12,7 @@
         :games="yourGames"
         :profile="profile"
         :users="users"
+        @hide-game="hideGame"
       />
       <template #fallback>
         <v-container class="text-center">
@@ -103,6 +104,20 @@ export default {
     document.title = 'Imperial';
     setFavicon(this.games, this.profile, this.$route.params.id);
   },
+  methods: {
+    hideGame(gameId) {
+      fetch(
+        `/api/games/${gameId}`,
+        {
+          method: 'PATCH',
+          body: JSON.stringify({ hide: true, user_id: this.profile.id }),
+          headers: { 'Content-Type': 'application/json' },
+        }
+      ).then(() => {
+        this.$emit('game_hidden', gameId);
+      });
+    }
+  }
 };
 </script>
 
