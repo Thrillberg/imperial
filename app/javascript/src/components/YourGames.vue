@@ -1,7 +1,20 @@
 <template>
-  <div class="text-h5 my-4">
-    Your Games
-  </div>
+  <v-row>
+    <v-col class="my-auto mx-2">
+      <span class="text-h5 mr-2">
+        Your Games
+      </span>
+      <v-btn
+        v-if="hasHiddenGames"
+        color="primary"
+        size="x-small"
+        style="vertical-align: text-bottom;"
+        @click="$emit('unhide-all-games')"
+      >
+        Show more games
+      </v-btn>
+    </v-col>
+  </v-row>
   <v-row
     v-masonry
     item-selector=".game"
@@ -110,8 +123,9 @@ export default {
     games: { type: Array, default: () => [] },
     profile: { type: Object, default: () => {} },
     users: { type: Array, default: () => [] },
+    hasHiddenGames: { type: Boolean, default: false },
   },
-  emits: ['hide-game'],
+  emits: ['hide-game', 'unhide-all-games'],
   async setup() {
     const { mdAndUp } = useDisplay();
     const boardConfigs = {};

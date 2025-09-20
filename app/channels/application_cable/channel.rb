@@ -11,8 +11,8 @@ module ApplicationCable
     def broadcast_games(channel, kind)
       games = Game.current.includes(:host, :current_player, :users, :winner, :cloned_from_game)
 
-      if current_user
-        hidden_game_ids = current_user.hidden_games.pluck(:game_id)
+      hidden_game_ids = current_user&.hidden_games&.pluck(:game_id)
+      if hidden_game_ids
         games = games.where.not(id: hidden_game_ids)
       end
 
@@ -23,7 +23,8 @@ module ApplicationCable
       payload = {
         kind: kind,
         data: {
-          games: payload_games
+          games: payload_games,
+          hidden_game_ids: hidden_game_ids
         }
       }
       ActionCable.server.broadcast(channel, payload)
