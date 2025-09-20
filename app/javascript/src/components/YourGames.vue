@@ -55,7 +55,7 @@
                 #append
               >
                 <v-tooltip text="Hide game">
-                  <template #activator="{ hideProps }">
+                  <template #activator="{ props: hideProps }">
                     <v-icon
                       icon="$close"
                       v-bind="hideProps"
