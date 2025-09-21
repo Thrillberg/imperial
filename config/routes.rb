@@ -21,8 +21,8 @@ Rails.application.routes.draw do
   end
 
   namespace :api do
-    resources :games, only: [:index, :create, :update]
-    resources :hidden_games, only: [] do
+    resources :games, only: [:index, :create]
+    resources :hidden_games, only: [:create] do
       collection do
         delete :destroy_all
       end

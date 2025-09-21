@@ -113,10 +113,10 @@ export default {
   methods: {
     hideGame(gameId) {
       fetch(
-        `/api/games/${gameId}`,
+        '/api/hidden_games',
         {
-          method: 'PATCH',
-          body: JSON.stringify({ hide: true, user_id: this.profile.id }),
+          method: 'POST',
+          body: JSON.stringify({ game_id: gameId, user_id: this.profile.id }),
           headers: { 'Content-Type': 'application/json' },
         },
       ).then(() => {

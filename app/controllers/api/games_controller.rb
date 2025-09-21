@@ -69,17 +69,6 @@ class API::GamesController < ApplicationController
     render json: game.to_json
   end
 
-  def update
-    game = Game.find(params[:id])
-    current_user = User.find(params[:user_id])
-
-    if game && current_user && params[:hide]
-      current_user.hidden_games.find_or_create_by(game: game)
-    end
-
-    head :ok
-  end
-
   private
 
   def lovely_string
