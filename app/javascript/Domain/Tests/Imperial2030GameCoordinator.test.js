@@ -351,29 +351,71 @@ describe('imperial2030', () => {
       });
 
       const game = new Imperial(board);
-      initialize(game);
+      game.tick(
+        Action.initialize({
+          players: [
+            { id: 'player1', nation: Nation2030.RU },
+            { id: 'player2', nation: Nation2030.CN },
+            { id: 'player3', nation: Nation2030.IN },
+          ],
+          soloMode: false,
+          variant: 'standard',
+          baseGame: 'imperial2030',
+        }),
+      );
       return game;
     };
 
-    test("a nation can block another nation's army from moving from North Pacific to "
-    + ' the Caribbean Sea if the nation has a flag in Colombia', () => {
-      const game = newGame();
-      game.provinces.get('colombia').flag = Nation2030.CN;
-      game.units.get(Nation2030.RU).get('northpacific').fleets = 1;
+    describe('blocking from Colombia', () => {
+      test("a nation can block another nation's army from moving from North Pacific to "
+      + ' the Caribbean Sea if the nation has a flag in Colombia', () => {
+        const game = newGame();
+        game.provinces.get('colombia').flag = Nation2030.CN;
+        game.units.get(Nation2030.RU).get('northpacific').fleets = 1;
 
-      game.tick(
-        Action.rondel({ nation: Nation2030.RU, cost: 0, slot: 'maneuver1' }),
-      );
-      game.tick(
-        Action.maneuver({ origin: 'northpacific', destination: 'caribbeansea' }),
-      );
+        game.tick(
+          Action.rondel({ nation: Nation2030.RU, cost: 0, slot: 'maneuver1' }),
+        );
+        game.tick(
+          Action.maneuver({ origin: 'northpacific', destination: 'caribbeansea' }),
+        );
 
-      const expected = new Set();
-      expected.add(Action.blockCanal());
-      expected.add(Action.unblockCanal());
-      expected.add(Action.undo({ player: 'player1' }));
+        const expected = new Set();
+        expected.add(Action.blockCanal());
+        expected.add(Action.unblockCanal());
+        expected.add(Action.undo({ player: 'player1' }));
 
-      expect(game.availableActions).toEqual(expected);
+        expect(game.availableActions).toEqual(expected);
+      });
+
+      test('a third nation cannot block the canal', () => {
+        const game = newGame();
+        game.nations.get(Nation2030.BR).controller = 'player2';
+        game.provinces.get('colombia').flag = Nation2030.BR;
+        game.units.get(Nation2030.US).get('northpacific').fleets = 1;
+        game.units.get(Nation2030.RU).get('northpacific').fleets = 1;
+        game.units.get(Nation2030.RU).get('caribbeansea').fleets = 1;
+
+        game.tick(
+          Action.rondel({ nation: Nation2030.RU, cost: 0, slot: 'maneuver1' }),
+        );
+        game.tick(
+          Action.maneuver({ origin: 'caribbeansea', destination: 'northpacific' }),
+        );
+        game.tick(
+          Action.unblockCanal(),
+        );
+
+        const expected = new Set();
+        expected.add(Action.undo({ player: 'player2' }));
+        expected.add(Action.coexist({ province: 'northpacific', incumbent: Nation2030.US, challenger: Nation2030.RU }));
+        expected.add(Action.fight({
+          province: 'northpacific', incumbent: Nation2030.US, challenger: Nation2030.RU, targetType: 'fleet',
+        }));
+
+        expect(game.currentPlayerName).toEqual('player3');
+        expect(game.availableActions).toEqual(expected);
+      });
     });
 
     test('fleets can freely move through canals if nobody has a flag in Colombia', () => {

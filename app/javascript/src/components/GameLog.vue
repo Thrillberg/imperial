@@ -1,5 +1,5 @@
 <template>
-  <v-card max-width="600">
+  <v-card>
     <v-list dense>
       <GameLogEntry
         v-for="(entry, index) in processedLog"
