@@ -1031,8 +1031,8 @@ export default {
     },
     back() {
       const lastTurn = this.game.log.pop();
+      let lastMoveType = lastTurn.type;
       this.poppedTurns.push(lastTurn);
-      let lastMoveType = this.game.log[this.game.log.length - 1].type;
 
       while ((lastMoveType !== 'rondel' && lastMoveType !== 'initialize') || lastMoveType === 'endGame') {
         this.poppedTurns.push(this.game.log.pop());
@@ -1070,9 +1070,15 @@ export default {
       this.game.tickFromLog(log);
     },
     backToGameStart() {
-      while (this.game.log[this.game.log.length - 1].type !== 'initialize') {
-        this.back();
+      const initializationTurn = this.game.log[0];
+      this.poppedTurns = this.game.log.slice(1).reverse();
+      const { baseGame } = this.game;
+
+      this.game = markRaw(new Imperial(this.board, new Logger('replay', this.gameData.id)));
+      if (baseGame) {
+        this.game.baseGame = baseGame;
       }
+      this.game.tickFromLog([initializationTurn]);
     },
 
     forward() {
@@ -1090,9 +1096,15 @@ export default {
       this.game.tickFromLog(newLog);
     },
     forwardToCurrentAction() {
-      while (this.poppedTurns.length > 0) {
-        this.forward();
+      const newLog = [this.game.log[0], ...this.poppedTurns.reverse()];
+      this.poppedTurns = [];
+      const { baseGame } = this.game;
+
+      this.game = markRaw(new Imperial(this.board, new Logger('replay', this.gameData.id)));
+      if (baseGame) {
+        this.game.baseGame = baseGame;
       }
+      this.game.tickFromLog(newLog);
     },
     audioNotification() {
       if (this.currentPlayer.name === this.game.currentPlayerName && !this.silenceAudio) {

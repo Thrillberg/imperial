@@ -27,12 +27,10 @@
         </v-container>
       </template>
     </Suspense>
-    <Suspense>
-      <CurrentGames
-        :games="currentGames"
-        :users="users"
-      />
-    </Suspense>
+    <CurrentGames
+      :games="currentGames"
+      :users="users"
+    />
   </v-container>
   <v-container
     v-else

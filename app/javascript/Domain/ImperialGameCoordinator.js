@@ -1268,6 +1268,9 @@ export default class ImperialGameCoordinator {
         }),
       );
       this.provinceInConflict = destination;
+      if (unblocked) {
+        this.currentPlayerName = this.nations.get(incumbent).controller;
+      }
       return;
     }
 
