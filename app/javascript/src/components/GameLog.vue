@@ -1,5 +1,11 @@
 <template>
   <v-card>
+    <div
+        v-if="timeCommitment"
+        class="my-auto mx-2"
+      >
+        <span><v-icon icon="$timerSand" /> <b>Time Commitment:</b> {{ timeCommitment }}</span>
+    </div>
     <v-list dense>
       <GameLogEntry
         v-for="(entry, index) in processedLog"
@@ -22,6 +28,7 @@ export default {
     board: { type: Object, default: () => {} },
     log: { type: Array, default: () => [] },
     logTimestamps: { type: Array, default: () => [] },
+    timeCommitment: { type: String, default: '' },
   },
   computed: {
     processedLog() {

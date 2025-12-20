@@ -74,11 +74,19 @@
           Clone game
         </v-btn>
       </v-col>
-      <v-col
-        v-if="gameData.timeCommitment"
-        class="text-right my-auto mx-2"
-      >
-        <span><v-icon icon="$timerSand" /> <b>Time Commitment:</b> {{ timeCommitment(gameData.timeCommitment) }}</span>
+      <v-col class="text-right text-uppercase text-subtitle-2 font-weight-bold my-auto mx-2">
+        <span v-if="tab === 'nations'">
+          <v-icon color="primary-darken-1" class="mx-1">$flag</v-icon>
+          <span style="vertical-align: sub;">Nation View</span>
+        </span>
+        <span v-else-if="tab === 'players'">
+          <v-icon color="primary-darken-1" class="mx-1">$accountGroup</v-icon>
+          <span style="vertical-align: sub;">Player View</span>
+        </span>
+        <span v-else-if="tab === 'gameLog'">
+          <v-icon color="primary-darken-1" class="mx-1">$scriptTextOutline</v-icon>
+          <span style="vertical-align: sub;">Game Log View</span>
+        </span>
       </v-col>
       <v-col
         v-if="playersInGame.length === 1"
@@ -308,6 +316,7 @@
                 :log="game.annotatedLog"
                 :log-timestamps="logTimestamps"
                 :board="board"
+                :time-commitment="timeCommitment(gameData.timeCommitment)"
               />
             </v-window-item>
           </v-window>
