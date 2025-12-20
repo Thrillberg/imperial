@@ -41,12 +41,17 @@ class API::GamesController < ApplicationController
         parent_id: ENV["DISCORD_GAME_CHANNEL_CATEGORY"]
       }.to_json
 
+      Rails.logger.info("Creating Discord channel for game #{game.id} with payload: #{payload}")
+
       response = Net::HTTP.post(
         uri,
         payload,
         "Content-Type" => "application/json",
         "authorization" => "Bot #{ENV["DISCORD_TOKEN"]}"
       )
+
+      Rails.logger.info("Discord response: #{response.code} - #{response.body}")
+
       discord_channel_id = JSON.parse(response.body)["id"]
       if discord_channel_id
         game.update(discord_channel_id: discord_channel_id)
