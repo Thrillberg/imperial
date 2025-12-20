@@ -26,6 +26,6 @@ class PagesController < ActionController::Base
   private
 
   def route_valid?
-    %w[register sign_in about rules game finished_games users games cloned_games import_game forgot_password reset_password rankings].any? { |path| params[:path]&.include?(path) } || !params[:path]
+    %w[register sign_in about supporters rules game finished_games users games cloned_games import_game forgot_password reset_password rankings].any? { |path| params[:path]&.include?(path) } || !params[:path]
   end
 end

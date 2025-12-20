@@ -157,6 +157,18 @@
           />
         </template>
       </v-list-item>
+      <v-list-item
+        title="Supporters"
+        to="/supporters"
+      >
+        <template #prepend>
+          <component
+            :is="patreonLogo"
+            class="v-icon v-icon--size-default"
+            fill="#f1465a"
+          />
+        </template>
+      </v-list-item>
     </v-list>
   </v-navigation-drawer>
 </template>
@@ -165,6 +177,7 @@
 import { markRaw } from 'vue';
 import { useTheme } from 'vuetify';
 import discordLogo from '../assets/discord.svg';
+import patreonLogo from '../assets/patreon.svg';
 
 export default {
   name: 'Header',
@@ -184,6 +197,7 @@ export default {
   },
   data: () => ({
     discordLogo: markRaw(discordLogo),
+    patreonLogo: markRaw(patreonLogo),
     drawer: false,
     email: '',
     errors: [],
