@@ -10,6 +10,8 @@ class Game < ActiveRecord::Base
   has_many :snapshots
   has_many :hidden_games
 
+  has_one :latest_snapshot, -> { order(created_at: :desc) }, class_name: "Snapshot"
+
   belongs_to :winner, class_name: "User", optional: true
   belongs_to :host, class_name: "User"
   belongs_to :current_player, class_name: "User", optional: true
@@ -46,7 +48,7 @@ class Game < ActiveRecord::Base
 
   def to_json
     observers = Rails.cache.fetch("users_observing_game_#{id}") { [] }
-    latest_state = snapshots.order(:created_at).last&.state
+    latest_state = latest_snapshot&.state
     parsed_latest_state = latest_state ? JSON.parse(latest_state)["state"] : nil
     {
       name: name,
