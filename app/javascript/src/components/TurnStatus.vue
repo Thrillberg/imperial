@@ -9,7 +9,21 @@
       class="border border-gray-500 text-center"
       :class="extraClasses"
     >
-      <span v-html="playerIs" />
+      <v-chip
+        v-if="controllingPlayerId !== '' && game.currentPlayerName !== profile.username"
+        :to="'/users/' + controllingPlayerId"
+        variant="outlined"
+      >
+        <b v-html="playerIs()" />
+      </v-chip>
+      <b
+        v-else
+        v-html="playerIs()"
+      />
+      <span
+        class="ml-1"
+        v-html="article()"
+      />
       {{ stringify(Array.from(game.availableActions)) }}.
     </v-col>
   </v-row>
@@ -24,6 +38,7 @@ export default {
     game: { type: Object, default: () => {} },
     profile: { type: Object, default: () => {} },
     controllingPlayerName: { type: String, default: '' },
+    controllingPlayerId: { type: String, default: '' },
     paused: { type: Boolean, default: false },
   },
   computed: {
@@ -36,16 +51,22 @@ export default {
       }
       return '';
     },
-    playerIs() {
-      if (this.controllingPlayerName === '') {
-        return '<b>Swiss Banks</b> are ';
-      } if (this.game.currentPlayerName === this.profile.username) {
-        return '<b>You</b> are ';
-      }
-      return `<b>${this.game.currentPlayerName}</b> is `;
-    },
   },
   methods: {
+    playerIs() {
+      if (this.controllingPlayerName === '') {
+        return 'Swiss Banks ';
+      } if (this.game.currentPlayerName === this.profile.username) {
+        return 'You ';
+      }
+      return `${this.game.currentPlayerName} `;
+    },
+    article() {
+      if (this.controllingPlayerName === '' || this.game.currentPlayerName === this.profile.username) {
+        return 'are ';
+      }
+      return 'is ';
+    },
     stringify(actions) {
       const actionsWithoutUndo = [];
       for (const action of actions) {

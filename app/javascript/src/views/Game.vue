@@ -76,15 +76,24 @@
       </v-col>
       <v-col class="text-right text-uppercase text-subtitle-2 font-weight-bold my-auto mx-2">
         <span v-if="tab === 'nations'">
-          <v-icon color="primary-darken-1" class="mx-1">$flag</v-icon>
+          <v-icon
+            color="primary-darken-1"
+            class="mx-1"
+          >$flag</v-icon>
           <span style="vertical-align: sub;">Nation View</span>
         </span>
         <span v-else-if="tab === 'players'">
-          <v-icon color="primary-darken-1" class="mx-1">$accountGroup</v-icon>
+          <v-icon
+            color="primary-darken-1"
+            class="mx-1"
+          >$accountGroup</v-icon>
           <span style="vertical-align: sub;">Player View</span>
         </span>
         <span v-else-if="tab === 'gameLog'">
-          <v-icon color="primary-darken-1" class="mx-1">$scriptTextOutline</v-icon>
+          <v-icon
+            color="primary-darken-1"
+            class="mx-1"
+          >$scriptTextOutline</v-icon>
           <span style="vertical-align: sub;">Game Log View</span>
         </span>
       </v-col>
@@ -148,6 +157,7 @@
         :game="game"
         :profile="profile"
         :controlling-player-name="controllingPlayerName"
+        :controlling-player-id="controllingPlayerId"
         :paused="paused"
       />
 
@@ -453,7 +463,10 @@
               />
             </v-row>
           </v-sheet>
-          <NationControlChart v-if="game.winner" :game="game" />
+          <NationControlChart
+            v-if="game.winner"
+            :game="game"
+          />
         </v-card-text>
       </v-card>
     </v-sheet>
@@ -675,6 +688,7 @@ export default {
     board: {},
     boardConfig: {},
     controllingPlayerName: '',
+    controllingPlayerId: '',
     currentPlayer: {},
     game: {},
     gameLogDialog: false,
@@ -859,6 +873,11 @@ export default {
       this.game.tickFromLog(gameLog);
 
       if (Object.keys(this.game.players).length > 0) {
+        this.controllingPlayerId = '';
+        const controllingPlayer = gameData.players.find((player) => player.name === this.game.currentPlayerName);
+        if (controllingPlayer) {
+          this.controllingPlayerId = controllingPlayer.id;
+        }
         this.gameStarted = true;
         this.currentPlayer = markRaw(this.game.players[this.profile.username] || {});
         this.controllingPlayerName = this.game.currentPlayerName;
