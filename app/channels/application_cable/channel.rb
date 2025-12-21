@@ -24,7 +24,7 @@ module ApplicationCable
         kind: kind,
         data: {
           games: payload_games,
-          hidden_game_ids: hidden_game_ids
+          hidden_game_ids: hidden_game_ids || []
         }
       }
       ActionCable.server.broadcast(channel, payload)
