@@ -131,19 +131,15 @@ export default {
       return this.wonGames.length === 1 ? 'game' : 'games';
     },
   },
-  created() {
+  beforeCreate() {
     fetch(`/api/users/${this.$route.params.id}`)
       .then((response) => response.json())
       .then((data) => {
-        this.user = data.user;
-        this.finishedGames = data.games.filter(
-          (game) => !!game.winner_name,
-        ).sort((a, b) => Date.parse(b.last_move_at) - Date.parse(a.last_move_at));
+        this.user = { id: data.user.id, name: data.user.name };
+        this.finishedGames = data.user.finished_games;
         this.wonGames = this.finishedGames.filter(
           (game) => game.winner_name === this.user.name,
         );
-        this.turnNotificationsEnabled = data.user.turn_notifications_enabled;
-        this.discordId = data.user.discord_id;
         document.title = `${this.user.name}'s Profile - Imperial`;
       });
   },

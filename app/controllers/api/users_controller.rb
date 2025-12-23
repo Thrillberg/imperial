@@ -5,8 +5,7 @@ class API::UsersController < ApplicationController
 
   def show
     user = User.find(params[:id])
-    games = Game.joins(:users).where(users: {id: user.id}).map(&:to_json)
-    render json: {user: user, games: games}
+    render json: {user: user.to_json_for_profile}
   end
 
   def create

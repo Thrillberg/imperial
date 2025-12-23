@@ -20,4 +20,20 @@ class User < ActiveRecord::Base
   def to_json_in_game
     {name: name, id: id}
   end
+
+  def to_json_for_profile
+    {
+      id: id,
+      name: name,
+      turn_notifications_enabled: turn_notifications_enabled,
+      discord_id: discord_id,
+      finished_games: finished_games_for_profile
+    }
+  end
+
+  private
+
+  def finished_games_for_profile
+    games.where.not(winner_id: nil).includes(:winner, :users, :latest_action).sort_by { |g| g.latest_action&.created_at || Time.at(0) }.reverse.map(&:to_json_for_profile)
+  end
 end

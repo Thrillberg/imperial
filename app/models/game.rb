@@ -11,6 +11,7 @@ class Game < ActiveRecord::Base
   has_many :hidden_games
 
   has_one :latest_snapshot, -> { order(created_at: :desc) }, class_name: "Snapshot"
+  has_one :latest_action, -> { order(created_at: :desc) }, class_name: "Action"
 
   belongs_to :winner, class_name: "User", optional: true
   belongs_to :host, class_name: "User"
@@ -98,6 +99,17 @@ class Game < ActiveRecord::Base
     }
   end
 
+  def to_json_for_profile
+    {
+      id: id,
+      name: name,
+      winner_name: winner&.name,
+      players: users.map(&:to_json_in_game),
+      variant: variant,
+      last_move_at: last_move_at
+    }
+  end
+
   def log
     actions.order(:created_at).map do |action|
       JSON.parse(action.data)
@@ -129,8 +141,8 @@ class Game < ActiveRecord::Base
     cloned_game.cloned_from_game = self
     cloned_game.host = host
     cloned_game.users << host
-    puts "Cloning game #{cloned_game.name}"
-    puts "Full game has #{actions.length} actions; cloning #{log.length} actions"
+    Rails.logger.info("Cloning game #{cloned_game.name}")
+    Rails.logger.info("Full game has #{actions.length} actions; cloning #{log.length} actions")
     actions.order(created_at: :asc).first(log.length).each do |action|
       cloned_game.actions << action.dup.tap do |cloned_action|
         parsed_data = JSON.parse(action.data)
