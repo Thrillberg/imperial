@@ -2,6 +2,7 @@ import ActionCable from 'actioncable';
 import { createRouter, createWebHistory } from 'vue-router';
 import * as Sentry from '@sentry/vue';
 import Home from '../views/Home.vue';
+import { profileStore } from './profileStore';
 
 class APIClient {
   constructor() {
@@ -359,6 +360,18 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
+  if (to.name === 'User') {
+    profileStore.loading = true;
+
+    fetch(`/api/users/${to.params.id}`)
+      .then((response) => response.json())
+      .then((data) => {
+        profileStore.user = data.user;
+        profileStore.finishedGames = data.user.finished_games;
+        document.title = `${profileStore.user.name}'s Profile - Imperial`;
+      })
+      .finally(() => { profileStore.loading = false; });
+  }
   Sentry.addBreadcrumb({
     category: 'navigation',
     message: `Navigating from ${from.fullPath} to ${to.fullPath}`,

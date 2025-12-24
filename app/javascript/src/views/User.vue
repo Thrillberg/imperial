@@ -1,5 +1,14 @@
 <template>
-  <v-container>
+  <v-container v-if="profileStore.loading">
+    <v-skeleton-loader
+      type="heading, paragraph"
+      class="mb-4"
+    />
+    <v-skeleton-loader
+      type="table"
+    />
+  </v-container>
+  <v-container v-else-if="profileStore.user">
     <div
       v-for="(error, index) in errors"
       :key="index"
@@ -59,10 +68,10 @@
       </v-card-text>
     </v-card>
     <p class="pb-4">
-      {{ user.name }} has finished {{ finishedGames.length }} {{ finishedGameString }} and won
-      {{ wonGames.length }} {{ wonGameString }}.
+      {{ profileStore.user?.name }} has finished {{ profileStore.finishedGames?.length }} {{ finishedGameString }} and won
+      {{ wonGames?.length }} {{ wonGameString }}.
     </p>
-    <span class="text-h5">{{ user.name }}'s Finished Games</span>
+    <span class="text-h5">{{ profileStore.user?.name }}'s Finished Games</span>
     <v-table
       density="compact"
       hover
@@ -78,7 +87,7 @@
       </thead>
       <tbody>
         <tr
-          v-for="game of finishedGames"
+          v-for="game of profileStore.finishedGames"
           :key="game.id"
         >
           <td>
@@ -108,16 +117,15 @@
 import { DateTime } from 'luxon';
 import { markRaw } from 'vue';
 import discordLogo from '../assets/discord.svg';
+import { profileStore, wonGames } from '../router/profileStore';
 
 export default {
   name: 'User',
+  setup: () => ({ profileStore, wonGames }),
   data() {
     return {
       discordLogo: markRaw(discordLogo),
       errors: [],
-      user: {},
-      finishedGames: [],
-      wonGames: [],
       successfullyUpdated: false,
       turnNotificationsEnabled: false,
       discordId: '',
@@ -125,23 +133,11 @@ export default {
   },
   computed: {
     finishedGameString() {
-      return this.finishedGames.length === 1 ? 'game' : 'games';
+      return profileStore.finishedGames?.length === 1 ? 'game' : 'games';
     },
     wonGameString() {
-      return this.wonGames.length === 1 ? 'game' : 'games';
+      return wonGames?.length === 1 ? 'game' : 'games';
     },
-  },
-  beforeCreate() {
-    fetch(`/api/users/${this.$route.params.id}`)
-      .then((response) => response.json())
-      .then((data) => {
-        this.user = { id: data.user.id, name: data.user.name };
-        this.finishedGames = data.user.finished_games;
-        this.wonGames = this.finishedGames.filter(
-          (game) => game.winner_name === this.user.name,
-        );
-        document.title = `${this.user.name}'s Profile - Imperial`;
-      });
   },
   methods: {
     save() {
