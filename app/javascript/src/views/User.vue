@@ -96,13 +96,13 @@
             </router-link>
           </td>
           <td>
-            {{ game.players.length }}
+            {{ game.players_count }}
           </td>
           <td>
             {{ truncate(game.winner_name) }}
           </td>
           <td>
-            {{ variant(game.baseGame) }}
+            {{ variant(game.variant) }}
           </td>
           <td>
             {{ toDate(game.last_move_at) }}
@@ -177,7 +177,7 @@ export default {
       return 'Imperial';
     },
     truncate(string) {
-      if (string.length > 10) {
+      if (string?.length > 10) {
         return `${string.slice(0, 10)}...`;
       }
 

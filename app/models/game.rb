@@ -104,7 +104,7 @@ class Game < ActiveRecord::Base
       id: id,
       name: name,
       winner_name: winner&.name,
-      players: users.map(&:to_json_in_game),
+      players_count: players.count,
       variant: variant,
       last_move_at: last_move_at
     }

@@ -34,6 +34,6 @@ class User < ActiveRecord::Base
   private
 
   def finished_games_for_profile
-    games.where.not(winner_id: nil).includes(:winner, :users, :latest_action).sort_by { |g| g.latest_action&.created_at || Time.at(0) }.reverse.map(&:to_json_for_profile)
+    games.where.not(winner_id: nil).includes(:winner).order(updated_at: :desc).map(&:to_json_for_profile)
   end
 end
