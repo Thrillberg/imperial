@@ -33,25 +33,31 @@
             </template>
             {{ player.name }}
           </v-chip>
-          <Flag
-            v-for="controlledNation in controlledNations(player.name)"
-            :key="controlledNation"
-            :nation="controlledNation"
-            width="45"
-            height="30"
-          />
         </v-card-title>
         <v-card-subtitle>
-          <div>
-            ${{ player.cash }}mil
-            <span
-              v-if="player.name === game.investorCardHolder && !someoneIsPurchasingABond"
-              class="font-weight-black"
-            >
-              + $2mil
-            </span>
+          <div class="d-flex justify-space-around my-2">
+            <Flag
+              v-for="controlledNation in controlledNations(player.name)"
+              :key="controlledNation"
+              :nation="controlledNation"
+              width="45"
+              height="30"
+            />
           </div>
-          <div>{{ player.rawScore + player.cash }} VP</div>
+          <div class="d-flex justify-space-around">
+            <span class="align-self-center">
+              ${{ player.cash }}mil
+              <span
+                v-if="player.name === game.investorCardHolder && !someoneIsPurchasingABond"
+                class="font-weight-black"
+              >
+                + $2mil
+              </span></span>
+
+            <v-chip variant="outlined">
+              {{ player.rawScore + player.cash }} VP
+            </v-chip>
+          </div>
         </v-card-subtitle>
       </v-card-item>
       <v-card-text class="overflow-auto">

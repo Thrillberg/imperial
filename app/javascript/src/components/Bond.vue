@@ -6,7 +6,7 @@
     <template #activator="{ props }">
       <div class="d-inline-block position-relative">
         <v-sheet
-          class="d-inline-block mx-2 px-2 py-2"
+          class="d-inline-block mx-1 px-2 my-1 py-2"
           :color="backgroundColor()"
           :elevation="isBeingAppliedToTradeIn ? 10 : 0"
           rounded
