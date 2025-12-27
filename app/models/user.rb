@@ -34,6 +34,11 @@ class User < ActiveRecord::Base
   private
 
   def finished_games_for_profile
-    games.where.not(winner_id: nil).includes(:winner).order(updated_at: :desc).map(&:to_json_for_profile)
+    games
+      .where.not(winner_id: nil)
+      .where(cloned_from_game: nil)
+      .includes(:winner)
+      .order(updated_at: :desc)
+      .map(&:to_json_for_profile)
   end
 end
