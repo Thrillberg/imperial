@@ -105,7 +105,7 @@ class Game < ActiveRecord::Base
       name: name,
       winner_name: winner&.name,
       players_count: players.count,
-      variant: variant,
+      base_game: base_game,
       last_move_at: last_move_at
     }
   end

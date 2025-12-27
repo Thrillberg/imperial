@@ -81,7 +81,7 @@
           <th>Name</th>
           <th>Players</th>
           <th>Winner</th>
-          <th>Variant</th>
+          <th>Base Game</th>
           <th>Finished On</th>
         </tr>
       </thead>
@@ -102,7 +102,7 @@
             {{ truncate(game.winner_name) }}
           </td>
           <td>
-            {{ variant(game.variant) }}
+            {{ getBaseGame(game.base_game) }}
           </td>
           <td>
             {{ toDate(game.last_move_at) }}
@@ -163,7 +163,7 @@ export default {
     toDate(timestamp) {
       return DateTime.fromISO(timestamp).toLocaleString();
     },
-    variant(baseGame) {
+    getBaseGame(baseGame) {
       if (baseGame === 'imperial') {
         return 'Imperial (Classic)';
       } if (baseGame === 'imperialEurope2030') {
