@@ -21,17 +21,20 @@ class User < ActiveRecord::Base
     {name: name, id: id}
   end
 
-  def to_json_for_profile
+  def to_json_for_profile(finished_games)
     {
       id: id,
       name: name,
       turn_notifications_enabled: turn_notifications_enabled,
       discord_id: discord_id,
-      finished_games: finished_games_for_profile
+      finished_games: finished_games.map(&:to_json_for_profile),
+      meta: {
+        page: finished_games.current_page,
+        total_pages: finished_games.total_pages,
+        total_count: finished_games.total_count
+      }
     }
   end
-
-  private
 
   def finished_games_for_profile
     games
@@ -39,6 +42,5 @@ class User < ActiveRecord::Base
       .where(cloned_from_game: nil)
       .includes(:winner)
       .order(updated_at: :desc)
-      .map(&:to_json_for_profile)
   end
 end

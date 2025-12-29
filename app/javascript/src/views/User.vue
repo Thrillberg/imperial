@@ -1,5 +1,5 @@
 <template>
-  <v-container v-if="profileStore.loading">
+  <v-container v-if="loading">
     <v-skeleton-loader
       type="heading, paragraph"
       class="mb-4"
@@ -8,7 +8,7 @@
       type="table"
     />
   </v-container>
-  <v-container v-else-if="profileStore.user">
+  <v-container v-else>
     <div
       v-for="(error, index) in errors"
       :key="index"
@@ -68,10 +68,10 @@
       </v-card-text>
     </v-card>
     <p class="pb-4">
-      {{ profileStore.user?.name }} has finished {{ profileStore.finishedGames?.length }} {{ finishedGameString }} and won
+      {{ user?.name }} has finished {{ finishedGames?.length }} {{ finishedGameString }} and won
       {{ wonGames?.length }} {{ wonGameString }}.
     </p>
-    <span class="text-h5">{{ profileStore.user?.name }}'s Finished Games</span>
+    <span class="text-h5">{{ user?.name }}'s Finished Games</span>
     <v-table
       density="compact"
       hover
@@ -87,7 +87,7 @@
       </thead>
       <tbody>
         <tr
-          v-for="game of profileStore.finishedGames"
+          v-for="game of finishedGames"
           :key="game.id"
         >
           <td>
@@ -110,6 +110,11 @@
         </tr>
       </tbody>
     </v-table>
+    <v-pagination
+      v-model="meta.page"
+      :length="meta.total_pages"
+      @update:model-value="fetchFinishedGames"
+    />
   </v-container>
 </template>
 
@@ -117,11 +122,9 @@
 import { DateTime } from 'luxon';
 import { markRaw } from 'vue';
 import discordLogo from '../assets/discord.svg';
-import { profileStore, wonGames } from '../router/profileStore';
 
 export default {
   name: 'User',
-  setup: () => ({ profileStore, wonGames }),
   data() {
     return {
       discordLogo: markRaw(discordLogo),
@@ -129,15 +132,41 @@ export default {
       successfullyUpdated: false,
       turnNotificationsEnabled: false,
       discordId: '',
+      user: null,
+      loading: false,
+      finishedGames: [],
+      meta: {
+        page: 1,
+        total_pages: 1,
+        total_count: 0,
+      },
     };
   },
   computed: {
     finishedGameString() {
-      return profileStore.finishedGames?.length === 1 ? 'game' : 'games';
+      return this.finishedGames?.length === 1 ? 'game' : 'games';
+    },
+    wonGames() {
+      if (!this.finishedGames || !this.user?.name) return [];
+
+      return this.finishedGames.filter(
+        (game) => game.winner_name === this.user.name,
+      );
     },
     wonGameString() {
-      return wonGames?.length === 1 ? 'game' : 'games';
+      return this.wonGames?.length === 1 ? 'game' : 'games';
     },
+  },
+  watch: {
+    '$route.params.id': {
+      immediate: true,
+      handler() {
+        this.fetchFinishedGames(1);
+      },
+    },
+  },
+  mounted() {
+    this.fetchFinishedGames(1);
   },
   methods: {
     save() {
@@ -155,6 +184,20 @@ export default {
           this.turnNotificationsEnabled = data.turn_notifications_enabled;
           this.discordId = data.discord_id;
           this.successfullyUpdated = true;
+        });
+    },
+    fetchFinishedGames(page = 1) {
+      this.loading = true;
+
+      fetch(`/api/users/${this.$route.params.id}?page=${page}`)
+        .then((response) => response.json())
+        .then((data) => {
+          this.user = data.user;
+          this.finishedGames = data.user.finished_games;
+          this.meta = data.user.meta;
+        })
+        .finally(() => {
+          this.loading = false;
         });
     },
     resetTurnNotifications() {

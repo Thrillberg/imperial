@@ -9,6 +9,7 @@ gem "concurrent-ruby", "1.3.4"
 gem "devise"
 gem "faker"
 gem "globalid", "~> 1.0"
+gem "kaminari"
 gem "net-imap", require: false
 gem "net-pop", require: false
 gem "net-smtp", require: false

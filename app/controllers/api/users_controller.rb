@@ -5,7 +5,8 @@ class API::UsersController < ApplicationController
 
   def show
     user = User.find(params[:id])
-    render json: {user: user.to_json_for_profile}
+    finished_games = user.finished_games_for_profile.page(params[:page]).per(2)
+    render json: {user: user.to_json_for_profile(finished_games)}
   end
 
   def create
