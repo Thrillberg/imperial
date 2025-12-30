@@ -28,6 +28,9 @@ class User < ActiveRecord::Base
       turn_notifications_enabled: turn_notifications_enabled,
       discord_id: discord_id,
       finished_games: finished_games.map(&:to_json_for_profile),
+      finished_games_count: finished_games.total_count,
+      won_games_count: finished_games_for_profile.where(winner_id: id).count,
+      created_at: created_at,
       meta: {
         page: finished_games.current_page,
         total_pages: finished_games.total_pages,
@@ -37,10 +40,9 @@ class User < ActiveRecord::Base
   end
 
   def finished_games_for_profile
-    games
+    @finished_games_for_profile ||= games
       .where.not(winner_id: nil)
       .where(cloned_from_game: nil)
       .includes(:winner)
-      .order(updated_at: :desc)
   end
 end

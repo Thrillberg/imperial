@@ -5,7 +5,11 @@ class API::UsersController < ApplicationController
 
   def show
     user = User.find(params[:id])
-    finished_games = user.finished_games_for_profile.page(params[:page]).per(20)
+    finished_games = user
+      .finished_games_for_profile
+      .order(updated_at: :desc)
+      .page(params[:page])
+      .per(20)
     render json: {user: user.to_json_for_profile(finished_games)}
   end
 

@@ -67,50 +67,57 @@
         </v-btn>
       </v-card-text>
     </v-card>
-    <span class="text-h5">{{ user?.name }}'s Finished Games</span>
-    <v-table
-      density="compact"
-      hover
-    >
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Players</th>
-          <th>Winner</th>
-          <th>Base Game</th>
-          <th>Finished On</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr
-          v-for="game of finishedGames"
-          :key="game.id"
-        >
-          <td>
-            <router-link :to="{ path: '/game/' + game.id }">
-              <span>{{ game.name }}</span>
-            </router-link>
-          </td>
-          <td>
-            {{ game.players_count }}
-          </td>
-          <td>
-            {{ truncate(game.winner_name) }}
-          </td>
-          <td>
-            {{ getBaseGame(game.base_game) }}
-          </td>
-          <td>
-            {{ toDate(game.last_move_at) }}
-          </td>
-        </tr>
-      </tbody>
-    </v-table>
-    <v-pagination
-      v-model="meta.page"
-      :length="meta.total_pages"
-      @update:model-value="fetchFinishedGames"
-    />
+    <v-card>
+      <v-card-title>{{ user.name }}</v-card-title>
+      <v-card-subtitle>
+        <p>Finished <b>{{ finishedGamesCount }}</b> {{ finishedGameString }}.</p>
+        <p>Won <b>{{ wonGamesCount }}</b> {{ wonGameString }} ({{ Math.floor((wonGamesCount / finishedGamesCount) * 100) }}%).</p>
+        <p>Member since <b>{{ toDateMonthYear(createdAt) }}</b>.</p>
+      </v-card-subtitle>
+      <v-table
+        density="compact"
+        hover
+      >
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Players</th>
+            <th>Winner</th>
+            <th>Base Game</th>
+            <th>Finished On</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="game of finishedGames"
+            :key="game.id"
+          >
+            <td>
+              <router-link :to="{ path: '/game/' + game.id }">
+                <span>{{ game.name }}</span>
+              </router-link>
+            </td>
+            <td>
+              {{ game.players_count }}
+            </td>
+            <td>
+              {{ truncate(game.winner_name) }}
+            </td>
+            <td>
+              {{ getBaseGame(game.base_game) }}
+            </td>
+            <td>
+              {{ toDate(game.last_move_at) }}
+            </td>
+          </tr>
+        </tbody>
+      </v-table>
+      <v-pagination
+        v-model="meta.page"
+        :length="meta.total_pages"
+        @update:model-value="fetchFinishedGames"
+      />
+    </v-card>
   </v-container>
 </template>
 
@@ -131,6 +138,9 @@ export default {
       user: null,
       loading: false,
       finishedGames: [],
+      finishedGamesCount: 0,
+      wonGamesCount: 0,
+      createdAt: null,
       meta: {
         page: 1,
         total_pages: 1,
@@ -140,17 +150,10 @@ export default {
   },
   computed: {
     finishedGameString() {
-      return this.finishedGames?.length === 1 ? 'game' : 'games';
-    },
-    wonGames() {
-      if (!this.finishedGames || !this.user?.name) return [];
-
-      return this.finishedGames.filter(
-        (game) => game.winner_name === this.user.name,
-      );
+      return this.finishedGamesCount === 1 ? 'game' : 'games';
     },
     wonGameString() {
-      return this.wonGames?.length === 1 ? 'game' : 'games';
+      return this.wonGamesCount === 1 ? 'game' : 'games';
     },
   },
   watch: {
@@ -190,6 +193,9 @@ export default {
         .then((data) => {
           this.user = data.user;
           this.finishedGames = data.user.finished_games;
+          this.finishedGamesCount = data.user.finished_games_count;
+          this.wonGamesCount = data.user.won_games_count;
+          this.createdAt = data.user.created_at;
           this.meta = data.user.meta;
         })
         .finally(() => {
@@ -201,6 +207,9 @@ export default {
     },
     toDate(timestamp) {
       return DateTime.fromISO(timestamp).toLocaleString();
+    },
+    toDateMonthYear(timestamp) {
+      return DateTime.fromISO(timestamp).toLocaleString({ month: 'long', year: 'numeric' });
     },
     getBaseGame(baseGame) {
       if (baseGame === 'imperial') {
