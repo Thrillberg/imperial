@@ -19,7 +19,13 @@
         >
           x{{ Math.floor(powerPoints / 5) }}
         </div>
-        {{ truncate(controller) }}
+        <v-chip
+          variant="outlined"
+          :to="isHuman ? '/users/' + controllerUuid : ''"
+          :color="isHuman ? 'default': 'red'"
+        >
+          {{ truncate(controller) }}
+        </v-chip>
       </v-card-text>
     </v-card>
   </v-col>
@@ -39,6 +45,8 @@ export default {
     currentNation: { type: String, default: '' },
     currentPlayer: { type: String, default: '' },
     controller: { type: String, default: '' },
+    controllerUuid: { type: String, default: '' },
+    isHuman: { type: Boolean, default: false },
     nation: { type: String, default: '' },
     powerPoints: { type: Number, default: 0 },
     treasury: { type: Number, default: 0 },

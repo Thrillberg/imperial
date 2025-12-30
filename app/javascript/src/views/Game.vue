@@ -301,6 +301,8 @@
                 :can-pay-out="canPayOut(nation)"
                 :power-points="game.nations.get(nation).powerPoints"
                 :controller="game.nations.get(nation).controller"
+                :controller-uuid="controllerUuid(nation)"
+                :is-human="gameData.players.map(p => p.name).includes(game.nations.get(nation).controller)"
                 :current-player="profile.username"
                 :base-game="game.baseGame"
                 :winner="game.winner"
@@ -1225,6 +1227,10 @@ export default {
       }
 
       return this.game.nations.get(nation).treasury >= totalToPayOut;
+    },
+    controllerUuid(nation) {
+      const controllerName = this.game.nations.get(nation).controller;
+      return this.gameData.players.find((player) => player.name === controllerName)?.id || '';
     },
     toggleTradeIn(bond) {
       if (this.tradedInValue > 0) {

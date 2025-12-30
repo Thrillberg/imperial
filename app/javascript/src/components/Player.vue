@@ -22,6 +22,7 @@
             :to="isHuman ? '/users/' + player.uuid : ''"
             :color="isHuman ? 'default': 'red'"
             class="mr-2"
+            variant="outlined"
           >
             <template #prepend>
               <v-icon
@@ -34,7 +35,7 @@
             {{ player.name }}
           </v-chip>
         </v-card-title>
-        <v-card-subtitle>
+        <v-card-item>
           <div class="d-flex justify-space-around my-2">
             <Flag
               v-for="controlledNation in controlledNations(player.name)"
@@ -58,7 +59,7 @@
               {{ player.rawScore + player.cash }} VP
             </v-chip>
           </div>
-        </v-card-subtitle>
+        </v-card-item>
       </v-card-item>
       <v-card-text class="overflow-auto">
         <Bond
