@@ -11,7 +11,6 @@ class Game < ActiveRecord::Base
   has_many :hidden_games
 
   has_one :latest_snapshot, -> { order(created_at: :desc) }, class_name: "Snapshot"
-  has_one :latest_action, -> { order(created_at: :desc) }, class_name: "Action"
 
   belongs_to :winner, class_name: "User", optional: true
   belongs_to :host, class_name: "User"
