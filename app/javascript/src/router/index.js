@@ -383,5 +383,11 @@ router.afterEach((to, from) => {
   });
 });
 
+router.onError((error) => {
+  if (error?.message?.includes('Failed to fetch dynamically imported module')) {
+    window.location.reload();
+  }
+});
+
 export default router;
 export { apiClient };
