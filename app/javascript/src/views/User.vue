@@ -186,9 +186,15 @@ export default {
         });
     },
     fetchFinishedGames(page = 1) {
+      const userId = this.$route.params?.id;
+
+      if (!userId) {
+        return;
+      }
+
       this.loading = true;
 
-      fetch(`/api/users/${this.$route.params.id}?page=${page}`)
+      fetch(`/api/users/${userId}?page=${page}`)
         .then((response) => response.json())
         .then((data) => {
           this.user = data.user;
