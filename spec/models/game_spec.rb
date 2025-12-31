@@ -23,7 +23,7 @@ RSpec.describe Game, "#to_json" do
       winner_name: nil,
       observers: [],
       variant: "standard",
-      last_move_at: game.last_move_at,
+      last_move_at: game.actions.order(:created_at).last&.created_at,
       cloned_from_game: nil,
       is_public: true,
       latest_state: nil
