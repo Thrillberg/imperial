@@ -1,4 +1,4 @@
-import ActionCable from 'actioncable';
+import { createConsumer } from '@rails/actioncable';
 import { createRouter, createWebHistory } from 'vue-router';
 import * as Sentry from '@sentry/vue';
 import Home from '../views/Home.vue';
@@ -12,7 +12,7 @@ class APIClient {
   }
 
   initws() {
-    const ws = ActionCable.createConsumer('/ws');
+    const ws = createConsumer('/ws');
     ws.subscriptions.create('GameChannel', {
       connected: () => {
         this.messageQueue.forEach((data) => this.send(data, 'GameChannel'));
