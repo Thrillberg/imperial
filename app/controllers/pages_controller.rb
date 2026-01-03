@@ -2,7 +2,7 @@ class PagesController < ActionController::Base
   def index
     raise ActionController::RoutingError.new("Not Found") unless route_valid?
 
-    raw_games = Game.current.includes(:host, :current_player, :users, :winner, :cloned_from_game, :snapshots, :actions)
+    raw_games = Game.current.includes(:current_player, :winner, :cloned_from_game)
 
     @games = raw_games.map do |game|
       observers = Rails.cache.fetch("users_observing_game_#{game.id}") { [] }

@@ -46,7 +46,6 @@ class Game < ActiveRecord::Base
 
   def to_json
     observers = Rails.cache.fetch("users_observing_game_#{id}") { [] }
-    latest_state = snapshots.order(:created_at).last&.state
     parsed_latest_state = latest_state ? JSON.parse(latest_state)["state"] : nil
     {
       name: name,
@@ -62,7 +61,7 @@ class Game < ActiveRecord::Base
       winner_name: winner&.name,
       observers: observers,
       variant: variant,
-      last_move_at: actions.order(:created_at).last&.created_at,
+      last_move_at: last_move&.created_at,
       cloned_from_game: cloned_from_game&.id,
       is_public: is_public,
       time_commitment: time_commitment,
@@ -71,7 +70,6 @@ class Game < ActiveRecord::Base
   end
 
   def to_json_with_observers(observers)
-    latest_state = snapshots.order(:created_at).last&.state
     parsed_latest_state = latest_state ? JSON.parse(latest_state)["state"] : nil
 
     {
@@ -88,7 +86,7 @@ class Game < ActiveRecord::Base
       winner_name: winner&.name,
       observers: observers,
       variant: variant,
-      last_move_at: actions.order(:created_at).last&.created_at,
+      last_move_at: last_move&.created_at,
       cloned_from_game: cloned_from_game&.id,
       is_public: is_public,
       time_commitment: time_commitment,
@@ -103,7 +101,7 @@ class Game < ActiveRecord::Base
       winner_name: winner&.name,
       players_count: players.count,
       base_game: base_game,
-      last_move_at: actions.order(:created_at).last&.created_at
+      last_move_at: last_move&.created_at
     }
   end
 
@@ -115,14 +113,22 @@ class Game < ActiveRecord::Base
 
   def abandoned?
     if actions.any? && !force_ended_at
-      return actions.order(:created_at).last.created_at < 7.days.ago
+      return last_move.created_at < 7.days.ago
     elsif actions.any? { |a| JSON.parse(a.data)["type"] == "rondel" } && !force_ended_at
-      return actions.order(:created_at).last.created_at < 30.days.ago
+      return last_move.created_at < 30.days.ago
     elsif !force_ended_at
       return created_at < 7.days.ago
     end
 
     false
+  end
+
+  def last_move
+    actions.order(:created_at).last
+  end
+
+  def latest_state
+    @latest_state ||= snapshots.order(:created_at).last&.state
   end
 
   def clone(host, log)
