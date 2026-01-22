@@ -719,9 +719,7 @@ export default class ImperialGameCoordinator {
           this.endOfInvestorTurn(player);
         }
 
-        // If there is one available action, it is the skip action and doesn't
-        // count as a real action.
-        if (this.availableActions.size <= 1) {
+        if ([...this.availableActions].every((action) => action.type !== 'bondPurchase')) {
           this.annotatedLog.push(
             Action.playerAutoSkipsBondPurchase({
               player: this.currentPlayerName,
@@ -1985,6 +1983,30 @@ export default class ImperialGameCoordinator {
       }
       for (const bondPurchase of this.bondPurchasesFromAllNations()) {
         this.availableActions.add(bondPurchase);
+      }
+
+      if ([...this.availableActions].every((action) => action.type !== 'bondPurchase')) {
+        this.annotatedLog.push(
+          Action.playerAutoSkipsBondPurchase({
+            player: this.currentPlayerName,
+            bondNation: this.currentNation,
+          }),
+        );
+        this.currentNation = this.nextNation(this.currentNation);
+        this.currentPlayerName = this.nations.get(
+          this.currentNation,
+        ).controller;
+        this.advanceInvestorCard();
+
+        for (const availableAction of this.availableActions) {
+          if (availableAction.type === 'skipBondPurchase') {
+            this.log.push(availableAction);
+            this.availableActions.delete(availableAction);
+          }
+        }
+        for (const rondelAction of this.availableRondelActions(this.currentNation)) {
+          this.availableActions.add(rondelAction);
+        }
       }
     }
   }
