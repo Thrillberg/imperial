@@ -1,7 +1,7 @@
 desc "Find inactive Discord channels and delete them"
 
 task delete_inactive_discord_channels: :environment do
-  Game.all.each do |game|
+  Game.find_each do |game|
     if game.discord_channel_id
       # Get the last message id
       uri = URI("https://discord.com/api/channels/#{game.discord_channel_id}")
