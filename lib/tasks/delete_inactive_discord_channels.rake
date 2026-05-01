@@ -32,7 +32,7 @@ task delete_inactive_discord_channels: :environment do
         if response.code == Net::HTTPOK
           game.update(discord_channel_id: nil)
           channel = JSON.parse(response)
-          puts "Successfully deleted channel. Channel id: #{channel.id}, name: #{channel.name}"
+          Rails.logger.info "Successfully deleted channel. Channel id: #{channel.id}, name: #{channel.name}"
         end
       end
     end

@@ -112,15 +112,17 @@ class Game < ActiveRecord::Base
   end
 
   def abandoned?
-    if actions.any? && !force_ended_at
-      return last_move.created_at < 7.days.ago
-    elsif actions.any? { |a| JSON.parse(a.data)["type"] == "rondel" } && !force_ended_at
-      return last_move.created_at < 30.days.ago
-    elsif !force_ended_at
-      return created_at < 7.days.ago
-    end
+    return false if force_ended_at
 
-    false
+    if actions.exists?
+      last_move.created_at < if has_rondel_action?
+        30.days.ago
+      else
+        7.days.ago
+      end
+    else
+      created_at < 7.days.ago
+    end
   end
 
   def last_move
@@ -150,5 +152,11 @@ class Game < ActiveRecord::Base
     end
     cloned_game.save
     cloned_game
+  end
+
+  private
+
+  def has_rondel_action?
+    actions.where("data LIKE '%\"type\":\"rondel\"%'").exists?
   end
 end
