@@ -10,6 +10,7 @@ task delete_inactive_discord_channels: :environment do
         "Content-Type" => "application/json",
         "authorization" => "Bot #{ENV["DISCORD_TOKEN"]}"
       )
+      Rails.logger.info "Discord API response for channel #{game.discord_channel_id}: #{response}"
       last_message_id = JSON.parse(response)["last_message_id"]
 
       # Get the timestamp of the last message
