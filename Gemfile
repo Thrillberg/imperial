@@ -15,7 +15,7 @@ gem "net-pop", require: false
 gem "net-smtp", require: false
 gem "pg", ">= 0.18", "< 2.0"
 gem "psych", "< 4"
-gem "puma", "~> 6.5"
+gem "puma", "~> 7.2"
 gem "rack-cors"
 gem "rails", "~> 7.1.5.1"
 gem "sentry-rails"
