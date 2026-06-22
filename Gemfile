@@ -5,7 +5,7 @@ ruby "3.2.2"
 
 gem "blazer"
 gem "bootsnap", require: false
-gem "concurrent-ruby", "1.3.4"
+gem "concurrent-ruby", "1.3.7"
 gem "devise"
 gem "faker"
 gem "globalid", "~> 1.0"
